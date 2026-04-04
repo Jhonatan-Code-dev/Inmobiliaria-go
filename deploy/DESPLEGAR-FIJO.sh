@@ -10,6 +10,11 @@ sudo systemctl restart paga-causa.service
 sudo systemctl status paga-causa.service
 
 
+# EL PUERTO DEL API SE DEFINE DESDE EL ARCHIVO .env
+# Ejemplo:
+# PORT=4000
+
+
 
 # COMANDO PARA COPIALAR CODIGO EN LOCAL PARA PRODUCCION:
 

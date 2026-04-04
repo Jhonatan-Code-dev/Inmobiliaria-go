@@ -2,6 +2,7 @@ package env
 
 import (
 	"log"
+	"strings"
 	"sync"
 
 	"github.com/joho/godotenv"
@@ -28,7 +29,20 @@ func NewConfig() *Config {
 		if err := envconfig.Process("", cfg); err != nil {
 			log.Fatalf("error al cargar variables de entorno: %v", err)
 		}
+
+		cfg.Port = normalizarPuerto(cfg.Port)
 	})
 
 	return cfg
+}
+
+func normalizarPuerto(port string) string {
+	port = strings.TrimSpace(port)
+	port = strings.TrimPrefix(port, ":")
+
+	if port == "" {
+		return "4000"
+	}
+
+	return port
 }

@@ -22,7 +22,6 @@ func main() {
 
 	app := fiber.New()
 	routes.Register(app, appDI)
-
 	log.Printf("API corriendo en http://localhost:%s\n", appDI.Config.Port)
 	log.Fatal(app.Listen(":" + appDI.Config.Port))
 }

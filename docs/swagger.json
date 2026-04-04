@@ -1,0 +1,785 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/admin/credenciales": {
+            "patch": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Cambiar usuario y contraseña del admin autenticado",
+                "parameters": [
+                    {
+                        "description": "Nuevo usuario y contraseña",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.adminCredencialesRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.adminCredencialesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/empresas": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Listado de empresas",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/controller.empresaResponse"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Alta de empresa + usuario principal",
+                "parameters": [
+                    {
+                        "description": "Datos de empresa y usuario",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.crearEmpresaRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/controller.crearEmpresaResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/empresas/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Obtener empresa por ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de empresa",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.empresaResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Actualizar empresa",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de empresa",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Datos de empresa",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.actualizarEmpresaRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.empresaResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Eliminar empresa",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de empresa",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/login": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Login admin",
+                "parameters": [
+                    {
+                        "description": "Credenciales",
+                        "name": "credentials",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.adminLoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.adminLoginResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/login": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "usuario"
+                ],
+                "summary": "Login de usuario",
+                "parameters": [
+                    {
+                        "description": "Credenciales",
+                        "name": "credentials",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.usuarioLoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.usuarioLoginResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/catalogos/monedas": {
+            "get": {
+                "description": "Lista las monedas ISO 4217 actualmente soportadas por el backend.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "catalogos"
+                ],
+                "summary": "Catalogo global de monedas",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/controller.monedaResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/catalogos/monedas/{codigo}": {
+            "get": {
+                "description": "Retorna precision y simbolos de una moneda ISO 4217.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "catalogos"
+                ],
+                "summary": "Detalle de moneda",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Codigo ISO 4217",
+                        "name": "codigo",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.monedaResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/me": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "usuario"
+                ],
+                "summary": "Perfil del usuario autenticado",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.usuarioLoginResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "controller.actualizarEmpresaRequest": {
+            "type": "object",
+            "properties": {
+                "ciudad": {
+                    "type": "string"
+                },
+                "correo": {
+                    "type": "string"
+                },
+                "direccion": {
+                    "type": "string"
+                },
+                "documento_fiscal": {
+                    "type": "string"
+                },
+                "estado": {
+                    "type": "string"
+                },
+                "maximo_usuarios": {
+                    "type": "integer"
+                },
+                "moneda": {
+                    "type": "string"
+                },
+                "nombre": {
+                    "type": "string"
+                },
+                "pais": {
+                    "type": "string"
+                },
+                "telefono": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.adminCredencialesRequest": {
+            "type": "object",
+            "properties": {
+                "contrasena": {
+                    "type": "string"
+                },
+                "usuario": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.adminCredencialesResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "nombre": {
+                    "type": "string"
+                },
+                "usuario": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.adminLoginRequest": {
+            "type": "object",
+            "properties": {
+                "contrasena": {
+                    "type": "string"
+                },
+                "usuario": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.adminLoginResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.crearEmpresaRequest": {
+            "type": "object",
+            "properties": {
+                "empresa": {
+                    "type": "object",
+                    "properties": {
+                        "ciudad": {
+                            "type": "string"
+                        },
+                        "correo": {
+                            "type": "string"
+                        },
+                        "direccion": {
+                            "type": "string"
+                        },
+                        "documento_fiscal": {
+                            "type": "string"
+                        },
+                        "estado": {
+                            "type": "string"
+                        },
+                        "maximo_usuarios": {
+                            "type": "integer"
+                        },
+                        "moneda": {
+                            "type": "string"
+                        },
+                        "nombre": {
+                            "type": "string"
+                        },
+                        "pais": {
+                            "type": "string"
+                        },
+                        "telefono": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "usuario": {
+                    "type": "object",
+                    "properties": {
+                        "apellidos": {
+                            "type": "string"
+                        },
+                        "correo": {
+                            "type": "string"
+                        },
+                        "nombres": {
+                            "type": "string"
+                        },
+                        "password": {
+                            "type": "string"
+                        },
+                        "telefono": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "controller.crearEmpresaResponse": {
+            "type": "object",
+            "properties": {
+                "empresa_id": {
+                    "type": "integer"
+                },
+                "usuario_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "controller.empresaResponse": {
+            "type": "object",
+            "properties": {
+                "ciudad": {
+                    "type": "string"
+                },
+                "correo": {
+                    "type": "string"
+                },
+                "direccion": {
+                    "type": "string"
+                },
+                "documento_fiscal": {
+                    "type": "string"
+                },
+                "estado": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "maximo_usuarios": {
+                    "type": "integer"
+                },
+                "moneda": {
+                    "type": "string"
+                },
+                "moneda_info": {
+                    "$ref": "#/definitions/controller.monedaResponse"
+                },
+                "nombre": {
+                    "type": "string"
+                },
+                "pais": {
+                    "type": "string"
+                },
+                "telefono": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.errorResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.monedaRegionResponse": {
+            "type": "object",
+            "properties": {
+                "codigo": {
+                    "type": "string"
+                },
+                "nombre": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.monedaRenderResponse": {
+            "type": "object",
+            "properties": {
+                "currency": {
+                    "type": "string"
+                },
+                "maximum_fraction_digits": {
+                    "type": "integer"
+                },
+                "metodo": {
+                    "type": "string"
+                },
+                "minimum_fraction_digits": {
+                    "type": "integer"
+                }
+            }
+        },
+        "controller.monedaResponse": {
+            "type": "object",
+            "properties": {
+                "codigo": {
+                    "type": "string"
+                },
+                "decimales": {
+                    "type": "integer"
+                },
+                "incremento": {
+                    "type": "integer"
+                },
+                "regiones": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/controller.monedaRegionResponse"
+                    }
+                },
+                "render": {
+                    "$ref": "#/definitions/controller.monedaRenderResponse"
+                }
+            }
+        },
+        "controller.usuarioLoginRequest": {
+            "type": "object",
+            "properties": {
+                "contrasena": {
+                    "type": "string"
+                },
+                "correo": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.usuarioLoginResponse": {
+            "type": "object",
+            "properties": {
+                "empresa": {
+                    "$ref": "#/definitions/controller.empresaResponse"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/controller.usuarioResponse"
+                }
+            }
+        },
+        "controller.usuarioResponse": {
+            "type": "object",
+            "properties": {
+                "apellidos": {
+                    "type": "string"
+                },
+                "correo": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nombres": {
+                    "type": "string"
+                },
+                "telefono": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

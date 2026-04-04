@@ -1,0 +1,2474 @@
+definitions:
+  authadmincontroller.LoginRequestDTO:
+    properties:
+      pass:
+        type: string
+      usuario:
+        type: string
+    required:
+    - pass
+    - usuario
+    type: object
+  authadmincontroller.LoginResponseDTO:
+    properties:
+      usuario:
+        $ref: '#/definitions/authadmincontroller.UsuarioDTO'
+    type: object
+  authadmincontroller.UsuarioDTO:
+    properties:
+      id:
+        type: integer
+      rol:
+        type: string
+      usuario:
+        type: string
+    type: object
+  authusuariocontroller.LoginRequestDTO:
+    properties:
+      password:
+        example: secret123
+        type: string
+      usuario:
+        example: trabajador1
+        type: string
+    type: object
+  authusuariocontroller.LoginResponseDTO:
+    properties:
+      empresa_id:
+        type: integer
+      empresa_nombre:
+        type: string
+      estado:
+        type: integer
+      fecha_corte:
+        type: string
+      id:
+        type: integer
+      pais:
+        type: string
+      rol:
+        type: string
+      usuario:
+        type: string
+    type: object
+  authusuariocontroller.UsuarioDTO:
+    properties:
+      empresa_id:
+        type: integer
+      empresa_nombre:
+        type: string
+      estado:
+        type: integer
+      fecha_corte:
+        type: string
+      id:
+        type: integer
+      pais:
+        type: string
+      rol:
+        type: string
+      usuario:
+        type: string
+    type: object
+  clientecontroller.ActualizarClienteRequest:
+    properties:
+      correos:
+        items:
+          type: string
+        type: array
+      direcciones:
+        items:
+          $ref: '#/definitions/clientecontroller.DireccionClienteDTO'
+        type: array
+      foto_perfil:
+        type: string
+      galeria:
+        items:
+          $ref: '#/definitions/clientecontroller.FotoClienteDTO'
+        maxItems: 2
+        type: array
+      identificacion:
+        maxLength: 30
+        minLength: 3
+        type: string
+      nombre_completo:
+        maxLength: 200
+        minLength: 3
+        type: string
+      nombre_referencia:
+        maxLength: 30
+        minLength: 2
+        type: string
+      telefonos:
+        items:
+          $ref: '#/definitions/clientecontroller.TelefonoClienteDTO'
+        type: array
+      tipo_identificacion_id:
+        type: integer
+    type: object
+  clientecontroller.ClienteDetalleResponseDTO:
+    properties:
+      correos:
+        items:
+          type: string
+        type: array
+      direcciones:
+        items:
+          $ref: '#/definitions/clientecontroller.DireccionDetalleDTO'
+        type: array
+      fecha_registro:
+        type: string
+      foto_cliente:
+        type: string
+      fotos:
+        items:
+          $ref: '#/definitions/clientecontroller.FotoDetalleDTO'
+        type: array
+      id:
+        type: integer
+      identificacion:
+        type: string
+      nombre_completo:
+        type: string
+      nombre_referencia:
+        type: string
+      telefonos:
+        items:
+          $ref: '#/definitions/clientecontroller.TelefonoDetalleDTO'
+        type: array
+      tipo_documento:
+        type: string
+    type: object
+  clientecontroller.ClienteListaJSON:
+    properties:
+      foto_cliente:
+        type: string
+      id:
+        type: integer
+      identificacion:
+        type: string
+      nombre_completo:
+        type: string
+      tipo_documento:
+        type: string
+    type: object
+  clientecontroller.DireccionClienteDTO:
+    properties:
+      direccion:
+        maxLength: 255
+        minLength: 2
+        type: string
+      lat:
+        type: number
+      lng:
+        type: number
+      principal:
+        type: boolean
+      referencia:
+        maxLength: 255
+        type: string
+      tipo_direccion_id:
+        type: integer
+    required:
+    - direccion
+    - lat
+    - lng
+    - tipo_direccion_id
+    type: object
+  clientecontroller.DireccionDetalleDTO:
+    properties:
+      direccion:
+        type: string
+      icono:
+        type: string
+      id:
+        type: integer
+      lat:
+        type: number
+      lng:
+        type: number
+      principal:
+        type: boolean
+      referencia:
+        type: string
+      tipo:
+        type: string
+    type: object
+  clientecontroller.EliminarFotosRequestDTO:
+    properties:
+      ids:
+        items:
+          type: integer
+        minItems: 1
+        type: array
+    required:
+    - ids
+    type: object
+  clientecontroller.EliminarVideosRequestDTO:
+    properties:
+      ids:
+        items:
+          type: integer
+        minItems: 1
+        type: array
+    required:
+    - ids
+    type: object
+  clientecontroller.FotoClienteDTO:
+    properties:
+      descripcion:
+        maxLength: 255
+        type: string
+      key:
+        type: string
+    required:
+    - key
+    type: object
+  clientecontroller.FotoDetalleDTO:
+    properties:
+      descripcion:
+        type: string
+      foto:
+        type: string
+      id:
+        type: integer
+    type: object
+  clientecontroller.PaginatedClientesResponseJSON:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/clientecontroller.ClienteListaJSON'
+        type: array
+      pagination:
+        $ref: '#/definitions/clientecontroller.PaginationMetadataJSON'
+    type: object
+  clientecontroller.PaginatedVideosResponseJSON:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/clientecontroller.VideoClienteJSON'
+        type: array
+      pagination:
+        $ref: '#/definitions/clientecontroller.PaginationMetadataJSON'
+    type: object
+  clientecontroller.PaginationMetadataJSON:
+    properties:
+      current_page:
+        type: integer
+      page_size:
+        type: integer
+      total_items:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  clientecontroller.RegistrarClienteRequest:
+    properties:
+      correos:
+        items:
+          type: string
+        type: array
+      direcciones:
+        items:
+          $ref: '#/definitions/clientecontroller.DireccionClienteDTO'
+        minItems: 1
+        type: array
+      foto_perfil:
+        type: string
+      galeria:
+        items:
+          $ref: '#/definitions/clientecontroller.FotoClienteDTO'
+        maxItems: 2
+        type: array
+      identificacion:
+        maxLength: 30
+        minLength: 3
+        type: string
+      nombre_completo:
+        maxLength: 200
+        minLength: 3
+        type: string
+      nombre_referencia:
+        maxLength: 30
+        minLength: 2
+        type: string
+      ruta_id:
+        type: integer
+      telefonos:
+        items:
+          $ref: '#/definitions/clientecontroller.TelefonoClienteDTO'
+        minItems: 1
+        type: array
+      tipo_identificacion_id:
+        type: integer
+    required:
+    - direcciones
+    - foto_perfil
+    - identificacion
+    - nombre_completo
+    - tipo_identificacion_id
+    type: object
+  clientecontroller.RegistrarClienteResponse:
+    properties:
+      asignado_a_ruta:
+        type: boolean
+      id:
+        type: integer
+      mensaje:
+        type: string
+      nombre_completo:
+        type: string
+    type: object
+  clientecontroller.RegistrarVideoRequestDTO:
+    properties:
+      cliente_id:
+        type: integer
+      fecha:
+        description: Formato YYYY-MM-DD
+        type: string
+      url:
+        type: string
+    required:
+    - cliente_id
+    - fecha
+    - url
+    type: object
+  clientecontroller.TelefonoClienteDTO:
+    properties:
+      permitir_llamada:
+        type: boolean
+      permitir_whatsapp:
+        type: boolean
+      principal:
+        type: boolean
+      telefono:
+        type: string
+      tipo_telefono_id:
+        type: integer
+    required:
+    - telefono
+    - tipo_telefono_id
+    type: object
+  clientecontroller.TelefonoDetalleDTO:
+    properties:
+      icono:
+        type: string
+      id:
+        type: integer
+      permitir_llamada:
+        type: boolean
+      permitir_whatsapp:
+        type: boolean
+      principal:
+        type: boolean
+      telefono:
+        type: string
+      tipo:
+        type: string
+    type: object
+  clientecontroller.VideoClienteJSON:
+    properties:
+      fecha:
+        type: string
+      id:
+        type: integer
+      url:
+        type: string
+    type: object
+  domain.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  domain.MessageResponse:
+    properties:
+      mensaje:
+        type: string
+    type: object
+  empresacontroller.ActualizarEmpresaRequestDTO:
+    properties:
+      dias_corte:
+        type: integer
+      id:
+        type: integer
+      nombre:
+        type: string
+      pais:
+        type: string
+    required:
+    - id
+    type: object
+  empresacontroller.AgregarRutaRequestDTO:
+    properties:
+      administrador:
+        $ref: '#/definitions/empresacontroller.UsuarioOnboardingDTO'
+      empresa_id:
+        type: integer
+      trabajadores:
+        items:
+          $ref: '#/definitions/empresacontroller.UsuarioOnboardingDTO'
+        type: array
+    type: object
+  empresacontroller.AgregarRutaResponseDTO:
+    properties:
+      message:
+        type: string
+      ruta_id:
+        type: integer
+    type: object
+  empresacontroller.ConfigurarEmpresaRequestDTO:
+    properties:
+      administrador:
+        $ref: '#/definitions/empresacontroller.UsuarioOnboardingDTO'
+      dias_corte:
+        minimum: 1
+        type: integer
+      empresa_nombre:
+        type: string
+      pais:
+        type: string
+      trabajadores:
+        items:
+          $ref: '#/definitions/empresacontroller.UsuarioOnboardingDTO'
+        type: array
+    required:
+    - administrador
+    - dias_corte
+    - empresa_nombre
+    - pais
+    - trabajadores
+    type: object
+  empresacontroller.ConfigurarEmpresaResponseDTO:
+    properties:
+      empresa_id:
+        type: integer
+      message:
+        type: string
+    type: object
+  empresacontroller.DashboardStatsDTO:
+    properties:
+      total_empresas:
+        type: integer
+      total_rutas:
+        type: integer
+      total_usuarios:
+        type: integer
+    type: object
+  empresacontroller.EliminarEmpresaResponseDTO:
+    properties:
+      message:
+        type: string
+    type: object
+  empresacontroller.EmpresaDetalladaDTO:
+    properties:
+      fecha_corte:
+        type: string
+      fecha_registro:
+        type: string
+      id:
+        type: integer
+      nombre:
+        type: string
+      pais:
+        type: string
+      usuarios:
+        items:
+          $ref: '#/definitions/empresacontroller.UsuarioRelacionadoDTO'
+        type: array
+    type: object
+  empresacontroller.EmpresaJSON:
+    properties:
+      fecha_corte:
+        type: string
+      fecha_registro:
+        type: string
+      id:
+        type: integer
+      nombre:
+        type: string
+      pais:
+        type: string
+    type: object
+  empresacontroller.EmpresaRutasDetalladasResponseDTO:
+    properties:
+      admins_generales:
+        items:
+          $ref: '#/definitions/empresacontroller.UsuarioAsignadoDTO'
+        type: array
+      rutas:
+        items:
+          $ref: '#/definitions/empresacontroller.RutaDetalladaDTO'
+        type: array
+      supervisor:
+        $ref: '#/definitions/empresacontroller.UsuarioAsignadoDTO'
+    type: object
+  empresacontroller.PaginatedEmpresasResponseDTO:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/empresacontroller.EmpresaDetalladaDTO'
+        type: array
+      pagination:
+        $ref: '#/definitions/empresacontroller.PaginationMetadataDTO'
+    type: object
+  empresacontroller.PaginatedEmpresasSimpleResponseDTO:
+    properties:
+      items:
+        items:
+          $ref: '#/definitions/empresacontroller.EmpresaJSON'
+        type: array
+      pagination:
+        $ref: '#/definitions/empresacontroller.PaginationMetadataDTO'
+    type: object
+  empresacontroller.PaginationMetadataDTO:
+    properties:
+      current_page:
+        type: integer
+      page_size:
+        type: integer
+      total_items:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  empresacontroller.RegistrarAdminGeneralRequestDTO:
+    properties:
+      empresa_id:
+        type: integer
+      usuario:
+        $ref: '#/definitions/empresacontroller.UsuarioOnboardingDTO'
+    type: object
+  empresacontroller.RegistrarSupervisorRequestDTO:
+    properties:
+      empresa_id:
+        type: integer
+      usuario:
+        $ref: '#/definitions/empresacontroller.UsuarioOnboardingDTO'
+    type: object
+  empresacontroller.RutaDetalladaDTO:
+    properties:
+      administradores:
+        items:
+          $ref: '#/definitions/empresacontroller.UsuarioAsignadoDTO'
+        type: array
+      id:
+        type: integer
+      numero_ruta:
+        type: string
+      trabajadores:
+        items:
+          $ref: '#/definitions/empresacontroller.UsuarioAsignadoDTO'
+        type: array
+    type: object
+  empresacontroller.UsuarioAsignadoDTO:
+    properties:
+      id:
+        type: integer
+      usuario:
+        type: string
+    type: object
+  empresacontroller.UsuarioOnboardingDTO:
+    properties:
+      pass:
+        minLength: 6
+        type: string
+      usuario:
+        minLength: 4
+        type: string
+    required:
+    - pass
+    - usuario
+    type: object
+  empresacontroller.UsuarioRelacionadoDTO:
+    properties:
+      id:
+        type: integer
+      rol:
+        type: string
+      usuario:
+        type: string
+    type: object
+  gastocontroller.GastoResponse:
+    properties:
+      id:
+        type: integer
+      mensaje:
+        type: string
+      nuevo_saldo:
+        type: number
+    type: object
+  gastocontroller.RegistrarGastoRequest:
+    properties:
+      descripcion:
+        type: string
+      fecha:
+        type: string
+      fotos:
+        items:
+          type: string
+        maxItems: 2
+        type: array
+      id_tipo_pago:
+        type: integer
+      monto:
+        type: number
+      ruta_id:
+        type: integer
+      video:
+        type: string
+    required:
+    - descripcion
+    - id_tipo_pago
+    - monto
+    - ruta_id
+    type: object
+  gestionusuariocontroller.ActualizarUsuarioRequestDTO:
+    properties:
+      pass:
+        example: secreto_nuevo
+        type: string
+      usuario:
+        example: admin_nuevo
+        type: string
+    type: object
+  gestionusuariocontroller.ActualizarUsuarioResponseDTO:
+    properties:
+      message:
+        type: string
+    type: object
+  maestrocontroller.MaestroDTO:
+    properties:
+      icono:
+        type: string
+      id:
+        type: integer
+      nombre:
+        type: string
+    type: object
+  paymentcontroller.PaymentMethodDTO:
+    properties:
+      id:
+        type: integer
+      nombre:
+        type: string
+    type: object
+  prestamocontroller.CotizarPrestamoRequest:
+    properties:
+      cuotas:
+        type: integer
+      fecha_inicio_cuotas:
+        type: string
+      monto_prestar:
+        type: number
+      tasa_interes:
+        minimum: 0
+        type: number
+      tipo_periodo:
+        enum:
+        - dias
+        - meses
+        type: string
+      valor_salto:
+        type: integer
+    required:
+    - cuotas
+    - monto_prestar
+    - tasa_interes
+    - tipo_periodo
+    - valor_salto
+    type: object
+  prestamocontroller.CotizarPrestamoResponse:
+    properties:
+      cuotas:
+        type: integer
+      detalle:
+        items:
+          $ref: '#/definitions/prestamocontroller.CuotaDetalleDTO'
+        type: array
+      monto_cuota:
+        type: number
+      monto_prestar:
+        type: number
+      monto_total:
+        type: number
+      tasa_interes:
+        type: number
+    type: object
+  prestamocontroller.CuotaDetalleDTO:
+    properties:
+      fecha_pago:
+        type: string
+      interes_cuota:
+        type: number
+      monto_cuota:
+        type: number
+      numero_cuota:
+        type: integer
+    type: object
+  prestamocontroller.MetodoPagoRequest:
+    properties:
+      monto:
+        type: number
+      tipo_pago_id:
+        type: integer
+    required:
+    - monto
+    - tipo_pago_id
+    type: object
+  prestamocontroller.RegistrarPrestamoRequest:
+    properties:
+      cliente_id:
+        type: integer
+      cuotas:
+        type: integer
+      descripcion:
+        type: string
+      fecha_inicio_cuotas:
+        type: string
+      fecha_prestamo:
+        type: string
+      id_tipo_pago_tercero:
+        type: integer
+      monto_pago_tercero:
+        type: number
+      pagos:
+        items:
+          $ref: '#/definitions/prestamocontroller.MetodoPagoRequest'
+        type: array
+      ruta_id:
+        type: integer
+      tasa_interes:
+        minimum: 0
+        type: number
+      tipo_periodo:
+        enum:
+        - dias
+        - meses
+        type: string
+      valor_salto:
+        type: integer
+    required:
+    - cliente_id
+    - cuotas
+    - fecha_prestamo
+    - pagos
+    - ruta_id
+    - tasa_interes
+    - tipo_periodo
+    - valor_salto
+    type: object
+  prestamocontroller.RegistrarPrestamoResponse:
+    properties:
+      id:
+        type: integer
+      mensaje:
+        type: string
+      nuevo_saldo:
+        type: number
+    type: object
+  usuariocontroller.AporteBaseRequestDTO:
+    properties:
+      id_tipo_pago:
+        type: integer
+      monto:
+        type: number
+      ruta_id:
+        type: integer
+    required:
+    - id_tipo_pago
+    - monto
+    - ruta_id
+    type: object
+  usuariocontroller.AsignarRutaRequestDTO:
+    properties:
+      ruta_id:
+        type: integer
+      usuario_id:
+        type: integer
+    required:
+    - ruta_id
+    - usuario_id
+    type: object
+  usuariocontroller.CajaBaseRequestDTO:
+    properties:
+      id_tipo_pago:
+        type: integer
+      monto:
+        type: number
+      ruta_id:
+        type: integer
+    required:
+    - id_tipo_pago
+    - monto
+    - ruta_id
+    type: object
+  usuariocontroller.CajaResumenResponseDTO:
+    properties:
+      estado:
+        type: boolean
+      id:
+        type: integer
+      ruta_id:
+        type: integer
+      saldo_actual:
+        type: number
+    type: object
+  usuariocontroller.ResumenGestionDTO:
+    properties:
+      rutas:
+        items:
+          $ref: '#/definitions/usuariocontroller.RutaUsuariosResponseDTO'
+        type: array
+      supervisores:
+        items:
+          $ref: '#/definitions/usuariocontroller.SupervisorGestionDTO'
+        type: array
+    type: object
+  usuariocontroller.RutaAccesoDTO:
+    properties:
+      id:
+        type: integer
+      numero_ruta:
+        type: string
+    type: object
+  usuariocontroller.RutaUsuariosResponseDTO:
+    properties:
+      administradores:
+        items:
+          $ref: '#/definitions/usuariocontroller.UsuarioAsignadoDTO'
+        type: array
+      id:
+        type: integer
+      numero_ruta:
+        type: string
+      trabajadores:
+        items:
+          $ref: '#/definitions/usuariocontroller.UsuarioAsignadoDTO'
+        type: array
+    type: object
+  usuariocontroller.SupervisorGestionDTO:
+    properties:
+      estado:
+        type: boolean
+      id:
+        type: integer
+      rutas_asignadas:
+        items:
+          $ref: '#/definitions/usuariocontroller.RutaAccesoDTO'
+        type: array
+      rutas_disponibles:
+        items:
+          $ref: '#/definitions/usuariocontroller.RutaAccesoDTO'
+        type: array
+      usuario:
+        type: string
+    type: object
+  usuariocontroller.UpdateCajaStatusRequestDTO:
+    properties:
+      estado:
+        description: true = activa, false = bloqueada
+        type: boolean
+      ruta_id:
+        type: integer
+    required:
+    - ruta_id
+    type: object
+  usuariocontroller.UpdatePasswordRequestDTO:
+    properties:
+      nueva_pass:
+        minLength: 6
+        type: string
+      usuario_id:
+        type: integer
+    required:
+    - nueva_pass
+    - usuario_id
+    type: object
+  usuariocontroller.UpdateStatusRequestDTO:
+    properties:
+      estado:
+        type: boolean
+      usuario_id:
+        type: integer
+    required:
+    - usuario_id
+    type: object
+  usuariocontroller.UsuarioAsignadoDTO:
+    properties:
+      estado:
+        type: boolean
+      id:
+        type: integer
+      usuario:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /admin/dashboard/stats:
+    get:
+      description: Retorna los totales de empresas, usuarios y rutas registradas en
+        el sistema.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/empresacontroller.DashboardStatsDTO'
+        "500":
+          description: 'error: fallo interno al obtener estadísticas'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Obtener estadísticas globales del sistema
+      tags:
+      - Administración - Dashboard
+  /admin/empresas:
+    put:
+      consumes:
+      - application/json
+      description: Actualiza el nombre y/o la fecha de corte de una empresa específica
+        usando su ID.
+      parameters:
+      - description: Datos de la actualización
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/empresacontroller.ActualizarEmpresaRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'message: empresa actualizada exitosamente'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: 'error: datos inválidos'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: no se pudo actualizar la empresa'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Actualizar datos de una empresa
+      tags:
+      - Administración - Empresas
+  /admin/empresas-detalles:
+    get:
+      consumes:
+      - application/json
+      description: Retorna un listado paginado de empresas, incluyendo sus usuarios
+        asociados y sus respectivos roles.
+      parameters:
+      - description: 'Número de página (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Cantidad por página (default: 10)'
+        in: query
+        name: limit
+        type: integer
+      - description: 'Criterio de orden (recientes, vencimiento) (default: recientes)'
+        in: query
+        name: sort_by
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/empresacontroller.PaginatedEmpresasResponseDTO'
+        "500":
+          description: 'error: no se pudo obtener la lista detallada'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Obtener lista detallada de empresas con usuarios y roles
+      tags:
+      - Administración - Empresas
+  /admin/empresas-paginadas:
+    get:
+      consumes:
+      - application/json
+      description: Retorna un listado filtrado y paginado de todas las empresas registradas
+        en el sistema.
+      parameters:
+      - description: 'Número de página (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Cantidad por página (default: 10)'
+        in: query
+        name: limit
+        type: integer
+      - description: Buscar por nombre de empresa
+        in: query
+        name: search
+        type: string
+      - description: 'Criterio de orden (recientes, vencimiento) (default: recientes)'
+        in: query
+        name: sort_by
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/empresacontroller.PaginatedEmpresasSimpleResponseDTO'
+        "500":
+          description: 'error: no se pudo obtener la lista paginada'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Obtener lista de empresas con paginación
+      tags:
+      - Administración - Empresas
+  /admin/empresas-rutas:
+    get:
+      consumes:
+      - application/json
+      description: Retorna todas las rutas de una empresa específica junto con sus
+        administradores y trabajadores asignados.
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/empresacontroller.EmpresaRutasDetalladasResponseDTO'
+        "400":
+          description: 'error: id de empresa requerido'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: no se pudo obtener el listado de rutas'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Obtener lista detallada de rutas de una empresa
+      tags:
+      - Administración - Empresas
+  /admin/empresas/{id}:
+    delete:
+      description: Elimina una empresa y sus usuarios (admin y trabajadores) solo
+        si NO tienen historial operativo (clientes, préstamos, movimientos de caja,
+        etc.).
+      parameters:
+      - description: ID de la empresa
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/empresacontroller.EliminarEmpresaResponseDTO'
+        "400":
+          description: 'error: no se puede eliminar por historial existente'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: fallo interno al eliminar'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Eliminar empresa de forma segura
+      tags:
+      - Administración - Empresas
+  /admin/empresas/admin-general:
+    post:
+      consumes:
+      - application/json
+      description: Crea un nuevo usuario con rol 'admin' vinculado a la empresa, con
+        acceso a todas sus rutas.
+      parameters:
+      - description: Datos del administrador general
+        in: body
+        name: config
+        required: true
+        schema:
+          $ref: '#/definitions/empresacontroller.RegistrarAdminGeneralRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 'message: Administrador general registrado'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: 'error: datos inválidos'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Registrar administrador general de empresa
+      tags:
+      - Administración - Empresas
+  /admin/empresas/nueva-ruta:
+    post:
+      consumes:
+      - application/json
+      description: Crea una nueva ruta (número incremental) para una empresa existente,
+        con su admin y 2 trabajadores.
+      parameters:
+      - description: Configuración de la nueva ruta
+        in: body
+        name: config
+        required: true
+        schema:
+          $ref: '#/definitions/empresacontroller.AgregarRutaRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/empresacontroller.AgregarRutaResponseDTO'
+        "400":
+          description: 'error: datos inválidos'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 'error: empresa no encontrada'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Añadir nueva ruta a empresa
+      tags:
+      - Administración - Empresas
+  /admin/empresas/nuevo-supervisor:
+    post:
+      consumes:
+      - application/json
+      description: Crea un nuevo usuario con rol 'supervisor' vinculado a la empresa,
+        con acceso automático a todas sus rutas.
+      parameters:
+      - description: Datos del supervisor
+        in: body
+        name: config
+        required: true
+        schema:
+          $ref: '#/definitions/empresacontroller.RegistrarSupervisorRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 'message: Supervisor registrado'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: 'error: datos inválidos'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Registrar supervisor de empresa
+      tags:
+      - Administración - Empresas
+  /admin/login:
+    post:
+      consumes:
+      - application/json
+      description: Autentica a un usuario administrador y devuelve un JWT
+      parameters:
+      - description: Credenciales de login
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/authadmincontroller.LoginRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/authadmincontroller.LoginResponseDTO'
+        "401":
+          description: 'error: credenciales inválidas'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Iniciar sesión administrador
+      tags:
+      - Administración - Auth
+  /admin/logout:
+    post:
+      description: Invalida la sesión del usuario eliminando la cookie de acceso
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'mensaje: sesión cerrada exitosamente'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Cerrar sesión
+      tags:
+      - Administración - Auth
+  /admin/me:
+    get:
+      description: Obtiene la información del usuario autenticado
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/authadmincontroller.UsuarioDTO'
+        "401":
+          description: 'error: no autorizado'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Obtener perfil actual
+      tags:
+      - Administración - Auth
+  /admin/onboarding:
+    post:
+      consumes:
+      - application/json
+      description: Crea una empresa, su primera ruta, un administrador y 2 trabajadores.
+      parameters:
+      - description: Datos de configuración
+        in: body
+        name: onboarding
+        required: true
+        schema:
+          $ref: '#/definitions/empresacontroller.ConfigurarEmpresaRequestDTO'
+      - description: Ejemplo de cuerpo
+        in: body
+        name: example_body
+        required: true
+        schema:
+          $ref: '#/definitions/empresacontroller.ConfigurarEmpresaRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/empresacontroller.ConfigurarEmpresaResponseDTO'
+        "400":
+          description: 'error: datos inválidos'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: fallo al configurar empresa'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Configuración completa de empresa
+      tags:
+      - Administración - Empresas
+  /admin/usuarios/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Permite a un administrador cambiar el nombre de usuario y/o la
+        contraseña de cualquier usuario del sistema por su ID.
+      parameters:
+      - description: ID del usuario
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Datos a actualizar
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/gestionusuariocontroller.ActualizarUsuarioRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gestionusuariocontroller.ActualizarUsuarioResponseDTO'
+        "400":
+          description: 'error: datos inválidos'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: fallo al actualizar usuario'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Actualizar credenciales de un usuario
+      tags:
+      - Administración - Usuarios
+  /administracion/empresas:
+    get:
+      consumes:
+      - application/json
+      description: Retorna un listado filtrado de todas las empresas registradas en
+        el sistema.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/empresacontroller.EmpresaJSON'
+            type: array
+        "500":
+          description: 'error: no se pudo obtener la lista de empresas'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Obtener lista de empresas
+      tags:
+      - Administración - Empresas
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Autentica a un usuario de empresa y establece una cookie JWT.
+      parameters:
+      - description: Credenciales
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/authusuariocontroller.LoginRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/authusuariocontroller.LoginResponseDTO'
+        "401":
+          description: 'error: credenciales inválidas'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Login de usuario (Trabajador/Supervisor)
+      tags:
+      - Usuario - Autenticación
+  /auth/logout:
+    post:
+      description: Elimina la cookie de autenticación.
+      responses:
+        "200":
+          description: 'message: sesión cerrada'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Cerrar sesión de usuario
+      tags:
+      - Usuario - Autenticación
+  /auth/me:
+    get:
+      description: Retorna la información del usuario basada en el token de la sesión.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/authusuariocontroller.UsuarioDTO'
+        "401":
+          description: 'error: no autorizado'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Obtener perfil del usuario autenticado
+      tags:
+      - Usuario - Autenticación
+  /config/pagos/empresa:
+    post:
+      consumes:
+      - application/json
+      description: Asigna los métodos de pago seleccionados a una empresa
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      tags:
+      - Configuración
+  /config/pagos/empresa/{empresaId}:
+    get:
+      consumes:
+      - application/json
+      description: Devuelve una lista de los tipos de pago seleccionados por una empresa
+        específica
+      parameters:
+      - description: ID de la Empresa
+        in: path
+        name: empresaId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/paymentcontroller.PaymentMethodDTO'
+            type: array
+      tags:
+      - Configuración
+  /config/pagos/empresa/{empresaId}/tipo/{tipoId}:
+    delete:
+      consumes:
+      - application/json
+      description: Desvincula un tipo de pago específico de una empresa
+      parameters:
+      - description: ID de la Empresa
+        in: path
+        name: empresaId
+        required: true
+        type: integer
+      - description: ID del Tipo de Pago
+        in: path
+        name: tipoId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      tags:
+      - Configuración
+    post:
+      consumes:
+      - application/json
+      description: Vincula un tipo de pago específico a una empresa
+      parameters:
+      - description: ID de la Empresa
+        in: path
+        name: empresaId
+        required: true
+        type: integer
+      - description: ID del Tipo de Pago
+        in: path
+        name: tipoId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      tags:
+      - Configuración
+  /config/pagos/tipos:
+    get:
+      consumes:
+      - application/json
+      description: Devuelve una lista de todos los tipos de pago globales
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/paymentcontroller.PaymentMethodDTO'
+            type: array
+      tags:
+      - Configuración
+  /user/catalogos/direcciones:
+    get:
+      description: Retorna la lista de tipos de dirección disponibles.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/maestrocontroller.MaestroDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Listar tipos de dirección
+      tags:
+      - Catálogos
+  /user/catalogos/identificaciones:
+    get:
+      description: Retorna la lista de tipos de identificación disponibles.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/maestrocontroller.MaestroDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Listar tipos de identificación
+      tags:
+      - Catálogos
+  /user/catalogos/telefonos:
+    get:
+      description: Retorna la lista de tipos de teléfono disponibles.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/maestrocontroller.MaestroDTO'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Listar tipos de teléfono
+      tags:
+      - Catálogos
+  /user/clientes:
+    post:
+      consumes:
+      - application/json
+      description: Registrar un nuevo cliente. La imagen es obligatoria y debe ser
+        subida previamente (Presigned URL).
+      parameters:
+      - description: Datos del cliente e imagen
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/clientecontroller.RegistrarClienteRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/clientecontroller.RegistrarClienteResponse'
+        "400":
+          description: 'error: datos inválidos'
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "401":
+          description: 'error: no autorizado'
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "500":
+          description: 'error: fallo interno'
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Registrar cliente
+      tags:
+      - Usuario - Clientes
+  /user/clientes/{id}:
+    delete:
+      description: Elimina un cliente si no tiene historial de préstamos.
+      parameters:
+      - description: ID del Cliente
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'mensaje: cliente eliminado'
+          schema:
+            $ref: '#/definitions/domain.MessageResponse'
+        "400":
+          description: 'error: ID inválido o tiene historial'
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "401":
+          description: 'error: no autorizado'
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "404":
+          description: 'error: cliente no encontrado'
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "500":
+          description: 'error: fallo interno'
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Eliminar un cliente
+      tags:
+      - Usuario - Clientes
+    get:
+      description: Retorna toda la información de un cliente incluyendo teléfonos,
+        direcciones, correos y fotos.
+      parameters:
+      - description: ID del cliente
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/clientecontroller.ClienteDetalleResponseDTO'
+        "401":
+          description: no autorizado
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "403":
+          description: acceso denegado
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "404":
+          description: cliente no encontrado
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Obtener detalle completo de un cliente
+      tags:
+      - Usuario - Clientes
+    put:
+      consumes:
+      - application/json
+      description: 'Actualiza datos con límites: máx 2 correos, 3 teléfonos (1 principal),
+        3 direcciones (1 principal). Sin duplicados.'
+      parameters:
+      - description: ID del Cliente
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Datos a actualizar
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/clientecontroller.ActualizarClienteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'mensaje: cliente actualizado'
+          schema:
+            $ref: '#/definitions/domain.MessageResponse'
+        "400":
+          description: 'error: datos inválidos'
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "401":
+          description: 'error: no autorizado'
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "404":
+          description: 'error: cliente no encontrado'
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "500":
+          description: 'error: fallo interno'
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Actualizar datos de cliente
+      tags:
+      - Usuario - Clientes
+  /user/clientes/{id}/videos:
+    get:
+      description: Retorna la lista paginada de videos de un cliente con filtros opcionales
+        de fecha.
+      parameters:
+      - description: ID del cliente
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 'Página (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Límite (default: 5, máximo 5)'
+        in: query
+        name: limit
+        type: integer
+      - description: Fecha inicio (YYYY-MM-DD)
+        in: query
+        name: from_date
+        type: string
+      - description: Fecha fin (YYYY-MM-DD)
+        in: query
+        name: to_date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/clientecontroller.PaginatedVideosResponseJSON'
+        "401":
+          description: no autorizado
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "403":
+          description: acceso denegado
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "404":
+          description: cliente no encontrado
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Listar videos de un cliente
+      tags:
+      - Usuario - Clientes
+  /user/clientes/empresa/{id_empresa}/ruta/{id_ruta}:
+    get:
+      description: Retorna la lista completa de clientes asociados a una empresa y
+        ruta con paginación.
+      parameters:
+      - description: ID de la Empresa
+        in: path
+        name: id_empresa
+        required: true
+        type: integer
+      - description: ID de la Ruta
+        in: path
+        name: id_ruta
+        required: true
+        type: integer
+      - description: Buscar por nombre o identificación
+        in: query
+        name: search
+        type: string
+      - description: 'Página (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Límite (default: 10)'
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/clientecontroller.PaginatedClientesResponseJSON'
+        "400":
+          description: 'error: IDs inválidos'
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "401":
+          description: 'error: no autorizado'
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "500":
+          description: 'error: fallo interno'
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Listar clientes por empresa y ruta
+      tags:
+      - Usuario - Clientes
+  /user/clientes/fotos:
+    delete:
+      consumes:
+      - application/json
+      description: Elimina uno o varios registros de fotos de galería asociados a
+        clientes de la empresa y limpia Oracle Storage.
+      parameters:
+      - description: Lista de IDs de fotos a eliminar
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/clientecontroller.EliminarFotosRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: fotos eliminadas exitosamente
+          schema:
+            $ref: '#/definitions/domain.MessageResponse'
+        "400":
+          description: datos inválidos o IDs faltantes
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "401":
+          description: no autorizado
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "403":
+          description: acceso denegado
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Eliminar fotos de galería de clientes de forma masiva
+      tags:
+      - Usuario - Clientes
+  /user/clientes/presigned-url:
+    get:
+      description: Genera una URL temporal para que el cliente suba una imagen directamente
+        a Oracle Storage. Válida por 15 min.
+      parameters:
+      - description: 'Extensión del archivo (ej: .jpg, .png)'
+        in: query
+        name: extension
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: upload_url, key
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 'error: no autorizado'
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "500":
+          description: 'error: fallo interno'
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Obtener URL pre-firmada para subir foto
+      tags:
+      - Usuario - Clientes
+  /user/clientes/video:
+    post:
+      consumes:
+      - application/json
+      description: Almacena la URL de un video de YouTube asociado a un cliente con
+        una fecha específica.
+      parameters:
+      - description: Datos del video
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/clientecontroller.RegistrarVideoRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: video registrado exitosamente
+          schema:
+            $ref: '#/definitions/domain.MessageResponse'
+        "400":
+          description: datos inválidos o URL no es de YouTube
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "401":
+          description: no autorizado
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "403":
+          description: acceso denegado
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "404":
+          description: cliente no encontrado
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Registrar un video de YouTube para el cliente
+      tags:
+      - Usuario - Clientes
+  /user/clientes/videos:
+    delete:
+      consumes:
+      - application/json
+      description: Elimina uno o varios registros de videos asociados a clientes de
+        la empresa.
+      parameters:
+      - description: Lista de IDs de videos a eliminar
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/clientecontroller.EliminarVideosRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: videos eliminados exitosamente
+          schema:
+            $ref: '#/definitions/domain.MessageResponse'
+        "400":
+          description: datos inválidos o IDs faltantes
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "401":
+          description: no autorizado
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+        "403":
+          description: acceso denegado
+          schema:
+            $ref: '#/definitions/domain.ErrorResponse'
+      summary: Eliminar videos de clientes de forma masiva
+      tags:
+      - Usuario - Clientes
+  /user/gastos:
+    get:
+      description: Ver el historial de gastos del usuario autenticado con filtros
+        de fecha y paginación.
+      parameters:
+      - description: 'Página (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Límite (default: 5, max: 5)'
+        in: query
+        name: limit
+        type: integer
+      - description: Fecha inicio (YYYY-MM-DD)
+        in: query
+        name: from_date
+        type: string
+      - description: Fecha fin (YYYY-MM-DD)
+        in: query
+        name: to_date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+        "401":
+          description: 'error: no autorizado'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: fallo interno'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Listar historial de gastos
+      tags:
+      - Usuario - Gastos
+    post:
+      consumes:
+      - application/json
+      description: Registra un gasto y lo descuenta automáticamente del saldo de la
+        caja de la ruta. Permite saldo negativo.
+      parameters:
+      - description: Datos del gasto
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/gastocontroller.RegistrarGastoRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/gastocontroller.GastoResponse'
+        "400":
+          description: 'error: datos inválidos'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 'error: no autorizado'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 'error: acceso denegado'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Registrar un gasto
+      tags:
+      - Usuario - Gastos
+  /user/gastos/{id}:
+    delete:
+      description: Elimina un gasto por su ID, revirtiendo el saldo en la caja y limpiando
+        los archivos en el storage.
+      parameters:
+      - description: ID del Gasto
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/gastocontroller.GastoResponse'
+        "401":
+          description: 'error: no autorizado'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 'error: acceso denegado'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: 'error: no encontrado'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: fallo interno'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Eliminar un gasto
+      tags:
+      - Usuario - Gastos
+  /user/gastos/presigned-url:
+    get:
+      description: Genera una URL temporal para subir una imagen de gasto a la carpeta
+        'gastos/'. Válida por 15 min.
+      parameters:
+      - description: 'Extensión del archivo (ej: .jpg, .png)'
+        in: query
+        name: extension
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: upload_url, key
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: 'error: extensión inválida'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: fallo interno'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Obtener URL pre-firmada para subir foto de gasto
+      tags:
+      - Usuario - Gastos
+  /user/mis-rutas:
+    get:
+      description: Retorna las rutas a las que el usuario autenticado tiene acceso
+        (extraído del token).
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/usuariocontroller.RutaAccesoDTO'
+            type: array
+        "401":
+          description: 'error: no autorizado'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Listar mis rutas asignadas
+      tags:
+      - Usuario - Rutas
+  /user/prestamos:
+    post:
+      consumes:
+      - application/json
+      description: Registra un préstamo para un cliente, genera sus cuotas automáticamente
+        y descuenta el capital de la caja.
+      parameters:
+      - description: Datos del préstamo
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/prestamocontroller.RegistrarPrestamoRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/prestamocontroller.RegistrarPrestamoResponse'
+        "400":
+          description: 'error: datos inválidos'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 'error: no autorizado'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "403":
+          description: 'error: acceso denegado'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: fallo interno'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Registrar un nuevo préstamo
+      tags:
+      - Usuario - Préstamos
+  /user/prestamos/cotizar:
+    post:
+      consumes:
+      - application/json
+      description: Simula un préstamo y devuelve el detalle de las cuotas sin persistir
+        datos.
+      parameters:
+      - description: Datos para cotizar
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/prestamocontroller.CotizarPrestamoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/prestamocontroller.CotizarPrestamoResponse'
+        "400":
+          description: 'error: datos inválidos'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: 'error: no autorizado'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: fallo interno'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Cotizar un préstamo
+      tags:
+      - Usuario - Préstamos
+  /user/team/caja/aporte:
+    post:
+      consumes:
+      - application/json
+      description: Suma dinero al saldo actual de la caja como aporte de base.
+      parameters:
+      - description: Datos del aporte
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/usuariocontroller.AporteBaseRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 'message: aporte registrado'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Inyectar capital (Aporte de Base)
+      tags:
+      - Usuario - Caja
+  /user/team/caja/base:
+    post:
+      consumes:
+      - application/json
+      description: Suma dinero al saldo actual de la caja como base inicial o nueva
+        base de ingreso.
+      parameters:
+      - description: Datos de la base
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/usuariocontroller.CajaBaseRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 'message: base registrada'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Registrar Base de Ingreso
+      tags:
+      - Usuario - Caja
+  /user/team/caja/resumen/{ruta_id}:
+    get:
+      description: Retorna el saldo actual y estado de la caja de una ruta.
+      parameters:
+      - description: ID de la ruta
+        in: path
+        name: ruta_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/usuariocontroller.CajaResumenResponseDTO'
+      summary: Obtener resumen de caja por ruta
+      tags:
+      - Usuario - Caja
+  /user/team/caja/status:
+    patch:
+      consumes:
+      - application/json
+      description: Cambia la política de bloqueo de la caja (true=activa, false=bloqueada).
+      parameters:
+      - description: Estado de la caja
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/usuariocontroller.UpdateCajaStatusRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'message: estado de caja actualizado'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Bloquear o activar caja
+      tags:
+      - Usuario - Caja
+  /user/team/password:
+    patch:
+      consumes:
+      - application/json
+      description: Resetea la contraseña de un miembro del equipo.
+      parameters:
+      - description: Nueva contraseña
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/usuariocontroller.UpdatePasswordRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'message: contraseña actualizada'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: 'error: datos inválidos'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Cambiar contraseña de un usuario
+      tags:
+      - Usuario - Gestión Equipo
+  /user/team/resumen-gestion:
+    get:
+      description: Retorna todas las rutas con sus usuarios y todos los supervisores
+        con sus accesos.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/usuariocontroller.ResumenGestionDTO'
+        "401":
+          description: 'error: no autorizado'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: 'error: fallo interno'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Obtener resumen de gestión de equipo
+      tags:
+      - Usuario - Gestión Equipo
+  /user/team/rutas/asignar:
+    post:
+      consumes:
+      - application/json
+      description: Otorga permiso de acceso a una ruta para un usuario específico.
+      parameters:
+      - description: Datos de asignación
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/usuariocontroller.AsignarRutaRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: 'message: ruta asignada'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Asignar acceso a ruta
+      tags:
+      - Usuario - Gestión Equipo
+  /user/team/rutas/quitar:
+    delete:
+      consumes:
+      - application/json
+      description: Elimina el permiso de acceso a una ruta para un usuario específico.
+      parameters:
+      - description: Datos de desasignación
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/usuariocontroller.AsignarRutaRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'message: acceso removido'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Quitar acceso a ruta
+      tags:
+      - Usuario - Gestión Equipo
+  /user/team/status:
+    patch:
+      consumes:
+      - application/json
+      description: Activa o desactiva a un miembro del equipo.
+      parameters:
+      - description: Datos del estado
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/usuariocontroller.UpdateStatusRequestDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'message: estado actualizado'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: 'error: datos inválidos'
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Cambiar estado de un usuario
+      tags:
+      - Usuario - Gestión Equipo
+swagger: "2.0"

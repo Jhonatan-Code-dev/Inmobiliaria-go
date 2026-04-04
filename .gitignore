@@ -1,0 +1,12 @@
+############################
+# Keys / Certificates
+############################
+*.pem
+*.key
+*.crt
+
+# Environment variables
+.env
+.env.*
+!.env.example
+

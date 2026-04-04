@@ -1,0 +1,509 @@
+definitions:
+  controller.actualizarEmpresaRequest:
+    properties:
+      ciudad:
+        type: string
+      correo:
+        type: string
+      direccion:
+        type: string
+      documento_fiscal:
+        type: string
+      estado:
+        type: string
+      maximo_usuarios:
+        type: integer
+      moneda:
+        type: string
+      nombre:
+        type: string
+      pais:
+        type: string
+      telefono:
+        type: string
+    type: object
+  controller.adminCredencialesRequest:
+    properties:
+      contrasena:
+        type: string
+      usuario:
+        type: string
+    type: object
+  controller.adminCredencialesResponse:
+    properties:
+      id:
+        type: integer
+      nombre:
+        type: string
+      usuario:
+        type: string
+    type: object
+  controller.adminLoginRequest:
+    properties:
+      contrasena:
+        type: string
+      usuario:
+        type: string
+    type: object
+  controller.adminLoginResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  controller.crearEmpresaRequest:
+    properties:
+      empresa:
+        properties:
+          ciudad:
+            type: string
+          correo:
+            type: string
+          direccion:
+            type: string
+          documento_fiscal:
+            type: string
+          estado:
+            type: string
+          maximo_usuarios:
+            type: integer
+          moneda:
+            type: string
+          nombre:
+            type: string
+          pais:
+            type: string
+          telefono:
+            type: string
+        type: object
+      usuario:
+        properties:
+          apellidos:
+            type: string
+          correo:
+            type: string
+          nombres:
+            type: string
+          password:
+            type: string
+          telefono:
+            type: string
+        type: object
+    type: object
+  controller.crearEmpresaResponse:
+    properties:
+      empresa_id:
+        type: integer
+      usuario_id:
+        type: integer
+    type: object
+  controller.empresaResponse:
+    properties:
+      ciudad:
+        type: string
+      correo:
+        type: string
+      direccion:
+        type: string
+      documento_fiscal:
+        type: string
+      estado:
+        type: string
+      id:
+        type: integer
+      maximo_usuarios:
+        type: integer
+      moneda:
+        type: string
+      moneda_info:
+        $ref: '#/definitions/controller.monedaResponse'
+      nombre:
+        type: string
+      pais:
+        type: string
+      telefono:
+        type: string
+    type: object
+  controller.errorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  controller.monedaRegionResponse:
+    properties:
+      codigo:
+        type: string
+      nombre:
+        type: string
+    type: object
+  controller.monedaRenderResponse:
+    properties:
+      currency:
+        type: string
+      maximum_fraction_digits:
+        type: integer
+      metodo:
+        type: string
+      minimum_fraction_digits:
+        type: integer
+    type: object
+  controller.monedaResponse:
+    properties:
+      codigo:
+        type: string
+      decimales:
+        type: integer
+      incremento:
+        type: integer
+      regiones:
+        items:
+          $ref: '#/definitions/controller.monedaRegionResponse'
+        type: array
+      render:
+        $ref: '#/definitions/controller.monedaRenderResponse'
+    type: object
+  controller.usuarioLoginRequest:
+    properties:
+      contrasena:
+        type: string
+      correo:
+        type: string
+    type: object
+  controller.usuarioLoginResponse:
+    properties:
+      empresa:
+        $ref: '#/definitions/controller.empresaResponse'
+      token:
+        type: string
+      user:
+        $ref: '#/definitions/controller.usuarioResponse'
+    type: object
+  controller.usuarioResponse:
+    properties:
+      apellidos:
+        type: string
+      correo:
+        type: string
+      id:
+        type: integer
+      nombres:
+        type: string
+      telefono:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /admin/credenciales:
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Nuevo usuario y contraseña
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.adminCredencialesRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.adminCredencialesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      summary: Cambiar usuario y contraseña del admin autenticado
+      tags:
+      - admin
+  /admin/empresas:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/controller.empresaResponse'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      summary: Listado de empresas
+      tags:
+      - admin
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Datos de empresa y usuario
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.crearEmpresaRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controller.crearEmpresaResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      summary: Alta de empresa + usuario principal
+      tags:
+      - admin
+  /admin/empresas/{id}:
+    delete:
+      parameters:
+      - description: ID de empresa
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      summary: Eliminar empresa
+      tags:
+      - admin
+    get:
+      parameters:
+      - description: ID de empresa
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.empresaResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      summary: Obtener empresa por ID
+      tags:
+      - admin
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID de empresa
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Datos de empresa
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/controller.actualizarEmpresaRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.empresaResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      summary: Actualizar empresa
+      tags:
+      - admin
+  /admin/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Credenciales
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/controller.adminLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.adminLoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      summary: Login admin
+      tags:
+      - admin
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Credenciales
+        in: body
+        name: credentials
+        required: true
+        schema:
+          $ref: '#/definitions/controller.usuarioLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.usuarioLoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      summary: Login de usuario
+      tags:
+      - usuario
+  /catalogos/monedas:
+    get:
+      description: Lista las monedas ISO 4217 actualmente soportadas por el backend.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/controller.monedaResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      summary: Catalogo global de monedas
+      tags:
+      - catalogos
+  /catalogos/monedas/{codigo}:
+    get:
+      description: Retorna precision y simbolos de una moneda ISO 4217.
+      parameters:
+      - description: Codigo ISO 4217
+        in: path
+        name: codigo
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.monedaResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      summary: Detalle de moneda
+      tags:
+      - catalogos
+  /me:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.usuarioLoginResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      summary: Perfil del usuario autenticado
+      tags:
+      - usuario
+swagger: "2.0"

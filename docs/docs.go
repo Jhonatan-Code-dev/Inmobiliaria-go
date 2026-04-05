@@ -15,6 +15,63 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/admin/credenciales": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Actualiza el usuario y contraseña de un administrador. Si no se envía ID en el body, se actualiza el admin autenticado.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Actualizar credenciales",
+                "parameters": [
+                    {
+                        "description": "Datos de credenciales",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_controller.adminCredencialesRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_controller.adminCredencialesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/internal_controller.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/internal_controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/internal_controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/admin/empresas": {
             "get": {
                 "security": [
@@ -36,20 +93,20 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/controller.empresaResponse"
+                                "$ref": "#/definitions/internal_controller.empresaResponse"
                             }
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
+                            "$ref": "#/definitions/internal_controller.errorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
+                            "$ref": "#/definitions/internal_controller.errorResponse"
                         }
                     }
                 }
@@ -78,7 +135,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controller.crearEmpresaRequest"
+                            "$ref": "#/definitions/internal_controller.crearEmpresaRequest"
                         }
                     }
                 ],
@@ -86,25 +143,25 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/controller.crearEmpresaResponse"
+                            "$ref": "#/definitions/internal_controller.crearEmpresaResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
+                            "$ref": "#/definitions/internal_controller.errorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
+                            "$ref": "#/definitions/internal_controller.errorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
+                            "$ref": "#/definitions/internal_controller.errorResponse"
                         }
                     }
                 }
@@ -138,25 +195,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controller.empresaResponse"
+                            "$ref": "#/definitions/internal_controller.empresaResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
+                            "$ref": "#/definitions/internal_controller.errorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
+                            "$ref": "#/definitions/internal_controller.errorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
+                            "$ref": "#/definitions/internal_controller.errorResponse"
                         }
                     }
                 }
@@ -192,7 +249,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controller.actualizarEmpresaRequest"
+                            "$ref": "#/definitions/internal_controller.actualizarEmpresaRequest"
                         }
                     }
                 ],
@@ -200,25 +257,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controller.empresaResponse"
+                            "$ref": "#/definitions/internal_controller.empresaResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
+                            "$ref": "#/definitions/internal_controller.errorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
+                            "$ref": "#/definitions/internal_controller.errorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
+                            "$ref": "#/definitions/internal_controller.errorResponse"
                         }
                     }
                 }
@@ -253,19 +310,19 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
+                            "$ref": "#/definitions/internal_controller.errorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
+                            "$ref": "#/definitions/internal_controller.errorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
+                            "$ref": "#/definitions/internal_controller.errorResponse"
                         }
                     }
                 }
@@ -291,7 +348,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/controller.adminLoginRequest"
+                            "$ref": "#/definitions/internal_controller.adminLoginRequest"
                         }
                     }
                 ],
@@ -299,25 +356,48 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controller.adminLoginResponse"
+                            "$ref": "#/definitions/internal_controller.adminLoginResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
+                            "$ref": "#/definitions/internal_controller.errorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
+                            "$ref": "#/definitions/internal_controller.errorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
+                            "$ref": "#/definitions/internal_controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/logout": {
+            "post": {
+                "description": "Cierra la sesión del administrador actual eliminando la cookie de autenticación.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Logout admin",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     }
                 }
@@ -342,19 +422,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controller.adminProfileResponse"
+                            "$ref": "#/definitions/internal_controller.adminProfileResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
+                            "$ref": "#/definitions/internal_controller.errorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
+                            "$ref": "#/definitions/internal_controller.errorResponse"
                         }
                     }
                 }
@@ -376,14 +456,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/controller.monedaResponse"
+                                "$ref": "#/definitions/internal_controller.monedaResponse"
                             }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
+                            "$ref": "#/definitions/internal_controller.errorResponse"
                         }
                     }
                 }
@@ -412,19 +492,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/controller.monedaResponse"
+                            "$ref": "#/definitions/internal_controller.monedaResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
+                            "$ref": "#/definitions/internal_controller.errorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
+                            "$ref": "#/definitions/internal_controller.errorResponse"
                         }
                     }
                 }
@@ -432,7 +512,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "controller.actualizarEmpresaRequest": {
+        "internal_controller.actualizarEmpresaRequest": {
             "type": "object",
             "properties": {
                 "estado": {
@@ -449,7 +529,32 @@ const docTemplate = `{
                 }
             }
         },
-        "controller.adminLoginRequest": {
+        "internal_controller.adminCredencialesRequest": {
+            "type": "object",
+            "properties": {
+                "contrasena": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "usuario": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_controller.adminCredencialesResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "usuario": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_controller.adminLoginRequest": {
             "type": "object",
             "properties": {
                 "contrasena": {
@@ -460,7 +565,7 @@ const docTemplate = `{
                 }
             }
         },
-        "controller.adminLoginResponse": {
+        "internal_controller.adminLoginResponse": {
             "type": "object",
             "properties": {
                 "token": {
@@ -468,7 +573,7 @@ const docTemplate = `{
                 }
             }
         },
-        "controller.adminProfileResponse": {
+        "internal_controller.adminProfileResponse": {
             "type": "object",
             "properties": {
                 "activo": {
@@ -477,15 +582,12 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "nombre": {
-                    "type": "string"
-                },
                 "usuario": {
                     "type": "string"
                 }
             }
         },
-        "controller.crearEmpresaRequest": {
+        "internal_controller.crearEmpresaRequest": {
             "type": "object",
             "properties": {
                 "empresa": {
@@ -515,7 +617,7 @@ const docTemplate = `{
                 }
             }
         },
-        "controller.crearEmpresaResponse": {
+        "internal_controller.crearEmpresaResponse": {
             "type": "object",
             "properties": {
                 "empresa_id": {
@@ -526,7 +628,7 @@ const docTemplate = `{
                 }
             }
         },
-        "controller.empresaResponse": {
+        "internal_controller.empresaResponse": {
             "type": "object",
             "properties": {
                 "estado": {
@@ -542,7 +644,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "moneda_info": {
-                    "$ref": "#/definitions/controller.monedaResponse"
+                    "$ref": "#/definitions/internal_controller.monedaResponse"
                 },
                 "nombre": {
                     "type": "string"
@@ -552,7 +654,7 @@ const docTemplate = `{
                 }
             }
         },
-        "controller.errorResponse": {
+        "internal_controller.errorResponse": {
             "type": "object",
             "properties": {
                 "message": {
@@ -560,7 +662,7 @@ const docTemplate = `{
                 }
             }
         },
-        "controller.monedaRegionResponse": {
+        "internal_controller.monedaRegionResponse": {
             "type": "object",
             "properties": {
                 "codigo": {
@@ -571,7 +673,7 @@ const docTemplate = `{
                 }
             }
         },
-        "controller.monedaRenderResponse": {
+        "internal_controller.monedaRenderResponse": {
             "type": "object",
             "properties": {
                 "currency": {
@@ -588,7 +690,7 @@ const docTemplate = `{
                 }
             }
         },
-        "controller.monedaResponse": {
+        "internal_controller.monedaResponse": {
             "type": "object",
             "properties": {
                 "codigo": {
@@ -603,11 +705,11 @@ const docTemplate = `{
                 "regiones": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/controller.monedaRegionResponse"
+                        "$ref": "#/definitions/internal_controller.monedaRegionResponse"
                     }
                 },
                 "render": {
-                    "$ref": "#/definitions/controller.monedaRenderResponse"
+                    "$ref": "#/definitions/internal_controller.monedaRenderResponse"
                 }
             }
         }

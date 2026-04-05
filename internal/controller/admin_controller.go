@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"rentals-go/config/security"
 	"rentals-go/internal/domain"
@@ -47,19 +48,18 @@ type actualizarEmpresaRequest struct {
 }
 
 type adminCredencialesRequest struct {
+	ID         int    `json:"id"`
 	Usuario    string `json:"usuario"`
 	Contrasena string `json:"contrasena"`
 }
 
 type adminCredencialesResponse struct {
 	ID      int    `json:"id"`
-	Nombre  string `json:"nombre"`
 	Usuario string `json:"usuario"`
 }
 
 type adminProfileResponse struct {
 	ID      int    `json:"id"`
-	Nombre  string `json:"nombre"`
 	Usuario string `json:"usuario"`
 	Activo  bool   `json:"activo"`
 }
@@ -97,6 +97,24 @@ func (h *AdminController) Login(c *fiber.Ctx) error {
 	return c.JSON(adminLoginResponse{Token: token})
 }
 
+// LogoutAdmin godoc
+// @Summary Logout admin
+// @Description Cierra la sesión del administrador actual eliminando la cookie de autenticación.
+// @Tags admin
+// @Produce json
+// @Success 200 {object} map[string]string
+// @Router /admin/logout [post]
+func (h *AdminController) Logout(c *fiber.Ctx) error {
+	c.Cookie(&fiber.Cookie{
+		Name:     "token_admin",
+		Value:    "",
+		Expires:  time.Now().Add(-time.Hour),
+		HTTPOnly: true,
+		Path:     "/",
+	})
+	return c.JSON(fiber.Map{"message": "sesión cerrada"})
+}
+
 // PerfilAdmin godoc
 // @Summary Perfil del administrador autenticado
 // @Description Retorna los datos del administrador autenticado a partir del token Bearer enviado por el frontend.
@@ -124,7 +142,6 @@ func (h *AdminController) Perfil(c *fiber.Ctx) error {
 
 	return c.JSON(adminProfileResponse{
 		ID:      adminActual.ID,
-		Nombre:  adminActual.Nombre,
 		Usuario: adminActual.Usuario,
 		Activo:  adminActual.Activo,
 	})
@@ -296,26 +313,49 @@ func (h *AdminController) EliminarEmpresa(c *fiber.Ctx) error {
 }
 
 // ActualizarCredenciales godoc
+// @Summary Actualizar credenciales
+// @Description Actualiza el usuario y contraseña de un administrador. Si no se envía ID en el body, se actualiza el admin autenticado.
+// @Tags admin
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param body body adminCredencialesRequest true "Datos de credenciales"
+// @Success 200 {object} adminCredencialesResponse
+// @Failure 400 {object} errorResponse
+// @Failure 401 {object} errorResponse
+// @Failure 500 {object} errorResponse
+// @Router /admin/credenciales [patch]
 func (h *AdminController) ActualizarCredenciales(c *fiber.Ctx) error {
 	adminIDVal := c.Locals("admin_id")
 	if adminIDVal == nil {
 		return fiber.ErrUnauthorized
 	}
-	adminID := adminIDVal.(int)
+	authAdminID := adminIDVal.(int)
 
 	var req adminCredencialesRequest
 	if err := c.BodyParser(&req); err != nil {
 		return fiber.ErrBadRequest
 	}
 
-	adminActualizado, err := h.svc.ActualizarCredenciales(c.Context(), adminID, req.Usuario, req.Contrasena)
+	// Si el request trae un ID, usamos ese, si no, el del token.
+	targetID := req.ID
+	if targetID == 0 {
+		targetID = authAdminID
+	}
+
+	adminActualizado, err := h.svc.ActualizarCredenciales(c.Context(), targetID, req.Usuario, req.Contrasena)
 	if err != nil {
+		if strings.Contains(err.Error(), "already exists") || strings.Contains(err.Error(), "duplicate") || strings.Contains(err.Error(), "UNIQUE") {
+			return fiber.NewError(http.StatusBadRequest, "el usuario ya está en uso")
+		}
+		if err == service.ErrUsuarioAdminInvalido || err == service.ErrContrasenaInvalida || strings.Contains(err.Error(), "obligatorio") {
+			return fiber.NewError(http.StatusBadRequest, err.Error())
+		}
 		return fiber.ErrInternalServerError
 	}
 
 	return c.JSON(adminCredencialesResponse{
 		ID:      adminActualizado.ID,
-		Nombre:  adminActualizado.Nombre,
 		Usuario: adminActualizado.Usuario,
 	})
 }

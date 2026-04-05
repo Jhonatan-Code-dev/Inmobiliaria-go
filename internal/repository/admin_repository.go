@@ -25,7 +25,6 @@ func (r *AdminRepoEnt) BuscarPorUsuario(ctx context.Context, usuario string) (*d
 	}
 	return &domain.Admin{
 		ID:             a.ID,
-		Nombre:         a.Nombre,
 		Usuario:        a.Usuario,
 		HashContrasena: a.HashContrasena,
 		Activo:         a.Activo,
@@ -39,7 +38,6 @@ func (r *AdminRepoEnt) BuscarPorID(ctx context.Context, id int) (*domain.Admin, 
 	}
 	return &domain.Admin{
 		ID:             a.ID,
-		Nombre:         a.Nombre,
 		Usuario:        a.Usuario,
 		HashContrasena: a.HashContrasena,
 		Activo:         a.Activo,
@@ -56,7 +54,6 @@ func (r *AdminRepoEnt) ActualizarCredenciales(ctx context.Context, id int, usuar
 	}
 	return &domain.Admin{
 		ID:             a.ID,
-		Nombre:         a.Nombre,
 		Usuario:        a.Usuario,
 		HashContrasena: a.HashContrasena,
 		Activo:         a.Activo,

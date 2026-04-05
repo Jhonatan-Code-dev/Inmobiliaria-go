@@ -10,6 +10,7 @@ import (
 func Register(app *fiber.App, appDI *di.App) {
 	group := app.Group("/admin")
 	group.Post("/login", appDI.AdminCtrl.Login)
+	group.Post("/logout", appDI.AdminCtrl.Logout)
 
 	protected := group.Use(middlewares.AdminAuth(appDI.Config))
 	protected.Get("/me", appDI.AdminCtrl.Perfil)

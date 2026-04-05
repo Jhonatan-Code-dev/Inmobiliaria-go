@@ -25,7 +25,6 @@ func (Admin) Annotations() []schema.Annotation {
 
 func (Admin) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("nombre").NotEmpty().MaxLen(120),
 		field.String("usuario").NotEmpty().Unique().MaxLen(80),
 		field.String("hash_contrasena").NotEmpty().Sensitive().MaxLen(255),
 		field.Bool("activo").Default(true),

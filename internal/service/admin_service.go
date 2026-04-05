@@ -120,22 +120,28 @@ func (s *AdminService) EliminarEmpresa(ctx context.Context, id int) error {
 }
 
 func (s *AdminService) ActualizarCredenciales(ctx context.Context, adminID int, usuarioNuevo, contrasenaNueva string) (*domain.Admin, error) {
-	usuarioNuevo = strings.TrimSpace(usuarioNuevo)
-	if len(usuarioNuevo) < 3 {
-		return nil, ErrUsuarioAdminInvalido
-	}
-	if len(contrasenaNueva) < 8 {
-		return nil, ErrContrasenaInvalida
-	}
-
-	if _, err := s.adminRepo.BuscarPorID(ctx, adminID); err != nil {
-		return nil, err
-	}
-
-	hasher := security.NewServicioHash()
-	hash, err := hasher.Encriptar(contrasenaNueva)
+	adminActual, err := s.adminRepo.BuscarPorID(ctx, adminID)
 	if err != nil {
 		return nil, err
+	}
+
+	usuarioNuevo = strings.TrimSpace(usuarioNuevo)
+	if usuarioNuevo == "" {
+		usuarioNuevo = adminActual.Usuario
+	} else if len(usuarioNuevo) < 3 {
+		return nil, ErrUsuarioAdminInvalido
+	}
+
+	hash := adminActual.HashContrasena
+	if contrasenaNueva != "" {
+		if len(contrasenaNueva) < 6 {
+			return nil, ErrContrasenaInvalida
+		}
+		hasher := security.NewServicioHash()
+		hash, err = hasher.Encriptar(contrasenaNueva)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return s.adminRepo.ActualizarCredenciales(ctx, adminID, usuarioNuevo, hash)

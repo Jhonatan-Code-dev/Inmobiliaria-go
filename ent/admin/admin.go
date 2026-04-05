@@ -17,8 +17,6 @@ const (
 	FieldCreadoEn = "creado_en"
 	// FieldActualizadoEn holds the string denoting the actualizado_en field in the database.
 	FieldActualizadoEn = "actualizado_en"
-	// FieldNombre holds the string denoting the nombre field in the database.
-	FieldNombre = "nombre"
 	// FieldUsuario holds the string denoting the usuario field in the database.
 	FieldUsuario = "usuario"
 	// FieldHashContrasena holds the string denoting the hash_contrasena field in the database.
@@ -34,7 +32,6 @@ var Columns = []string{
 	FieldID,
 	FieldCreadoEn,
 	FieldActualizadoEn,
-	FieldNombre,
 	FieldUsuario,
 	FieldHashContrasena,
 	FieldActivo,
@@ -57,8 +54,6 @@ var (
 	DefaultActualizadoEn func() time.Time
 	// UpdateDefaultActualizadoEn holds the default value on update for the "actualizado_en" field.
 	UpdateDefaultActualizadoEn func() time.Time
-	// NombreValidator is a validator for the "nombre" field. It is called by the builders before save.
-	NombreValidator func(string) error
 	// UsuarioValidator is a validator for the "usuario" field. It is called by the builders before save.
 	UsuarioValidator func(string) error
 	// HashContrasenaValidator is a validator for the "hash_contrasena" field. It is called by the builders before save.
@@ -83,11 +78,6 @@ func ByCreadoEn(opts ...sql.OrderTermOption) OrderOption {
 // ByActualizadoEn orders the results by the actualizado_en field.
 func ByActualizadoEn(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldActualizadoEn, opts...).ToFunc()
-}
-
-// ByNombre orders the results by the nombre field.
-func ByNombre(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldNombre, opts...).ToFunc()
 }
 
 // ByUsuario orders the results by the usuario field.

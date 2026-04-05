@@ -14,7 +14,6 @@ func seedAdmin(client *ent.Client) error {
 	ctx := context.Background()
 	const (
 		superUsuario = "Jhonatan"
-		superNombre  = "Super Admin"
 		superPass    = "912059555"
 	)
 
@@ -38,7 +37,6 @@ func seedAdmin(client *ent.Client) error {
 	if _, err := client.Admin.
 		Create().
 		SetUsuario(superUsuario).
-		SetNombre(superNombre).
 		SetHashContrasena(hash).
 		Save(ctx); err != nil {
 		return err

@@ -43,26 +43,8 @@ func init() {
 	admin.DefaultActualizadoEn = adminDescActualizadoEn.Default.(func() time.Time)
 	// admin.UpdateDefaultActualizadoEn holds the default value on update for the actualizado_en field.
 	admin.UpdateDefaultActualizadoEn = adminDescActualizadoEn.UpdateDefault.(func() time.Time)
-	// adminDescNombre is the schema descriptor for nombre field.
-	adminDescNombre := adminFields[0].Descriptor()
-	// admin.NombreValidator is a validator for the "nombre" field. It is called by the builders before save.
-	admin.NombreValidator = func() func(string) error {
-		validators := adminDescNombre.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(nombre string) error {
-			for _, fn := range fns {
-				if err := fn(nombre); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
 	// adminDescUsuario is the schema descriptor for usuario field.
-	adminDescUsuario := adminFields[1].Descriptor()
+	adminDescUsuario := adminFields[0].Descriptor()
 	// admin.UsuarioValidator is a validator for the "usuario" field. It is called by the builders before save.
 	admin.UsuarioValidator = func() func(string) error {
 		validators := adminDescUsuario.Validators
@@ -80,7 +62,7 @@ func init() {
 		}
 	}()
 	// adminDescHashContrasena is the schema descriptor for hash_contrasena field.
-	adminDescHashContrasena := adminFields[2].Descriptor()
+	adminDescHashContrasena := adminFields[1].Descriptor()
 	// admin.HashContrasenaValidator is a validator for the "hash_contrasena" field. It is called by the builders before save.
 	admin.HashContrasenaValidator = func() func(string) error {
 		validators := adminDescHashContrasena.Validators
@@ -98,7 +80,7 @@ func init() {
 		}
 	}()
 	// adminDescActivo is the schema descriptor for activo field.
-	adminDescActivo := adminFields[3].Descriptor()
+	adminDescActivo := adminFields[2].Descriptor()
 	// admin.DefaultActivo holds the default value on creation for the activo field.
 	admin.DefaultActivo = adminDescActivo.Default.(bool)
 	cargoMixin := schema.Cargo{}.Mixin()

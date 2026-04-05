@@ -64,11 +64,6 @@ func ActualizadoEn(v time.Time) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldActualizadoEn, v))
 }
 
-// Nombre applies equality check predicate on the "nombre" field. It's identical to NombreEQ.
-func Nombre(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldEQ(FieldNombre, v))
-}
-
 // Usuario applies equality check predicate on the "usuario" field. It's identical to UsuarioEQ.
 func Usuario(v string) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldUsuario, v))
@@ -162,71 +157,6 @@ func ActualizadoEnLT(v time.Time) predicate.Admin {
 // ActualizadoEnLTE applies the LTE predicate on the "actualizado_en" field.
 func ActualizadoEnLTE(v time.Time) predicate.Admin {
 	return predicate.Admin(sql.FieldLTE(FieldActualizadoEn, v))
-}
-
-// NombreEQ applies the EQ predicate on the "nombre" field.
-func NombreEQ(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldEQ(FieldNombre, v))
-}
-
-// NombreNEQ applies the NEQ predicate on the "nombre" field.
-func NombreNEQ(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldNEQ(FieldNombre, v))
-}
-
-// NombreIn applies the In predicate on the "nombre" field.
-func NombreIn(vs ...string) predicate.Admin {
-	return predicate.Admin(sql.FieldIn(FieldNombre, vs...))
-}
-
-// NombreNotIn applies the NotIn predicate on the "nombre" field.
-func NombreNotIn(vs ...string) predicate.Admin {
-	return predicate.Admin(sql.FieldNotIn(FieldNombre, vs...))
-}
-
-// NombreGT applies the GT predicate on the "nombre" field.
-func NombreGT(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldGT(FieldNombre, v))
-}
-
-// NombreGTE applies the GTE predicate on the "nombre" field.
-func NombreGTE(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldGTE(FieldNombre, v))
-}
-
-// NombreLT applies the LT predicate on the "nombre" field.
-func NombreLT(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldLT(FieldNombre, v))
-}
-
-// NombreLTE applies the LTE predicate on the "nombre" field.
-func NombreLTE(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldLTE(FieldNombre, v))
-}
-
-// NombreContains applies the Contains predicate on the "nombre" field.
-func NombreContains(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldContains(FieldNombre, v))
-}
-
-// NombreHasPrefix applies the HasPrefix predicate on the "nombre" field.
-func NombreHasPrefix(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldHasPrefix(FieldNombre, v))
-}
-
-// NombreHasSuffix applies the HasSuffix predicate on the "nombre" field.
-func NombreHasSuffix(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldHasSuffix(FieldNombre, v))
-}
-
-// NombreEqualFold applies the EqualFold predicate on the "nombre" field.
-func NombreEqualFold(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldEqualFold(FieldNombre, v))
-}
-
-// NombreContainsFold applies the ContainsFold predicate on the "nombre" field.
-func NombreContainsFold(v string) predicate.Admin {
-	return predicate.Admin(sql.FieldContainsFold(FieldNombre, v))
 }
 
 // UsuarioEQ applies the EQ predicate on the "usuario" field.

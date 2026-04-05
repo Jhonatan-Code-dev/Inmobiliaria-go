@@ -34,20 +34,6 @@ func (_u *AdminUpdate) SetActualizadoEn(v time.Time) *AdminUpdate {
 	return _u
 }
 
-// SetNombre sets the "nombre" field.
-func (_u *AdminUpdate) SetNombre(v string) *AdminUpdate {
-	_u.mutation.SetNombre(v)
-	return _u
-}
-
-// SetNillableNombre sets the "nombre" field if the given value is not nil.
-func (_u *AdminUpdate) SetNillableNombre(v *string) *AdminUpdate {
-	if v != nil {
-		_u.SetNombre(*v)
-	}
-	return _u
-}
-
 // SetUsuario sets the "usuario" field.
 func (_u *AdminUpdate) SetUsuario(v string) *AdminUpdate {
 	_u.mutation.SetUsuario(v)
@@ -133,11 +119,6 @@ func (_u *AdminUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *AdminUpdate) check() error {
-	if v, ok := _u.mutation.Nombre(); ok {
-		if err := admin.NombreValidator(v); err != nil {
-			return &ValidationError{Name: "nombre", err: fmt.Errorf(`ent: validator failed for field "Admin.nombre": %w`, err)}
-		}
-	}
 	if v, ok := _u.mutation.Usuario(); ok {
 		if err := admin.UsuarioValidator(v); err != nil {
 			return &ValidationError{Name: "usuario", err: fmt.Errorf(`ent: validator failed for field "Admin.usuario": %w`, err)}
@@ -165,9 +146,6 @@ func (_u *AdminUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.ActualizadoEn(); ok {
 		_spec.SetField(admin.FieldActualizadoEn, field.TypeTime, value)
-	}
-	if value, ok := _u.mutation.Nombre(); ok {
-		_spec.SetField(admin.FieldNombre, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Usuario(); ok {
 		_spec.SetField(admin.FieldUsuario, field.TypeString, value)
@@ -201,20 +179,6 @@ type AdminUpdateOne struct {
 // SetActualizadoEn sets the "actualizado_en" field.
 func (_u *AdminUpdateOne) SetActualizadoEn(v time.Time) *AdminUpdateOne {
 	_u.mutation.SetActualizadoEn(v)
-	return _u
-}
-
-// SetNombre sets the "nombre" field.
-func (_u *AdminUpdateOne) SetNombre(v string) *AdminUpdateOne {
-	_u.mutation.SetNombre(v)
-	return _u
-}
-
-// SetNillableNombre sets the "nombre" field if the given value is not nil.
-func (_u *AdminUpdateOne) SetNillableNombre(v *string) *AdminUpdateOne {
-	if v != nil {
-		_u.SetNombre(*v)
-	}
 	return _u
 }
 
@@ -316,11 +280,6 @@ func (_u *AdminUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *AdminUpdateOne) check() error {
-	if v, ok := _u.mutation.Nombre(); ok {
-		if err := admin.NombreValidator(v); err != nil {
-			return &ValidationError{Name: "nombre", err: fmt.Errorf(`ent: validator failed for field "Admin.nombre": %w`, err)}
-		}
-	}
 	if v, ok := _u.mutation.Usuario(); ok {
 		if err := admin.UsuarioValidator(v); err != nil {
 			return &ValidationError{Name: "usuario", err: fmt.Errorf(`ent: validator failed for field "Admin.usuario": %w`, err)}
@@ -365,9 +324,6 @@ func (_u *AdminUpdateOne) sqlSave(ctx context.Context) (_node *Admin, err error)
 	}
 	if value, ok := _u.mutation.ActualizadoEn(); ok {
 		_spec.SetField(admin.FieldActualizadoEn, field.TypeTime, value)
-	}
-	if value, ok := _u.mutation.Nombre(); ok {
-		_spec.SetField(admin.FieldNombre, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Usuario(); ok {
 		_spec.SetField(admin.FieldUsuario, field.TypeString, value)

@@ -48,12 +48,6 @@ func (_c *AdminCreate) SetNillableActualizadoEn(v *time.Time) *AdminCreate {
 	return _c
 }
 
-// SetNombre sets the "nombre" field.
-func (_c *AdminCreate) SetNombre(v string) *AdminCreate {
-	_c.mutation.SetNombre(v)
-	return _c
-}
-
 // SetUsuario sets the "usuario" field.
 func (_c *AdminCreate) SetUsuario(v string) *AdminCreate {
 	_c.mutation.SetUsuario(v)
@@ -137,14 +131,6 @@ func (_c *AdminCreate) check() error {
 	if _, ok := _c.mutation.ActualizadoEn(); !ok {
 		return &ValidationError{Name: "actualizado_en", err: errors.New(`ent: missing required field "Admin.actualizado_en"`)}
 	}
-	if _, ok := _c.mutation.Nombre(); !ok {
-		return &ValidationError{Name: "nombre", err: errors.New(`ent: missing required field "Admin.nombre"`)}
-	}
-	if v, ok := _c.mutation.Nombre(); ok {
-		if err := admin.NombreValidator(v); err != nil {
-			return &ValidationError{Name: "nombre", err: fmt.Errorf(`ent: validator failed for field "Admin.nombre": %w`, err)}
-		}
-	}
 	if _, ok := _c.mutation.Usuario(); !ok {
 		return &ValidationError{Name: "usuario", err: errors.New(`ent: missing required field "Admin.usuario"`)}
 	}
@@ -197,10 +183,6 @@ func (_c *AdminCreate) createSpec() (*Admin, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.ActualizadoEn(); ok {
 		_spec.SetField(admin.FieldActualizadoEn, field.TypeTime, value)
 		_node.ActualizadoEn = value
-	}
-	if value, ok := _c.mutation.Nombre(); ok {
-		_spec.SetField(admin.FieldNombre, field.TypeString, value)
-		_node.Nombre = value
 	}
 	if value, ok := _c.mutation.Usuario(); ok {
 		_spec.SetField(admin.FieldUsuario, field.TypeString, value)

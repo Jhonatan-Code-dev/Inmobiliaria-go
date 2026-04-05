@@ -14,7 +14,6 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "creado_en", Type: field.TypeTime},
 		{Name: "actualizado_en", Type: field.TypeTime},
-		{Name: "nombre", Type: field.TypeString, Size: 120},
 		{Name: "usuario", Type: field.TypeString, Unique: true, Size: 80},
 		{Name: "hash_contrasena", Type: field.TypeString, Size: 255},
 		{Name: "activo", Type: field.TypeBool, Default: true},

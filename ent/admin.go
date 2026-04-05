@@ -21,8 +21,6 @@ type Admin struct {
 	CreadoEn time.Time `json:"creado_en,omitempty"`
 	// ActualizadoEn holds the value of the "actualizado_en" field.
 	ActualizadoEn time.Time `json:"actualizado_en,omitempty"`
-	// Nombre holds the value of the "nombre" field.
-	Nombre string `json:"nombre,omitempty"`
 	// Usuario holds the value of the "usuario" field.
 	Usuario string `json:"usuario,omitempty"`
 	// HashContrasena holds the value of the "hash_contrasena" field.
@@ -41,7 +39,7 @@ func (*Admin) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case admin.FieldID:
 			values[i] = new(sql.NullInt64)
-		case admin.FieldNombre, admin.FieldUsuario, admin.FieldHashContrasena:
+		case admin.FieldUsuario, admin.FieldHashContrasena:
 			values[i] = new(sql.NullString)
 		case admin.FieldCreadoEn, admin.FieldActualizadoEn:
 			values[i] = new(sql.NullTime)
@@ -77,12 +75,6 @@ func (_m *Admin) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field actualizado_en", values[i])
 			} else if value.Valid {
 				_m.ActualizadoEn = value.Time
-			}
-		case admin.FieldNombre:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field nombre", values[i])
-			} else if value.Valid {
-				_m.Nombre = value.String
 			}
 		case admin.FieldUsuario:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -143,9 +135,6 @@ func (_m *Admin) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("actualizado_en=")
 	builder.WriteString(_m.ActualizadoEn.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("nombre=")
-	builder.WriteString(_m.Nombre)
 	builder.WriteString(", ")
 	builder.WriteString("usuario=")
 	builder.WriteString(_m.Usuario)

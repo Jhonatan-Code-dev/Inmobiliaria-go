@@ -67,7 +67,6 @@ type AdminMutation struct {
 	id              *int
 	creado_en       *time.Time
 	actualizado_en  *time.Time
-	nombre          *string
 	usuario         *string
 	hash_contrasena *string
 	activo          *bool
@@ -247,42 +246,6 @@ func (m *AdminMutation) ResetActualizadoEn() {
 	m.actualizado_en = nil
 }
 
-// SetNombre sets the "nombre" field.
-func (m *AdminMutation) SetNombre(s string) {
-	m.nombre = &s
-}
-
-// Nombre returns the value of the "nombre" field in the mutation.
-func (m *AdminMutation) Nombre() (r string, exists bool) {
-	v := m.nombre
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldNombre returns the old "nombre" field's value of the Admin entity.
-// If the Admin object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AdminMutation) OldNombre(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldNombre is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldNombre requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldNombre: %w", err)
-	}
-	return oldValue.Nombre, nil
-}
-
-// ResetNombre resets all changes to the "nombre" field.
-func (m *AdminMutation) ResetNombre() {
-	m.nombre = nil
-}
-
 // SetUsuario sets the "usuario" field.
 func (m *AdminMutation) SetUsuario(s string) {
 	m.usuario = &s
@@ -425,15 +388,12 @@ func (m *AdminMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AdminMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 5)
 	if m.creado_en != nil {
 		fields = append(fields, admin.FieldCreadoEn)
 	}
 	if m.actualizado_en != nil {
 		fields = append(fields, admin.FieldActualizadoEn)
-	}
-	if m.nombre != nil {
-		fields = append(fields, admin.FieldNombre)
 	}
 	if m.usuario != nil {
 		fields = append(fields, admin.FieldUsuario)
@@ -456,8 +416,6 @@ func (m *AdminMutation) Field(name string) (ent.Value, bool) {
 		return m.CreadoEn()
 	case admin.FieldActualizadoEn:
 		return m.ActualizadoEn()
-	case admin.FieldNombre:
-		return m.Nombre()
 	case admin.FieldUsuario:
 		return m.Usuario()
 	case admin.FieldHashContrasena:
@@ -477,8 +435,6 @@ func (m *AdminMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldCreadoEn(ctx)
 	case admin.FieldActualizadoEn:
 		return m.OldActualizadoEn(ctx)
-	case admin.FieldNombre:
-		return m.OldNombre(ctx)
 	case admin.FieldUsuario:
 		return m.OldUsuario(ctx)
 	case admin.FieldHashContrasena:
@@ -507,13 +463,6 @@ func (m *AdminMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetActualizadoEn(v)
-		return nil
-	case admin.FieldNombre:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetNombre(v)
 		return nil
 	case admin.FieldUsuario:
 		v, ok := value.(string)
@@ -590,9 +539,6 @@ func (m *AdminMutation) ResetField(name string) error {
 		return nil
 	case admin.FieldActualizadoEn:
 		m.ResetActualizadoEn()
-		return nil
-	case admin.FieldNombre:
-		m.ResetNombre()
 		return nil
 	case admin.FieldUsuario:
 		m.ResetUsuario()

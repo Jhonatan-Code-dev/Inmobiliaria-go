@@ -3,6 +3,7 @@ package controller
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
 	"rentals-go/config/security"
 	"rentals-go/internal/domain"
@@ -76,6 +77,13 @@ type adminCredencialesResponse struct {
 	Usuario string `json:"usuario"`
 }
 
+type adminProfileResponse struct {
+	ID      int    `json:"id"`
+	Nombre  string `json:"nombre"`
+	Usuario string `json:"usuario"`
+	Activo  bool   `json:"activo"`
+}
+
 type empresaResponse struct {
 	ID              int             `json:"id"`
 	Nombre          string          `json:"nombre"`
@@ -101,6 +109,7 @@ func NewAdminController(svc *service.AdminService) *AdminController {
 
 // LoginAdmin godoc
 // @Summary Login admin
+// @Description Autentica a un administrador y devuelve el JWT que el frontend debe enviar en el header Authorization.
 // @Tags admin
 // @Accept json
 // @Produce json
@@ -123,11 +132,46 @@ func (h *AdminController) Login(c *fiber.Ctx) error {
 	return c.JSON(adminLoginResponse{Token: token})
 }
 
+// PerfilAdmin godoc
+// @Summary Perfil del administrador autenticado
+// @Description Retorna los datos del administrador autenticado a partir del token Bearer enviado por el frontend.
+// @Tags admin
+// @Produce json
+// @Security BearerAuth
+// @Success 200 {object} adminProfileResponse
+// @Failure 401 {object} errorResponse
+// @Failure 500 {object} errorResponse
+// @Router /admin/me [get]
+func (h *AdminController) Perfil(c *fiber.Ctx) error {
+	adminIDVal := c.Locals("admin_id")
+	if adminIDVal == nil {
+		return fiber.ErrUnauthorized
+	}
+	adminID, ok := adminIDVal.(int)
+	if !ok {
+		return fiber.ErrUnauthorized
+	}
+
+	adminActual, err := h.svc.Perfil(c.Context(), adminID)
+	if err != nil {
+		return fiber.ErrInternalServerError
+	}
+
+	return c.JSON(adminProfileResponse{
+		ID:      adminActual.ID,
+		Nombre:  adminActual.Nombre,
+		Usuario: adminActual.Usuario,
+		Activo:  adminActual.Activo,
+	})
+}
+
 // CrearEmpresa godoc
 // @Summary Alta de empresa + usuario principal
+// @Description Crea una empresa y su usuario principal en una sola operacion. Requiere autenticacion de administrador.
 // @Tags admin
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param body body crearEmpresaRequest true "Datos de empresa y usuario"
 // @Success 201 {object} crearEmpresaResponse
 // @Failure 400 {object} errorResponse
@@ -139,8 +183,8 @@ func (h *AdminController) CrearEmpresa(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return fiber.ErrBadRequest
 	}
-	if req.Empresa.Nombre == "" || req.Usuario.Correo == "" || req.Usuario.Password == "" {
-		return fiber.ErrBadRequest
+	if err := validarCrearEmpresaRequest(req); err != nil {
+		return fiber.NewError(http.StatusBadRequest, err.Error())
 	}
 	hasher := security.NewServicioHash()
 	hash, err := hasher.Encriptar(req.Usuario.Password)
@@ -181,8 +225,10 @@ func (h *AdminController) CrearEmpresa(c *fiber.Ctx) error {
 
 // ObtenerEmpresa godoc
 // @Summary Obtener empresa por ID
+// @Description Devuelve el detalle completo de una empresa, incluyendo la informacion de moneda si esta disponible.
 // @Tags admin
 // @Produce json
+// @Security BearerAuth
 // @Param id path int true "ID de empresa"
 // @Success 200 {object} empresaResponse
 // @Failure 400 {object} errorResponse
@@ -203,8 +249,10 @@ func (h *AdminController) ObtenerEmpresa(c *fiber.Ctx) error {
 
 // ListarEmpresas godoc
 // @Summary Listado de empresas
+// @Description Retorna todas las empresas registradas para uso del panel administrativo.
 // @Tags admin
 // @Produce json
+// @Security BearerAuth
 // @Success 200 {array} empresaResponse
 // @Failure 401 {object} errorResponse
 // @Failure 500 {object} errorResponse
@@ -226,9 +274,11 @@ func (h *AdminController) ListarEmpresas(c *fiber.Ctx) error {
 
 // ActualizarEmpresa godoc
 // @Summary Actualizar empresa
+// @Description Actualiza los datos generales de una empresa existente. Requiere autenticacion de administrador.
 // @Tags admin
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param id path int true "ID de empresa"
 // @Param body body actualizarEmpresaRequest true "Datos de empresa"
 // @Success 200 {object} empresaResponse
@@ -275,8 +325,10 @@ func (h *AdminController) ActualizarEmpresa(c *fiber.Ctx) error {
 
 // EliminarEmpresa godoc
 // @Summary Eliminar empresa
+// @Description Elimina una empresa por ID. Requiere autenticacion de administrador.
 // @Tags admin
 // @Produce json
+// @Security BearerAuth
 // @Param id path int true "ID de empresa"
 // @Success 204
 // @Failure 400 {object} errorResponse
@@ -296,9 +348,11 @@ func (h *AdminController) EliminarEmpresa(c *fiber.Ctx) error {
 
 // ActualizarCredencialesAdmin godoc
 // @Summary Cambiar usuario y contraseña del admin autenticado
+// @Description Actualiza las credenciales del administrador autenticado.
 // @Tags admin
 // @Accept json
 // @Produce json
+// @Security BearerAuth
 // @Param body body adminCredencialesRequest true "Nuevo usuario y contraseña"
 // @Success 200 {object} adminCredencialesResponse
 // @Failure 400 {object} errorResponse
@@ -340,6 +394,37 @@ func defaultString(val, def string) string {
 		return def
 	}
 	return val
+}
+
+func validarCrearEmpresaRequest(req crearEmpresaRequest) error {
+	if strings.TrimSpace(req.Empresa.Nombre) == "" {
+		return fiber.NewError(http.StatusBadRequest, "empresa.nombre es obligatorio")
+	}
+	if req.Empresa.Pais != "" && len(strings.TrimSpace(req.Empresa.Pais)) != 2 {
+		return fiber.NewError(http.StatusBadRequest, "empresa.pais debe ser un codigo ISO de 2 letras, por ejemplo PE")
+	}
+	if req.Empresa.Estado != "" && !estadoEmpresaValido(req.Empresa.Estado) {
+		return fiber.NewError(http.StatusBadRequest, "empresa.estado debe ser activa, inactiva o suspendida")
+	}
+	if strings.TrimSpace(req.Usuario.Nombres) == "" {
+		return fiber.NewError(http.StatusBadRequest, "usuario.nombres es obligatorio")
+	}
+	if strings.TrimSpace(req.Usuario.Correo) == "" {
+		return fiber.NewError(http.StatusBadRequest, "usuario.correo es obligatorio")
+	}
+	if strings.TrimSpace(req.Usuario.Password) == "" {
+		return fiber.NewError(http.StatusBadRequest, "usuario.password es obligatorio")
+	}
+	return nil
+}
+
+func estadoEmpresaValido(val string) bool {
+	switch strings.TrimSpace(val) {
+	case "activa", "inactiva", "suspendida":
+		return true
+	default:
+		return false
+	}
 }
 
 func parseIDParam(c *fiber.Ctx) (int, error) {

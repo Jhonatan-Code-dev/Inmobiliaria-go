@@ -14,6 +14,7 @@ type Config struct {
 	Port         string `envconfig:"PORT" default:"4000"`
 	DSN          string `envconfig:"BASE_DATOS_1" required:"true"`
 	JWTSecret    string `envconfig:"JWT_SECRET" required:"true"`
+	AllowedOrigins string `envconfig:"ALLOWED_ORIGINS" default:"*"`
 }
 
 var (

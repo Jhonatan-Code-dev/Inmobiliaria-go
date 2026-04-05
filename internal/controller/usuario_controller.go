@@ -39,6 +39,7 @@ func NewUsuarioController(svc *service.UsuarioService) *UsuarioController {
 
 // LoginUsuario godoc
 // @Summary Login de usuario
+// @Description Autentica a un usuario final y devuelve su token junto con los datos del usuario y su empresa.
 // @Tags usuario
 // @Accept json
 // @Produce json
@@ -73,8 +74,10 @@ func (h *UsuarioController) Login(c *fiber.Ctx) error {
 
 // Perfil godoc
 // @Summary Perfil del usuario autenticado
+// @Description Retorna el perfil del usuario autenticado a partir del token Bearer enviado por el frontend.
 // @Tags usuario
 // @Produce json
+// @Security BearerAuth
 // @Success 200 {object} usuarioLoginResponse
 // @Failure 401 {object} errorResponse
 // @Failure 500 {object} errorResponse

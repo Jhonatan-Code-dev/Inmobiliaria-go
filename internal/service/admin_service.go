@@ -54,6 +54,10 @@ func (s *AdminService) Login(ctx context.Context, usuario, contrasena string) (s
 	})
 }
 
+func (s *AdminService) Perfil(ctx context.Context, adminID int) (*domain.Admin, error) {
+	return s.adminRepo.BuscarPorID(ctx, adminID)
+}
+
 func (s *AdminService) CrearEmpresaConUsuario(ctx context.Context, emp *domain.Empresa, usuario *domain.Usuario, rolID int) (*domain.Empresa, *domain.Usuario, error) {
 	emp.Moneda = moneda.NormalizarCodigo(emp.Moneda)
 	if err := moneda.ValidarCodigo(emp.Moneda); err != nil {

@@ -1,3 +1,4 @@
+basePath: /
 definitions:
   controller.actualizarEmpresaRequest:
     properties:
@@ -48,6 +49,17 @@ definitions:
   controller.adminLoginResponse:
     properties:
       token:
+        type: string
+    type: object
+  controller.adminProfileResponse:
+    properties:
+      activo:
+        type: boolean
+      id:
+        type: integer
+      nombre:
+        type: string
+      usuario:
         type: string
     type: object
   controller.crearEmpresaRequest:
@@ -192,11 +204,16 @@ definitions:
     type: object
 info:
   contact: {}
+  description: API para autenticacion, administracion de empresas y catalogos de soporte
+    para el frontend de Rentals Go.
+  title: Rentals Go API
+  version: "1.0"
 paths:
   /admin/credenciales:
     patch:
       consumes:
       - application/json
+      description: Actualiza las credenciales del administrador autenticado.
       parameters:
       - description: Nuevo usuario y contraseña
         in: body
@@ -223,11 +240,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
       summary: Cambiar usuario y contraseña del admin autenticado
       tags:
       - admin
   /admin/empresas:
     get:
+      description: Retorna todas las empresas registradas para uso del panel administrativo.
       produces:
       - application/json
       responses:
@@ -245,12 +265,16 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
       summary: Listado de empresas
       tags:
       - admin
     post:
       consumes:
       - application/json
+      description: Crea una empresa y su usuario principal en una sola operacion.
+        Requiere autenticacion de administrador.
       parameters:
       - description: Datos de empresa y usuario
         in: body
@@ -277,11 +301,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
       summary: Alta de empresa + usuario principal
       tags:
       - admin
   /admin/empresas/{id}:
     delete:
+      description: Elimina una empresa por ID. Requiere autenticacion de administrador.
       parameters:
       - description: ID de empresa
         in: path
@@ -305,10 +332,14 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
       summary: Eliminar empresa
       tags:
       - admin
     get:
+      description: Devuelve el detalle completo de una empresa, incluyendo la informacion
+        de moneda si esta disponible.
       parameters:
       - description: ID de empresa
         in: path
@@ -334,12 +365,16 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
       summary: Obtener empresa por ID
       tags:
       - admin
     put:
       consumes:
       - application/json
+      description: Actualiza los datos generales de una empresa existente. Requiere
+        autenticacion de administrador.
       parameters:
       - description: ID de empresa
         in: path
@@ -371,6 +406,8 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
       summary: Actualizar empresa
       tags:
       - admin
@@ -378,6 +415,8 @@ paths:
     post:
       consumes:
       - application/json
+      description: Autentica a un administrador y devuelve el JWT que el frontend
+        debe enviar en el header Authorization.
       parameters:
       - description: Credenciales
         in: body
@@ -407,10 +446,36 @@ paths:
       summary: Login admin
       tags:
       - admin
+  /admin/me:
+    get:
+      description: Retorna los datos del administrador autenticado a partir del token
+        Bearer enviado por el frontend.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.adminProfileResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Perfil del administrador autenticado
+      tags:
+      - admin
   /auth/login:
     post:
       consumes:
       - application/json
+      description: Autentica a un usuario final y devuelve su token junto con los
+        datos del usuario y su empresa.
       parameters:
       - description: Credenciales
         in: body
@@ -488,6 +553,8 @@ paths:
       - catalogos
   /me:
     get:
+      description: Retorna el perfil del usuario autenticado a partir del token Bearer
+        enviado por el frontend.
       produces:
       - application/json
       responses:
@@ -503,7 +570,18 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
       summary: Perfil del usuario autenticado
       tags:
       - usuario
+schemes:
+- http
+- https
+securityDefinitions:
+  BearerAuth:
+    description: 'Token JWT en formato: Bearer <token>'
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

@@ -17,6 +17,12 @@ const docTemplate = `{
     "paths": {
         "/admin/credenciales": {
             "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Actualiza las credenciales del administrador autenticado.",
                 "consumes": [
                     "application/json"
                 ],
@@ -68,6 +74,12 @@ const docTemplate = `{
         },
         "/admin/empresas": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retorna todas las empresas registradas para uso del panel administrativo.",
                 "produces": [
                     "application/json"
                 ],
@@ -100,6 +112,12 @@ const docTemplate = `{
                 }
             },
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Crea una empresa y su usuario principal en una sola operacion. Requiere autenticacion de administrador.",
                 "consumes": [
                     "application/json"
                 ],
@@ -151,6 +169,12 @@ const docTemplate = `{
         },
         "/admin/empresas/{id}": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Devuelve el detalle completo de una empresa, incluyendo la informacion de moneda si esta disponible.",
                 "produces": [
                     "application/json"
                 ],
@@ -195,6 +219,12 @@ const docTemplate = `{
                 }
             },
             "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Actualiza los datos generales de una empresa existente. Requiere autenticacion de administrador.",
                 "consumes": [
                     "application/json"
                 ],
@@ -251,6 +281,12 @@ const docTemplate = `{
                 }
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Elimina una empresa por ID. Requiere autenticacion de administrador.",
                 "produces": [
                     "application/json"
                 ],
@@ -294,6 +330,7 @@ const docTemplate = `{
         },
         "/admin/login": {
             "post": {
+                "description": "Autentica a un administrador y devuelve el JWT que el frontend debe enviar en el header Authorization.",
                 "consumes": [
                     "application/json"
                 ],
@@ -343,8 +380,46 @@ const docTemplate = `{
                 }
             }
         },
+        "/admin/me": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retorna los datos del administrador autenticado a partir del token Bearer enviado por el frontend.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Perfil del administrador autenticado",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.adminProfileResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/auth/login": {
             "post": {
+                "description": "Autentica a un usuario final y devuelve su token junto con los datos del usuario y su empresa.",
                 "consumes": [
                     "application/json"
                 ],
@@ -466,6 +541,12 @@ const docTemplate = `{
         },
         "/me": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retorna el perfil del usuario autenticado a partir del token Bearer enviado por el frontend.",
                 "produces": [
                     "application/json"
                 ],
@@ -572,6 +653,23 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.adminProfileResponse": {
+            "type": "object",
+            "properties": {
+                "activo": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nombre": {
+                    "type": "string"
+                },
+                "usuario": {
                     "type": "string"
                 }
             }
@@ -792,17 +890,25 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Token JWT en formato: Bearer \u003ctoken\u003e",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "1.0",
 	Host:             "",
-	BasePath:         "",
-	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	BasePath:         "/",
+	Schemes:          []string{"http", "https"},
+	Title:            "Rentals Go API",
+	Description:      "API para autenticacion, administracion de empresas y catalogos de soporte para el frontend de Rentals Go.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

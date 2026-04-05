@@ -12,6 +12,7 @@ func Register(app *fiber.App, appDI *di.App) {
 	group.Post("/login", appDI.AdminCtrl.Login)
 
 	protected := group.Use(middlewares.AdminAuth(appDI.Config))
+	protected.Get("/me", appDI.AdminCtrl.Perfil)
 	protected.Patch("/credenciales", appDI.AdminCtrl.ActualizarCredenciales)
 	protected.Get("/empresas", appDI.AdminCtrl.ListarEmpresas)
 	protected.Post("/empresas", appDI.AdminCtrl.CrearEmpresa)

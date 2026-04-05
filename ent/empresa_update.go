@@ -55,106 +55,6 @@ func (_u *EmpresaUpdate) SetNillableNombre(v *string) *EmpresaUpdate {
 	return _u
 }
 
-// SetDocumentoFiscal sets the "documento_fiscal" field.
-func (_u *EmpresaUpdate) SetDocumentoFiscal(v string) *EmpresaUpdate {
-	_u.mutation.SetDocumentoFiscal(v)
-	return _u
-}
-
-// SetNillableDocumentoFiscal sets the "documento_fiscal" field if the given value is not nil.
-func (_u *EmpresaUpdate) SetNillableDocumentoFiscal(v *string) *EmpresaUpdate {
-	if v != nil {
-		_u.SetDocumentoFiscal(*v)
-	}
-	return _u
-}
-
-// ClearDocumentoFiscal clears the value of the "documento_fiscal" field.
-func (_u *EmpresaUpdate) ClearDocumentoFiscal() *EmpresaUpdate {
-	_u.mutation.ClearDocumentoFiscal()
-	return _u
-}
-
-// SetCorreo sets the "correo" field.
-func (_u *EmpresaUpdate) SetCorreo(v string) *EmpresaUpdate {
-	_u.mutation.SetCorreo(v)
-	return _u
-}
-
-// SetNillableCorreo sets the "correo" field if the given value is not nil.
-func (_u *EmpresaUpdate) SetNillableCorreo(v *string) *EmpresaUpdate {
-	if v != nil {
-		_u.SetCorreo(*v)
-	}
-	return _u
-}
-
-// ClearCorreo clears the value of the "correo" field.
-func (_u *EmpresaUpdate) ClearCorreo() *EmpresaUpdate {
-	_u.mutation.ClearCorreo()
-	return _u
-}
-
-// SetTelefono sets the "telefono" field.
-func (_u *EmpresaUpdate) SetTelefono(v string) *EmpresaUpdate {
-	_u.mutation.SetTelefono(v)
-	return _u
-}
-
-// SetNillableTelefono sets the "telefono" field if the given value is not nil.
-func (_u *EmpresaUpdate) SetNillableTelefono(v *string) *EmpresaUpdate {
-	if v != nil {
-		_u.SetTelefono(*v)
-	}
-	return _u
-}
-
-// ClearTelefono clears the value of the "telefono" field.
-func (_u *EmpresaUpdate) ClearTelefono() *EmpresaUpdate {
-	_u.mutation.ClearTelefono()
-	return _u
-}
-
-// SetDireccion sets the "direccion" field.
-func (_u *EmpresaUpdate) SetDireccion(v string) *EmpresaUpdate {
-	_u.mutation.SetDireccion(v)
-	return _u
-}
-
-// SetNillableDireccion sets the "direccion" field if the given value is not nil.
-func (_u *EmpresaUpdate) SetNillableDireccion(v *string) *EmpresaUpdate {
-	if v != nil {
-		_u.SetDireccion(*v)
-	}
-	return _u
-}
-
-// ClearDireccion clears the value of the "direccion" field.
-func (_u *EmpresaUpdate) ClearDireccion() *EmpresaUpdate {
-	_u.mutation.ClearDireccion()
-	return _u
-}
-
-// SetCiudad sets the "ciudad" field.
-func (_u *EmpresaUpdate) SetCiudad(v string) *EmpresaUpdate {
-	_u.mutation.SetCiudad(v)
-	return _u
-}
-
-// SetNillableCiudad sets the "ciudad" field if the given value is not nil.
-func (_u *EmpresaUpdate) SetNillableCiudad(v *string) *EmpresaUpdate {
-	if v != nil {
-		_u.SetCiudad(*v)
-	}
-	return _u
-}
-
-// ClearCiudad clears the value of the "ciudad" field.
-func (_u *EmpresaUpdate) ClearCiudad() *EmpresaUpdate {
-	_u.mutation.ClearCiudad()
-	return _u
-}
-
 // SetPais sets the "pais" field.
 func (_u *EmpresaUpdate) SetPais(v string) *EmpresaUpdate {
 	_u.mutation.SetPais(v)
@@ -524,31 +424,6 @@ func (_u *EmpresaUpdate) check() error {
 			return &ValidationError{Name: "nombre", err: fmt.Errorf(`ent: validator failed for field "Empresa.nombre": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.DocumentoFiscal(); ok {
-		if err := empresa.DocumentoFiscalValidator(v); err != nil {
-			return &ValidationError{Name: "documento_fiscal", err: fmt.Errorf(`ent: validator failed for field "Empresa.documento_fiscal": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Correo(); ok {
-		if err := empresa.CorreoValidator(v); err != nil {
-			return &ValidationError{Name: "correo", err: fmt.Errorf(`ent: validator failed for field "Empresa.correo": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Telefono(); ok {
-		if err := empresa.TelefonoValidator(v); err != nil {
-			return &ValidationError{Name: "telefono", err: fmt.Errorf(`ent: validator failed for field "Empresa.telefono": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Direccion(); ok {
-		if err := empresa.DireccionValidator(v); err != nil {
-			return &ValidationError{Name: "direccion", err: fmt.Errorf(`ent: validator failed for field "Empresa.direccion": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Ciudad(); ok {
-		if err := empresa.CiudadValidator(v); err != nil {
-			return &ValidationError{Name: "ciudad", err: fmt.Errorf(`ent: validator failed for field "Empresa.ciudad": %w`, err)}
-		}
-	}
 	if v, ok := _u.mutation.Pais(); ok {
 		if err := empresa.PaisValidator(v); err != nil {
 			return &ValidationError{Name: "pais", err: fmt.Errorf(`ent: validator failed for field "Empresa.pais": %w`, err)}
@@ -589,36 +464,6 @@ func (_u *EmpresaUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.Nombre(); ok {
 		_spec.SetField(empresa.FieldNombre, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.DocumentoFiscal(); ok {
-		_spec.SetField(empresa.FieldDocumentoFiscal, field.TypeString, value)
-	}
-	if _u.mutation.DocumentoFiscalCleared() {
-		_spec.ClearField(empresa.FieldDocumentoFiscal, field.TypeString)
-	}
-	if value, ok := _u.mutation.Correo(); ok {
-		_spec.SetField(empresa.FieldCorreo, field.TypeString, value)
-	}
-	if _u.mutation.CorreoCleared() {
-		_spec.ClearField(empresa.FieldCorreo, field.TypeString)
-	}
-	if value, ok := _u.mutation.Telefono(); ok {
-		_spec.SetField(empresa.FieldTelefono, field.TypeString, value)
-	}
-	if _u.mutation.TelefonoCleared() {
-		_spec.ClearField(empresa.FieldTelefono, field.TypeString)
-	}
-	if value, ok := _u.mutation.Direccion(); ok {
-		_spec.SetField(empresa.FieldDireccion, field.TypeString, value)
-	}
-	if _u.mutation.DireccionCleared() {
-		_spec.ClearField(empresa.FieldDireccion, field.TypeString)
-	}
-	if value, ok := _u.mutation.Ciudad(); ok {
-		_spec.SetField(empresa.FieldCiudad, field.TypeString, value)
-	}
-	if _u.mutation.CiudadCleared() {
-		_spec.ClearField(empresa.FieldCiudad, field.TypeString)
 	}
 	if value, ok := _u.mutation.Pais(); ok {
 		_spec.SetField(empresa.FieldPais, field.TypeString, value)
@@ -990,106 +835,6 @@ func (_u *EmpresaUpdateOne) SetNillableNombre(v *string) *EmpresaUpdateOne {
 	if v != nil {
 		_u.SetNombre(*v)
 	}
-	return _u
-}
-
-// SetDocumentoFiscal sets the "documento_fiscal" field.
-func (_u *EmpresaUpdateOne) SetDocumentoFiscal(v string) *EmpresaUpdateOne {
-	_u.mutation.SetDocumentoFiscal(v)
-	return _u
-}
-
-// SetNillableDocumentoFiscal sets the "documento_fiscal" field if the given value is not nil.
-func (_u *EmpresaUpdateOne) SetNillableDocumentoFiscal(v *string) *EmpresaUpdateOne {
-	if v != nil {
-		_u.SetDocumentoFiscal(*v)
-	}
-	return _u
-}
-
-// ClearDocumentoFiscal clears the value of the "documento_fiscal" field.
-func (_u *EmpresaUpdateOne) ClearDocumentoFiscal() *EmpresaUpdateOne {
-	_u.mutation.ClearDocumentoFiscal()
-	return _u
-}
-
-// SetCorreo sets the "correo" field.
-func (_u *EmpresaUpdateOne) SetCorreo(v string) *EmpresaUpdateOne {
-	_u.mutation.SetCorreo(v)
-	return _u
-}
-
-// SetNillableCorreo sets the "correo" field if the given value is not nil.
-func (_u *EmpresaUpdateOne) SetNillableCorreo(v *string) *EmpresaUpdateOne {
-	if v != nil {
-		_u.SetCorreo(*v)
-	}
-	return _u
-}
-
-// ClearCorreo clears the value of the "correo" field.
-func (_u *EmpresaUpdateOne) ClearCorreo() *EmpresaUpdateOne {
-	_u.mutation.ClearCorreo()
-	return _u
-}
-
-// SetTelefono sets the "telefono" field.
-func (_u *EmpresaUpdateOne) SetTelefono(v string) *EmpresaUpdateOne {
-	_u.mutation.SetTelefono(v)
-	return _u
-}
-
-// SetNillableTelefono sets the "telefono" field if the given value is not nil.
-func (_u *EmpresaUpdateOne) SetNillableTelefono(v *string) *EmpresaUpdateOne {
-	if v != nil {
-		_u.SetTelefono(*v)
-	}
-	return _u
-}
-
-// ClearTelefono clears the value of the "telefono" field.
-func (_u *EmpresaUpdateOne) ClearTelefono() *EmpresaUpdateOne {
-	_u.mutation.ClearTelefono()
-	return _u
-}
-
-// SetDireccion sets the "direccion" field.
-func (_u *EmpresaUpdateOne) SetDireccion(v string) *EmpresaUpdateOne {
-	_u.mutation.SetDireccion(v)
-	return _u
-}
-
-// SetNillableDireccion sets the "direccion" field if the given value is not nil.
-func (_u *EmpresaUpdateOne) SetNillableDireccion(v *string) *EmpresaUpdateOne {
-	if v != nil {
-		_u.SetDireccion(*v)
-	}
-	return _u
-}
-
-// ClearDireccion clears the value of the "direccion" field.
-func (_u *EmpresaUpdateOne) ClearDireccion() *EmpresaUpdateOne {
-	_u.mutation.ClearDireccion()
-	return _u
-}
-
-// SetCiudad sets the "ciudad" field.
-func (_u *EmpresaUpdateOne) SetCiudad(v string) *EmpresaUpdateOne {
-	_u.mutation.SetCiudad(v)
-	return _u
-}
-
-// SetNillableCiudad sets the "ciudad" field if the given value is not nil.
-func (_u *EmpresaUpdateOne) SetNillableCiudad(v *string) *EmpresaUpdateOne {
-	if v != nil {
-		_u.SetCiudad(*v)
-	}
-	return _u
-}
-
-// ClearCiudad clears the value of the "ciudad" field.
-func (_u *EmpresaUpdateOne) ClearCiudad() *EmpresaUpdateOne {
-	_u.mutation.ClearCiudad()
 	return _u
 }
 
@@ -1475,31 +1220,6 @@ func (_u *EmpresaUpdateOne) check() error {
 			return &ValidationError{Name: "nombre", err: fmt.Errorf(`ent: validator failed for field "Empresa.nombre": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.DocumentoFiscal(); ok {
-		if err := empresa.DocumentoFiscalValidator(v); err != nil {
-			return &ValidationError{Name: "documento_fiscal", err: fmt.Errorf(`ent: validator failed for field "Empresa.documento_fiscal": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Correo(); ok {
-		if err := empresa.CorreoValidator(v); err != nil {
-			return &ValidationError{Name: "correo", err: fmt.Errorf(`ent: validator failed for field "Empresa.correo": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Telefono(); ok {
-		if err := empresa.TelefonoValidator(v); err != nil {
-			return &ValidationError{Name: "telefono", err: fmt.Errorf(`ent: validator failed for field "Empresa.telefono": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Direccion(); ok {
-		if err := empresa.DireccionValidator(v); err != nil {
-			return &ValidationError{Name: "direccion", err: fmt.Errorf(`ent: validator failed for field "Empresa.direccion": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Ciudad(); ok {
-		if err := empresa.CiudadValidator(v); err != nil {
-			return &ValidationError{Name: "ciudad", err: fmt.Errorf(`ent: validator failed for field "Empresa.ciudad": %w`, err)}
-		}
-	}
 	if v, ok := _u.mutation.Pais(); ok {
 		if err := empresa.PaisValidator(v); err != nil {
 			return &ValidationError{Name: "pais", err: fmt.Errorf(`ent: validator failed for field "Empresa.pais": %w`, err)}
@@ -1557,36 +1277,6 @@ func (_u *EmpresaUpdateOne) sqlSave(ctx context.Context) (_node *Empresa, err er
 	}
 	if value, ok := _u.mutation.Nombre(); ok {
 		_spec.SetField(empresa.FieldNombre, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.DocumentoFiscal(); ok {
-		_spec.SetField(empresa.FieldDocumentoFiscal, field.TypeString, value)
-	}
-	if _u.mutation.DocumentoFiscalCleared() {
-		_spec.ClearField(empresa.FieldDocumentoFiscal, field.TypeString)
-	}
-	if value, ok := _u.mutation.Correo(); ok {
-		_spec.SetField(empresa.FieldCorreo, field.TypeString, value)
-	}
-	if _u.mutation.CorreoCleared() {
-		_spec.ClearField(empresa.FieldCorreo, field.TypeString)
-	}
-	if value, ok := _u.mutation.Telefono(); ok {
-		_spec.SetField(empresa.FieldTelefono, field.TypeString, value)
-	}
-	if _u.mutation.TelefonoCleared() {
-		_spec.ClearField(empresa.FieldTelefono, field.TypeString)
-	}
-	if value, ok := _u.mutation.Direccion(); ok {
-		_spec.SetField(empresa.FieldDireccion, field.TypeString, value)
-	}
-	if _u.mutation.DireccionCleared() {
-		_spec.ClearField(empresa.FieldDireccion, field.TypeString)
-	}
-	if value, ok := _u.mutation.Ciudad(); ok {
-		_spec.SetField(empresa.FieldCiudad, field.TypeString, value)
-	}
-	if _u.mutation.CiudadCleared() {
-		_spec.ClearField(empresa.FieldCiudad, field.TypeString)
 	}
 	if value, ok := _u.mutation.Pais(); ok {
 		_spec.SetField(empresa.FieldPais, field.TypeString, value)

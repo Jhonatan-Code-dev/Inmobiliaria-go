@@ -9,25 +9,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-type monedaResponse struct {
-	Codigo     string                 `json:"codigo"`
-	Decimales  int                    `json:"decimales"`
-	Incremento int                    `json:"incremento"`
-	Regiones   []monedaRegionResponse `json:"regiones"`
-	Render     monedaRenderResponse   `json:"render"`
-}
-
-type monedaRegionResponse struct {
-	Codigo string `json:"codigo"`
-	Nombre string `json:"nombre"`
-}
-
-type monedaRenderResponse struct {
-	Metodo                string `json:"metodo"`
-	Currency              string `json:"currency"`
-	MinimumFractionDigits int    `json:"minimum_fraction_digits"`
-	MaximumFractionDigits int    `json:"maximum_fraction_digits"`
-}
+// DTOs moved to dtos.go
 
 type MonedaController struct {
 	svc *service.MonedaService

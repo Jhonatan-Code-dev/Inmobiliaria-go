@@ -35,71 +35,17 @@ func (_u *UsuarioUpdate) SetActualizadoEn(v time.Time) *UsuarioUpdate {
 	return _u
 }
 
-// SetNombres sets the "nombres" field.
-func (_u *UsuarioUpdate) SetNombres(v string) *UsuarioUpdate {
-	_u.mutation.SetNombres(v)
+// SetUsuario sets the "usuario" field.
+func (_u *UsuarioUpdate) SetUsuario(v string) *UsuarioUpdate {
+	_u.mutation.SetUsuario(v)
 	return _u
 }
 
-// SetNillableNombres sets the "nombres" field if the given value is not nil.
-func (_u *UsuarioUpdate) SetNillableNombres(v *string) *UsuarioUpdate {
+// SetNillableUsuario sets the "usuario" field if the given value is not nil.
+func (_u *UsuarioUpdate) SetNillableUsuario(v *string) *UsuarioUpdate {
 	if v != nil {
-		_u.SetNombres(*v)
+		_u.SetUsuario(*v)
 	}
-	return _u
-}
-
-// SetApellidos sets the "apellidos" field.
-func (_u *UsuarioUpdate) SetApellidos(v string) *UsuarioUpdate {
-	_u.mutation.SetApellidos(v)
-	return _u
-}
-
-// SetNillableApellidos sets the "apellidos" field if the given value is not nil.
-func (_u *UsuarioUpdate) SetNillableApellidos(v *string) *UsuarioUpdate {
-	if v != nil {
-		_u.SetApellidos(*v)
-	}
-	return _u
-}
-
-// ClearApellidos clears the value of the "apellidos" field.
-func (_u *UsuarioUpdate) ClearApellidos() *UsuarioUpdate {
-	_u.mutation.ClearApellidos()
-	return _u
-}
-
-// SetCorreo sets the "correo" field.
-func (_u *UsuarioUpdate) SetCorreo(v string) *UsuarioUpdate {
-	_u.mutation.SetCorreo(v)
-	return _u
-}
-
-// SetNillableCorreo sets the "correo" field if the given value is not nil.
-func (_u *UsuarioUpdate) SetNillableCorreo(v *string) *UsuarioUpdate {
-	if v != nil {
-		_u.SetCorreo(*v)
-	}
-	return _u
-}
-
-// SetTelefono sets the "telefono" field.
-func (_u *UsuarioUpdate) SetTelefono(v string) *UsuarioUpdate {
-	_u.mutation.SetTelefono(v)
-	return _u
-}
-
-// SetNillableTelefono sets the "telefono" field if the given value is not nil.
-func (_u *UsuarioUpdate) SetNillableTelefono(v *string) *UsuarioUpdate {
-	if v != nil {
-		_u.SetTelefono(*v)
-	}
-	return _u
-}
-
-// ClearTelefono clears the value of the "telefono" field.
-func (_u *UsuarioUpdate) ClearTelefono() *UsuarioUpdate {
-	_u.mutation.ClearTelefono()
 	return _u
 }
 
@@ -230,24 +176,9 @@ func (_u *UsuarioUpdate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *UsuarioUpdate) check() error {
-	if v, ok := _u.mutation.Nombres(); ok {
-		if err := usuario.NombresValidator(v); err != nil {
-			return &ValidationError{Name: "nombres", err: fmt.Errorf(`ent: validator failed for field "Usuario.nombres": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Apellidos(); ok {
-		if err := usuario.ApellidosValidator(v); err != nil {
-			return &ValidationError{Name: "apellidos", err: fmt.Errorf(`ent: validator failed for field "Usuario.apellidos": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Correo(); ok {
-		if err := usuario.CorreoValidator(v); err != nil {
-			return &ValidationError{Name: "correo", err: fmt.Errorf(`ent: validator failed for field "Usuario.correo": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Telefono(); ok {
-		if err := usuario.TelefonoValidator(v); err != nil {
-			return &ValidationError{Name: "telefono", err: fmt.Errorf(`ent: validator failed for field "Usuario.telefono": %w`, err)}
+	if v, ok := _u.mutation.Usuario(); ok {
+		if err := usuario.UsuarioValidator(v); err != nil {
+			return &ValidationError{Name: "usuario", err: fmt.Errorf(`ent: validator failed for field "Usuario.usuario": %w`, err)}
 		}
 	}
 	if v, ok := _u.mutation.HashContrasena(); ok {
@@ -278,23 +209,8 @@ func (_u *UsuarioUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.ActualizadoEn(); ok {
 		_spec.SetField(usuario.FieldActualizadoEn, field.TypeTime, value)
 	}
-	if value, ok := _u.mutation.Nombres(); ok {
-		_spec.SetField(usuario.FieldNombres, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Apellidos(); ok {
-		_spec.SetField(usuario.FieldApellidos, field.TypeString, value)
-	}
-	if _u.mutation.ApellidosCleared() {
-		_spec.ClearField(usuario.FieldApellidos, field.TypeString)
-	}
-	if value, ok := _u.mutation.Correo(); ok {
-		_spec.SetField(usuario.FieldCorreo, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Telefono(); ok {
-		_spec.SetField(usuario.FieldTelefono, field.TypeString, value)
-	}
-	if _u.mutation.TelefonoCleared() {
-		_spec.ClearField(usuario.FieldTelefono, field.TypeString)
+	if value, ok := _u.mutation.Usuario(); ok {
+		_spec.SetField(usuario.FieldUsuario, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.HashContrasena(); ok {
 		_spec.SetField(usuario.FieldHashContrasena, field.TypeString, value)
@@ -379,71 +295,17 @@ func (_u *UsuarioUpdateOne) SetActualizadoEn(v time.Time) *UsuarioUpdateOne {
 	return _u
 }
 
-// SetNombres sets the "nombres" field.
-func (_u *UsuarioUpdateOne) SetNombres(v string) *UsuarioUpdateOne {
-	_u.mutation.SetNombres(v)
+// SetUsuario sets the "usuario" field.
+func (_u *UsuarioUpdateOne) SetUsuario(v string) *UsuarioUpdateOne {
+	_u.mutation.SetUsuario(v)
 	return _u
 }
 
-// SetNillableNombres sets the "nombres" field if the given value is not nil.
-func (_u *UsuarioUpdateOne) SetNillableNombres(v *string) *UsuarioUpdateOne {
+// SetNillableUsuario sets the "usuario" field if the given value is not nil.
+func (_u *UsuarioUpdateOne) SetNillableUsuario(v *string) *UsuarioUpdateOne {
 	if v != nil {
-		_u.SetNombres(*v)
+		_u.SetUsuario(*v)
 	}
-	return _u
-}
-
-// SetApellidos sets the "apellidos" field.
-func (_u *UsuarioUpdateOne) SetApellidos(v string) *UsuarioUpdateOne {
-	_u.mutation.SetApellidos(v)
-	return _u
-}
-
-// SetNillableApellidos sets the "apellidos" field if the given value is not nil.
-func (_u *UsuarioUpdateOne) SetNillableApellidos(v *string) *UsuarioUpdateOne {
-	if v != nil {
-		_u.SetApellidos(*v)
-	}
-	return _u
-}
-
-// ClearApellidos clears the value of the "apellidos" field.
-func (_u *UsuarioUpdateOne) ClearApellidos() *UsuarioUpdateOne {
-	_u.mutation.ClearApellidos()
-	return _u
-}
-
-// SetCorreo sets the "correo" field.
-func (_u *UsuarioUpdateOne) SetCorreo(v string) *UsuarioUpdateOne {
-	_u.mutation.SetCorreo(v)
-	return _u
-}
-
-// SetNillableCorreo sets the "correo" field if the given value is not nil.
-func (_u *UsuarioUpdateOne) SetNillableCorreo(v *string) *UsuarioUpdateOne {
-	if v != nil {
-		_u.SetCorreo(*v)
-	}
-	return _u
-}
-
-// SetTelefono sets the "telefono" field.
-func (_u *UsuarioUpdateOne) SetTelefono(v string) *UsuarioUpdateOne {
-	_u.mutation.SetTelefono(v)
-	return _u
-}
-
-// SetNillableTelefono sets the "telefono" field if the given value is not nil.
-func (_u *UsuarioUpdateOne) SetNillableTelefono(v *string) *UsuarioUpdateOne {
-	if v != nil {
-		_u.SetTelefono(*v)
-	}
-	return _u
-}
-
-// ClearTelefono clears the value of the "telefono" field.
-func (_u *UsuarioUpdateOne) ClearTelefono() *UsuarioUpdateOne {
-	_u.mutation.ClearTelefono()
 	return _u
 }
 
@@ -587,24 +449,9 @@ func (_u *UsuarioUpdateOne) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *UsuarioUpdateOne) check() error {
-	if v, ok := _u.mutation.Nombres(); ok {
-		if err := usuario.NombresValidator(v); err != nil {
-			return &ValidationError{Name: "nombres", err: fmt.Errorf(`ent: validator failed for field "Usuario.nombres": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Apellidos(); ok {
-		if err := usuario.ApellidosValidator(v); err != nil {
-			return &ValidationError{Name: "apellidos", err: fmt.Errorf(`ent: validator failed for field "Usuario.apellidos": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Correo(); ok {
-		if err := usuario.CorreoValidator(v); err != nil {
-			return &ValidationError{Name: "correo", err: fmt.Errorf(`ent: validator failed for field "Usuario.correo": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Telefono(); ok {
-		if err := usuario.TelefonoValidator(v); err != nil {
-			return &ValidationError{Name: "telefono", err: fmt.Errorf(`ent: validator failed for field "Usuario.telefono": %w`, err)}
+	if v, ok := _u.mutation.Usuario(); ok {
+		if err := usuario.UsuarioValidator(v); err != nil {
+			return &ValidationError{Name: "usuario", err: fmt.Errorf(`ent: validator failed for field "Usuario.usuario": %w`, err)}
 		}
 	}
 	if v, ok := _u.mutation.HashContrasena(); ok {
@@ -652,23 +499,8 @@ func (_u *UsuarioUpdateOne) sqlSave(ctx context.Context) (_node *Usuario, err er
 	if value, ok := _u.mutation.ActualizadoEn(); ok {
 		_spec.SetField(usuario.FieldActualizadoEn, field.TypeTime, value)
 	}
-	if value, ok := _u.mutation.Nombres(); ok {
-		_spec.SetField(usuario.FieldNombres, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Apellidos(); ok {
-		_spec.SetField(usuario.FieldApellidos, field.TypeString, value)
-	}
-	if _u.mutation.ApellidosCleared() {
-		_spec.ClearField(usuario.FieldApellidos, field.TypeString)
-	}
-	if value, ok := _u.mutation.Correo(); ok {
-		_spec.SetField(usuario.FieldCorreo, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Telefono(); ok {
-		_spec.SetField(usuario.FieldTelefono, field.TypeString, value)
-	}
-	if _u.mutation.TelefonoCleared() {
-		_spec.ClearField(usuario.FieldTelefono, field.TypeString)
+	if value, ok := _u.mutation.Usuario(); ok {
+		_spec.SetField(usuario.FieldUsuario, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.HashContrasena(); ok {
 		_spec.SetField(usuario.FieldHashContrasena, field.TypeString, value)

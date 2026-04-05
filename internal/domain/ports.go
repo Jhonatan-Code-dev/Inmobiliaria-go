@@ -25,7 +25,7 @@ type (
 
 	UsuarioRepository interface {
 		Crear(ctx context.Context, u *Usuario) (*Usuario, error)
-		BuscarPorCorreo(ctx context.Context, correo string) (*Usuario, error)
+		BuscarPorUsuario(ctx context.Context, usuario string) (*Usuario, error)
 		BuscarPerfil(ctx context.Context, id int) (*Usuario, *Empresa, error)
 	}
 

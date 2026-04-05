@@ -24,10 +24,7 @@ func (Usuario) Annotations() []schema.Annotation {
 
 func (Usuario) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("nombres").NotEmpty().MaxLen(120),
-		field.String("apellidos").Optional().Nillable().MaxLen(120),
-		field.String("correo").NotEmpty().Unique().MaxLen(150),
-		field.String("telefono").Optional().Nillable().MaxLen(30),
+		field.String("usuario").NotEmpty().Unique().MaxLen(120),
 		field.String("hash_contrasena").NotEmpty().Sensitive().MaxLen(255),
 		field.Enum("estado").
 			Values("activo", "inactivo", "bloqueado").

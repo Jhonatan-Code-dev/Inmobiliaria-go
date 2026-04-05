@@ -21,8 +21,8 @@ func NewUsuarioService(usuarioRepo domain.UsuarioRepository, jwtSecret []byte) *
 	}
 }
 
-func (s *UsuarioService) Login(ctx context.Context, correo, contrasena string) (string, *domain.Usuario, *domain.Empresa, error) {
-	u, err := s.usuarioRepo.BuscarPorCorreo(ctx, correo)
+func (s *UsuarioService) Login(ctx context.Context, username, contrasena string) (string, *domain.Usuario, *domain.Empresa, error) {
+	u, err := s.usuarioRepo.BuscarPorUsuario(ctx, username)
 	if err != nil {
 		return "", nil, nil, ErrCredenciales
 	}

@@ -26,11 +26,6 @@ func (Empresa) Annotations() []schema.Annotation {
 func (Empresa) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("nombre").NotEmpty().MaxLen(150),
-		field.String("documento_fiscal").Optional().Nillable().MaxLen(50),
-		field.String("correo").Optional().Nillable().MaxLen(150),
-		field.String("telefono").Optional().Nillable().MaxLen(30),
-		field.String("direccion").Optional().Nillable().MaxLen(255),
-		field.String("ciudad").Optional().Nillable().MaxLen(120),
 		field.String("pais").Optional().Nillable().MaxLen(2),
 		codigoMoneda("moneda", "PEN"),
 		field.Int("maximo_usuarios").Default(1).Positive(),
@@ -55,6 +50,5 @@ func (Empresa) Edges() []ent.Edge {
 func (Empresa) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("nombre"),
-		index.Fields("documento_fiscal").Unique(),
 	}
 }

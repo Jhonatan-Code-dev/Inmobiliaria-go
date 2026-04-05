@@ -22,29 +22,15 @@ type adminLoginResponse struct {
 	Token string `json:"token"`
 }
 
-type errorResponse struct {
-	Message string `json:"message"`
-}
-
 type crearEmpresaRequest struct {
 	Empresa struct {
-		Nombre          string `json:"nombre"`
-		DocumentoFiscal string `json:"documento_fiscal"`
-		Correo          string `json:"correo"`
-		Telefono        string `json:"telefono"`
-		Direccion       string `json:"direccion"`
-		Ciudad          string `json:"ciudad"`
-		Pais            string `json:"pais"`
-		Moneda          string `json:"moneda"`
-		MaximoUsuarios  int    `json:"maximo_usuarios"`
-		Estado          string `json:"estado"`
+		Nombre string `json:"nombre"`
+		Pais   string `json:"pais"`
+		Moneda string `json:"moneda"`
 	} `json:"empresa"`
 	Usuario struct {
-		Nombres   string `json:"nombres"`
-		Apellidos string `json:"apellidos"`
-		Correo    string `json:"correo"`
-		Telefono  string `json:"telefono"`
-		Password  string `json:"password"`
+		Username string `json:"usuario"`
+		Password string `json:"password"`
 	} `json:"usuario"`
 }
 
@@ -54,16 +40,10 @@ type crearEmpresaResponse struct {
 }
 
 type actualizarEmpresaRequest struct {
-	Nombre          string `json:"nombre"`
-	DocumentoFiscal string `json:"documento_fiscal"`
-	Correo          string `json:"correo"`
-	Telefono        string `json:"telefono"`
-	Direccion       string `json:"direccion"`
-	Ciudad          string `json:"ciudad"`
-	Pais            string `json:"pais"`
-	Moneda          string `json:"moneda"`
-	MaximoUsuarios  int    `json:"maximo_usuarios"`
-	Estado          string `json:"estado"`
+	Nombre string `json:"nombre"`
+	Pais   string `json:"pais"`
+	Moneda string `json:"moneda"`
+	Estado string `json:"estado"`
 }
 
 type adminCredencialesRequest struct {
@@ -82,21 +62,6 @@ type adminProfileResponse struct {
 	Nombre  string `json:"nombre"`
 	Usuario string `json:"usuario"`
 	Activo  bool   `json:"activo"`
-}
-
-type empresaResponse struct {
-	ID              int             `json:"id"`
-	Nombre          string          `json:"nombre"`
-	DocumentoFiscal string          `json:"documento_fiscal,omitempty"`
-	Correo          string          `json:"correo,omitempty"`
-	Telefono        string          `json:"telefono,omitempty"`
-	Direccion       string          `json:"direccion,omitempty"`
-	Ciudad          string          `json:"ciudad,omitempty"`
-	Pais            string          `json:"pais,omitempty"`
-	Moneda          string          `json:"moneda"`
-	MonedaInfo      *monedaResponse `json:"moneda_info,omitempty"`
-	MaximoUsuarios  int             `json:"maximo_usuarios"`
-	Estado          string          `json:"estado"`
 }
 
 type AdminController struct {
@@ -167,7 +132,7 @@ func (h *AdminController) Perfil(c *fiber.Ctx) error {
 
 // CrearEmpresa godoc
 // @Summary Alta de empresa + usuario principal
-// @Description Crea una empresa y su usuario principal en una sola operacion. Requiere autenticacion de administrador.
+// @Description Crea una empresa y su usuario principal en una sola operacion. Requiere autenticacion de administrador. Solo nombre, pais, usuario y contraseña.
 // @Tags admin
 // @Accept json
 // @Produce json
@@ -192,22 +157,12 @@ func (h *AdminController) CrearEmpresa(c *fiber.Ctx) error {
 		return fiber.ErrInternalServerError
 	}
 	emp := &domain.Empresa{
-		Nombre:          req.Empresa.Nombre,
-		DocumentoFiscal: req.Empresa.DocumentoFiscal,
-		Correo:          req.Empresa.Correo,
-		Telefono:        req.Empresa.Telefono,
-		Direccion:       req.Empresa.Direccion,
-		Ciudad:          req.Empresa.Ciudad,
-		Pais:            req.Empresa.Pais,
-		Moneda:          defaultString(req.Empresa.Moneda, "PEN"),
-		MaximoUsuarios:  req.Empresa.MaximoUsuarios,
-		Estado:          req.Empresa.Estado,
+		Nombre: req.Empresa.Nombre,
+		Pais:   req.Empresa.Pais,
+		Moneda: defaultString(req.Empresa.Moneda, "PEN"),
 	}
 	u := &domain.Usuario{
-		Nombres:        req.Usuario.Nombres,
-		Apellidos:      req.Usuario.Apellidos,
-		Correo:         req.Usuario.Correo,
-		Telefono:       req.Usuario.Telefono,
+		Usuario:        req.Usuario.Username,
 		HashContrasena: hash,
 	}
 	createdEmp, createdUser, err := h.svc.CrearEmpresaConUsuario(c.Context(), emp, u, 0)
@@ -225,7 +180,7 @@ func (h *AdminController) CrearEmpresa(c *fiber.Ctx) error {
 
 // ObtenerEmpresa godoc
 // @Summary Obtener empresa por ID
-// @Description Devuelve el detalle completo de una empresa, incluyendo la informacion de moneda si esta disponible.
+// @Description Devuelve el detalle de una empresa.
 // @Tags admin
 // @Produce json
 // @Security BearerAuth
@@ -244,12 +199,12 @@ func (h *AdminController) ObtenerEmpresa(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.ErrInternalServerError
 	}
-	return c.JSON(mapEmpresa(empresa))
+	return c.JSON(mapEmpresaResponse(empresa))
 }
 
 // ListarEmpresas godoc
 // @Summary Listado de empresas
-// @Description Retorna todas las empresas registradas para uso del panel administrativo.
+// @Description Retorna todas las empresas registradas.
 // @Tags admin
 // @Produce json
 // @Security BearerAuth
@@ -264,7 +219,7 @@ func (h *AdminController) ListarEmpresas(c *fiber.Ctx) error {
 	}
 	resp := make([]empresaResponse, 0, len(list))
 	for _, e := range list {
-		mapped := mapEmpresa(e)
+		mapped := mapEmpresaResponse(e)
 		if mapped != nil {
 			resp = append(resp, *mapped)
 		}
@@ -274,7 +229,7 @@ func (h *AdminController) ListarEmpresas(c *fiber.Ctx) error {
 
 // ActualizarEmpresa godoc
 // @Summary Actualizar empresa
-// @Description Actualiza los datos generales de una empresa existente. Requiere autenticacion de administrador.
+// @Description Actualiza los datos generales de una empresa.
 // @Tags admin
 // @Accept json
 // @Produce json
@@ -301,17 +256,11 @@ func (h *AdminController) ActualizarEmpresa(c *fiber.Ctx) error {
 	}
 
 	empresa, err := h.svc.ActualizarEmpresa(c.Context(), &domain.Empresa{
-		ID:              id,
-		Nombre:          req.Nombre,
-		DocumentoFiscal: req.DocumentoFiscal,
-		Correo:          req.Correo,
-		Telefono:        req.Telefono,
-		Direccion:       req.Direccion,
-		Ciudad:          req.Ciudad,
-		Pais:            req.Pais,
-		Moneda:          defaultString(req.Moneda, "PEN"),
-		MaximoUsuarios:  req.MaximoUsuarios,
-		Estado:          req.Estado,
+		ID:     id,
+		Nombre: req.Nombre,
+		Pais:   req.Pais,
+		Moneda: defaultString(req.Moneda, "PEN"),
+		Estado: req.Estado,
 	})
 	if err != nil {
 		if err == service.ErrMonedaInvalida {
@@ -320,12 +269,12 @@ func (h *AdminController) ActualizarEmpresa(c *fiber.Ctx) error {
 		return fiber.ErrInternalServerError
 	}
 
-	return c.JSON(mapEmpresa(empresa))
+	return c.JSON(mapEmpresaResponse(empresa))
 }
 
 // EliminarEmpresa godoc
 // @Summary Eliminar empresa
-// @Description Elimina una empresa por ID. Requiere autenticacion de administrador.
+// @Description Elimina una empresa por ID.
 // @Tags admin
 // @Produce json
 // @Security BearerAuth
@@ -346,28 +295,13 @@ func (h *AdminController) EliminarEmpresa(c *fiber.Ctx) error {
 	return c.SendStatus(http.StatusNoContent)
 }
 
-// ActualizarCredencialesAdmin godoc
-// @Summary Cambiar usuario y contraseña del admin autenticado
-// @Description Actualiza las credenciales del administrador autenticado.
-// @Tags admin
-// @Accept json
-// @Produce json
-// @Security BearerAuth
-// @Param body body adminCredencialesRequest true "Nuevo usuario y contraseña"
-// @Success 200 {object} adminCredencialesResponse
-// @Failure 400 {object} errorResponse
-// @Failure 401 {object} errorResponse
-// @Failure 500 {object} errorResponse
-// @Router /admin/credenciales [patch]
+// ActualizarCredenciales godoc
 func (h *AdminController) ActualizarCredenciales(c *fiber.Ctx) error {
 	adminIDVal := c.Locals("admin_id")
 	if adminIDVal == nil {
 		return fiber.ErrUnauthorized
 	}
-	adminID, ok := adminIDVal.(int)
-	if !ok {
-		return fiber.ErrUnauthorized
-	}
+	adminID := adminIDVal.(int)
 
 	var req adminCredencialesRequest
 	if err := c.BodyParser(&req); err != nil {
@@ -376,9 +310,6 @@ func (h *AdminController) ActualizarCredenciales(c *fiber.Ctx) error {
 
 	adminActualizado, err := h.svc.ActualizarCredenciales(c.Context(), adminID, req.Usuario, req.Contrasena)
 	if err != nil {
-		if err == service.ErrUsuarioAdminInvalido || err == service.ErrContrasenaInvalida {
-			return fiber.NewError(http.StatusBadRequest, err.Error())
-		}
 		return fiber.ErrInternalServerError
 	}
 
@@ -403,28 +334,13 @@ func validarCrearEmpresaRequest(req crearEmpresaRequest) error {
 	if req.Empresa.Pais != "" && len(strings.TrimSpace(req.Empresa.Pais)) != 2 {
 		return fiber.NewError(http.StatusBadRequest, "empresa.pais debe ser un codigo ISO de 2 letras, por ejemplo PE")
 	}
-	if req.Empresa.Estado != "" && !estadoEmpresaValido(req.Empresa.Estado) {
-		return fiber.NewError(http.StatusBadRequest, "empresa.estado debe ser activa, inactiva o suspendida")
-	}
-	if strings.TrimSpace(req.Usuario.Nombres) == "" {
-		return fiber.NewError(http.StatusBadRequest, "usuario.nombres es obligatorio")
-	}
-	if strings.TrimSpace(req.Usuario.Correo) == "" {
-		return fiber.NewError(http.StatusBadRequest, "usuario.correo es obligatorio")
+	if strings.TrimSpace(req.Usuario.Username) == "" {
+		return fiber.NewError(http.StatusBadRequest, "usuario es obligatorio")
 	}
 	if strings.TrimSpace(req.Usuario.Password) == "" {
 		return fiber.NewError(http.StatusBadRequest, "usuario.password es obligatorio")
 	}
 	return nil
-}
-
-func estadoEmpresaValido(val string) bool {
-	switch strings.TrimSpace(val) {
-	case "activa", "inactiva", "suspendida":
-		return true
-	default:
-		return false
-	}
 }
 
 func parseIDParam(c *fiber.Ctx) (int, error) {

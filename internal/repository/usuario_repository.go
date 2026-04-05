@@ -18,10 +18,7 @@ func NewUsuarioRepo(client *ent.Client) *UsuarioRepoEnt {
 
 func (r *UsuarioRepoEnt) Crear(ctx context.Context, u *domain.Usuario) (*domain.Usuario, error) {
 	usr, err := r.client.Usuario.Create().
-		SetNombres(u.Nombres).
-		SetNillableApellidos(nilIfEmpty(u.Apellidos)).
-		SetCorreo(u.Correo).
-		SetNillableTelefono(nilIfEmpty(u.Telefono)).
+		SetUsuario(u.Usuario).
 		SetHashContrasena(u.HashContrasena).
 		Save(ctx)
 	if err != nil {
@@ -29,28 +26,22 @@ func (r *UsuarioRepoEnt) Crear(ctx context.Context, u *domain.Usuario) (*domain.
 	}
 	return &domain.Usuario{
 		ID:             usr.ID,
-		Nombres:        usr.Nombres,
-		Apellidos:      ptrToString(usr.Apellidos),
-		Correo:         usr.Correo,
-		Telefono:       ptrToString(usr.Telefono),
+		Usuario:        usr.Usuario,
 		HashContrasena: usr.HashContrasena,
 	}, nil
 }
 
-func (r *UsuarioRepoEnt) BuscarPorCorreo(ctx context.Context, correo string) (*domain.Usuario, error) {
+func (r *UsuarioRepoEnt) BuscarPorUsuario(ctx context.Context, username string) (*domain.Usuario, error) {
 	u, err := r.client.Usuario.
 		Query().
-		Where(usuario.CorreoEQ(correo)).
+		Where(usuario.UsuarioEQ(username)).
 		First(ctx)
 	if err != nil {
 		return nil, err
 	}
 	return &domain.Usuario{
 		ID:             u.ID,
-		Nombres:        u.Nombres,
-		Apellidos:      ptrToString(u.Apellidos),
-		Correo:         u.Correo,
-		Telefono:       ptrToString(u.Telefono),
+		Usuario:        u.Usuario,
 		HashContrasena: u.HashContrasena,
 	}, nil
 }
@@ -72,21 +63,13 @@ func (r *UsuarioRepoEnt) BuscarPerfil(ctx context.Context, id int) (*domain.Usua
 		emp = &domain.Empresa{
 			ID:              e.ID,
 			Nombre:          e.Nombre,
-			DocumentoFiscal: ptrToString(e.DocumentoFiscal),
-			Correo:          ptrToString(e.Correo),
-			Telefono:        ptrToString(e.Telefono),
-			Direccion:       ptrToString(e.Direccion),
-			Ciudad:          ptrToString(e.Ciudad),
 			Pais:            ptrToString(e.Pais),
 			Moneda:          e.Moneda,
 		}
 	}
 	return &domain.Usuario{
 		ID:             u.ID,
-		Nombres:        u.Nombres,
-		Apellidos:      ptrToString(u.Apellidos),
-		Correo:         u.Correo,
-		Telefono:       ptrToString(u.Telefono),
+		Usuario:        u.Usuario,
 		HashContrasena: u.HashContrasena,
 	}, emp, nil
 }

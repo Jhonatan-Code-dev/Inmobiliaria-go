@@ -5976,11 +5976,6 @@ type EmpresaMutation struct {
 	creado_en               *time.Time
 	actualizado_en          *time.Time
 	nombre                  *string
-	documento_fiscal        *string
-	correo                  *string
-	telefono                *string
-	direccion               *string
-	ciudad                  *string
 	pais                    *string
 	moneda                  *string
 	maximo_usuarios         *int
@@ -6217,251 +6212,6 @@ func (m *EmpresaMutation) OldNombre(ctx context.Context) (v string, err error) {
 // ResetNombre resets all changes to the "nombre" field.
 func (m *EmpresaMutation) ResetNombre() {
 	m.nombre = nil
-}
-
-// SetDocumentoFiscal sets the "documento_fiscal" field.
-func (m *EmpresaMutation) SetDocumentoFiscal(s string) {
-	m.documento_fiscal = &s
-}
-
-// DocumentoFiscal returns the value of the "documento_fiscal" field in the mutation.
-func (m *EmpresaMutation) DocumentoFiscal() (r string, exists bool) {
-	v := m.documento_fiscal
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDocumentoFiscal returns the old "documento_fiscal" field's value of the Empresa entity.
-// If the Empresa object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EmpresaMutation) OldDocumentoFiscal(ctx context.Context) (v *string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDocumentoFiscal is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDocumentoFiscal requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDocumentoFiscal: %w", err)
-	}
-	return oldValue.DocumentoFiscal, nil
-}
-
-// ClearDocumentoFiscal clears the value of the "documento_fiscal" field.
-func (m *EmpresaMutation) ClearDocumentoFiscal() {
-	m.documento_fiscal = nil
-	m.clearedFields[empresa.FieldDocumentoFiscal] = struct{}{}
-}
-
-// DocumentoFiscalCleared returns if the "documento_fiscal" field was cleared in this mutation.
-func (m *EmpresaMutation) DocumentoFiscalCleared() bool {
-	_, ok := m.clearedFields[empresa.FieldDocumentoFiscal]
-	return ok
-}
-
-// ResetDocumentoFiscal resets all changes to the "documento_fiscal" field.
-func (m *EmpresaMutation) ResetDocumentoFiscal() {
-	m.documento_fiscal = nil
-	delete(m.clearedFields, empresa.FieldDocumentoFiscal)
-}
-
-// SetCorreo sets the "correo" field.
-func (m *EmpresaMutation) SetCorreo(s string) {
-	m.correo = &s
-}
-
-// Correo returns the value of the "correo" field in the mutation.
-func (m *EmpresaMutation) Correo() (r string, exists bool) {
-	v := m.correo
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCorreo returns the old "correo" field's value of the Empresa entity.
-// If the Empresa object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EmpresaMutation) OldCorreo(ctx context.Context) (v *string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCorreo is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCorreo requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCorreo: %w", err)
-	}
-	return oldValue.Correo, nil
-}
-
-// ClearCorreo clears the value of the "correo" field.
-func (m *EmpresaMutation) ClearCorreo() {
-	m.correo = nil
-	m.clearedFields[empresa.FieldCorreo] = struct{}{}
-}
-
-// CorreoCleared returns if the "correo" field was cleared in this mutation.
-func (m *EmpresaMutation) CorreoCleared() bool {
-	_, ok := m.clearedFields[empresa.FieldCorreo]
-	return ok
-}
-
-// ResetCorreo resets all changes to the "correo" field.
-func (m *EmpresaMutation) ResetCorreo() {
-	m.correo = nil
-	delete(m.clearedFields, empresa.FieldCorreo)
-}
-
-// SetTelefono sets the "telefono" field.
-func (m *EmpresaMutation) SetTelefono(s string) {
-	m.telefono = &s
-}
-
-// Telefono returns the value of the "telefono" field in the mutation.
-func (m *EmpresaMutation) Telefono() (r string, exists bool) {
-	v := m.telefono
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldTelefono returns the old "telefono" field's value of the Empresa entity.
-// If the Empresa object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EmpresaMutation) OldTelefono(ctx context.Context) (v *string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldTelefono is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldTelefono requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldTelefono: %w", err)
-	}
-	return oldValue.Telefono, nil
-}
-
-// ClearTelefono clears the value of the "telefono" field.
-func (m *EmpresaMutation) ClearTelefono() {
-	m.telefono = nil
-	m.clearedFields[empresa.FieldTelefono] = struct{}{}
-}
-
-// TelefonoCleared returns if the "telefono" field was cleared in this mutation.
-func (m *EmpresaMutation) TelefonoCleared() bool {
-	_, ok := m.clearedFields[empresa.FieldTelefono]
-	return ok
-}
-
-// ResetTelefono resets all changes to the "telefono" field.
-func (m *EmpresaMutation) ResetTelefono() {
-	m.telefono = nil
-	delete(m.clearedFields, empresa.FieldTelefono)
-}
-
-// SetDireccion sets the "direccion" field.
-func (m *EmpresaMutation) SetDireccion(s string) {
-	m.direccion = &s
-}
-
-// Direccion returns the value of the "direccion" field in the mutation.
-func (m *EmpresaMutation) Direccion() (r string, exists bool) {
-	v := m.direccion
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldDireccion returns the old "direccion" field's value of the Empresa entity.
-// If the Empresa object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EmpresaMutation) OldDireccion(ctx context.Context) (v *string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDireccion is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDireccion requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDireccion: %w", err)
-	}
-	return oldValue.Direccion, nil
-}
-
-// ClearDireccion clears the value of the "direccion" field.
-func (m *EmpresaMutation) ClearDireccion() {
-	m.direccion = nil
-	m.clearedFields[empresa.FieldDireccion] = struct{}{}
-}
-
-// DireccionCleared returns if the "direccion" field was cleared in this mutation.
-func (m *EmpresaMutation) DireccionCleared() bool {
-	_, ok := m.clearedFields[empresa.FieldDireccion]
-	return ok
-}
-
-// ResetDireccion resets all changes to the "direccion" field.
-func (m *EmpresaMutation) ResetDireccion() {
-	m.direccion = nil
-	delete(m.clearedFields, empresa.FieldDireccion)
-}
-
-// SetCiudad sets the "ciudad" field.
-func (m *EmpresaMutation) SetCiudad(s string) {
-	m.ciudad = &s
-}
-
-// Ciudad returns the value of the "ciudad" field in the mutation.
-func (m *EmpresaMutation) Ciudad() (r string, exists bool) {
-	v := m.ciudad
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCiudad returns the old "ciudad" field's value of the Empresa entity.
-// If the Empresa object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EmpresaMutation) OldCiudad(ctx context.Context) (v *string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCiudad is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCiudad requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCiudad: %w", err)
-	}
-	return oldValue.Ciudad, nil
-}
-
-// ClearCiudad clears the value of the "ciudad" field.
-func (m *EmpresaMutation) ClearCiudad() {
-	m.ciudad = nil
-	m.clearedFields[empresa.FieldCiudad] = struct{}{}
-}
-
-// CiudadCleared returns if the "ciudad" field was cleared in this mutation.
-func (m *EmpresaMutation) CiudadCleared() bool {
-	_, ok := m.clearedFields[empresa.FieldCiudad]
-	return ok
-}
-
-// ResetCiudad resets all changes to the "ciudad" field.
-func (m *EmpresaMutation) ResetCiudad() {
-	m.ciudad = nil
-	delete(m.clearedFields, empresa.FieldCiudad)
 }
 
 // SetPais sets the "pais" field.
@@ -7053,7 +6803,7 @@ func (m *EmpresaMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EmpresaMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 7)
 	if m.creado_en != nil {
 		fields = append(fields, empresa.FieldCreadoEn)
 	}
@@ -7062,21 +6812,6 @@ func (m *EmpresaMutation) Fields() []string {
 	}
 	if m.nombre != nil {
 		fields = append(fields, empresa.FieldNombre)
-	}
-	if m.documento_fiscal != nil {
-		fields = append(fields, empresa.FieldDocumentoFiscal)
-	}
-	if m.correo != nil {
-		fields = append(fields, empresa.FieldCorreo)
-	}
-	if m.telefono != nil {
-		fields = append(fields, empresa.FieldTelefono)
-	}
-	if m.direccion != nil {
-		fields = append(fields, empresa.FieldDireccion)
-	}
-	if m.ciudad != nil {
-		fields = append(fields, empresa.FieldCiudad)
 	}
 	if m.pais != nil {
 		fields = append(fields, empresa.FieldPais)
@@ -7104,16 +6839,6 @@ func (m *EmpresaMutation) Field(name string) (ent.Value, bool) {
 		return m.ActualizadoEn()
 	case empresa.FieldNombre:
 		return m.Nombre()
-	case empresa.FieldDocumentoFiscal:
-		return m.DocumentoFiscal()
-	case empresa.FieldCorreo:
-		return m.Correo()
-	case empresa.FieldTelefono:
-		return m.Telefono()
-	case empresa.FieldDireccion:
-		return m.Direccion()
-	case empresa.FieldCiudad:
-		return m.Ciudad()
 	case empresa.FieldPais:
 		return m.Pais()
 	case empresa.FieldMoneda:
@@ -7137,16 +6862,6 @@ func (m *EmpresaMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldActualizadoEn(ctx)
 	case empresa.FieldNombre:
 		return m.OldNombre(ctx)
-	case empresa.FieldDocumentoFiscal:
-		return m.OldDocumentoFiscal(ctx)
-	case empresa.FieldCorreo:
-		return m.OldCorreo(ctx)
-	case empresa.FieldTelefono:
-		return m.OldTelefono(ctx)
-	case empresa.FieldDireccion:
-		return m.OldDireccion(ctx)
-	case empresa.FieldCiudad:
-		return m.OldCiudad(ctx)
 	case empresa.FieldPais:
 		return m.OldPais(ctx)
 	case empresa.FieldMoneda:
@@ -7184,41 +6899,6 @@ func (m *EmpresaMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetNombre(v)
-		return nil
-	case empresa.FieldDocumentoFiscal:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDocumentoFiscal(v)
-		return nil
-	case empresa.FieldCorreo:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCorreo(v)
-		return nil
-	case empresa.FieldTelefono:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetTelefono(v)
-		return nil
-	case empresa.FieldDireccion:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetDireccion(v)
-		return nil
-	case empresa.FieldCiudad:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCiudad(v)
 		return nil
 	case empresa.FieldPais:
 		v, ok := value.(string)
@@ -7293,21 +6973,6 @@ func (m *EmpresaMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *EmpresaMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(empresa.FieldDocumentoFiscal) {
-		fields = append(fields, empresa.FieldDocumentoFiscal)
-	}
-	if m.FieldCleared(empresa.FieldCorreo) {
-		fields = append(fields, empresa.FieldCorreo)
-	}
-	if m.FieldCleared(empresa.FieldTelefono) {
-		fields = append(fields, empresa.FieldTelefono)
-	}
-	if m.FieldCleared(empresa.FieldDireccion) {
-		fields = append(fields, empresa.FieldDireccion)
-	}
-	if m.FieldCleared(empresa.FieldCiudad) {
-		fields = append(fields, empresa.FieldCiudad)
-	}
 	if m.FieldCleared(empresa.FieldPais) {
 		fields = append(fields, empresa.FieldPais)
 	}
@@ -7325,21 +6990,6 @@ func (m *EmpresaMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *EmpresaMutation) ClearField(name string) error {
 	switch name {
-	case empresa.FieldDocumentoFiscal:
-		m.ClearDocumentoFiscal()
-		return nil
-	case empresa.FieldCorreo:
-		m.ClearCorreo()
-		return nil
-	case empresa.FieldTelefono:
-		m.ClearTelefono()
-		return nil
-	case empresa.FieldDireccion:
-		m.ClearDireccion()
-		return nil
-	case empresa.FieldCiudad:
-		m.ClearCiudad()
-		return nil
 	case empresa.FieldPais:
 		m.ClearPais()
 		return nil
@@ -7359,21 +7009,6 @@ func (m *EmpresaMutation) ResetField(name string) error {
 		return nil
 	case empresa.FieldNombre:
 		m.ResetNombre()
-		return nil
-	case empresa.FieldDocumentoFiscal:
-		m.ResetDocumentoFiscal()
-		return nil
-	case empresa.FieldCorreo:
-		m.ResetCorreo()
-		return nil
-	case empresa.FieldTelefono:
-		m.ResetTelefono()
-		return nil
-	case empresa.FieldDireccion:
-		m.ResetDireccion()
-		return nil
-	case empresa.FieldCiudad:
-		m.ResetCiudad()
 		return nil
 	case empresa.FieldPais:
 		m.ResetPais()
@@ -19122,10 +18757,7 @@ type UsuarioMutation struct {
 	id                      *int
 	creado_en               *time.Time
 	actualizado_en          *time.Time
-	nombres                 *string
-	apellidos               *string
-	correo                  *string
-	telefono                *string
+	usuario                 *string
 	hash_contrasena         *string
 	estado                  *usuario.Estado
 	ultimo_acceso           *time.Time
@@ -19308,174 +18940,40 @@ func (m *UsuarioMutation) ResetActualizadoEn() {
 	m.actualizado_en = nil
 }
 
-// SetNombres sets the "nombres" field.
-func (m *UsuarioMutation) SetNombres(s string) {
-	m.nombres = &s
+// SetUsuario sets the "usuario" field.
+func (m *UsuarioMutation) SetUsuario(s string) {
+	m.usuario = &s
 }
 
-// Nombres returns the value of the "nombres" field in the mutation.
-func (m *UsuarioMutation) Nombres() (r string, exists bool) {
-	v := m.nombres
+// Usuario returns the value of the "usuario" field in the mutation.
+func (m *UsuarioMutation) Usuario() (r string, exists bool) {
+	v := m.usuario
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldNombres returns the old "nombres" field's value of the Usuario entity.
+// OldUsuario returns the old "usuario" field's value of the Usuario entity.
 // If the Usuario object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UsuarioMutation) OldNombres(ctx context.Context) (v string, err error) {
+func (m *UsuarioMutation) OldUsuario(ctx context.Context) (v string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldNombres is only allowed on UpdateOne operations")
+		return v, errors.New("OldUsuario is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldNombres requires an ID field in the mutation")
+		return v, errors.New("OldUsuario requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldNombres: %w", err)
+		return v, fmt.Errorf("querying old value for OldUsuario: %w", err)
 	}
-	return oldValue.Nombres, nil
+	return oldValue.Usuario, nil
 }
 
-// ResetNombres resets all changes to the "nombres" field.
-func (m *UsuarioMutation) ResetNombres() {
-	m.nombres = nil
-}
-
-// SetApellidos sets the "apellidos" field.
-func (m *UsuarioMutation) SetApellidos(s string) {
-	m.apellidos = &s
-}
-
-// Apellidos returns the value of the "apellidos" field in the mutation.
-func (m *UsuarioMutation) Apellidos() (r string, exists bool) {
-	v := m.apellidos
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldApellidos returns the old "apellidos" field's value of the Usuario entity.
-// If the Usuario object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UsuarioMutation) OldApellidos(ctx context.Context) (v *string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldApellidos is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldApellidos requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldApellidos: %w", err)
-	}
-	return oldValue.Apellidos, nil
-}
-
-// ClearApellidos clears the value of the "apellidos" field.
-func (m *UsuarioMutation) ClearApellidos() {
-	m.apellidos = nil
-	m.clearedFields[usuario.FieldApellidos] = struct{}{}
-}
-
-// ApellidosCleared returns if the "apellidos" field was cleared in this mutation.
-func (m *UsuarioMutation) ApellidosCleared() bool {
-	_, ok := m.clearedFields[usuario.FieldApellidos]
-	return ok
-}
-
-// ResetApellidos resets all changes to the "apellidos" field.
-func (m *UsuarioMutation) ResetApellidos() {
-	m.apellidos = nil
-	delete(m.clearedFields, usuario.FieldApellidos)
-}
-
-// SetCorreo sets the "correo" field.
-func (m *UsuarioMutation) SetCorreo(s string) {
-	m.correo = &s
-}
-
-// Correo returns the value of the "correo" field in the mutation.
-func (m *UsuarioMutation) Correo() (r string, exists bool) {
-	v := m.correo
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCorreo returns the old "correo" field's value of the Usuario entity.
-// If the Usuario object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UsuarioMutation) OldCorreo(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCorreo is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCorreo requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCorreo: %w", err)
-	}
-	return oldValue.Correo, nil
-}
-
-// ResetCorreo resets all changes to the "correo" field.
-func (m *UsuarioMutation) ResetCorreo() {
-	m.correo = nil
-}
-
-// SetTelefono sets the "telefono" field.
-func (m *UsuarioMutation) SetTelefono(s string) {
-	m.telefono = &s
-}
-
-// Telefono returns the value of the "telefono" field in the mutation.
-func (m *UsuarioMutation) Telefono() (r string, exists bool) {
-	v := m.telefono
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldTelefono returns the old "telefono" field's value of the Usuario entity.
-// If the Usuario object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UsuarioMutation) OldTelefono(ctx context.Context) (v *string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldTelefono is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldTelefono requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldTelefono: %w", err)
-	}
-	return oldValue.Telefono, nil
-}
-
-// ClearTelefono clears the value of the "telefono" field.
-func (m *UsuarioMutation) ClearTelefono() {
-	m.telefono = nil
-	m.clearedFields[usuario.FieldTelefono] = struct{}{}
-}
-
-// TelefonoCleared returns if the "telefono" field was cleared in this mutation.
-func (m *UsuarioMutation) TelefonoCleared() bool {
-	_, ok := m.clearedFields[usuario.FieldTelefono]
-	return ok
-}
-
-// ResetTelefono resets all changes to the "telefono" field.
-func (m *UsuarioMutation) ResetTelefono() {
-	m.telefono = nil
-	delete(m.clearedFields, usuario.FieldTelefono)
+// ResetUsuario resets all changes to the "usuario" field.
+func (m *UsuarioMutation) ResetUsuario() {
+	m.usuario = nil
 }
 
 // SetHashContrasena sets the "hash_contrasena" field.
@@ -19687,24 +19185,15 @@ func (m *UsuarioMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UsuarioMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 6)
 	if m.creado_en != nil {
 		fields = append(fields, usuario.FieldCreadoEn)
 	}
 	if m.actualizado_en != nil {
 		fields = append(fields, usuario.FieldActualizadoEn)
 	}
-	if m.nombres != nil {
-		fields = append(fields, usuario.FieldNombres)
-	}
-	if m.apellidos != nil {
-		fields = append(fields, usuario.FieldApellidos)
-	}
-	if m.correo != nil {
-		fields = append(fields, usuario.FieldCorreo)
-	}
-	if m.telefono != nil {
-		fields = append(fields, usuario.FieldTelefono)
+	if m.usuario != nil {
+		fields = append(fields, usuario.FieldUsuario)
 	}
 	if m.hash_contrasena != nil {
 		fields = append(fields, usuario.FieldHashContrasena)
@@ -19727,14 +19216,8 @@ func (m *UsuarioMutation) Field(name string) (ent.Value, bool) {
 		return m.CreadoEn()
 	case usuario.FieldActualizadoEn:
 		return m.ActualizadoEn()
-	case usuario.FieldNombres:
-		return m.Nombres()
-	case usuario.FieldApellidos:
-		return m.Apellidos()
-	case usuario.FieldCorreo:
-		return m.Correo()
-	case usuario.FieldTelefono:
-		return m.Telefono()
+	case usuario.FieldUsuario:
+		return m.Usuario()
 	case usuario.FieldHashContrasena:
 		return m.HashContrasena()
 	case usuario.FieldEstado:
@@ -19754,14 +19237,8 @@ func (m *UsuarioMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldCreadoEn(ctx)
 	case usuario.FieldActualizadoEn:
 		return m.OldActualizadoEn(ctx)
-	case usuario.FieldNombres:
-		return m.OldNombres(ctx)
-	case usuario.FieldApellidos:
-		return m.OldApellidos(ctx)
-	case usuario.FieldCorreo:
-		return m.OldCorreo(ctx)
-	case usuario.FieldTelefono:
-		return m.OldTelefono(ctx)
+	case usuario.FieldUsuario:
+		return m.OldUsuario(ctx)
 	case usuario.FieldHashContrasena:
 		return m.OldHashContrasena(ctx)
 	case usuario.FieldEstado:
@@ -19791,33 +19268,12 @@ func (m *UsuarioMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetActualizadoEn(v)
 		return nil
-	case usuario.FieldNombres:
+	case usuario.FieldUsuario:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetNombres(v)
-		return nil
-	case usuario.FieldApellidos:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetApellidos(v)
-		return nil
-	case usuario.FieldCorreo:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCorreo(v)
-		return nil
-	case usuario.FieldTelefono:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetTelefono(v)
+		m.SetUsuario(v)
 		return nil
 	case usuario.FieldHashContrasena:
 		v, ok := value.(string)
@@ -19870,12 +19326,6 @@ func (m *UsuarioMutation) AddField(name string, value ent.Value) error {
 // mutation.
 func (m *UsuarioMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(usuario.FieldApellidos) {
-		fields = append(fields, usuario.FieldApellidos)
-	}
-	if m.FieldCleared(usuario.FieldTelefono) {
-		fields = append(fields, usuario.FieldTelefono)
-	}
 	if m.FieldCleared(usuario.FieldUltimoAcceso) {
 		fields = append(fields, usuario.FieldUltimoAcceso)
 	}
@@ -19893,12 +19343,6 @@ func (m *UsuarioMutation) FieldCleared(name string) bool {
 // error if the field is not defined in the schema.
 func (m *UsuarioMutation) ClearField(name string) error {
 	switch name {
-	case usuario.FieldApellidos:
-		m.ClearApellidos()
-		return nil
-	case usuario.FieldTelefono:
-		m.ClearTelefono()
-		return nil
 	case usuario.FieldUltimoAcceso:
 		m.ClearUltimoAcceso()
 		return nil
@@ -19916,17 +19360,8 @@ func (m *UsuarioMutation) ResetField(name string) error {
 	case usuario.FieldActualizadoEn:
 		m.ResetActualizadoEn()
 		return nil
-	case usuario.FieldNombres:
-		m.ResetNombres()
-		return nil
-	case usuario.FieldApellidos:
-		m.ResetApellidos()
-		return nil
-	case usuario.FieldCorreo:
-		m.ResetCorreo()
-		return nil
-	case usuario.FieldTelefono:
-		m.ResetTelefono()
+	case usuario.FieldUsuario:
+		m.ResetUsuario()
 		return nil
 	case usuario.FieldHashContrasena:
 		m.ResetHashContrasena()

@@ -390,32 +390,12 @@ func init() {
 			return nil
 		}
 	}()
-	// empresaDescDocumentoFiscal is the schema descriptor for documento_fiscal field.
-	empresaDescDocumentoFiscal := empresaFields[1].Descriptor()
-	// empresa.DocumentoFiscalValidator is a validator for the "documento_fiscal" field. It is called by the builders before save.
-	empresa.DocumentoFiscalValidator = empresaDescDocumentoFiscal.Validators[0].(func(string) error)
-	// empresaDescCorreo is the schema descriptor for correo field.
-	empresaDescCorreo := empresaFields[2].Descriptor()
-	// empresa.CorreoValidator is a validator for the "correo" field. It is called by the builders before save.
-	empresa.CorreoValidator = empresaDescCorreo.Validators[0].(func(string) error)
-	// empresaDescTelefono is the schema descriptor for telefono field.
-	empresaDescTelefono := empresaFields[3].Descriptor()
-	// empresa.TelefonoValidator is a validator for the "telefono" field. It is called by the builders before save.
-	empresa.TelefonoValidator = empresaDescTelefono.Validators[0].(func(string) error)
-	// empresaDescDireccion is the schema descriptor for direccion field.
-	empresaDescDireccion := empresaFields[4].Descriptor()
-	// empresa.DireccionValidator is a validator for the "direccion" field. It is called by the builders before save.
-	empresa.DireccionValidator = empresaDescDireccion.Validators[0].(func(string) error)
-	// empresaDescCiudad is the schema descriptor for ciudad field.
-	empresaDescCiudad := empresaFields[5].Descriptor()
-	// empresa.CiudadValidator is a validator for the "ciudad" field. It is called by the builders before save.
-	empresa.CiudadValidator = empresaDescCiudad.Validators[0].(func(string) error)
 	// empresaDescPais is the schema descriptor for pais field.
-	empresaDescPais := empresaFields[6].Descriptor()
+	empresaDescPais := empresaFields[1].Descriptor()
 	// empresa.PaisValidator is a validator for the "pais" field. It is called by the builders before save.
 	empresa.PaisValidator = empresaDescPais.Validators[0].(func(string) error)
 	// empresaDescMoneda is the schema descriptor for moneda field.
-	empresaDescMoneda := empresaFields[7].Descriptor()
+	empresaDescMoneda := empresaFields[2].Descriptor()
 	// empresa.DefaultMoneda holds the default value on creation for the moneda field.
 	empresa.DefaultMoneda = empresaDescMoneda.Default.(string)
 	// empresa.MonedaValidator is a validator for the "moneda" field. It is called by the builders before save.
@@ -435,7 +415,7 @@ func init() {
 		}
 	}()
 	// empresaDescMaximoUsuarios is the schema descriptor for maximo_usuarios field.
-	empresaDescMaximoUsuarios := empresaFields[8].Descriptor()
+	empresaDescMaximoUsuarios := empresaFields[3].Descriptor()
 	// empresa.DefaultMaximoUsuarios holds the default value on creation for the maximo_usuarios field.
 	empresa.DefaultMaximoUsuarios = empresaDescMaximoUsuarios.Default.(int)
 	// empresa.MaximoUsuariosValidator is a validator for the "maximo_usuarios" field. It is called by the builders before save.
@@ -1049,52 +1029,26 @@ func init() {
 	usuario.DefaultActualizadoEn = usuarioDescActualizadoEn.Default.(func() time.Time)
 	// usuario.UpdateDefaultActualizadoEn holds the default value on update for the actualizado_en field.
 	usuario.UpdateDefaultActualizadoEn = usuarioDescActualizadoEn.UpdateDefault.(func() time.Time)
-	// usuarioDescNombres is the schema descriptor for nombres field.
-	usuarioDescNombres := usuarioFields[0].Descriptor()
-	// usuario.NombresValidator is a validator for the "nombres" field. It is called by the builders before save.
-	usuario.NombresValidator = func() func(string) error {
-		validators := usuarioDescNombres.Validators
+	// usuarioDescUsuario is the schema descriptor for usuario field.
+	usuarioDescUsuario := usuarioFields[0].Descriptor()
+	// usuario.UsuarioValidator is a validator for the "usuario" field. It is called by the builders before save.
+	usuario.UsuarioValidator = func() func(string) error {
+		validators := usuarioDescUsuario.Validators
 		fns := [...]func(string) error{
 			validators[0].(func(string) error),
 			validators[1].(func(string) error),
 		}
-		return func(nombres string) error {
+		return func(usuario string) error {
 			for _, fn := range fns {
-				if err := fn(nombres); err != nil {
+				if err := fn(usuario); err != nil {
 					return err
 				}
 			}
 			return nil
 		}
 	}()
-	// usuarioDescApellidos is the schema descriptor for apellidos field.
-	usuarioDescApellidos := usuarioFields[1].Descriptor()
-	// usuario.ApellidosValidator is a validator for the "apellidos" field. It is called by the builders before save.
-	usuario.ApellidosValidator = usuarioDescApellidos.Validators[0].(func(string) error)
-	// usuarioDescCorreo is the schema descriptor for correo field.
-	usuarioDescCorreo := usuarioFields[2].Descriptor()
-	// usuario.CorreoValidator is a validator for the "correo" field. It is called by the builders before save.
-	usuario.CorreoValidator = func() func(string) error {
-		validators := usuarioDescCorreo.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(correo string) error {
-			for _, fn := range fns {
-				if err := fn(correo); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
-	// usuarioDescTelefono is the schema descriptor for telefono field.
-	usuarioDescTelefono := usuarioFields[3].Descriptor()
-	// usuario.TelefonoValidator is a validator for the "telefono" field. It is called by the builders before save.
-	usuario.TelefonoValidator = usuarioDescTelefono.Validators[0].(func(string) error)
 	// usuarioDescHashContrasena is the schema descriptor for hash_contrasena field.
-	usuarioDescHashContrasena := usuarioFields[4].Descriptor()
+	usuarioDescHashContrasena := usuarioFields[1].Descriptor()
 	// usuario.HashContrasenaValidator is a validator for the "hash_contrasena" field. It is called by the builders before save.
 	usuario.HashContrasenaValidator = func() func(string) error {
 		validators := usuarioDescHashContrasena.Validators

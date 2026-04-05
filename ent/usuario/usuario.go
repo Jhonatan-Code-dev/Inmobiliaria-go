@@ -19,14 +19,8 @@ const (
 	FieldCreadoEn = "creado_en"
 	// FieldActualizadoEn holds the string denoting the actualizado_en field in the database.
 	FieldActualizadoEn = "actualizado_en"
-	// FieldNombres holds the string denoting the nombres field in the database.
-	FieldNombres = "nombres"
-	// FieldApellidos holds the string denoting the apellidos field in the database.
-	FieldApellidos = "apellidos"
-	// FieldCorreo holds the string denoting the correo field in the database.
-	FieldCorreo = "correo"
-	// FieldTelefono holds the string denoting the telefono field in the database.
-	FieldTelefono = "telefono"
+	// FieldUsuario holds the string denoting the usuario field in the database.
+	FieldUsuario = "usuario"
 	// FieldHashContrasena holds the string denoting the hash_contrasena field in the database.
 	FieldHashContrasena = "hash_contrasena"
 	// FieldEstado holds the string denoting the estado field in the database.
@@ -51,10 +45,7 @@ var Columns = []string{
 	FieldID,
 	FieldCreadoEn,
 	FieldActualizadoEn,
-	FieldNombres,
-	FieldApellidos,
-	FieldCorreo,
-	FieldTelefono,
+	FieldUsuario,
 	FieldHashContrasena,
 	FieldEstado,
 	FieldUltimoAcceso,
@@ -77,14 +68,8 @@ var (
 	DefaultActualizadoEn func() time.Time
 	// UpdateDefaultActualizadoEn holds the default value on update for the "actualizado_en" field.
 	UpdateDefaultActualizadoEn func() time.Time
-	// NombresValidator is a validator for the "nombres" field. It is called by the builders before save.
-	NombresValidator func(string) error
-	// ApellidosValidator is a validator for the "apellidos" field. It is called by the builders before save.
-	ApellidosValidator func(string) error
-	// CorreoValidator is a validator for the "correo" field. It is called by the builders before save.
-	CorreoValidator func(string) error
-	// TelefonoValidator is a validator for the "telefono" field. It is called by the builders before save.
-	TelefonoValidator func(string) error
+	// UsuarioValidator is a validator for the "usuario" field. It is called by the builders before save.
+	UsuarioValidator func(string) error
 	// HashContrasenaValidator is a validator for the "hash_contrasena" field. It is called by the builders before save.
 	HashContrasenaValidator func(string) error
 )
@@ -134,24 +119,9 @@ func ByActualizadoEn(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldActualizadoEn, opts...).ToFunc()
 }
 
-// ByNombres orders the results by the nombres field.
-func ByNombres(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldNombres, opts...).ToFunc()
-}
-
-// ByApellidos orders the results by the apellidos field.
-func ByApellidos(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldApellidos, opts...).ToFunc()
-}
-
-// ByCorreo orders the results by the correo field.
-func ByCorreo(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCorreo, opts...).ToFunc()
-}
-
-// ByTelefono orders the results by the telefono field.
-func ByTelefono(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldTelefono, opts...).ToFunc()
+// ByUsuario orders the results by the usuario field.
+func ByUsuario(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUsuario, opts...).ToFunc()
 }
 
 // ByHashContrasena orders the results by the hash_contrasena field.

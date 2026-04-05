@@ -49,43 +49,9 @@ func (_c *UsuarioCreate) SetNillableActualizadoEn(v *time.Time) *UsuarioCreate {
 	return _c
 }
 
-// SetNombres sets the "nombres" field.
-func (_c *UsuarioCreate) SetNombres(v string) *UsuarioCreate {
-	_c.mutation.SetNombres(v)
-	return _c
-}
-
-// SetApellidos sets the "apellidos" field.
-func (_c *UsuarioCreate) SetApellidos(v string) *UsuarioCreate {
-	_c.mutation.SetApellidos(v)
-	return _c
-}
-
-// SetNillableApellidos sets the "apellidos" field if the given value is not nil.
-func (_c *UsuarioCreate) SetNillableApellidos(v *string) *UsuarioCreate {
-	if v != nil {
-		_c.SetApellidos(*v)
-	}
-	return _c
-}
-
-// SetCorreo sets the "correo" field.
-func (_c *UsuarioCreate) SetCorreo(v string) *UsuarioCreate {
-	_c.mutation.SetCorreo(v)
-	return _c
-}
-
-// SetTelefono sets the "telefono" field.
-func (_c *UsuarioCreate) SetTelefono(v string) *UsuarioCreate {
-	_c.mutation.SetTelefono(v)
-	return _c
-}
-
-// SetNillableTelefono sets the "telefono" field if the given value is not nil.
-func (_c *UsuarioCreate) SetNillableTelefono(v *string) *UsuarioCreate {
-	if v != nil {
-		_c.SetTelefono(*v)
-	}
+// SetUsuario sets the "usuario" field.
+func (_c *UsuarioCreate) SetUsuario(v string) *UsuarioCreate {
+	_c.mutation.SetUsuario(v)
 	return _c
 }
 
@@ -195,30 +161,12 @@ func (_c *UsuarioCreate) check() error {
 	if _, ok := _c.mutation.ActualizadoEn(); !ok {
 		return &ValidationError{Name: "actualizado_en", err: errors.New(`ent: missing required field "Usuario.actualizado_en"`)}
 	}
-	if _, ok := _c.mutation.Nombres(); !ok {
-		return &ValidationError{Name: "nombres", err: errors.New(`ent: missing required field "Usuario.nombres"`)}
+	if _, ok := _c.mutation.Usuario(); !ok {
+		return &ValidationError{Name: "usuario", err: errors.New(`ent: missing required field "Usuario.usuario"`)}
 	}
-	if v, ok := _c.mutation.Nombres(); ok {
-		if err := usuario.NombresValidator(v); err != nil {
-			return &ValidationError{Name: "nombres", err: fmt.Errorf(`ent: validator failed for field "Usuario.nombres": %w`, err)}
-		}
-	}
-	if v, ok := _c.mutation.Apellidos(); ok {
-		if err := usuario.ApellidosValidator(v); err != nil {
-			return &ValidationError{Name: "apellidos", err: fmt.Errorf(`ent: validator failed for field "Usuario.apellidos": %w`, err)}
-		}
-	}
-	if _, ok := _c.mutation.Correo(); !ok {
-		return &ValidationError{Name: "correo", err: errors.New(`ent: missing required field "Usuario.correo"`)}
-	}
-	if v, ok := _c.mutation.Correo(); ok {
-		if err := usuario.CorreoValidator(v); err != nil {
-			return &ValidationError{Name: "correo", err: fmt.Errorf(`ent: validator failed for field "Usuario.correo": %w`, err)}
-		}
-	}
-	if v, ok := _c.mutation.Telefono(); ok {
-		if err := usuario.TelefonoValidator(v); err != nil {
-			return &ValidationError{Name: "telefono", err: fmt.Errorf(`ent: validator failed for field "Usuario.telefono": %w`, err)}
+	if v, ok := _c.mutation.Usuario(); ok {
+		if err := usuario.UsuarioValidator(v); err != nil {
+			return &ValidationError{Name: "usuario", err: fmt.Errorf(`ent: validator failed for field "Usuario.usuario": %w`, err)}
 		}
 	}
 	if _, ok := _c.mutation.HashContrasena(); !ok {
@@ -271,21 +219,9 @@ func (_c *UsuarioCreate) createSpec() (*Usuario, *sqlgraph.CreateSpec) {
 		_spec.SetField(usuario.FieldActualizadoEn, field.TypeTime, value)
 		_node.ActualizadoEn = value
 	}
-	if value, ok := _c.mutation.Nombres(); ok {
-		_spec.SetField(usuario.FieldNombres, field.TypeString, value)
-		_node.Nombres = value
-	}
-	if value, ok := _c.mutation.Apellidos(); ok {
-		_spec.SetField(usuario.FieldApellidos, field.TypeString, value)
-		_node.Apellidos = &value
-	}
-	if value, ok := _c.mutation.Correo(); ok {
-		_spec.SetField(usuario.FieldCorreo, field.TypeString, value)
-		_node.Correo = value
-	}
-	if value, ok := _c.mutation.Telefono(); ok {
-		_spec.SetField(usuario.FieldTelefono, field.TypeString, value)
-		_node.Telefono = &value
+	if value, ok := _c.mutation.Usuario(); ok {
+		_spec.SetField(usuario.FieldUsuario, field.TypeString, value)
+		_node.Usuario = value
 	}
 	if value, ok := _c.mutation.HashContrasena(); ok {
 		_spec.SetField(usuario.FieldHashContrasena, field.TypeString, value)

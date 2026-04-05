@@ -2,41 +2,13 @@ basePath: /
 definitions:
   controller.actualizarEmpresaRequest:
     properties:
-      ciudad:
-        type: string
-      correo:
-        type: string
-      direccion:
-        type: string
-      documento_fiscal:
-        type: string
       estado:
         type: string
-      maximo_usuarios:
-        type: integer
       moneda:
         type: string
       nombre:
         type: string
       pais:
-        type: string
-      telefono:
-        type: string
-    type: object
-  controller.adminCredencialesRequest:
-    properties:
-      contrasena:
-        type: string
-      usuario:
-        type: string
-    type: object
-  controller.adminCredencialesResponse:
-    properties:
-      id:
-        type: integer
-      nombre:
-        type: string
-      usuario:
         type: string
     type: object
   controller.adminLoginRequest:
@@ -66,38 +38,18 @@ definitions:
     properties:
       empresa:
         properties:
-          ciudad:
-            type: string
-          correo:
-            type: string
-          direccion:
-            type: string
-          documento_fiscal:
-            type: string
-          estado:
-            type: string
-          maximo_usuarios:
-            type: integer
           moneda:
             type: string
           nombre:
             type: string
           pais:
             type: string
-          telefono:
-            type: string
         type: object
       usuario:
         properties:
-          apellidos:
-            type: string
-          correo:
-            type: string
-          nombres:
-            type: string
           password:
             type: string
-          telefono:
+          usuario:
             type: string
         type: object
     type: object
@@ -110,14 +62,6 @@ definitions:
     type: object
   controller.empresaResponse:
     properties:
-      ciudad:
-        type: string
-      correo:
-        type: string
-      direccion:
-        type: string
-      documento_fiscal:
-        type: string
       estado:
         type: string
       id:
@@ -131,8 +75,6 @@ definitions:
       nombre:
         type: string
       pais:
-        type: string
-      telefono:
         type: string
     type: object
   controller.errorResponse:
@@ -173,35 +115,6 @@ definitions:
       render:
         $ref: '#/definitions/controller.monedaRenderResponse'
     type: object
-  controller.usuarioLoginRequest:
-    properties:
-      contrasena:
-        type: string
-      correo:
-        type: string
-    type: object
-  controller.usuarioLoginResponse:
-    properties:
-      empresa:
-        $ref: '#/definitions/controller.empresaResponse'
-      token:
-        type: string
-      user:
-        $ref: '#/definitions/controller.usuarioResponse'
-    type: object
-  controller.usuarioResponse:
-    properties:
-      apellidos:
-        type: string
-      correo:
-        type: string
-      id:
-        type: integer
-      nombres:
-        type: string
-      telefono:
-        type: string
-    type: object
 info:
   contact: {}
   description: API para autenticacion, administracion de empresas y catalogos de soporte
@@ -209,45 +122,9 @@ info:
   title: Rentals Go API
   version: "1.0"
 paths:
-  /admin/credenciales:
-    patch:
-      consumes:
-      - application/json
-      description: Actualiza las credenciales del administrador autenticado.
-      parameters:
-      - description: Nuevo usuario y contraseña
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/controller.adminCredencialesRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.adminCredencialesResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/controller.errorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/controller.errorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/controller.errorResponse'
-      security:
-      - BearerAuth: []
-      summary: Cambiar usuario y contraseña del admin autenticado
-      tags:
-      - admin
   /admin/empresas:
     get:
-      description: Retorna todas las empresas registradas para uso del panel administrativo.
+      description: Retorna todas las empresas registradas.
       produces:
       - application/json
       responses:
@@ -274,7 +151,7 @@ paths:
       consumes:
       - application/json
       description: Crea una empresa y su usuario principal en una sola operacion.
-        Requiere autenticacion de administrador.
+        Requiere autenticacion de administrador. Solo nombre, pais, usuario y contraseña.
       parameters:
       - description: Datos de empresa y usuario
         in: body
@@ -308,7 +185,7 @@ paths:
       - admin
   /admin/empresas/{id}:
     delete:
-      description: Elimina una empresa por ID. Requiere autenticacion de administrador.
+      description: Elimina una empresa por ID.
       parameters:
       - description: ID de empresa
         in: path
@@ -338,8 +215,7 @@ paths:
       tags:
       - admin
     get:
-      description: Devuelve el detalle completo de una empresa, incluyendo la informacion
-        de moneda si esta disponible.
+      description: Devuelve el detalle de una empresa.
       parameters:
       - description: ID de empresa
         in: path
@@ -373,8 +249,7 @@ paths:
     put:
       consumes:
       - application/json
-      description: Actualiza los datos generales de una empresa existente. Requiere
-        autenticacion de administrador.
+      description: Actualiza los datos generales de una empresa.
       parameters:
       - description: ID de empresa
         in: path
@@ -470,41 +345,6 @@ paths:
       summary: Perfil del administrador autenticado
       tags:
       - admin
-  /auth/login:
-    post:
-      consumes:
-      - application/json
-      description: Autentica a un usuario final y devuelve su token junto con los
-        datos del usuario y su empresa.
-      parameters:
-      - description: Credenciales
-        in: body
-        name: credentials
-        required: true
-        schema:
-          $ref: '#/definitions/controller.usuarioLoginRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.usuarioLoginResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/controller.errorResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/controller.errorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/controller.errorResponse'
-      summary: Login de usuario
-      tags:
-      - usuario
   /catalogos/monedas:
     get:
       description: Lista las monedas ISO 4217 actualmente soportadas por el backend.
@@ -551,30 +391,6 @@ paths:
       summary: Detalle de moneda
       tags:
       - catalogos
-  /me:
-    get:
-      description: Retorna el perfil del usuario autenticado a partir del token Bearer
-        enviado por el frontend.
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/controller.usuarioLoginResponse'
-        "401":
-          description: Unauthorized
-          schema:
-            $ref: '#/definitions/controller.errorResponse'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/controller.errorResponse'
-      security:
-      - BearerAuth: []
-      summary: Perfil del usuario autenticado
-      tags:
-      - usuario
 schemes:
 - http
 - https

@@ -61,76 +61,6 @@ func (_c *EmpresaCreate) SetNombre(v string) *EmpresaCreate {
 	return _c
 }
 
-// SetDocumentoFiscal sets the "documento_fiscal" field.
-func (_c *EmpresaCreate) SetDocumentoFiscal(v string) *EmpresaCreate {
-	_c.mutation.SetDocumentoFiscal(v)
-	return _c
-}
-
-// SetNillableDocumentoFiscal sets the "documento_fiscal" field if the given value is not nil.
-func (_c *EmpresaCreate) SetNillableDocumentoFiscal(v *string) *EmpresaCreate {
-	if v != nil {
-		_c.SetDocumentoFiscal(*v)
-	}
-	return _c
-}
-
-// SetCorreo sets the "correo" field.
-func (_c *EmpresaCreate) SetCorreo(v string) *EmpresaCreate {
-	_c.mutation.SetCorreo(v)
-	return _c
-}
-
-// SetNillableCorreo sets the "correo" field if the given value is not nil.
-func (_c *EmpresaCreate) SetNillableCorreo(v *string) *EmpresaCreate {
-	if v != nil {
-		_c.SetCorreo(*v)
-	}
-	return _c
-}
-
-// SetTelefono sets the "telefono" field.
-func (_c *EmpresaCreate) SetTelefono(v string) *EmpresaCreate {
-	_c.mutation.SetTelefono(v)
-	return _c
-}
-
-// SetNillableTelefono sets the "telefono" field if the given value is not nil.
-func (_c *EmpresaCreate) SetNillableTelefono(v *string) *EmpresaCreate {
-	if v != nil {
-		_c.SetTelefono(*v)
-	}
-	return _c
-}
-
-// SetDireccion sets the "direccion" field.
-func (_c *EmpresaCreate) SetDireccion(v string) *EmpresaCreate {
-	_c.mutation.SetDireccion(v)
-	return _c
-}
-
-// SetNillableDireccion sets the "direccion" field if the given value is not nil.
-func (_c *EmpresaCreate) SetNillableDireccion(v *string) *EmpresaCreate {
-	if v != nil {
-		_c.SetDireccion(*v)
-	}
-	return _c
-}
-
-// SetCiudad sets the "ciudad" field.
-func (_c *EmpresaCreate) SetCiudad(v string) *EmpresaCreate {
-	_c.mutation.SetCiudad(v)
-	return _c
-}
-
-// SetNillableCiudad sets the "ciudad" field if the given value is not nil.
-func (_c *EmpresaCreate) SetNillableCiudad(v *string) *EmpresaCreate {
-	if v != nil {
-		_c.SetCiudad(*v)
-	}
-	return _c
-}
-
 // SetPais sets the "pais" field.
 func (_c *EmpresaCreate) SetPais(v string) *EmpresaCreate {
 	_c.mutation.SetPais(v)
@@ -365,31 +295,6 @@ func (_c *EmpresaCreate) check() error {
 			return &ValidationError{Name: "nombre", err: fmt.Errorf(`ent: validator failed for field "Empresa.nombre": %w`, err)}
 		}
 	}
-	if v, ok := _c.mutation.DocumentoFiscal(); ok {
-		if err := empresa.DocumentoFiscalValidator(v); err != nil {
-			return &ValidationError{Name: "documento_fiscal", err: fmt.Errorf(`ent: validator failed for field "Empresa.documento_fiscal": %w`, err)}
-		}
-	}
-	if v, ok := _c.mutation.Correo(); ok {
-		if err := empresa.CorreoValidator(v); err != nil {
-			return &ValidationError{Name: "correo", err: fmt.Errorf(`ent: validator failed for field "Empresa.correo": %w`, err)}
-		}
-	}
-	if v, ok := _c.mutation.Telefono(); ok {
-		if err := empresa.TelefonoValidator(v); err != nil {
-			return &ValidationError{Name: "telefono", err: fmt.Errorf(`ent: validator failed for field "Empresa.telefono": %w`, err)}
-		}
-	}
-	if v, ok := _c.mutation.Direccion(); ok {
-		if err := empresa.DireccionValidator(v); err != nil {
-			return &ValidationError{Name: "direccion", err: fmt.Errorf(`ent: validator failed for field "Empresa.direccion": %w`, err)}
-		}
-	}
-	if v, ok := _c.mutation.Ciudad(); ok {
-		if err := empresa.CiudadValidator(v); err != nil {
-			return &ValidationError{Name: "ciudad", err: fmt.Errorf(`ent: validator failed for field "Empresa.ciudad": %w`, err)}
-		}
-	}
 	if v, ok := _c.mutation.Pais(); ok {
 		if err := empresa.PaisValidator(v); err != nil {
 			return &ValidationError{Name: "pais", err: fmt.Errorf(`ent: validator failed for field "Empresa.pais": %w`, err)}
@@ -456,26 +361,6 @@ func (_c *EmpresaCreate) createSpec() (*Empresa, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Nombre(); ok {
 		_spec.SetField(empresa.FieldNombre, field.TypeString, value)
 		_node.Nombre = value
-	}
-	if value, ok := _c.mutation.DocumentoFiscal(); ok {
-		_spec.SetField(empresa.FieldDocumentoFiscal, field.TypeString, value)
-		_node.DocumentoFiscal = &value
-	}
-	if value, ok := _c.mutation.Correo(); ok {
-		_spec.SetField(empresa.FieldCorreo, field.TypeString, value)
-		_node.Correo = &value
-	}
-	if value, ok := _c.mutation.Telefono(); ok {
-		_spec.SetField(empresa.FieldTelefono, field.TypeString, value)
-		_node.Telefono = &value
-	}
-	if value, ok := _c.mutation.Direccion(); ok {
-		_spec.SetField(empresa.FieldDireccion, field.TypeString, value)
-		_node.Direccion = &value
-	}
-	if value, ok := _c.mutation.Ciudad(); ok {
-		_spec.SetField(empresa.FieldCiudad, field.TypeString, value)
-		_node.Ciudad = &value
 	}
 	if value, ok := _c.mutation.Pais(); ok {
 		_spec.SetField(empresa.FieldPais, field.TypeString, value)

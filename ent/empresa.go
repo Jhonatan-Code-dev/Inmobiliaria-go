@@ -23,16 +23,6 @@ type Empresa struct {
 	ActualizadoEn time.Time `json:"actualizado_en,omitempty"`
 	// Nombre holds the value of the "nombre" field.
 	Nombre string `json:"nombre,omitempty"`
-	// DocumentoFiscal holds the value of the "documento_fiscal" field.
-	DocumentoFiscal *string `json:"documento_fiscal,omitempty"`
-	// Correo holds the value of the "correo" field.
-	Correo *string `json:"correo,omitempty"`
-	// Telefono holds the value of the "telefono" field.
-	Telefono *string `json:"telefono,omitempty"`
-	// Direccion holds the value of the "direccion" field.
-	Direccion *string `json:"direccion,omitempty"`
-	// Ciudad holds the value of the "ciudad" field.
-	Ciudad *string `json:"ciudad,omitempty"`
 	// Pais holds the value of the "pais" field.
 	Pais *string `json:"pais,omitempty"`
 	// Moneda holds the value of the "moneda" field.
@@ -138,7 +128,7 @@ func (*Empresa) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case empresa.FieldID, empresa.FieldMaximoUsuarios:
 			values[i] = new(sql.NullInt64)
-		case empresa.FieldNombre, empresa.FieldDocumentoFiscal, empresa.FieldCorreo, empresa.FieldTelefono, empresa.FieldDireccion, empresa.FieldCiudad, empresa.FieldPais, empresa.FieldMoneda, empresa.FieldEstado:
+		case empresa.FieldNombre, empresa.FieldPais, empresa.FieldMoneda, empresa.FieldEstado:
 			values[i] = new(sql.NullString)
 		case empresa.FieldCreadoEn, empresa.FieldActualizadoEn:
 			values[i] = new(sql.NullTime)
@@ -180,41 +170,6 @@ func (_m *Empresa) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field nombre", values[i])
 			} else if value.Valid {
 				_m.Nombre = value.String
-			}
-		case empresa.FieldDocumentoFiscal:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field documento_fiscal", values[i])
-			} else if value.Valid {
-				_m.DocumentoFiscal = new(string)
-				*_m.DocumentoFiscal = value.String
-			}
-		case empresa.FieldCorreo:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field correo", values[i])
-			} else if value.Valid {
-				_m.Correo = new(string)
-				*_m.Correo = value.String
-			}
-		case empresa.FieldTelefono:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field telefono", values[i])
-			} else if value.Valid {
-				_m.Telefono = new(string)
-				*_m.Telefono = value.String
-			}
-		case empresa.FieldDireccion:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field direccion", values[i])
-			} else if value.Valid {
-				_m.Direccion = new(string)
-				*_m.Direccion = value.String
-			}
-		case empresa.FieldCiudad:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field ciudad", values[i])
-			} else if value.Valid {
-				_m.Ciudad = new(string)
-				*_m.Ciudad = value.String
 			}
 		case empresa.FieldPais:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -320,31 +275,6 @@ func (_m *Empresa) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("nombre=")
 	builder.WriteString(_m.Nombre)
-	builder.WriteString(", ")
-	if v := _m.DocumentoFiscal; v != nil {
-		builder.WriteString("documento_fiscal=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.Correo; v != nil {
-		builder.WriteString("correo=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.Telefono; v != nil {
-		builder.WriteString("telefono=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.Direccion; v != nil {
-		builder.WriteString("direccion=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.Ciudad; v != nil {
-		builder.WriteString("ciudad=")
-		builder.WriteString(*v)
-	}
 	builder.WriteString(", ")
 	if v := _m.Pais; v != nil {
 		builder.WriteString("pais=")

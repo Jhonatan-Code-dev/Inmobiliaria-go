@@ -21,16 +21,6 @@ const (
 	FieldActualizadoEn = "actualizado_en"
 	// FieldNombre holds the string denoting the nombre field in the database.
 	FieldNombre = "nombre"
-	// FieldDocumentoFiscal holds the string denoting the documento_fiscal field in the database.
-	FieldDocumentoFiscal = "documento_fiscal"
-	// FieldCorreo holds the string denoting the correo field in the database.
-	FieldCorreo = "correo"
-	// FieldTelefono holds the string denoting the telefono field in the database.
-	FieldTelefono = "telefono"
-	// FieldDireccion holds the string denoting the direccion field in the database.
-	FieldDireccion = "direccion"
-	// FieldCiudad holds the string denoting the ciudad field in the database.
-	FieldCiudad = "ciudad"
 	// FieldPais holds the string denoting the pais field in the database.
 	FieldPais = "pais"
 	// FieldMoneda holds the string denoting the moneda field in the database.
@@ -112,11 +102,6 @@ var Columns = []string{
 	FieldCreadoEn,
 	FieldActualizadoEn,
 	FieldNombre,
-	FieldDocumentoFiscal,
-	FieldCorreo,
-	FieldTelefono,
-	FieldDireccion,
-	FieldCiudad,
 	FieldPais,
 	FieldMoneda,
 	FieldMaximoUsuarios,
@@ -142,16 +127,6 @@ var (
 	UpdateDefaultActualizadoEn func() time.Time
 	// NombreValidator is a validator for the "nombre" field. It is called by the builders before save.
 	NombreValidator func(string) error
-	// DocumentoFiscalValidator is a validator for the "documento_fiscal" field. It is called by the builders before save.
-	DocumentoFiscalValidator func(string) error
-	// CorreoValidator is a validator for the "correo" field. It is called by the builders before save.
-	CorreoValidator func(string) error
-	// TelefonoValidator is a validator for the "telefono" field. It is called by the builders before save.
-	TelefonoValidator func(string) error
-	// DireccionValidator is a validator for the "direccion" field. It is called by the builders before save.
-	DireccionValidator func(string) error
-	// CiudadValidator is a validator for the "ciudad" field. It is called by the builders before save.
-	CiudadValidator func(string) error
 	// PaisValidator is a validator for the "pais" field. It is called by the builders before save.
 	PaisValidator func(string) error
 	// DefaultMoneda holds the default value on creation for the "moneda" field.
@@ -212,31 +187,6 @@ func ByActualizadoEn(opts ...sql.OrderTermOption) OrderOption {
 // ByNombre orders the results by the nombre field.
 func ByNombre(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldNombre, opts...).ToFunc()
-}
-
-// ByDocumentoFiscal orders the results by the documento_fiscal field.
-func ByDocumentoFiscal(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldDocumentoFiscal, opts...).ToFunc()
-}
-
-// ByCorreo orders the results by the correo field.
-func ByCorreo(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCorreo, opts...).ToFunc()
-}
-
-// ByTelefono orders the results by the telefono field.
-func ByTelefono(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldTelefono, opts...).ToFunc()
-}
-
-// ByDireccion orders the results by the direccion field.
-func ByDireccion(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldDireccion, opts...).ToFunc()
-}
-
-// ByCiudad orders the results by the ciudad field.
-func ByCiudad(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCiudad, opts...).ToFunc()
 }
 
 // ByPais orders the results by the pais field.

@@ -39,11 +39,6 @@ func (r *EmpresaRepoEnt) BuscarPorID(ctx context.Context, id int) (*domain.Empre
 func (r *EmpresaRepoEnt) Crear(ctx context.Context, emp *domain.Empresa) (*domain.Empresa, error) {
 	e, err := r.client.Empresa.Create().
 		SetNombre(emp.Nombre).
-		SetNillableDocumentoFiscal(nilIfEmpty(emp.DocumentoFiscal)).
-		SetNillableCorreo(nilIfEmpty(emp.Correo)).
-		SetNillableTelefono(nilIfEmpty(emp.Telefono)).
-		SetNillableDireccion(nilIfEmpty(emp.Direccion)).
-		SetNillableCiudad(nilIfEmpty(emp.Ciudad)).
 		SetNillablePais(nilIfEmpty(emp.Pais)).
 		SetMoneda(emp.Moneda).
 		SetMaximoUsuarios(defaultInt(emp.MaximoUsuarios, 1)).
@@ -58,11 +53,6 @@ func (r *EmpresaRepoEnt) Crear(ctx context.Context, emp *domain.Empresa) (*domai
 func (r *EmpresaRepoEnt) Actualizar(ctx context.Context, emp *domain.Empresa) (*domain.Empresa, error) {
 	e, err := r.client.Empresa.UpdateOneID(emp.ID).
 		SetNombre(emp.Nombre).
-		SetNillableDocumentoFiscal(nilIfEmpty(emp.DocumentoFiscal)).
-		SetNillableCorreo(nilIfEmpty(emp.Correo)).
-		SetNillableTelefono(nilIfEmpty(emp.Telefono)).
-		SetNillableDireccion(nilIfEmpty(emp.Direccion)).
-		SetNillableCiudad(nilIfEmpty(emp.Ciudad)).
 		SetNillablePais(nilIfEmpty(emp.Pais)).
 		SetMoneda(emp.Moneda).
 		SetMaximoUsuarios(defaultInt(emp.MaximoUsuarios, 1)).
@@ -82,11 +72,6 @@ func mapEmpresaEntity(e *ent.Empresa) *domain.Empresa {
 	return &domain.Empresa{
 		ID:              e.ID,
 		Nombre:          e.Nombre,
-		DocumentoFiscal: ptrToString(e.DocumentoFiscal),
-		Correo:          ptrToString(e.Correo),
-		Telefono:        ptrToString(e.Telefono),
-		Direccion:       ptrToString(e.Direccion),
-		Ciudad:          ptrToString(e.Ciudad),
 		Pais:            ptrToString(e.Pais),
 		Moneda:          e.Moneda,
 		MaximoUsuarios:  e.MaximoUsuarios,

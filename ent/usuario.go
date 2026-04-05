@@ -21,14 +21,8 @@ type Usuario struct {
 	CreadoEn time.Time `json:"creado_en,omitempty"`
 	// ActualizadoEn holds the value of the "actualizado_en" field.
 	ActualizadoEn time.Time `json:"actualizado_en,omitempty"`
-	// Nombres holds the value of the "nombres" field.
-	Nombres string `json:"nombres,omitempty"`
-	// Apellidos holds the value of the "apellidos" field.
-	Apellidos *string `json:"apellidos,omitempty"`
-	// Correo holds the value of the "correo" field.
-	Correo string `json:"correo,omitempty"`
-	// Telefono holds the value of the "telefono" field.
-	Telefono *string `json:"telefono,omitempty"`
+	// Usuario holds the value of the "usuario" field.
+	Usuario string `json:"usuario,omitempty"`
 	// HashContrasena holds the value of the "hash_contrasena" field.
 	HashContrasena string `json:"-"`
 	// Estado holds the value of the "estado" field.
@@ -66,7 +60,7 @@ func (*Usuario) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case usuario.FieldID:
 			values[i] = new(sql.NullInt64)
-		case usuario.FieldNombres, usuario.FieldApellidos, usuario.FieldCorreo, usuario.FieldTelefono, usuario.FieldHashContrasena, usuario.FieldEstado:
+		case usuario.FieldUsuario, usuario.FieldHashContrasena, usuario.FieldEstado:
 			values[i] = new(sql.NullString)
 		case usuario.FieldCreadoEn, usuario.FieldActualizadoEn, usuario.FieldUltimoAcceso:
 			values[i] = new(sql.NullTime)
@@ -103,31 +97,11 @@ func (_m *Usuario) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.ActualizadoEn = value.Time
 			}
-		case usuario.FieldNombres:
+		case usuario.FieldUsuario:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field nombres", values[i])
+				return fmt.Errorf("unexpected type %T for field usuario", values[i])
 			} else if value.Valid {
-				_m.Nombres = value.String
-			}
-		case usuario.FieldApellidos:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field apellidos", values[i])
-			} else if value.Valid {
-				_m.Apellidos = new(string)
-				*_m.Apellidos = value.String
-			}
-		case usuario.FieldCorreo:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field correo", values[i])
-			} else if value.Valid {
-				_m.Correo = value.String
-			}
-		case usuario.FieldTelefono:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field telefono", values[i])
-			} else if value.Valid {
-				_m.Telefono = new(string)
-				*_m.Telefono = value.String
+				_m.Usuario = value.String
 			}
 		case usuario.FieldHashContrasena:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -195,21 +169,8 @@ func (_m *Usuario) String() string {
 	builder.WriteString("actualizado_en=")
 	builder.WriteString(_m.ActualizadoEn.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("nombres=")
-	builder.WriteString(_m.Nombres)
-	builder.WriteString(", ")
-	if v := _m.Apellidos; v != nil {
-		builder.WriteString("apellidos=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	builder.WriteString("correo=")
-	builder.WriteString(_m.Correo)
-	builder.WriteString(", ")
-	if v := _m.Telefono; v != nil {
-		builder.WriteString("telefono=")
-		builder.WriteString(*v)
-	}
+	builder.WriteString("usuario=")
+	builder.WriteString(_m.Usuario)
 	builder.WriteString(", ")
 	builder.WriteString("hash_contrasena=<sensitive>")
 	builder.WriteString(", ")

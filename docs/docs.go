@@ -15,63 +15,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/admin/credenciales": {
-            "patch": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Actualiza las credenciales del administrador autenticado.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "admin"
-                ],
-                "summary": "Cambiar usuario y contraseña del admin autenticado",
-                "parameters": [
-                    {
-                        "description": "Nuevo usuario y contraseña",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controller.adminCredencialesRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/controller.adminCredencialesResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/admin/empresas": {
             "get": {
                 "security": [
@@ -79,7 +22,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Retorna todas las empresas registradas para uso del panel administrativo.",
+                "description": "Retorna todas las empresas registradas.",
                 "produces": [
                     "application/json"
                 ],
@@ -117,7 +60,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Crea una empresa y su usuario principal en una sola operacion. Requiere autenticacion de administrador.",
+                "description": "Crea una empresa y su usuario principal en una sola operacion. Requiere autenticacion de administrador. Solo nombre, pais, usuario y contraseña.",
                 "consumes": [
                     "application/json"
                 ],
@@ -174,7 +117,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Devuelve el detalle completo de una empresa, incluyendo la informacion de moneda si esta disponible.",
+                "description": "Devuelve el detalle de una empresa.",
                 "produces": [
                     "application/json"
                 ],
@@ -224,7 +167,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Actualiza los datos generales de una empresa existente. Requiere autenticacion de administrador.",
+                "description": "Actualiza los datos generales de una empresa.",
                 "consumes": [
                     "application/json"
                 ],
@@ -286,7 +229,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Elimina una empresa por ID. Requiere autenticacion de administrador.",
+                "description": "Elimina una empresa por ID.",
                 "produces": [
                     "application/json"
                 ],
@@ -417,58 +360,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/auth/login": {
-            "post": {
-                "description": "Autentica a un usuario final y devuelve su token junto con los datos del usuario y su empresa.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "usuario"
-                ],
-                "summary": "Login de usuario",
-                "parameters": [
-                    {
-                        "description": "Credenciales",
-                        "name": "credentials",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/controller.usuarioLoginRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/controller.usuarioLoginResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
-                        }
-                    }
-                }
-            }
-        },
         "/catalogos/monedas": {
             "get": {
                 "description": "Lista las monedas ISO 4217 actualmente soportadas por el backend.",
@@ -538,66 +429,14 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/me": {
-            "get": {
-                "security": [
-                    {
-                        "BearerAuth": []
-                    }
-                ],
-                "description": "Retorna el perfil del usuario autenticado a partir del token Bearer enviado por el frontend.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "usuario"
-                ],
-                "summary": "Perfil del usuario autenticado",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/controller.usuarioLoginResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized",
-                        "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/controller.errorResponse"
-                        }
-                    }
-                }
-            }
         }
     },
     "definitions": {
         "controller.actualizarEmpresaRequest": {
             "type": "object",
             "properties": {
-                "ciudad": {
-                    "type": "string"
-                },
-                "correo": {
-                    "type": "string"
-                },
-                "direccion": {
-                    "type": "string"
-                },
-                "documento_fiscal": {
-                    "type": "string"
-                },
                 "estado": {
                     "type": "string"
-                },
-                "maximo_usuarios": {
-                    "type": "integer"
                 },
                 "moneda": {
                     "type": "string"
@@ -606,34 +445,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "pais": {
-                    "type": "string"
-                },
-                "telefono": {
-                    "type": "string"
-                }
-            }
-        },
-        "controller.adminCredencialesRequest": {
-            "type": "object",
-            "properties": {
-                "contrasena": {
-                    "type": "string"
-                },
-                "usuario": {
-                    "type": "string"
-                }
-            }
-        },
-        "controller.adminCredencialesResponse": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "nombre": {
-                    "type": "string"
-                },
-                "usuario": {
                     "type": "string"
                 }
             }
@@ -680,24 +491,6 @@ const docTemplate = `{
                 "empresa": {
                     "type": "object",
                     "properties": {
-                        "ciudad": {
-                            "type": "string"
-                        },
-                        "correo": {
-                            "type": "string"
-                        },
-                        "direccion": {
-                            "type": "string"
-                        },
-                        "documento_fiscal": {
-                            "type": "string"
-                        },
-                        "estado": {
-                            "type": "string"
-                        },
-                        "maximo_usuarios": {
-                            "type": "integer"
-                        },
                         "moneda": {
                             "type": "string"
                         },
@@ -706,28 +499,16 @@ const docTemplate = `{
                         },
                         "pais": {
                             "type": "string"
-                        },
-                        "telefono": {
-                            "type": "string"
                         }
                     }
                 },
                 "usuario": {
                     "type": "object",
                     "properties": {
-                        "apellidos": {
-                            "type": "string"
-                        },
-                        "correo": {
-                            "type": "string"
-                        },
-                        "nombres": {
-                            "type": "string"
-                        },
                         "password": {
                             "type": "string"
                         },
-                        "telefono": {
+                        "usuario": {
                             "type": "string"
                         }
                     }
@@ -748,18 +529,6 @@ const docTemplate = `{
         "controller.empresaResponse": {
             "type": "object",
             "properties": {
-                "ciudad": {
-                    "type": "string"
-                },
-                "correo": {
-                    "type": "string"
-                },
-                "direccion": {
-                    "type": "string"
-                },
-                "documento_fiscal": {
-                    "type": "string"
-                },
                 "estado": {
                     "type": "string"
                 },
@@ -779,9 +548,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "pais": {
-                    "type": "string"
-                },
-                "telefono": {
                     "type": "string"
                 }
             }
@@ -842,51 +608,6 @@ const docTemplate = `{
                 },
                 "render": {
                     "$ref": "#/definitions/controller.monedaRenderResponse"
-                }
-            }
-        },
-        "controller.usuarioLoginRequest": {
-            "type": "object",
-            "properties": {
-                "contrasena": {
-                    "type": "string"
-                },
-                "correo": {
-                    "type": "string"
-                }
-            }
-        },
-        "controller.usuarioLoginResponse": {
-            "type": "object",
-            "properties": {
-                "empresa": {
-                    "$ref": "#/definitions/controller.empresaResponse"
-                },
-                "token": {
-                    "type": "string"
-                },
-                "user": {
-                    "$ref": "#/definitions/controller.usuarioResponse"
-                }
-            }
-        },
-        "controller.usuarioResponse": {
-            "type": "object",
-            "properties": {
-                "apellidos": {
-                    "type": "string"
-                },
-                "correo": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "nombres": {
-                    "type": "string"
-                },
-                "telefono": {
-                    "type": "string"
                 }
             }
         }

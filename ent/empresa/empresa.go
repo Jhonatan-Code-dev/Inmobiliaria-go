@@ -3,7 +3,6 @@
 package empresa
 
 import (
-	"fmt"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -17,8 +16,6 @@ const (
 	FieldID = "id"
 	// FieldCreadoEn holds the string denoting the creado_en field in the database.
 	FieldCreadoEn = "creado_en"
-	// FieldActualizadoEn holds the string denoting the actualizado_en field in the database.
-	FieldActualizadoEn = "actualizado_en"
 	// FieldNombre holds the string denoting the nombre field in the database.
 	FieldNombre = "nombre"
 	// FieldPais holds the string denoting the pais field in the database.
@@ -29,6 +26,8 @@ const (
 	FieldMaximoUsuarios = "maximo_usuarios"
 	// FieldEstado holds the string denoting the estado field in the database.
 	FieldEstado = "estado"
+	// FieldVencimiento holds the string denoting the vencimiento field in the database.
+	FieldVencimiento = "vencimiento"
 	// EdgeUsuariosEmpresa holds the string denoting the usuarios_empresa edge name in mutations.
 	EdgeUsuariosEmpresa = "usuarios_empresa"
 	// EdgeClientes holds the string denoting the clientes edge name in mutations.
@@ -100,12 +99,12 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldCreadoEn,
-	FieldActualizadoEn,
 	FieldNombre,
 	FieldPais,
 	FieldMoneda,
 	FieldMaximoUsuarios,
 	FieldEstado,
+	FieldVencimiento,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -121,10 +120,6 @@ func ValidColumn(column string) bool {
 var (
 	// DefaultCreadoEn holds the default value on creation for the "creado_en" field.
 	DefaultCreadoEn func() time.Time
-	// DefaultActualizadoEn holds the default value on creation for the "actualizado_en" field.
-	DefaultActualizadoEn func() time.Time
-	// UpdateDefaultActualizadoEn holds the default value on update for the "actualizado_en" field.
-	UpdateDefaultActualizadoEn func() time.Time
 	// NombreValidator is a validator for the "nombre" field. It is called by the builders before save.
 	NombreValidator func(string) error
 	// PaisValidator is a validator for the "pais" field. It is called by the builders before save.
@@ -137,34 +132,9 @@ var (
 	DefaultMaximoUsuarios int
 	// MaximoUsuariosValidator is a validator for the "maximo_usuarios" field. It is called by the builders before save.
 	MaximoUsuariosValidator func(int) error
+	// DefaultEstado holds the default value on creation for the "estado" field.
+	DefaultEstado bool
 )
-
-// Estado defines the type for the "estado" enum field.
-type Estado string
-
-// EstadoActiva is the default value of the Estado enum.
-const DefaultEstado = EstadoActiva
-
-// Estado values.
-const (
-	EstadoActiva     Estado = "activa"
-	EstadoInactiva   Estado = "inactiva"
-	EstadoSuspendida Estado = "suspendida"
-)
-
-func (e Estado) String() string {
-	return string(e)
-}
-
-// EstadoValidator is a validator for the "estado" field enum values. It is called by the builders before save.
-func EstadoValidator(e Estado) error {
-	switch e {
-	case EstadoActiva, EstadoInactiva, EstadoSuspendida:
-		return nil
-	default:
-		return fmt.Errorf("empresa: invalid enum value for estado field: %q", e)
-	}
-}
 
 // OrderOption defines the ordering options for the Empresa queries.
 type OrderOption func(*sql.Selector)
@@ -177,11 +147,6 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByCreadoEn orders the results by the creado_en field.
 func ByCreadoEn(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreadoEn, opts...).ToFunc()
-}
-
-// ByActualizadoEn orders the results by the actualizado_en field.
-func ByActualizadoEn(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldActualizadoEn, opts...).ToFunc()
 }
 
 // ByNombre orders the results by the nombre field.
@@ -207,6 +172,11 @@ func ByMaximoUsuarios(opts ...sql.OrderTermOption) OrderOption {
 // ByEstado orders the results by the estado field.
 func ByEstado(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEstado, opts...).ToFunc()
+}
+
+// ByVencimiento orders the results by the vencimiento field.
+func ByVencimiento(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldVencimiento, opts...).ToFunc()
 }
 
 // ByUsuariosEmpresaCount orders the results by usuarios_empresa count.

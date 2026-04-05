@@ -34,20 +34,6 @@ func (_c *AdminCreate) SetNillableCreadoEn(v *time.Time) *AdminCreate {
 	return _c
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_c *AdminCreate) SetActualizadoEn(v time.Time) *AdminCreate {
-	_c.mutation.SetActualizadoEn(v)
-	return _c
-}
-
-// SetNillableActualizadoEn sets the "actualizado_en" field if the given value is not nil.
-func (_c *AdminCreate) SetNillableActualizadoEn(v *time.Time) *AdminCreate {
-	if v != nil {
-		_c.SetActualizadoEn(*v)
-	}
-	return _c
-}
-
 // SetUsuario sets the "usuario" field.
 func (_c *AdminCreate) SetUsuario(v string) *AdminCreate {
 	_c.mutation.SetUsuario(v)
@@ -113,10 +99,6 @@ func (_c *AdminCreate) defaults() {
 		v := admin.DefaultCreadoEn()
 		_c.mutation.SetCreadoEn(v)
 	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		v := admin.DefaultActualizadoEn()
-		_c.mutation.SetActualizadoEn(v)
-	}
 	if _, ok := _c.mutation.Activo(); !ok {
 		v := admin.DefaultActivo
 		_c.mutation.SetActivo(v)
@@ -127,9 +109,6 @@ func (_c *AdminCreate) defaults() {
 func (_c *AdminCreate) check() error {
 	if _, ok := _c.mutation.CreadoEn(); !ok {
 		return &ValidationError{Name: "creado_en", err: errors.New(`ent: missing required field "Admin.creado_en"`)}
-	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		return &ValidationError{Name: "actualizado_en", err: errors.New(`ent: missing required field "Admin.actualizado_en"`)}
 	}
 	if _, ok := _c.mutation.Usuario(); !ok {
 		return &ValidationError{Name: "usuario", err: errors.New(`ent: missing required field "Admin.usuario"`)}
@@ -179,10 +158,6 @@ func (_c *AdminCreate) createSpec() (*Admin, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.CreadoEn(); ok {
 		_spec.SetField(admin.FieldCreadoEn, field.TypeTime, value)
 		_node.CreadoEn = value
-	}
-	if value, ok := _c.mutation.ActualizadoEn(); ok {
-		_spec.SetField(admin.FieldActualizadoEn, field.TypeTime, value)
-		_node.ActualizadoEn = value
 	}
 	if value, ok := _c.mutation.Usuario(); ok {
 		_spec.SetField(admin.FieldUsuario, field.TypeString, value)

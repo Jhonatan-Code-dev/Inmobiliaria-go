@@ -11,7 +11,6 @@ import (
 	"rentals-go/ent/predicate"
 	"rentals-go/ent/propiedad"
 	"rentals-go/ent/unidad"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -28,12 +27,6 @@ type PropiedadUpdate struct {
 // Where appends a list predicates to the PropiedadUpdate builder.
 func (_u *PropiedadUpdate) Where(ps ...predicate.Propiedad) *PropiedadUpdate {
 	_u.mutation.Where(ps...)
-	return _u
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *PropiedadUpdate) SetActualizadoEn(v time.Time) *PropiedadUpdate {
-	_u.mutation.SetActualizadoEn(v)
 	return _u
 }
 
@@ -339,7 +332,6 @@ func (_u *PropiedadUpdate) RemoveGastos(v ...*Gasto) *PropiedadUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *PropiedadUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -362,14 +354,6 @@ func (_u *PropiedadUpdate) Exec(ctx context.Context) error {
 func (_u *PropiedadUpdate) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *PropiedadUpdate) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := propiedad.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -447,9 +431,6 @@ func (_u *PropiedadUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(propiedad.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Nombre(); ok {
 		_spec.SetField(propiedad.FieldNombre, field.TypeString, value)
@@ -642,12 +623,6 @@ type PropiedadUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *PropiedadMutation
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *PropiedadUpdateOne) SetActualizadoEn(v time.Time) *PropiedadUpdateOne {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
 }
 
 // SetEmpresaID sets the "empresa_id" field.
@@ -965,7 +940,6 @@ func (_u *PropiedadUpdateOne) Select(field string, fields ...string) *PropiedadU
 
 // Save executes the query and returns the updated Propiedad entity.
 func (_u *PropiedadUpdateOne) Save(ctx context.Context) (*Propiedad, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -988,14 +962,6 @@ func (_u *PropiedadUpdateOne) Exec(ctx context.Context) error {
 func (_u *PropiedadUpdateOne) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *PropiedadUpdateOne) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := propiedad.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -1090,9 +1056,6 @@ func (_u *PropiedadUpdateOne) sqlSave(ctx context.Context) (_node *Propiedad, er
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(propiedad.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Nombre(); ok {
 		_spec.SetField(propiedad.FieldNombre, field.TypeString, value)

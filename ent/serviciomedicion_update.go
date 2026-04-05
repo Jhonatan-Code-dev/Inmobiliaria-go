@@ -29,12 +29,6 @@ func (_u *ServicioMedicionUpdate) Where(ps ...predicate.ServicioMedicion) *Servi
 	return _u
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *ServicioMedicionUpdate) SetActualizadoEn(v time.Time) *ServicioMedicionUpdate {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
-}
-
 // SetUnidadID sets the "unidad_id" field.
 func (_u *ServicioMedicionUpdate) SetUnidadID(v int) *ServicioMedicionUpdate {
 	_u.mutation.SetUnidadID(v)
@@ -248,7 +242,6 @@ func (_u *ServicioMedicionUpdate) ClearUnidad() *ServicioMedicionUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *ServicioMedicionUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -271,14 +264,6 @@ func (_u *ServicioMedicionUpdate) Exec(ctx context.Context) error {
 func (_u *ServicioMedicionUpdate) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *ServicioMedicionUpdate) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := serviciomedicion.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -316,9 +301,6 @@ func (_u *ServicioMedicionUpdate) sqlSave(ctx context.Context) (_node int, err e
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(serviciomedicion.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.TipoServicio(); ok {
 		_spec.SetField(serviciomedicion.FieldTipoServicio, field.TypeEnum, value)
@@ -415,12 +397,6 @@ type ServicioMedicionUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *ServicioMedicionMutation
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *ServicioMedicionUpdateOne) SetActualizadoEn(v time.Time) *ServicioMedicionUpdateOne {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
 }
 
 // SetUnidadID sets the "unidad_id" field.
@@ -649,7 +625,6 @@ func (_u *ServicioMedicionUpdateOne) Select(field string, fields ...string) *Ser
 
 // Save executes the query and returns the updated ServicioMedicion entity.
 func (_u *ServicioMedicionUpdateOne) Save(ctx context.Context) (*ServicioMedicion, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -672,14 +647,6 @@ func (_u *ServicioMedicionUpdateOne) Exec(ctx context.Context) error {
 func (_u *ServicioMedicionUpdateOne) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *ServicioMedicionUpdateOne) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := serviciomedicion.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -734,9 +701,6 @@ func (_u *ServicioMedicionUpdateOne) sqlSave(ctx context.Context) (_node *Servic
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(serviciomedicion.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.TipoServicio(); ok {
 		_spec.SetField(serviciomedicion.FieldTipoServicio, field.TypeEnum, value)

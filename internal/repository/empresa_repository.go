@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"rentals-go/ent"
-	"rentals-go/ent/empresa"
+	entEmpresa "rentals-go/ent/empresa"
 	"rentals-go/internal/domain"
 )
 
@@ -16,16 +16,34 @@ func NewEmpresaRepo(client *ent.Client) *EmpresaRepoEnt {
 	return &EmpresaRepoEnt{client: client}
 }
 
-func (r *EmpresaRepoEnt) Listar(ctx context.Context) ([]*domain.Empresa, error) {
-	list, err := r.client.Empresa.Query().All(ctx)
-	if err != nil {
-		return nil, err
+func (r *EmpresaRepoEnt) ListarPaginado(ctx context.Context, limite, offset int, busqueda string) ([]*domain.Empresa, int, error) {
+	query := r.client.Empresa.Query()
+
+	if busqueda != "" {
+		query = query.Where(
+			entEmpresa.NombreContains(busqueda),
+		)
 	}
+
+	total, err := query.Count(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	list, err := query.
+		Limit(limite).
+		Offset(offset).
+		Order(ent.Desc(entEmpresa.FieldID)).
+		All(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+
 	out := make([]*domain.Empresa, 0, len(list))
 	for _, e := range list {
 		out = append(out, mapEmpresaEntity(e))
 	}
-	return out, nil
+	return out, total, nil
 }
 
 func (r *EmpresaRepoEnt) BuscarPorID(ctx context.Context, id int) (*domain.Empresa, error) {
@@ -42,7 +60,8 @@ func (r *EmpresaRepoEnt) Crear(ctx context.Context, emp *domain.Empresa) (*domai
 		SetNillablePais(nilIfEmpty(emp.Pais)).
 		SetMoneda(emp.Moneda).
 		SetMaximoUsuarios(defaultInt(emp.MaximoUsuarios, 1)).
-		SetEstado(empresa.Estado(defaultStringValue(emp.Estado, "activa"))).
+		SetEstado(emp.Estado).
+		SetNillableVencimiento(nilIfTimeZero(emp.Vencimiento)).
 		Save(ctx)
 	if err != nil {
 		return nil, err
@@ -56,7 +75,8 @@ func (r *EmpresaRepoEnt) Actualizar(ctx context.Context, emp *domain.Empresa) (*
 		SetNillablePais(nilIfEmpty(emp.Pais)).
 		SetMoneda(emp.Moneda).
 		SetMaximoUsuarios(defaultInt(emp.MaximoUsuarios, 1)).
-		SetEstado(empresa.Estado(defaultStringValue(emp.Estado, "activa"))).
+		SetEstado(emp.Estado).
+		SetNillableVencimiento(nilIfTimeZero(emp.Vencimiento)).
 		Save(ctx)
 	if err != nil {
 		return nil, err
@@ -75,7 +95,9 @@ func mapEmpresaEntity(e *ent.Empresa) *domain.Empresa {
 		Pais:            ptrToString(e.Pais),
 		Moneda:          e.Moneda,
 		MaximoUsuarios:  e.MaximoUsuarios,
-		Estado:          string(e.Estado),
+		Estado:          e.Estado,
+		Vencimiento:     ptrToTime(e.Vencimiento),
+		CreadoEn:        e.CreadoEn,
 	}
 }
 

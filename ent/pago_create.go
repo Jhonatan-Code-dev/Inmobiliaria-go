@@ -39,20 +39,6 @@ func (_c *PagoCreate) SetNillableCreadoEn(v *time.Time) *PagoCreate {
 	return _c
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_c *PagoCreate) SetActualizadoEn(v time.Time) *PagoCreate {
-	_c.mutation.SetActualizadoEn(v)
-	return _c
-}
-
-// SetNillableActualizadoEn sets the "actualizado_en" field if the given value is not nil.
-func (_c *PagoCreate) SetNillableActualizadoEn(v *time.Time) *PagoCreate {
-	if v != nil {
-		_c.SetActualizadoEn(*v)
-	}
-	return _c
-}
-
 // SetEmpresaID sets the "empresa_id" field.
 func (_c *PagoCreate) SetEmpresaID(v int) *PagoCreate {
 	_c.mutation.SetEmpresaID(v)
@@ -267,10 +253,6 @@ func (_c *PagoCreate) defaults() {
 		v := pago.DefaultCreadoEn()
 		_c.mutation.SetCreadoEn(v)
 	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		v := pago.DefaultActualizadoEn()
-		_c.mutation.SetActualizadoEn(v)
-	}
 	if _, ok := _c.mutation.Moneda(); !ok {
 		v := pago.DefaultMoneda
 		_c.mutation.SetMoneda(v)
@@ -293,9 +275,6 @@ func (_c *PagoCreate) defaults() {
 func (_c *PagoCreate) check() error {
 	if _, ok := _c.mutation.CreadoEn(); !ok {
 		return &ValidationError{Name: "creado_en", err: errors.New(`ent: missing required field "Pago.creado_en"`)}
-	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		return &ValidationError{Name: "actualizado_en", err: errors.New(`ent: missing required field "Pago.actualizado_en"`)}
 	}
 	if _, ok := _c.mutation.EmpresaID(); !ok {
 		return &ValidationError{Name: "empresa_id", err: errors.New(`ent: missing required field "Pago.empresa_id"`)}
@@ -380,10 +359,6 @@ func (_c *PagoCreate) createSpec() (*Pago, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.CreadoEn(); ok {
 		_spec.SetField(pago.FieldCreadoEn, field.TypeTime, value)
 		_node.CreadoEn = value
-	}
-	if value, ok := _c.mutation.ActualizadoEn(); ok {
-		_spec.SetField(pago.FieldActualizadoEn, field.TypeTime, value)
-		_node.ActualizadoEn = value
 	}
 	if value, ok := _c.mutation.NumeroRecibo(); ok {
 		_spec.SetField(pago.FieldNumeroRecibo, field.TypeString, value)

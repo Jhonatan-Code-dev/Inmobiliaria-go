@@ -36,20 +36,6 @@ func (_c *CargoCreate) SetNillableCreadoEn(v *time.Time) *CargoCreate {
 	return _c
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_c *CargoCreate) SetActualizadoEn(v time.Time) *CargoCreate {
-	_c.mutation.SetActualizadoEn(v)
-	return _c
-}
-
-// SetNillableActualizadoEn sets the "actualizado_en" field if the given value is not nil.
-func (_c *CargoCreate) SetNillableActualizadoEn(v *time.Time) *CargoCreate {
-	if v != nil {
-		_c.SetActualizadoEn(*v)
-	}
-	return _c
-}
-
 // SetContratoID sets the "contrato_id" field.
 func (_c *CargoCreate) SetContratoID(v int) *CargoCreate {
 	_c.mutation.SetContratoID(v)
@@ -237,10 +223,6 @@ func (_c *CargoCreate) defaults() {
 		v := cargo.DefaultCreadoEn()
 		_c.mutation.SetCreadoEn(v)
 	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		v := cargo.DefaultActualizadoEn()
-		_c.mutation.SetActualizadoEn(v)
-	}
 	if _, ok := _c.mutation.Concepto(); !ok {
 		v := cargo.DefaultConcepto
 		_c.mutation.SetConcepto(v)
@@ -271,9 +253,6 @@ func (_c *CargoCreate) defaults() {
 func (_c *CargoCreate) check() error {
 	if _, ok := _c.mutation.CreadoEn(); !ok {
 		return &ValidationError{Name: "creado_en", err: errors.New(`ent: missing required field "Cargo.creado_en"`)}
-	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		return &ValidationError{Name: "actualizado_en", err: errors.New(`ent: missing required field "Cargo.actualizado_en"`)}
 	}
 	if _, ok := _c.mutation.ContratoID(); !ok {
 		return &ValidationError{Name: "contrato_id", err: errors.New(`ent: missing required field "Cargo.contrato_id"`)}
@@ -360,10 +339,6 @@ func (_c *CargoCreate) createSpec() (*Cargo, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.CreadoEn(); ok {
 		_spec.SetField(cargo.FieldCreadoEn, field.TypeTime, value)
 		_node.CreadoEn = value
-	}
-	if value, ok := _c.mutation.ActualizadoEn(); ok {
-		_spec.SetField(cargo.FieldActualizadoEn, field.TypeTime, value)
-		_node.ActualizadoEn = value
 	}
 	if value, ok := _c.mutation.Concepto(); ok {
 		_spec.SetField(cargo.FieldConcepto, field.TypeEnum, value)

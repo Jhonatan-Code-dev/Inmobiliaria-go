@@ -28,6 +28,7 @@ func (r *UsuarioRepoEnt) Crear(ctx context.Context, u *domain.Usuario) (*domain.
 		ID:             usr.ID,
 		Usuario:        usr.Usuario,
 		HashContrasena: usr.HashContrasena,
+		Estado:         usr.Estado,
 	}, nil
 }
 
@@ -43,6 +44,7 @@ func (r *UsuarioRepoEnt) BuscarPorUsuario(ctx context.Context, username string) 
 		ID:             u.ID,
 		Usuario:        u.Usuario,
 		HashContrasena: u.HashContrasena,
+		Estado:         u.Estado,
 	}, nil
 }
 
@@ -71,5 +73,6 @@ func (r *UsuarioRepoEnt) BuscarPerfil(ctx context.Context, id int) (*domain.Usua
 		ID:             u.ID,
 		Usuario:        u.Usuario,
 		HashContrasena: u.HashContrasena,
+		Estado:         u.Estado,
 	}, emp, nil
 }

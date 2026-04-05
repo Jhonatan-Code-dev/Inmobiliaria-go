@@ -35,20 +35,6 @@ func (_c *ServicioMedicionCreate) SetNillableCreadoEn(v *time.Time) *ServicioMed
 	return _c
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_c *ServicioMedicionCreate) SetActualizadoEn(v time.Time) *ServicioMedicionCreate {
-	_c.mutation.SetActualizadoEn(v)
-	return _c
-}
-
-// SetNillableActualizadoEn sets the "actualizado_en" field if the given value is not nil.
-func (_c *ServicioMedicionCreate) SetNillableActualizadoEn(v *time.Time) *ServicioMedicionCreate {
-	if v != nil {
-		_c.SetActualizadoEn(*v)
-	}
-	return _c
-}
-
 // SetUnidadID sets the "unidad_id" field.
 func (_c *ServicioMedicionCreate) SetUnidadID(v int) *ServicioMedicionCreate {
 	_c.mutation.SetUnidadID(v)
@@ -223,10 +209,6 @@ func (_c *ServicioMedicionCreate) defaults() {
 		v := serviciomedicion.DefaultCreadoEn()
 		_c.mutation.SetCreadoEn(v)
 	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		v := serviciomedicion.DefaultActualizadoEn()
-		_c.mutation.SetActualizadoEn(v)
-	}
 	if _, ok := _c.mutation.TipoServicio(); !ok {
 		v := serviciomedicion.DefaultTipoServicio
 		_c.mutation.SetTipoServicio(v)
@@ -261,9 +243,6 @@ func (_c *ServicioMedicionCreate) defaults() {
 func (_c *ServicioMedicionCreate) check() error {
 	if _, ok := _c.mutation.CreadoEn(); !ok {
 		return &ValidationError{Name: "creado_en", err: errors.New(`ent: missing required field "ServicioMedicion.creado_en"`)}
-	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		return &ValidationError{Name: "actualizado_en", err: errors.New(`ent: missing required field "ServicioMedicion.actualizado_en"`)}
 	}
 	if _, ok := _c.mutation.UnidadID(); !ok {
 		return &ValidationError{Name: "unidad_id", err: errors.New(`ent: missing required field "ServicioMedicion.unidad_id"`)}
@@ -342,10 +321,6 @@ func (_c *ServicioMedicionCreate) createSpec() (*ServicioMedicion, *sqlgraph.Cre
 	if value, ok := _c.mutation.CreadoEn(); ok {
 		_spec.SetField(serviciomedicion.FieldCreadoEn, field.TypeTime, value)
 		_node.CreadoEn = value
-	}
-	if value, ok := _c.mutation.ActualizadoEn(); ok {
-		_spec.SetField(serviciomedicion.FieldActualizadoEn, field.TypeTime, value)
-		_node.ActualizadoEn = value
 	}
 	if value, ok := _c.mutation.TipoServicio(); ok {
 		_spec.SetField(serviciomedicion.FieldTipoServicio, field.TypeEnum, value)

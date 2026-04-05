@@ -19,16 +19,12 @@ type Usuario struct {
 	ID int `json:"id,omitempty"`
 	// CreadoEn holds the value of the "creado_en" field.
 	CreadoEn time.Time `json:"creado_en,omitempty"`
-	// ActualizadoEn holds the value of the "actualizado_en" field.
-	ActualizadoEn time.Time `json:"actualizado_en,omitempty"`
 	// Usuario holds the value of the "usuario" field.
 	Usuario string `json:"usuario,omitempty"`
 	// HashContrasena holds the value of the "hash_contrasena" field.
 	HashContrasena string `json:"-"`
 	// Estado holds the value of the "estado" field.
-	Estado usuario.Estado `json:"estado,omitempty"`
-	// UltimoAcceso holds the value of the "ultimo_acceso" field.
-	UltimoAcceso *time.Time `json:"ultimo_acceso,omitempty"`
+	Estado bool `json:"estado,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the UsuarioQuery when eager-loading is set.
 	Edges        UsuarioEdges `json:"edges"`
@@ -58,11 +54,13 @@ func (*Usuario) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case usuario.FieldEstado:
+			values[i] = new(sql.NullBool)
 		case usuario.FieldID:
 			values[i] = new(sql.NullInt64)
-		case usuario.FieldUsuario, usuario.FieldHashContrasena, usuario.FieldEstado:
+		case usuario.FieldUsuario, usuario.FieldHashContrasena:
 			values[i] = new(sql.NullString)
-		case usuario.FieldCreadoEn, usuario.FieldActualizadoEn, usuario.FieldUltimoAcceso:
+		case usuario.FieldCreadoEn:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -91,12 +89,6 @@ func (_m *Usuario) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.CreadoEn = value.Time
 			}
-		case usuario.FieldActualizadoEn:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field actualizado_en", values[i])
-			} else if value.Valid {
-				_m.ActualizadoEn = value.Time
-			}
 		case usuario.FieldUsuario:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field usuario", values[i])
@@ -110,17 +102,10 @@ func (_m *Usuario) assignValues(columns []string, values []any) error {
 				_m.HashContrasena = value.String
 			}
 		case usuario.FieldEstado:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field estado", values[i])
 			} else if value.Valid {
-				_m.Estado = usuario.Estado(value.String)
-			}
-		case usuario.FieldUltimoAcceso:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field ultimo_acceso", values[i])
-			} else if value.Valid {
-				_m.UltimoAcceso = new(time.Time)
-				*_m.UltimoAcceso = value.Time
+				_m.Estado = value.Bool
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -166,9 +151,6 @@ func (_m *Usuario) String() string {
 	builder.WriteString("creado_en=")
 	builder.WriteString(_m.CreadoEn.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("actualizado_en=")
-	builder.WriteString(_m.ActualizadoEn.Format(time.ANSIC))
-	builder.WriteString(", ")
 	builder.WriteString("usuario=")
 	builder.WriteString(_m.Usuario)
 	builder.WriteString(", ")
@@ -176,11 +158,6 @@ func (_m *Usuario) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("estado=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Estado))
-	builder.WriteString(", ")
-	if v := _m.UltimoAcceso; v != nil {
-		builder.WriteString("ultimo_acceso=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
 	builder.WriteByte(')')
 	return builder.String()
 }

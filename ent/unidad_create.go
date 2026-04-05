@@ -38,20 +38,6 @@ func (_c *UnidadCreate) SetNillableCreadoEn(v *time.Time) *UnidadCreate {
 	return _c
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_c *UnidadCreate) SetActualizadoEn(v time.Time) *UnidadCreate {
-	_c.mutation.SetActualizadoEn(v)
-	return _c
-}
-
-// SetNillableActualizadoEn sets the "actualizado_en" field if the given value is not nil.
-func (_c *UnidadCreate) SetNillableActualizadoEn(v *time.Time) *UnidadCreate {
-	if v != nil {
-		_c.SetActualizadoEn(*v)
-	}
-	return _c
-}
-
 // SetPropiedadID sets the "propiedad_id" field.
 func (_c *UnidadCreate) SetPropiedadID(v int) *UnidadCreate {
 	_c.mutation.SetPropiedadID(v)
@@ -363,10 +349,6 @@ func (_c *UnidadCreate) defaults() {
 		v := unidad.DefaultCreadoEn()
 		_c.mutation.SetCreadoEn(v)
 	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		v := unidad.DefaultActualizadoEn()
-		_c.mutation.SetActualizadoEn(v)
-	}
 	if _, ok := _c.mutation.Tipo(); !ok {
 		v := unidad.DefaultTipo
 		_c.mutation.SetTipo(v)
@@ -417,9 +399,6 @@ func (_c *UnidadCreate) defaults() {
 func (_c *UnidadCreate) check() error {
 	if _, ok := _c.mutation.CreadoEn(); !ok {
 		return &ValidationError{Name: "creado_en", err: errors.New(`ent: missing required field "Unidad.creado_en"`)}
-	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		return &ValidationError{Name: "actualizado_en", err: errors.New(`ent: missing required field "Unidad.actualizado_en"`)}
 	}
 	if _, ok := _c.mutation.PropiedadID(); !ok {
 		return &ValidationError{Name: "propiedad_id", err: errors.New(`ent: missing required field "Unidad.propiedad_id"`)}
@@ -537,10 +516,6 @@ func (_c *UnidadCreate) createSpec() (*Unidad, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.CreadoEn(); ok {
 		_spec.SetField(unidad.FieldCreadoEn, field.TypeTime, value)
 		_node.CreadoEn = value
-	}
-	if value, ok := _c.mutation.ActualizadoEn(); ok {
-		_spec.SetField(unidad.FieldActualizadoEn, field.TypeTime, value)
-		_node.ActualizadoEn = value
 	}
 	if value, ok := _c.mutation.Codigo(); ok {
 		_spec.SetField(unidad.FieldCodigo, field.TypeString, value)

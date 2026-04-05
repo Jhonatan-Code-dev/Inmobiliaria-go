@@ -3,8 +3,6 @@
 package rol
 
 import (
-	"time"
-
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -14,10 +12,6 @@ const (
 	Label = "rol"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldCreadoEn holds the string denoting the creado_en field in the database.
-	FieldCreadoEn = "creado_en"
-	// FieldActualizadoEn holds the string denoting the actualizado_en field in the database.
-	FieldActualizadoEn = "actualizado_en"
 	// FieldNombre holds the string denoting the nombre field in the database.
 	FieldNombre = "nombre"
 	// FieldDescripcion holds the string denoting the descripcion field in the database.
@@ -38,8 +32,6 @@ const (
 // Columns holds all SQL columns for rol fields.
 var Columns = []string{
 	FieldID,
-	FieldCreadoEn,
-	FieldActualizadoEn,
 	FieldNombre,
 	FieldDescripcion,
 }
@@ -55,12 +47,6 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// DefaultCreadoEn holds the default value on creation for the "creado_en" field.
-	DefaultCreadoEn func() time.Time
-	// DefaultActualizadoEn holds the default value on creation for the "actualizado_en" field.
-	DefaultActualizadoEn func() time.Time
-	// UpdateDefaultActualizadoEn holds the default value on update for the "actualizado_en" field.
-	UpdateDefaultActualizadoEn func() time.Time
 	// NombreValidator is a validator for the "nombre" field. It is called by the builders before save.
 	NombreValidator func(string) error
 	// DescripcionValidator is a validator for the "descripcion" field. It is called by the builders before save.
@@ -73,16 +59,6 @@ type OrderOption func(*sql.Selector)
 // ByID orders the results by the id field.
 func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
-}
-
-// ByCreadoEn orders the results by the creado_en field.
-func ByCreadoEn(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCreadoEn, opts...).ToFunc()
-}
-
-// ByActualizadoEn orders the results by the actualizado_en field.
-func ByActualizadoEn(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldActualizadoEn, opts...).ToFunc()
 }
 
 // ByNombre orders the results by the nombre field.

@@ -4,7 +4,6 @@ package rol
 
 import (
 	"rentals-go/ent/predicate"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -55,16 +54,6 @@ func IDLTE(id int) predicate.Rol {
 	return predicate.Rol(sql.FieldLTE(FieldID, id))
 }
 
-// CreadoEn applies equality check predicate on the "creado_en" field. It's identical to CreadoEnEQ.
-func CreadoEn(v time.Time) predicate.Rol {
-	return predicate.Rol(sql.FieldEQ(FieldCreadoEn, v))
-}
-
-// ActualizadoEn applies equality check predicate on the "actualizado_en" field. It's identical to ActualizadoEnEQ.
-func ActualizadoEn(v time.Time) predicate.Rol {
-	return predicate.Rol(sql.FieldEQ(FieldActualizadoEn, v))
-}
-
 // Nombre applies equality check predicate on the "nombre" field. It's identical to NombreEQ.
 func Nombre(v string) predicate.Rol {
 	return predicate.Rol(sql.FieldEQ(FieldNombre, v))
@@ -73,86 +62,6 @@ func Nombre(v string) predicate.Rol {
 // Descripcion applies equality check predicate on the "descripcion" field. It's identical to DescripcionEQ.
 func Descripcion(v string) predicate.Rol {
 	return predicate.Rol(sql.FieldEQ(FieldDescripcion, v))
-}
-
-// CreadoEnEQ applies the EQ predicate on the "creado_en" field.
-func CreadoEnEQ(v time.Time) predicate.Rol {
-	return predicate.Rol(sql.FieldEQ(FieldCreadoEn, v))
-}
-
-// CreadoEnNEQ applies the NEQ predicate on the "creado_en" field.
-func CreadoEnNEQ(v time.Time) predicate.Rol {
-	return predicate.Rol(sql.FieldNEQ(FieldCreadoEn, v))
-}
-
-// CreadoEnIn applies the In predicate on the "creado_en" field.
-func CreadoEnIn(vs ...time.Time) predicate.Rol {
-	return predicate.Rol(sql.FieldIn(FieldCreadoEn, vs...))
-}
-
-// CreadoEnNotIn applies the NotIn predicate on the "creado_en" field.
-func CreadoEnNotIn(vs ...time.Time) predicate.Rol {
-	return predicate.Rol(sql.FieldNotIn(FieldCreadoEn, vs...))
-}
-
-// CreadoEnGT applies the GT predicate on the "creado_en" field.
-func CreadoEnGT(v time.Time) predicate.Rol {
-	return predicate.Rol(sql.FieldGT(FieldCreadoEn, v))
-}
-
-// CreadoEnGTE applies the GTE predicate on the "creado_en" field.
-func CreadoEnGTE(v time.Time) predicate.Rol {
-	return predicate.Rol(sql.FieldGTE(FieldCreadoEn, v))
-}
-
-// CreadoEnLT applies the LT predicate on the "creado_en" field.
-func CreadoEnLT(v time.Time) predicate.Rol {
-	return predicate.Rol(sql.FieldLT(FieldCreadoEn, v))
-}
-
-// CreadoEnLTE applies the LTE predicate on the "creado_en" field.
-func CreadoEnLTE(v time.Time) predicate.Rol {
-	return predicate.Rol(sql.FieldLTE(FieldCreadoEn, v))
-}
-
-// ActualizadoEnEQ applies the EQ predicate on the "actualizado_en" field.
-func ActualizadoEnEQ(v time.Time) predicate.Rol {
-	return predicate.Rol(sql.FieldEQ(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnNEQ applies the NEQ predicate on the "actualizado_en" field.
-func ActualizadoEnNEQ(v time.Time) predicate.Rol {
-	return predicate.Rol(sql.FieldNEQ(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnIn applies the In predicate on the "actualizado_en" field.
-func ActualizadoEnIn(vs ...time.Time) predicate.Rol {
-	return predicate.Rol(sql.FieldIn(FieldActualizadoEn, vs...))
-}
-
-// ActualizadoEnNotIn applies the NotIn predicate on the "actualizado_en" field.
-func ActualizadoEnNotIn(vs ...time.Time) predicate.Rol {
-	return predicate.Rol(sql.FieldNotIn(FieldActualizadoEn, vs...))
-}
-
-// ActualizadoEnGT applies the GT predicate on the "actualizado_en" field.
-func ActualizadoEnGT(v time.Time) predicate.Rol {
-	return predicate.Rol(sql.FieldGT(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnGTE applies the GTE predicate on the "actualizado_en" field.
-func ActualizadoEnGTE(v time.Time) predicate.Rol {
-	return predicate.Rol(sql.FieldGTE(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnLT applies the LT predicate on the "actualizado_en" field.
-func ActualizadoEnLT(v time.Time) predicate.Rol {
-	return predicate.Rol(sql.FieldLT(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnLTE applies the LTE predicate on the "actualizado_en" field.
-func ActualizadoEnLTE(v time.Time) predicate.Rol {
-	return predicate.Rol(sql.FieldLTE(FieldActualizadoEn, v))
 }
 
 // NombreEQ applies the EQ predicate on the "nombre" field.

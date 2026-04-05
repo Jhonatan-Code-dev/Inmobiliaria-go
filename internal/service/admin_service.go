@@ -59,7 +59,13 @@ func (s *AdminService) Perfil(ctx context.Context, adminID int) (*domain.Admin, 
 }
 
 func (s *AdminService) CrearEmpresaConUsuario(ctx context.Context, emp *domain.Empresa, usuario *domain.Usuario, rolID int) (*domain.Empresa, *domain.Usuario, error) {
+	if emp.Moneda == "" {
+		emp.Moneda = moneda.ObtenerMonedaPorPais(emp.Pais)
+	}
 	emp.Moneda = moneda.NormalizarCodigo(emp.Moneda)
+	if emp.Moneda == "" {
+		emp.Moneda = "PEN"
+	}
 	if err := moneda.ValidarCodigo(emp.Moneda); err != nil {
 		return nil, nil, ErrMonedaInvalida
 	}
@@ -99,8 +105,8 @@ func (s *AdminService) obtenerRolAdministrador(ctx context.Context, rolID int) (
 	return rolNuevo.ID, nil
 }
 
-func (s *AdminService) ListarEmpresas(ctx context.Context) ([]*domain.Empresa, error) {
-	return s.empresaRepo.Listar(ctx)
+func (s *AdminService) ListarEmpresas(ctx context.Context, limite, offset int, busqueda string) ([]*domain.Empresa, int, error) {
+	return s.empresaRepo.ListarPaginado(ctx, limite, offset, busqueda)
 }
 
 func (s *AdminService) ObtenerEmpresa(ctx context.Context, id int) (*domain.Empresa, error) {
@@ -108,7 +114,13 @@ func (s *AdminService) ObtenerEmpresa(ctx context.Context, id int) (*domain.Empr
 }
 
 func (s *AdminService) ActualizarEmpresa(ctx context.Context, emp *domain.Empresa) (*domain.Empresa, error) {
+	if emp.Moneda == "" {
+		emp.Moneda = moneda.ObtenerMonedaPorPais(emp.Pais)
+	}
 	emp.Moneda = moneda.NormalizarCodigo(emp.Moneda)
+	if emp.Moneda == "" {
+		emp.Moneda = "PEN"
+	}
 	if err := moneda.ValidarCodigo(emp.Moneda); err != nil {
 		return nil, ErrMonedaInvalida
 	}

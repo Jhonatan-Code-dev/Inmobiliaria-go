@@ -37,20 +37,6 @@ func (_c *EmpresaUsuarioCreate) SetNillableCreadoEn(v *time.Time) *EmpresaUsuari
 	return _c
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_c *EmpresaUsuarioCreate) SetActualizadoEn(v time.Time) *EmpresaUsuarioCreate {
-	_c.mutation.SetActualizadoEn(v)
-	return _c
-}
-
-// SetNillableActualizadoEn sets the "actualizado_en" field if the given value is not nil.
-func (_c *EmpresaUsuarioCreate) SetNillableActualizadoEn(v *time.Time) *EmpresaUsuarioCreate {
-	if v != nil {
-		_c.SetActualizadoEn(*v)
-	}
-	return _c
-}
-
 // SetEmpresaID sets the "empresa_id" field.
 func (_c *EmpresaUsuarioCreate) SetEmpresaID(v int) *EmpresaUsuarioCreate {
 	_c.mutation.SetEmpresaID(v)
@@ -151,10 +137,6 @@ func (_c *EmpresaUsuarioCreate) defaults() {
 		v := empresausuario.DefaultCreadoEn()
 		_c.mutation.SetCreadoEn(v)
 	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		v := empresausuario.DefaultActualizadoEn()
-		_c.mutation.SetActualizadoEn(v)
-	}
 	if _, ok := _c.mutation.Principal(); !ok {
 		v := empresausuario.DefaultPrincipal
 		_c.mutation.SetPrincipal(v)
@@ -169,9 +151,6 @@ func (_c *EmpresaUsuarioCreate) defaults() {
 func (_c *EmpresaUsuarioCreate) check() error {
 	if _, ok := _c.mutation.CreadoEn(); !ok {
 		return &ValidationError{Name: "creado_en", err: errors.New(`ent: missing required field "EmpresaUsuario.creado_en"`)}
-	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		return &ValidationError{Name: "actualizado_en", err: errors.New(`ent: missing required field "EmpresaUsuario.actualizado_en"`)}
 	}
 	if _, ok := _c.mutation.EmpresaID(); !ok {
 		return &ValidationError{Name: "empresa_id", err: errors.New(`ent: missing required field "EmpresaUsuario.empresa_id"`)}
@@ -231,10 +210,6 @@ func (_c *EmpresaUsuarioCreate) createSpec() (*EmpresaUsuario, *sqlgraph.CreateS
 	if value, ok := _c.mutation.CreadoEn(); ok {
 		_spec.SetField(empresausuario.FieldCreadoEn, field.TypeTime, value)
 		_node.CreadoEn = value
-	}
-	if value, ok := _c.mutation.ActualizadoEn(); ok {
-		_spec.SetField(empresausuario.FieldActualizadoEn, field.TypeTime, value)
-		_node.ActualizadoEn = value
 	}
 	if value, ok := _c.mutation.Principal(); ok {
 		_spec.SetField(empresausuario.FieldPrincipal, field.TypeBool, value)

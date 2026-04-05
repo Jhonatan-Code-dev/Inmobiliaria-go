@@ -37,20 +37,6 @@ func (_c *PropiedadCreate) SetNillableCreadoEn(v *time.Time) *PropiedadCreate {
 	return _c
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_c *PropiedadCreate) SetActualizadoEn(v time.Time) *PropiedadCreate {
-	_c.mutation.SetActualizadoEn(v)
-	return _c
-}
-
-// SetNillableActualizadoEn sets the "actualizado_en" field if the given value is not nil.
-func (_c *PropiedadCreate) SetNillableActualizadoEn(v *time.Time) *PropiedadCreate {
-	if v != nil {
-		_c.SetActualizadoEn(*v)
-	}
-	return _c
-}
-
 // SetEmpresaID sets the "empresa_id" field.
 func (_c *PropiedadCreate) SetEmpresaID(v int) *PropiedadCreate {
 	_c.mutation.SetEmpresaID(v)
@@ -269,10 +255,6 @@ func (_c *PropiedadCreate) defaults() {
 		v := propiedad.DefaultCreadoEn()
 		_c.mutation.SetCreadoEn(v)
 	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		v := propiedad.DefaultActualizadoEn()
-		_c.mutation.SetActualizadoEn(v)
-	}
 	if _, ok := _c.mutation.Tipo(); !ok {
 		v := propiedad.DefaultTipo
 		_c.mutation.SetTipo(v)
@@ -295,9 +277,6 @@ func (_c *PropiedadCreate) defaults() {
 func (_c *PropiedadCreate) check() error {
 	if _, ok := _c.mutation.CreadoEn(); !ok {
 		return &ValidationError{Name: "creado_en", err: errors.New(`ent: missing required field "Propiedad.creado_en"`)}
-	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		return &ValidationError{Name: "actualizado_en", err: errors.New(`ent: missing required field "Propiedad.actualizado_en"`)}
 	}
 	if _, ok := _c.mutation.EmpresaID(); !ok {
 		return &ValidationError{Name: "empresa_id", err: errors.New(`ent: missing required field "Propiedad.empresa_id"`)}
@@ -407,10 +386,6 @@ func (_c *PropiedadCreate) createSpec() (*Propiedad, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.CreadoEn(); ok {
 		_spec.SetField(propiedad.FieldCreadoEn, field.TypeTime, value)
 		_node.CreadoEn = value
-	}
-	if value, ok := _c.mutation.ActualizadoEn(); ok {
-		_spec.SetField(propiedad.FieldActualizadoEn, field.TypeTime, value)
-		_node.ActualizadoEn = value
 	}
 	if value, ok := _c.mutation.Nombre(); ok {
 		_spec.SetField(propiedad.FieldNombre, field.TypeString, value)

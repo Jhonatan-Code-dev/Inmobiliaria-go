@@ -19,7 +19,11 @@ func (Empresa) Mixin() []ent.Mixin {
 
 func (Empresa) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		entsql.Annotation{Table: "empresas"},
+		entsql.Annotation{
+			Table:     "empresas",
+			Charset:   "utf8mb4",
+			Collation: "utf8mb4_bin",
+		},
 	}
 }
 
@@ -29,9 +33,8 @@ func (Empresa) Fields() []ent.Field {
 		field.String("pais").Optional().Nillable().MaxLen(2),
 		codigoMoneda("moneda", "PEN"),
 		field.Int("maximo_usuarios").Default(1).Positive(),
-		field.Enum("estado").
-			Values("activa", "inactiva", "suspendida").
-			Default("activa"),
+		field.Bool("estado").Default(true),
+		field.Time("vencimiento").Optional().Nillable(),
 	}
 }
 

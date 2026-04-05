@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"rentals-go/ent/admin"
 	"rentals-go/ent/predicate"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -25,12 +24,6 @@ type AdminUpdate struct {
 // Where appends a list predicates to the AdminUpdate builder.
 func (_u *AdminUpdate) Where(ps ...predicate.Admin) *AdminUpdate {
 	_u.mutation.Where(ps...)
-	return _u
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *AdminUpdate) SetActualizadoEn(v time.Time) *AdminUpdate {
-	_u.mutation.SetActualizadoEn(v)
 	return _u
 }
 
@@ -83,7 +76,6 @@ func (_u *AdminUpdate) Mutation() *AdminMutation {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *AdminUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -106,14 +98,6 @@ func (_u *AdminUpdate) Exec(ctx context.Context) error {
 func (_u *AdminUpdate) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *AdminUpdate) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := admin.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -144,9 +128,6 @@ func (_u *AdminUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			}
 		}
 	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(admin.FieldActualizadoEn, field.TypeTime, value)
-	}
 	if value, ok := _u.mutation.Usuario(); ok {
 		_spec.SetField(admin.FieldUsuario, field.TypeString, value)
 	}
@@ -174,12 +155,6 @@ type AdminUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *AdminMutation
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *AdminUpdateOne) SetActualizadoEn(v time.Time) *AdminUpdateOne {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
 }
 
 // SetUsuario sets the "usuario" field.
@@ -244,7 +219,6 @@ func (_u *AdminUpdateOne) Select(field string, fields ...string) *AdminUpdateOne
 
 // Save executes the query and returns the updated Admin entity.
 func (_u *AdminUpdateOne) Save(ctx context.Context) (*Admin, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -267,14 +241,6 @@ func (_u *AdminUpdateOne) Exec(ctx context.Context) error {
 func (_u *AdminUpdateOne) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *AdminUpdateOne) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := admin.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -321,9 +287,6 @@ func (_u *AdminUpdateOne) sqlSave(ctx context.Context) (_node *Admin, err error)
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(admin.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Usuario(); ok {
 		_spec.SetField(admin.FieldUsuario, field.TypeString, value)

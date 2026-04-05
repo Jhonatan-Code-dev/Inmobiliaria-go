@@ -9,7 +9,6 @@ import (
 	"rentals-go/ent/cliente"
 	"rentals-go/ent/predicate"
 	"rentals-go/ent/tipoidentificacion"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -26,12 +25,6 @@ type TipoIdentificacionUpdate struct {
 // Where appends a list predicates to the TipoIdentificacionUpdate builder.
 func (_u *TipoIdentificacionUpdate) Where(ps ...predicate.TipoIdentificacion) *TipoIdentificacionUpdate {
 	_u.mutation.Where(ps...)
-	return _u
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *TipoIdentificacionUpdate) SetActualizadoEn(v time.Time) *TipoIdentificacionUpdate {
-	_u.mutation.SetActualizadoEn(v)
 	return _u
 }
 
@@ -140,7 +133,6 @@ func (_u *TipoIdentificacionUpdate) RemoveClientes(v ...*Cliente) *TipoIdentific
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *TipoIdentificacionUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -163,14 +155,6 @@ func (_u *TipoIdentificacionUpdate) Exec(ctx context.Context) error {
 func (_u *TipoIdentificacionUpdate) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *TipoIdentificacionUpdate) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := tipoidentificacion.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -205,9 +189,6 @@ func (_u *TipoIdentificacionUpdate) sqlSave(ctx context.Context) (_node int, err
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(tipoidentificacion.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Codigo(); ok {
 		_spec.SetField(tipoidentificacion.FieldCodigo, field.TypeString, value)
@@ -287,12 +268,6 @@ type TipoIdentificacionUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *TipoIdentificacionMutation
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *TipoIdentificacionUpdateOne) SetActualizadoEn(v time.Time) *TipoIdentificacionUpdateOne {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
 }
 
 // SetCodigo sets the "codigo" field.
@@ -413,7 +388,6 @@ func (_u *TipoIdentificacionUpdateOne) Select(field string, fields ...string) *T
 
 // Save executes the query and returns the updated TipoIdentificacion entity.
 func (_u *TipoIdentificacionUpdateOne) Save(ctx context.Context) (*TipoIdentificacion, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -436,14 +410,6 @@ func (_u *TipoIdentificacionUpdateOne) Exec(ctx context.Context) error {
 func (_u *TipoIdentificacionUpdateOne) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *TipoIdentificacionUpdateOne) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := tipoidentificacion.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -495,9 +461,6 @@ func (_u *TipoIdentificacionUpdateOne) sqlSave(ctx context.Context) (_node *Tipo
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(tipoidentificacion.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Codigo(); ok {
 		_spec.SetField(tipoidentificacion.FieldCodigo, field.TypeString, value)

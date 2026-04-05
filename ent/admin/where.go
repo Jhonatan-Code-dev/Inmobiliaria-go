@@ -59,11 +59,6 @@ func CreadoEn(v time.Time) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldCreadoEn, v))
 }
 
-// ActualizadoEn applies equality check predicate on the "actualizado_en" field. It's identical to ActualizadoEnEQ.
-func ActualizadoEn(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldEQ(FieldActualizadoEn, v))
-}
-
 // Usuario applies equality check predicate on the "usuario" field. It's identical to UsuarioEQ.
 func Usuario(v string) predicate.Admin {
 	return predicate.Admin(sql.FieldEQ(FieldUsuario, v))
@@ -117,46 +112,6 @@ func CreadoEnLT(v time.Time) predicate.Admin {
 // CreadoEnLTE applies the LTE predicate on the "creado_en" field.
 func CreadoEnLTE(v time.Time) predicate.Admin {
 	return predicate.Admin(sql.FieldLTE(FieldCreadoEn, v))
-}
-
-// ActualizadoEnEQ applies the EQ predicate on the "actualizado_en" field.
-func ActualizadoEnEQ(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldEQ(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnNEQ applies the NEQ predicate on the "actualizado_en" field.
-func ActualizadoEnNEQ(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldNEQ(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnIn applies the In predicate on the "actualizado_en" field.
-func ActualizadoEnIn(vs ...time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldIn(FieldActualizadoEn, vs...))
-}
-
-// ActualizadoEnNotIn applies the NotIn predicate on the "actualizado_en" field.
-func ActualizadoEnNotIn(vs ...time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldNotIn(FieldActualizadoEn, vs...))
-}
-
-// ActualizadoEnGT applies the GT predicate on the "actualizado_en" field.
-func ActualizadoEnGT(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldGT(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnGTE applies the GTE predicate on the "actualizado_en" field.
-func ActualizadoEnGTE(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldGTE(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnLT applies the LT predicate on the "actualizado_en" field.
-func ActualizadoEnLT(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldLT(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnLTE applies the LTE predicate on the "actualizado_en" field.
-func ActualizadoEnLTE(v time.Time) predicate.Admin {
-	return predicate.Admin(sql.FieldLTE(FieldActualizadoEn, v))
 }
 
 // UsuarioEQ applies the EQ predicate on the "usuario" field.

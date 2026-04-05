@@ -17,8 +17,6 @@ const (
 	FieldID = "id"
 	// FieldCreadoEn holds the string denoting the creado_en field in the database.
 	FieldCreadoEn = "creado_en"
-	// FieldActualizadoEn holds the string denoting the actualizado_en field in the database.
-	FieldActualizadoEn = "actualizado_en"
 	// FieldUnidadID holds the string denoting the unidad_id field in the database.
 	FieldUnidadID = "unidad_id"
 	// FieldTipoServicio holds the string denoting the tipo_servicio field in the database.
@@ -58,7 +56,6 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldCreadoEn,
-	FieldActualizadoEn,
 	FieldUnidadID,
 	FieldTipoServicio,
 	FieldPeriodoInicio,
@@ -85,10 +82,6 @@ func ValidColumn(column string) bool {
 var (
 	// DefaultCreadoEn holds the default value on creation for the "creado_en" field.
 	DefaultCreadoEn func() time.Time
-	// DefaultActualizadoEn holds the default value on creation for the "actualizado_en" field.
-	DefaultActualizadoEn func() time.Time
-	// UpdateDefaultActualizadoEn holds the default value on update for the "actualizado_en" field.
-	UpdateDefaultActualizadoEn func() time.Time
 	// DefaultLecturaAnterior holds the default value on creation for the "lectura_anterior" field.
 	DefaultLecturaAnterior float64
 	// DefaultLecturaActual holds the default value on creation for the "lectura_actual" field.
@@ -147,11 +140,6 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByCreadoEn orders the results by the creado_en field.
 func ByCreadoEn(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreadoEn, opts...).ToFunc()
-}
-
-// ByActualizadoEn orders the results by the actualizado_en field.
-func ByActualizadoEn(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldActualizadoEn, opts...).ToFunc()
 }
 
 // ByUnidadID orders the results by the unidad_id field.

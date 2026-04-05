@@ -8,6 +8,7 @@ import (
 
 	"rentals-go/config/security"
 	"rentals-go/internal/domain"
+	"rentals-go/internal/pkg/moneda"
 	"rentals-go/internal/service"
 
 	"github.com/gofiber/fiber/v2"
@@ -25,9 +26,10 @@ type adminLoginResponse struct {
 
 type crearEmpresaRequest struct {
 	Empresa struct {
-		Nombre string `json:"nombre"`
-		Pais   string `json:"pais"`
-		Moneda string `json:"moneda"`
+		Nombre          string `json:"nombre"`
+		Pais            string `json:"pais"`
+		Moneda          string `json:"moneda"`
+		SuscripcionDias int    `json:"suscripcion_dias"`
 	} `json:"empresa"`
 	Usuario struct {
 		Username string `json:"usuario"`
@@ -44,7 +46,7 @@ type actualizarEmpresaRequest struct {
 	Nombre string `json:"nombre"`
 	Pais   string `json:"pais"`
 	Moneda string `json:"moneda"`
-	Estado string `json:"estado"`
+	Estado bool   `json:"estado"`
 }
 
 type adminCredencialesRequest struct {
@@ -80,18 +82,27 @@ func NewAdminController(svc *service.AdminService) *AdminController {
 // @Produce json
 // @Param credentials body adminLoginRequest true "Credenciales"
 // @Success 200 {object} adminLoginResponse
-// @Failure 400 {object} errorResponse
-// @Failure 401 {object} errorResponse
-// @Failure 500 {object} errorResponse
+// @Failure 400 {object} errorResponse "Faltan datos o el formato es incorrecto"
+// @Failure 401 {object} errorResponse "Usuario o contraseña incorrecto"
+// @Failure 500 {object} errorResponse "Ha ocurrido un error inesperado, intente más tarde"
 // @Router /admin/login [post]
 func (h *AdminController) Login(c *fiber.Ctx) error {
 	var req adminLoginRequest
 	if err := c.BodyParser(&req); err != nil {
-		return fiber.ErrBadRequest
+		return c.Status(fiber.StatusBadRequest).JSON(errorResponse{
+			Message: "Faltan datos o el formato es incorrecto",
+		})
 	}
 	token, err := h.svc.Login(c.Context(), req.Usuario, req.Contrasena)
 	if err != nil {
-		return fiber.NewError(http.StatusUnauthorized, "credenciales inválidas")
+		if err == service.ErrCredenciales {
+			return c.Status(fiber.StatusUnauthorized).JSON(errorResponse{
+				Message: "Usuario o contraseña incorrecto",
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(errorResponse{
+			Message: "Ha ocurrido un error inesperado, intente más tarde",
+		})
 	}
 	c.Cookie(&fiber.Cookie{Name: "token_admin", Value: token, HTTPOnly: true, Path: "/"})
 	return c.JSON(adminLoginResponse{Token: token})
@@ -173,10 +184,25 @@ func (h *AdminController) CrearEmpresa(c *fiber.Ctx) error {
 	if err != nil {
 		return fiber.ErrInternalServerError
 	}
+	monedaCod := moneda.NormalizarCodigo(req.Empresa.Moneda)
+	if monedaCod == "" {
+		monedaCod = moneda.ObtenerMonedaPorPais(req.Empresa.Pais)
+	}
+	if monedaCod == "" {
+		monedaCod = "PEN"
+	}
+
+	var vencimiento time.Time
+	if req.Empresa.SuscripcionDias > 0 {
+		vencimiento = time.Now().UTC().AddDate(0, 0, req.Empresa.SuscripcionDias)
+	}
+
 	emp := &domain.Empresa{
-		Nombre: req.Empresa.Nombre,
-		Pais:   req.Empresa.Pais,
-		Moneda: defaultString(req.Empresa.Moneda, "PEN"),
+		Nombre:      req.Empresa.Nombre,
+		Pais:        req.Empresa.Pais,
+		Moneda:      monedaCod,
+		Estado:      true,
+		Vencimiento: vencimiento,
 	}
 	u := &domain.Usuario{
 		Usuario:        req.Usuario.Username,
@@ -219,29 +245,86 @@ func (h *AdminController) ObtenerEmpresa(c *fiber.Ctx) error {
 	return c.JSON(mapEmpresaResponse(empresa))
 }
 
-// ListarEmpresas godoc
-// @Summary Listado de empresas
-// @Description Retorna todas las empresas registradas.
+// DetalleEmpresa godoc
+// @Summary Detalle completo de empresa
+// @Description Devuelve todos los datos de una empresa: info general, moneda con render, suscripcion, estado y fechas.
 // @Tags admin
 // @Produce json
 // @Security BearerAuth
-// @Success 200 {array} empresaResponse
+// @Param id path int true "ID de empresa"
+// @Success 200 {object} empresaDetalleResponse
+// @Failure 400 {object} errorResponse
+// @Failure 401 {object} errorResponse
+// @Failure 500 {object} errorResponse
+// @Router /admin/empresas/{id}/detalle [get]
+func (h *AdminController) DetalleEmpresa(c *fiber.Ctx) error {
+	id, err := parseIDParam(c)
+	if err != nil {
+		return fiber.ErrBadRequest
+	}
+	empresa, err := h.svc.ObtenerEmpresa(c.Context(), id)
+	if err != nil {
+		return fiber.ErrInternalServerError
+	}
+	return c.JSON(mapEmpresaDetalleResponse(empresa))
+}
+
+// ListarEmpresas godoc
+// @Summary Listado de empresas
+// @Description Retorna las empresas registradas de forma paginada (máx 10 por página). Permite buscar por nombre.
+// @Tags admin
+// @Produce json
+// @Security BearerAuth
+// @Param pagina query int false "Número de página" default(1)
+// @Param busqueda query string false "Texto a buscar en el nombre"
+// @Success 200 {object} listadoEmpresasResponse
 // @Failure 401 {object} errorResponse
 // @Failure 500 {object} errorResponse
 // @Router /admin/empresas [get]
 func (h *AdminController) ListarEmpresas(c *fiber.Ctx) error {
-	list, err := h.svc.ListarEmpresas(c.Context())
+	pagina, _ := strconv.Atoi(c.Query("pagina", "1"))
+	if pagina < 1 {
+		pagina = 1
+	}
+	porPagina := 10 // fijado a max 10
+	
+	busqueda := strings.TrimSpace(c.Query("busqueda", ""))
+	
+	offset := (pagina - 1) * porPagina
+
+	list, total, err := h.svc.ListarEmpresas(c.Context(), porPagina, offset, busqueda)
 	if err != nil {
 		return fiber.ErrInternalServerError
 	}
-	resp := make([]empresaResponse, 0, len(list))
+	
+	paginasTotales := total / porPagina
+	if total%porPagina > 0 {
+		paginasTotales++
+	}
+
+	datos := make([]empresaListItemResponse, 0, len(list))
 	for _, e := range list {
-		mapped := mapEmpresaResponse(e)
-		if mapped != nil {
-			resp = append(resp, *mapped)
+		if e != nil {
+			datos = append(datos, empresaListItemResponse{
+				ID:          e.ID,
+				Nombre:      e.Nombre,
+				Pais:        e.Pais,
+				Estado:      e.Estado,
+				Vencimiento: e.Vencimiento,
+				CreadoEn:    e.CreadoEn,
+			})
 		}
 	}
-	return c.JSON(resp)
+
+	return c.JSON(listadoEmpresasResponse{
+		Datos: datos,
+		Paginacion: paginadorResponse{
+			Total:     total,
+			Paginas:   paginasTotales,
+			Pagina:    pagina,
+			PorPagina: porPagina,
+		},
+	})
 }
 
 // ActualizarEmpresa godoc
@@ -272,11 +355,19 @@ func (h *AdminController) ActualizarEmpresa(c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 
+	monedaCod := moneda.NormalizarCodigo(req.Moneda)
+	if monedaCod == "" {
+		monedaCod = moneda.ObtenerMonedaPorPais(req.Pais)
+	}
+	if monedaCod == "" {
+		monedaCod = "PEN"
+	}
+
 	empresa, err := h.svc.ActualizarEmpresa(c.Context(), &domain.Empresa{
 		ID:     id,
 		Nombre: req.Nombre,
 		Pais:   req.Pais,
-		Moneda: defaultString(req.Moneda, "PEN"),
+		Moneda: monedaCod,
 		Estado: req.Estado,
 	})
 	if err != nil {

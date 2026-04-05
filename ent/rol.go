@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"rentals-go/ent/rol"
 	"strings"
-	"time"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -17,10 +16,6 @@ type Rol struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
-	// CreadoEn holds the value of the "creado_en" field.
-	CreadoEn time.Time `json:"creado_en,omitempty"`
-	// ActualizadoEn holds the value of the "actualizado_en" field.
-	ActualizadoEn time.Time `json:"actualizado_en,omitempty"`
 	// Nombre holds the value of the "nombre" field.
 	Nombre string `json:"nombre,omitempty"`
 	// Descripcion holds the value of the "descripcion" field.
@@ -58,8 +53,6 @@ func (*Rol) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case rol.FieldNombre, rol.FieldDescripcion:
 			values[i] = new(sql.NullString)
-		case rol.FieldCreadoEn, rol.FieldActualizadoEn:
-			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -81,18 +74,6 @@ func (_m *Rol) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			_m.ID = int(value.Int64)
-		case rol.FieldCreadoEn:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field creado_en", values[i])
-			} else if value.Valid {
-				_m.CreadoEn = value.Time
-			}
-		case rol.FieldActualizadoEn:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field actualizado_en", values[i])
-			} else if value.Valid {
-				_m.ActualizadoEn = value.Time
-			}
 		case rol.FieldNombre:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field nombre", values[i])
@@ -147,12 +128,6 @@ func (_m *Rol) String() string {
 	var builder strings.Builder
 	builder.WriteString("Rol(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
-	builder.WriteString("creado_en=")
-	builder.WriteString(_m.CreadoEn.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("actualizado_en=")
-	builder.WriteString(_m.ActualizadoEn.Format(time.ANSIC))
-	builder.WriteString(", ")
 	builder.WriteString("nombre=")
 	builder.WriteString(_m.Nombre)
 	builder.WriteString(", ")

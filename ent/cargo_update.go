@@ -30,12 +30,6 @@ func (_u *CargoUpdate) Where(ps ...predicate.Cargo) *CargoUpdate {
 	return _u
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *CargoUpdate) SetActualizadoEn(v time.Time) *CargoUpdate {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
-}
-
 // SetContratoID sets the "contrato_id" field.
 func (_u *CargoUpdate) SetContratoID(v int) *CargoUpdate {
 	_u.mutation.SetContratoID(v)
@@ -278,7 +272,6 @@ func (_u *CargoUpdate) RemoveAplicacionesPago(v ...*PagoAplicacion) *CargoUpdate
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *CargoUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -301,14 +294,6 @@ func (_u *CargoUpdate) Exec(ctx context.Context) error {
 func (_u *CargoUpdate) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *CargoUpdate) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := cargo.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -351,9 +336,6 @@ func (_u *CargoUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(cargo.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Concepto(); ok {
 		_spec.SetField(cargo.FieldConcepto, field.TypeEnum, value)
@@ -489,12 +471,6 @@ type CargoUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *CargoMutation
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *CargoUpdateOne) SetActualizadoEn(v time.Time) *CargoUpdateOne {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
 }
 
 // SetContratoID sets the "contrato_id" field.
@@ -752,7 +728,6 @@ func (_u *CargoUpdateOne) Select(field string, fields ...string) *CargoUpdateOne
 
 // Save executes the query and returns the updated Cargo entity.
 func (_u *CargoUpdateOne) Save(ctx context.Context) (*Cargo, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -775,14 +750,6 @@ func (_u *CargoUpdateOne) Exec(ctx context.Context) error {
 func (_u *CargoUpdateOne) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *CargoUpdateOne) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := cargo.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -842,9 +809,6 @@ func (_u *CargoUpdateOne) sqlSave(ctx context.Context) (_node *Cargo, err error)
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(cargo.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Concepto(); ok {
 		_spec.SetField(cargo.FieldConcepto, field.TypeEnum, value)

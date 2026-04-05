@@ -33,12 +33,6 @@ func (_u *ClienteUpdate) Where(ps ...predicate.Cliente) *ClienteUpdate {
 	return _u
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *ClienteUpdate) SetActualizadoEn(v time.Time) *ClienteUpdate {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
-}
-
 // SetEmpresaID sets the "empresa_id" field.
 func (_u *ClienteUpdate) SetEmpresaID(v int) *ClienteUpdate {
 	_u.mutation.SetEmpresaID(v)
@@ -406,7 +400,6 @@ func (_u *ClienteUpdate) RemovePagos(v ...*Pago) *ClienteUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *ClienteUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -429,14 +422,6 @@ func (_u *ClienteUpdate) Exec(ctx context.Context) error {
 func (_u *ClienteUpdate) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *ClienteUpdate) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := cliente.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -512,9 +497,6 @@ func (_u *ClienteUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(cliente.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.DocumentoNumero(); ok {
 		_spec.SetField(cliente.FieldDocumentoNumero, field.TypeString, value)
@@ -784,12 +766,6 @@ type ClienteUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *ClienteMutation
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *ClienteUpdateOne) SetActualizadoEn(v time.Time) *ClienteUpdateOne {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
 }
 
 // SetEmpresaID sets the "empresa_id" field.
@@ -1172,7 +1148,6 @@ func (_u *ClienteUpdateOne) Select(field string, fields ...string) *ClienteUpdat
 
 // Save executes the query and returns the updated Cliente entity.
 func (_u *ClienteUpdateOne) Save(ctx context.Context) (*Cliente, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -1195,14 +1170,6 @@ func (_u *ClienteUpdateOne) Exec(ctx context.Context) error {
 func (_u *ClienteUpdateOne) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *ClienteUpdateOne) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := cliente.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -1295,9 +1262,6 @@ func (_u *ClienteUpdateOne) sqlSave(ctx context.Context) (_node *Cliente, err er
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(cliente.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.DocumentoNumero(); ok {
 		_spec.SetField(cliente.FieldDocumentoNumero, field.TypeString, value)

@@ -40,7 +40,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.adminCredencialesRequest"
+                            "$ref": "#/definitions/controller.adminCredencialesRequest"
                         }
                     }
                 ],
@@ -48,25 +48,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.adminCredencialesResponse"
+                            "$ref": "#/definitions/controller.adminCredencialesResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     }
                 }
@@ -79,7 +79,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Retorna todas las empresas registradas.",
+                "description": "Retorna las empresas registradas de forma paginada (máx 10 por página). Permite buscar por nombre.",
                 "produces": [
                     "application/json"
                 ],
@@ -87,26 +87,38 @@ const docTemplate = `{
                     "admin"
                 ],
                 "summary": "Listado de empresas",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Número de página",
+                        "name": "pagina",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Texto a buscar en el nombre",
+                        "name": "busqueda",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/internal_controller.empresaResponse"
-                            }
+                            "$ref": "#/definitions/controller.listadoEmpresasResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     }
                 }
@@ -135,7 +147,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.crearEmpresaRequest"
+                            "$ref": "#/definitions/controller.crearEmpresaRequest"
                         }
                     }
                 ],
@@ -143,25 +155,25 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.crearEmpresaResponse"
+                            "$ref": "#/definitions/controller.crearEmpresaResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     }
                 }
@@ -195,25 +207,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.empresaResponse"
+                            "$ref": "#/definitions/controller.empresaResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     }
                 }
@@ -249,7 +261,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.actualizarEmpresaRequest"
+                            "$ref": "#/definitions/controller.actualizarEmpresaRequest"
                         }
                     }
                 ],
@@ -257,25 +269,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.empresaResponse"
+                            "$ref": "#/definitions/controller.empresaResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     }
                 }
@@ -310,19 +322,71 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/empresas/{id}/detalle": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Devuelve todos los datos de una empresa: info general, moneda con render, suscripcion, estado y fechas.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Detalle completo de empresa",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de empresa",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.empresaDetalleResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     }
                 }
@@ -348,7 +412,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.adminLoginRequest"
+                            "$ref": "#/definitions/controller.adminLoginRequest"
                         }
                     }
                 ],
@@ -356,25 +420,25 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.adminLoginResponse"
+                            "$ref": "#/definitions/controller.adminLoginResponse"
                         }
                     },
                     "400": {
-                        "description": "Bad Request",
+                        "description": "Faltan datos o el formato es incorrecto",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     },
                     "401": {
-                        "description": "Unauthorized",
+                        "description": "Usuario o contraseña incorrecto",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error",
+                        "description": "Ha ocurrido un error inesperado, intente más tarde",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     }
                 }
@@ -422,19 +486,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.adminProfileResponse"
+                            "$ref": "#/definitions/controller.adminProfileResponse"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     }
                 }
@@ -456,14 +520,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/internal_controller.monedaResponse"
+                                "$ref": "#/definitions/controller.monedaResponse"
                             }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     }
                 }
@@ -492,19 +556,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.monedaResponse"
+                            "$ref": "#/definitions/controller.monedaResponse"
                         }
                     },
                     "400": {
                         "description": "Bad Request",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/internal_controller.errorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     }
                 }
@@ -512,11 +576,11 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "internal_controller.actualizarEmpresaRequest": {
+        "controller.actualizarEmpresaRequest": {
             "type": "object",
             "properties": {
                 "estado": {
-                    "type": "string"
+                    "type": "boolean"
                 },
                 "moneda": {
                     "type": "string"
@@ -529,7 +593,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_controller.adminCredencialesRequest": {
+        "controller.adminCredencialesRequest": {
             "type": "object",
             "properties": {
                 "contrasena": {
@@ -543,7 +607,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_controller.adminCredencialesResponse": {
+        "controller.adminCredencialesResponse": {
             "type": "object",
             "properties": {
                 "id": {
@@ -554,7 +618,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_controller.adminLoginRequest": {
+        "controller.adminLoginRequest": {
             "type": "object",
             "properties": {
                 "contrasena": {
@@ -565,7 +629,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_controller.adminLoginResponse": {
+        "controller.adminLoginResponse": {
             "type": "object",
             "properties": {
                 "token": {
@@ -573,7 +637,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_controller.adminProfileResponse": {
+        "controller.adminProfileResponse": {
             "type": "object",
             "properties": {
                 "activo": {
@@ -587,7 +651,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_controller.crearEmpresaRequest": {
+        "controller.crearEmpresaRequest": {
             "type": "object",
             "properties": {
                 "empresa": {
@@ -601,6 +665,9 @@ const docTemplate = `{
                         },
                         "pais": {
                             "type": "string"
+                        },
+                        "suscripcion_dias": {
+                            "type": "integer"
                         }
                     }
                 },
@@ -617,7 +684,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_controller.crearEmpresaResponse": {
+        "controller.crearEmpresaResponse": {
             "type": "object",
             "properties": {
                 "empresa_id": {
@@ -628,11 +695,14 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_controller.empresaResponse": {
+        "controller.empresaDetalleResponse": {
             "type": "object",
             "properties": {
-                "estado": {
+                "creado_en": {
                     "type": "string"
+                },
+                "estado": {
+                    "type": "boolean"
                 },
                 "id": {
                     "type": "integer"
@@ -644,17 +714,75 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "moneda_info": {
-                    "$ref": "#/definitions/internal_controller.monedaResponse"
+                    "$ref": "#/definitions/controller.monedaResponse"
                 },
                 "nombre": {
                     "type": "string"
                 },
                 "pais": {
                     "type": "string"
+                },
+                "vencimiento": {
+                    "type": "string"
                 }
             }
         },
-        "internal_controller.errorResponse": {
+        "controller.empresaListItemResponse": {
+            "type": "object",
+            "properties": {
+                "creado_en": {
+                    "type": "string"
+                },
+                "estado": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nombre": {
+                    "type": "string"
+                },
+                "pais": {
+                    "type": "string"
+                },
+                "vencimiento": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.empresaResponse": {
+            "type": "object",
+            "properties": {
+                "creado_en": {
+                    "type": "string"
+                },
+                "estado": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "maximo_usuarios": {
+                    "type": "integer"
+                },
+                "moneda": {
+                    "type": "string"
+                },
+                "moneda_info": {
+                    "$ref": "#/definitions/controller.monedaResponse"
+                },
+                "nombre": {
+                    "type": "string"
+                },
+                "pais": {
+                    "type": "string"
+                },
+                "vencimiento": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.errorResponse": {
             "type": "object",
             "properties": {
                 "message": {
@@ -662,7 +790,21 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_controller.monedaRegionResponse": {
+        "controller.listadoEmpresasResponse": {
+            "type": "object",
+            "properties": {
+                "datos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/controller.empresaListItemResponse"
+                    }
+                },
+                "paginacion": {
+                    "$ref": "#/definitions/controller.paginadorResponse"
+                }
+            }
+        },
+        "controller.monedaRegionResponse": {
             "type": "object",
             "properties": {
                 "codigo": {
@@ -673,7 +815,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_controller.monedaRenderResponse": {
+        "controller.monedaRenderResponse": {
             "type": "object",
             "properties": {
                 "currency": {
@@ -690,7 +832,7 @@ const docTemplate = `{
                 }
             }
         },
-        "internal_controller.monedaResponse": {
+        "controller.monedaResponse": {
             "type": "object",
             "properties": {
                 "codigo": {
@@ -705,11 +847,28 @@ const docTemplate = `{
                 "regiones": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/internal_controller.monedaRegionResponse"
+                        "$ref": "#/definitions/controller.monedaRegionResponse"
                     }
                 },
                 "render": {
-                    "$ref": "#/definitions/internal_controller.monedaRenderResponse"
+                    "$ref": "#/definitions/controller.monedaRenderResponse"
+                }
+            }
+        },
+        "controller.paginadorResponse": {
+            "type": "object",
+            "properties": {
+                "pagina": {
+                    "type": "integer"
+                },
+                "paginas": {
+                    "type": "integer"
+                },
+                "por_pagina": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         }

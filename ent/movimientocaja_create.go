@@ -37,20 +37,6 @@ func (_c *MovimientoCajaCreate) SetNillableCreadoEn(v *time.Time) *MovimientoCaj
 	return _c
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_c *MovimientoCajaCreate) SetActualizadoEn(v time.Time) *MovimientoCajaCreate {
-	_c.mutation.SetActualizadoEn(v)
-	return _c
-}
-
-// SetNillableActualizadoEn sets the "actualizado_en" field if the given value is not nil.
-func (_c *MovimientoCajaCreate) SetNillableActualizadoEn(v *time.Time) *MovimientoCajaCreate {
-	if v != nil {
-		_c.SetActualizadoEn(*v)
-	}
-	return _c
-}
-
 // SetEmpresaID sets the "empresa_id" field.
 func (_c *MovimientoCajaCreate) SetEmpresaID(v int) *MovimientoCajaCreate {
 	_c.mutation.SetEmpresaID(v)
@@ -235,10 +221,6 @@ func (_c *MovimientoCajaCreate) defaults() {
 		v := movimientocaja.DefaultCreadoEn()
 		_c.mutation.SetCreadoEn(v)
 	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		v := movimientocaja.DefaultActualizadoEn()
-		_c.mutation.SetActualizadoEn(v)
-	}
 	if _, ok := _c.mutation.Tipo(); !ok {
 		v := movimientocaja.DefaultTipo
 		_c.mutation.SetTipo(v)
@@ -261,9 +243,6 @@ func (_c *MovimientoCajaCreate) defaults() {
 func (_c *MovimientoCajaCreate) check() error {
 	if _, ok := _c.mutation.CreadoEn(); !ok {
 		return &ValidationError{Name: "creado_en", err: errors.New(`ent: missing required field "MovimientoCaja.creado_en"`)}
-	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		return &ValidationError{Name: "actualizado_en", err: errors.New(`ent: missing required field "MovimientoCaja.actualizado_en"`)}
 	}
 	if _, ok := _c.mutation.EmpresaID(); !ok {
 		return &ValidationError{Name: "empresa_id", err: errors.New(`ent: missing required field "MovimientoCaja.empresa_id"`)}
@@ -348,10 +327,6 @@ func (_c *MovimientoCajaCreate) createSpec() (*MovimientoCaja, *sqlgraph.CreateS
 	if value, ok := _c.mutation.CreadoEn(); ok {
 		_spec.SetField(movimientocaja.FieldCreadoEn, field.TypeTime, value)
 		_node.CreadoEn = value
-	}
-	if value, ok := _c.mutation.ActualizadoEn(); ok {
-		_spec.SetField(movimientocaja.FieldActualizadoEn, field.TypeTime, value)
-		_node.ActualizadoEn = value
 	}
 	if value, ok := _c.mutation.Tipo(); ok {
 		_spec.SetField(movimientocaja.FieldTipo, field.TypeEnum, value)

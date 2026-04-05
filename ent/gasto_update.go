@@ -32,12 +32,6 @@ func (_u *GastoUpdate) Where(ps ...predicate.Gasto) *GastoUpdate {
 	return _u
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *GastoUpdate) SetActualizadoEn(v time.Time) *GastoUpdate {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
-}
-
 // SetEmpresaID sets the "empresa_id" field.
 func (_u *GastoUpdate) SetEmpresaID(v int) *GastoUpdate {
 	_u.mutation.SetEmpresaID(v)
@@ -333,7 +327,6 @@ func (_u *GastoUpdate) RemoveMovimientosCaja(v ...*MovimientoCaja) *GastoUpdate 
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *GastoUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -356,14 +349,6 @@ func (_u *GastoUpdate) Exec(ctx context.Context) error {
 func (_u *GastoUpdate) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *GastoUpdate) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := gasto.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -426,9 +411,6 @@ func (_u *GastoUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(gasto.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Categoria(); ok {
 		_spec.SetField(gasto.FieldCategoria, field.TypeEnum, value)
@@ -622,12 +604,6 @@ type GastoUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *GastoMutation
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *GastoUpdateOne) SetActualizadoEn(v time.Time) *GastoUpdateOne {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
 }
 
 // SetEmpresaID sets the "empresa_id" field.
@@ -938,7 +914,6 @@ func (_u *GastoUpdateOne) Select(field string, fields ...string) *GastoUpdateOne
 
 // Save executes the query and returns the updated Gasto entity.
 func (_u *GastoUpdateOne) Save(ctx context.Context) (*Gasto, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -961,14 +936,6 @@ func (_u *GastoUpdateOne) Exec(ctx context.Context) error {
 func (_u *GastoUpdateOne) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *GastoUpdateOne) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := gasto.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -1048,9 +1015,6 @@ func (_u *GastoUpdateOne) sqlSave(ctx context.Context) (_node *Gasto, err error)
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(gasto.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Categoria(); ok {
 		_spec.SetField(gasto.FieldCategoria, field.TypeEnum, value)

@@ -31,12 +31,6 @@ func (_u *MovimientoCajaUpdate) Where(ps ...predicate.MovimientoCaja) *Movimient
 	return _u
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *MovimientoCajaUpdate) SetActualizadoEn(v time.Time) *MovimientoCajaUpdate {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
-}
-
 // SetEmpresaID sets the "empresa_id" field.
 func (_u *MovimientoCajaUpdate) SetEmpresaID(v int) *MovimientoCajaUpdate {
 	_u.mutation.SetEmpresaID(v)
@@ -262,7 +256,6 @@ func (_u *MovimientoCajaUpdate) ClearGasto() *MovimientoCajaUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *MovimientoCajaUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -285,14 +278,6 @@ func (_u *MovimientoCajaUpdate) Exec(ctx context.Context) error {
 func (_u *MovimientoCajaUpdate) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *MovimientoCajaUpdate) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := movimientocaja.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -345,9 +330,6 @@ func (_u *MovimientoCajaUpdate) sqlSave(ctx context.Context) (_node int, err err
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(movimientocaja.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Tipo(); ok {
 		_spec.SetField(movimientocaja.FieldTipo, field.TypeEnum, value)
@@ -487,12 +469,6 @@ type MovimientoCajaUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *MovimientoCajaMutation
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *MovimientoCajaUpdateOne) SetActualizadoEn(v time.Time) *MovimientoCajaUpdateOne {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
 }
 
 // SetEmpresaID sets the "empresa_id" field.
@@ -733,7 +709,6 @@ func (_u *MovimientoCajaUpdateOne) Select(field string, fields ...string) *Movim
 
 // Save executes the query and returns the updated MovimientoCaja entity.
 func (_u *MovimientoCajaUpdateOne) Save(ctx context.Context) (*MovimientoCaja, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -756,14 +731,6 @@ func (_u *MovimientoCajaUpdateOne) Exec(ctx context.Context) error {
 func (_u *MovimientoCajaUpdateOne) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *MovimientoCajaUpdateOne) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := movimientocaja.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -833,9 +800,6 @@ func (_u *MovimientoCajaUpdateOne) sqlSave(ctx context.Context) (_node *Movimien
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(movimientocaja.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Tipo(); ok {
 		_spec.SetField(movimientocaja.FieldTipo, field.TypeEnum, value)

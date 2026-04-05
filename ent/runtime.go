@@ -37,12 +37,6 @@ func init() {
 	adminDescCreadoEn := adminMixinFields0[0].Descriptor()
 	// admin.DefaultCreadoEn holds the default value on creation for the creado_en field.
 	admin.DefaultCreadoEn = adminDescCreadoEn.Default.(func() time.Time)
-	// adminDescActualizadoEn is the schema descriptor for actualizado_en field.
-	adminDescActualizadoEn := adminMixinFields0[1].Descriptor()
-	// admin.DefaultActualizadoEn holds the default value on creation for the actualizado_en field.
-	admin.DefaultActualizadoEn = adminDescActualizadoEn.Default.(func() time.Time)
-	// admin.UpdateDefaultActualizadoEn holds the default value on update for the actualizado_en field.
-	admin.UpdateDefaultActualizadoEn = adminDescActualizadoEn.UpdateDefault.(func() time.Time)
 	// adminDescUsuario is the schema descriptor for usuario field.
 	adminDescUsuario := adminFields[0].Descriptor()
 	// admin.UsuarioValidator is a validator for the "usuario" field. It is called by the builders before save.
@@ -92,12 +86,6 @@ func init() {
 	cargoDescCreadoEn := cargoMixinFields0[0].Descriptor()
 	// cargo.DefaultCreadoEn holds the default value on creation for the creado_en field.
 	cargo.DefaultCreadoEn = cargoDescCreadoEn.Default.(func() time.Time)
-	// cargoDescActualizadoEn is the schema descriptor for actualizado_en field.
-	cargoDescActualizadoEn := cargoMixinFields0[1].Descriptor()
-	// cargo.DefaultActualizadoEn holds the default value on creation for the actualizado_en field.
-	cargo.DefaultActualizadoEn = cargoDescActualizadoEn.Default.(func() time.Time)
-	// cargo.UpdateDefaultActualizadoEn holds the default value on update for the actualizado_en field.
-	cargo.UpdateDefaultActualizadoEn = cargoDescActualizadoEn.UpdateDefault.(func() time.Time)
 	// cargoDescDescripcion is the schema descriptor for descripcion field.
 	cargoDescDescripcion := cargoFields[2].Descriptor()
 	// cargo.DescripcionValidator is a validator for the "descripcion" field. It is called by the builders before save.
@@ -143,12 +131,6 @@ func init() {
 	clienteDescCreadoEn := clienteMixinFields0[0].Descriptor()
 	// cliente.DefaultCreadoEn holds the default value on creation for the creado_en field.
 	cliente.DefaultCreadoEn = clienteDescCreadoEn.Default.(func() time.Time)
-	// clienteDescActualizadoEn is the schema descriptor for actualizado_en field.
-	clienteDescActualizadoEn := clienteMixinFields0[1].Descriptor()
-	// cliente.DefaultActualizadoEn holds the default value on creation for the actualizado_en field.
-	cliente.DefaultActualizadoEn = clienteDescActualizadoEn.Default.(func() time.Time)
-	// cliente.UpdateDefaultActualizadoEn holds the default value on update for the actualizado_en field.
-	cliente.UpdateDefaultActualizadoEn = clienteDescActualizadoEn.UpdateDefault.(func() time.Time)
 	// clienteDescDocumentoNumero is the schema descriptor for documento_numero field.
 	clienteDescDocumentoNumero := clienteFields[2].Descriptor()
 	// cliente.DocumentoNumeroValidator is a validator for the "documento_numero" field. It is called by the builders before save.
@@ -222,12 +204,6 @@ func init() {
 	clientetelefonoDescCreadoEn := clientetelefonoMixinFields0[0].Descriptor()
 	// clientetelefono.DefaultCreadoEn holds the default value on creation for the creado_en field.
 	clientetelefono.DefaultCreadoEn = clientetelefonoDescCreadoEn.Default.(func() time.Time)
-	// clientetelefonoDescActualizadoEn is the schema descriptor for actualizado_en field.
-	clientetelefonoDescActualizadoEn := clientetelefonoMixinFields0[1].Descriptor()
-	// clientetelefono.DefaultActualizadoEn holds the default value on creation for the actualizado_en field.
-	clientetelefono.DefaultActualizadoEn = clientetelefonoDescActualizadoEn.Default.(func() time.Time)
-	// clientetelefono.UpdateDefaultActualizadoEn holds the default value on update for the actualizado_en field.
-	clientetelefono.UpdateDefaultActualizadoEn = clientetelefonoDescActualizadoEn.UpdateDefault.(func() time.Time)
 	// clientetelefonoDescTelefono is the schema descriptor for telefono field.
 	clientetelefonoDescTelefono := clientetelefonoFields[1].Descriptor()
 	// clientetelefono.TelefonoValidator is a validator for the "telefono" field. It is called by the builders before save.
@@ -267,12 +243,6 @@ func init() {
 	contratoDescCreadoEn := contratoMixinFields0[0].Descriptor()
 	// contrato.DefaultCreadoEn holds the default value on creation for the creado_en field.
 	contrato.DefaultCreadoEn = contratoDescCreadoEn.Default.(func() time.Time)
-	// contratoDescActualizadoEn is the schema descriptor for actualizado_en field.
-	contratoDescActualizadoEn := contratoMixinFields0[1].Descriptor()
-	// contrato.DefaultActualizadoEn holds the default value on creation for the actualizado_en field.
-	contrato.DefaultActualizadoEn = contratoDescActualizadoEn.Default.(func() time.Time)
-	// contrato.UpdateDefaultActualizadoEn holds the default value on update for the actualizado_en field.
-	contrato.UpdateDefaultActualizadoEn = contratoDescActualizadoEn.UpdateDefault.(func() time.Time)
 	// contratoDescCodigo is the schema descriptor for codigo field.
 	contratoDescCodigo := contratoFields[3].Descriptor()
 	// contrato.CodigoValidator is a validator for the "codigo" field. It is called by the builders before save.
@@ -348,12 +318,6 @@ func init() {
 	empresaDescCreadoEn := empresaMixinFields0[0].Descriptor()
 	// empresa.DefaultCreadoEn holds the default value on creation for the creado_en field.
 	empresa.DefaultCreadoEn = empresaDescCreadoEn.Default.(func() time.Time)
-	// empresaDescActualizadoEn is the schema descriptor for actualizado_en field.
-	empresaDescActualizadoEn := empresaMixinFields0[1].Descriptor()
-	// empresa.DefaultActualizadoEn holds the default value on creation for the actualizado_en field.
-	empresa.DefaultActualizadoEn = empresaDescActualizadoEn.Default.(func() time.Time)
-	// empresa.UpdateDefaultActualizadoEn holds the default value on update for the actualizado_en field.
-	empresa.UpdateDefaultActualizadoEn = empresaDescActualizadoEn.UpdateDefault.(func() time.Time)
 	// empresaDescNombre is the schema descriptor for nombre field.
 	empresaDescNombre := empresaFields[0].Descriptor()
 	// empresa.NombreValidator is a validator for the "nombre" field. It is called by the builders before save.
@@ -402,6 +366,10 @@ func init() {
 	empresa.DefaultMaximoUsuarios = empresaDescMaximoUsuarios.Default.(int)
 	// empresa.MaximoUsuariosValidator is a validator for the "maximo_usuarios" field. It is called by the builders before save.
 	empresa.MaximoUsuariosValidator = empresaDescMaximoUsuarios.Validators[0].(func(int) error)
+	// empresaDescEstado is the schema descriptor for estado field.
+	empresaDescEstado := empresaFields[4].Descriptor()
+	// empresa.DefaultEstado holds the default value on creation for the estado field.
+	empresa.DefaultEstado = empresaDescEstado.Default.(bool)
 	empresausuarioMixin := schema.EmpresaUsuario{}.Mixin()
 	empresausuarioMixinFields0 := empresausuarioMixin[0].Fields()
 	_ = empresausuarioMixinFields0
@@ -411,12 +379,6 @@ func init() {
 	empresausuarioDescCreadoEn := empresausuarioMixinFields0[0].Descriptor()
 	// empresausuario.DefaultCreadoEn holds the default value on creation for the creado_en field.
 	empresausuario.DefaultCreadoEn = empresausuarioDescCreadoEn.Default.(func() time.Time)
-	// empresausuarioDescActualizadoEn is the schema descriptor for actualizado_en field.
-	empresausuarioDescActualizadoEn := empresausuarioMixinFields0[1].Descriptor()
-	// empresausuario.DefaultActualizadoEn holds the default value on creation for the actualizado_en field.
-	empresausuario.DefaultActualizadoEn = empresausuarioDescActualizadoEn.Default.(func() time.Time)
-	// empresausuario.UpdateDefaultActualizadoEn holds the default value on update for the actualizado_en field.
-	empresausuario.UpdateDefaultActualizadoEn = empresausuarioDescActualizadoEn.UpdateDefault.(func() time.Time)
 	// empresausuarioDescPrincipal is the schema descriptor for principal field.
 	empresausuarioDescPrincipal := empresausuarioFields[3].Descriptor()
 	// empresausuario.DefaultPrincipal holds the default value on creation for the principal field.
@@ -430,12 +392,6 @@ func init() {
 	gastoDescCreadoEn := gastoMixinFields0[0].Descriptor()
 	// gasto.DefaultCreadoEn holds the default value on creation for the creado_en field.
 	gasto.DefaultCreadoEn = gastoDescCreadoEn.Default.(func() time.Time)
-	// gastoDescActualizadoEn is the schema descriptor for actualizado_en field.
-	gastoDescActualizadoEn := gastoMixinFields0[1].Descriptor()
-	// gasto.DefaultActualizadoEn holds the default value on creation for the actualizado_en field.
-	gasto.DefaultActualizadoEn = gastoDescActualizadoEn.Default.(func() time.Time)
-	// gasto.UpdateDefaultActualizadoEn holds the default value on update for the actualizado_en field.
-	gasto.UpdateDefaultActualizadoEn = gastoDescActualizadoEn.UpdateDefault.(func() time.Time)
 	// gastoDescDescripcion is the schema descriptor for descripcion field.
 	gastoDescDescripcion := gastoFields[4].Descriptor()
 	// gasto.DescripcionValidator is a validator for the "descripcion" field. It is called by the builders before save.
@@ -499,12 +455,6 @@ func init() {
 	movimientocajaDescCreadoEn := movimientocajaMixinFields0[0].Descriptor()
 	// movimientocaja.DefaultCreadoEn holds the default value on creation for the creado_en field.
 	movimientocaja.DefaultCreadoEn = movimientocajaDescCreadoEn.Default.(func() time.Time)
-	// movimientocajaDescActualizadoEn is the schema descriptor for actualizado_en field.
-	movimientocajaDescActualizadoEn := movimientocajaMixinFields0[1].Descriptor()
-	// movimientocaja.DefaultActualizadoEn holds the default value on creation for the actualizado_en field.
-	movimientocaja.DefaultActualizadoEn = movimientocajaDescActualizadoEn.Default.(func() time.Time)
-	// movimientocaja.UpdateDefaultActualizadoEn holds the default value on update for the actualizado_en field.
-	movimientocaja.UpdateDefaultActualizadoEn = movimientocajaDescActualizadoEn.UpdateDefault.(func() time.Time)
 	// movimientocajaDescConcepto is the schema descriptor for concepto field.
 	movimientocajaDescConcepto := movimientocajaFields[4].Descriptor()
 	// movimientocaja.ConceptoValidator is a validator for the "concepto" field. It is called by the builders before save.
@@ -564,12 +514,6 @@ func init() {
 	pagoDescCreadoEn := pagoMixinFields0[0].Descriptor()
 	// pago.DefaultCreadoEn holds the default value on creation for the creado_en field.
 	pago.DefaultCreadoEn = pagoDescCreadoEn.Default.(func() time.Time)
-	// pagoDescActualizadoEn is the schema descriptor for actualizado_en field.
-	pagoDescActualizadoEn := pagoMixinFields0[1].Descriptor()
-	// pago.DefaultActualizadoEn holds the default value on creation for the actualizado_en field.
-	pago.DefaultActualizadoEn = pagoDescActualizadoEn.Default.(func() time.Time)
-	// pago.UpdateDefaultActualizadoEn holds the default value on update for the actualizado_en field.
-	pago.UpdateDefaultActualizadoEn = pagoDescActualizadoEn.UpdateDefault.(func() time.Time)
 	// pagoDescNumeroRecibo is the schema descriptor for numero_recibo field.
 	pagoDescNumeroRecibo := pagoFields[3].Descriptor()
 	// pago.NumeroReciboValidator is a validator for the "numero_recibo" field. It is called by the builders before save.
@@ -629,12 +573,6 @@ func init() {
 	pagoaplicacionDescCreadoEn := pagoaplicacionMixinFields0[0].Descriptor()
 	// pagoaplicacion.DefaultCreadoEn holds the default value on creation for the creado_en field.
 	pagoaplicacion.DefaultCreadoEn = pagoaplicacionDescCreadoEn.Default.(func() time.Time)
-	// pagoaplicacionDescActualizadoEn is the schema descriptor for actualizado_en field.
-	pagoaplicacionDescActualizadoEn := pagoaplicacionMixinFields0[1].Descriptor()
-	// pagoaplicacion.DefaultActualizadoEn holds the default value on creation for the actualizado_en field.
-	pagoaplicacion.DefaultActualizadoEn = pagoaplicacionDescActualizadoEn.Default.(func() time.Time)
-	// pagoaplicacion.UpdateDefaultActualizadoEn holds the default value on update for the actualizado_en field.
-	pagoaplicacion.UpdateDefaultActualizadoEn = pagoaplicacionDescActualizadoEn.UpdateDefault.(func() time.Time)
 	// pagoaplicacionDescMoneda is the schema descriptor for moneda field.
 	pagoaplicacionDescMoneda := pagoaplicacionFields[2].Descriptor()
 	// pagoaplicacion.DefaultMoneda holds the default value on creation for the moneda field.
@@ -668,12 +606,6 @@ func init() {
 	propiedadDescCreadoEn := propiedadMixinFields0[0].Descriptor()
 	// propiedad.DefaultCreadoEn holds the default value on creation for the creado_en field.
 	propiedad.DefaultCreadoEn = propiedadDescCreadoEn.Default.(func() time.Time)
-	// propiedadDescActualizadoEn is the schema descriptor for actualizado_en field.
-	propiedadDescActualizadoEn := propiedadMixinFields0[1].Descriptor()
-	// propiedad.DefaultActualizadoEn holds the default value on creation for the actualizado_en field.
-	propiedad.DefaultActualizadoEn = propiedadDescActualizadoEn.Default.(func() time.Time)
-	// propiedad.UpdateDefaultActualizadoEn holds the default value on update for the actualizado_en field.
-	propiedad.UpdateDefaultActualizadoEn = propiedadDescActualizadoEn.UpdateDefault.(func() time.Time)
 	// propiedadDescNombre is the schema descriptor for nombre field.
 	propiedadDescNombre := propiedadFields[1].Descriptor()
 	// propiedad.NombreValidator is a validator for the "nombre" field. It is called by the builders before save.
@@ -742,21 +674,8 @@ func init() {
 	propiedad.DefaultTotalUnidades = propiedadDescTotalUnidades.Default.(int)
 	// propiedad.TotalUnidadesValidator is a validator for the "total_unidades" field. It is called by the builders before save.
 	propiedad.TotalUnidadesValidator = propiedadDescTotalUnidades.Validators[0].(func(int) error)
-	rolMixin := schema.Rol{}.Mixin()
-	rolMixinFields0 := rolMixin[0].Fields()
-	_ = rolMixinFields0
 	rolFields := schema.Rol{}.Fields()
 	_ = rolFields
-	// rolDescCreadoEn is the schema descriptor for creado_en field.
-	rolDescCreadoEn := rolMixinFields0[0].Descriptor()
-	// rol.DefaultCreadoEn holds the default value on creation for the creado_en field.
-	rol.DefaultCreadoEn = rolDescCreadoEn.Default.(func() time.Time)
-	// rolDescActualizadoEn is the schema descriptor for actualizado_en field.
-	rolDescActualizadoEn := rolMixinFields0[1].Descriptor()
-	// rol.DefaultActualizadoEn holds the default value on creation for the actualizado_en field.
-	rol.DefaultActualizadoEn = rolDescActualizadoEn.Default.(func() time.Time)
-	// rol.UpdateDefaultActualizadoEn holds the default value on update for the actualizado_en field.
-	rol.UpdateDefaultActualizadoEn = rolDescActualizadoEn.UpdateDefault.(func() time.Time)
 	// rolDescNombre is the schema descriptor for nombre field.
 	rolDescNombre := rolFields[0].Descriptor()
 	// rol.NombreValidator is a validator for the "nombre" field. It is called by the builders before save.
@@ -788,12 +707,6 @@ func init() {
 	serviciomedicionDescCreadoEn := serviciomedicionMixinFields0[0].Descriptor()
 	// serviciomedicion.DefaultCreadoEn holds the default value on creation for the creado_en field.
 	serviciomedicion.DefaultCreadoEn = serviciomedicionDescCreadoEn.Default.(func() time.Time)
-	// serviciomedicionDescActualizadoEn is the schema descriptor for actualizado_en field.
-	serviciomedicionDescActualizadoEn := serviciomedicionMixinFields0[1].Descriptor()
-	// serviciomedicion.DefaultActualizadoEn holds the default value on creation for the actualizado_en field.
-	serviciomedicion.DefaultActualizadoEn = serviciomedicionDescActualizadoEn.Default.(func() time.Time)
-	// serviciomedicion.UpdateDefaultActualizadoEn holds the default value on update for the actualizado_en field.
-	serviciomedicion.UpdateDefaultActualizadoEn = serviciomedicionDescActualizadoEn.UpdateDefault.(func() time.Time)
 	// serviciomedicionDescLecturaAnterior is the schema descriptor for lectura_anterior field.
 	serviciomedicionDescLecturaAnterior := serviciomedicionFields[4].Descriptor()
 	// serviciomedicion.DefaultLecturaAnterior holds the default value on creation for the lectura_anterior field.
@@ -847,12 +760,6 @@ func init() {
 	tipoidentificacionDescCreadoEn := tipoidentificacionMixinFields0[0].Descriptor()
 	// tipoidentificacion.DefaultCreadoEn holds the default value on creation for the creado_en field.
 	tipoidentificacion.DefaultCreadoEn = tipoidentificacionDescCreadoEn.Default.(func() time.Time)
-	// tipoidentificacionDescActualizadoEn is the schema descriptor for actualizado_en field.
-	tipoidentificacionDescActualizadoEn := tipoidentificacionMixinFields0[1].Descriptor()
-	// tipoidentificacion.DefaultActualizadoEn holds the default value on creation for the actualizado_en field.
-	tipoidentificacion.DefaultActualizadoEn = tipoidentificacionDescActualizadoEn.Default.(func() time.Time)
-	// tipoidentificacion.UpdateDefaultActualizadoEn holds the default value on update for the actualizado_en field.
-	tipoidentificacion.UpdateDefaultActualizadoEn = tipoidentificacionDescActualizadoEn.UpdateDefault.(func() time.Time)
 	// tipoidentificacionDescCodigo is the schema descriptor for codigo field.
 	tipoidentificacionDescCodigo := tipoidentificacionFields[0].Descriptor()
 	// tipoidentificacion.CodigoValidator is a validator for the "codigo" field. It is called by the builders before save.
@@ -906,12 +813,6 @@ func init() {
 	unidadDescCreadoEn := unidadMixinFields0[0].Descriptor()
 	// unidad.DefaultCreadoEn holds the default value on creation for the creado_en field.
 	unidad.DefaultCreadoEn = unidadDescCreadoEn.Default.(func() time.Time)
-	// unidadDescActualizadoEn is the schema descriptor for actualizado_en field.
-	unidadDescActualizadoEn := unidadMixinFields0[1].Descriptor()
-	// unidad.DefaultActualizadoEn holds the default value on creation for the actualizado_en field.
-	unidad.DefaultActualizadoEn = unidadDescActualizadoEn.Default.(func() time.Time)
-	// unidad.UpdateDefaultActualizadoEn holds the default value on update for the actualizado_en field.
-	unidad.UpdateDefaultActualizadoEn = unidadDescActualizadoEn.UpdateDefault.(func() time.Time)
 	// unidadDescCodigo is the schema descriptor for codigo field.
 	unidadDescCodigo := unidadFields[1].Descriptor()
 	// unidad.CodigoValidator is a validator for the "codigo" field. It is called by the builders before save.
@@ -1005,12 +906,6 @@ func init() {
 	usuarioDescCreadoEn := usuarioMixinFields0[0].Descriptor()
 	// usuario.DefaultCreadoEn holds the default value on creation for the creado_en field.
 	usuario.DefaultCreadoEn = usuarioDescCreadoEn.Default.(func() time.Time)
-	// usuarioDescActualizadoEn is the schema descriptor for actualizado_en field.
-	usuarioDescActualizadoEn := usuarioMixinFields0[1].Descriptor()
-	// usuario.DefaultActualizadoEn holds the default value on creation for the actualizado_en field.
-	usuario.DefaultActualizadoEn = usuarioDescActualizadoEn.Default.(func() time.Time)
-	// usuario.UpdateDefaultActualizadoEn holds the default value on update for the actualizado_en field.
-	usuario.UpdateDefaultActualizadoEn = usuarioDescActualizadoEn.UpdateDefault.(func() time.Time)
 	// usuarioDescUsuario is the schema descriptor for usuario field.
 	usuarioDescUsuario := usuarioFields[0].Descriptor()
 	// usuario.UsuarioValidator is a validator for the "usuario" field. It is called by the builders before save.
@@ -1047,4 +942,8 @@ func init() {
 			return nil
 		}
 	}()
+	// usuarioDescEstado is the schema descriptor for estado field.
+	usuarioDescEstado := usuarioFields[2].Descriptor()
+	// usuario.DefaultEstado holds the default value on creation for the estado field.
+	usuario.DefaultEstado = usuarioDescEstado.Default.(bool)
 }

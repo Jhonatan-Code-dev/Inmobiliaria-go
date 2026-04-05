@@ -60,11 +60,6 @@ func CreadoEn(v time.Time) predicate.Empresa {
 	return predicate.Empresa(sql.FieldEQ(FieldCreadoEn, v))
 }
 
-// ActualizadoEn applies equality check predicate on the "actualizado_en" field. It's identical to ActualizadoEnEQ.
-func ActualizadoEn(v time.Time) predicate.Empresa {
-	return predicate.Empresa(sql.FieldEQ(FieldActualizadoEn, v))
-}
-
 // Nombre applies equality check predicate on the "nombre" field. It's identical to NombreEQ.
 func Nombre(v string) predicate.Empresa {
 	return predicate.Empresa(sql.FieldEQ(FieldNombre, v))
@@ -83,6 +78,16 @@ func Moneda(v string) predicate.Empresa {
 // MaximoUsuarios applies equality check predicate on the "maximo_usuarios" field. It's identical to MaximoUsuariosEQ.
 func MaximoUsuarios(v int) predicate.Empresa {
 	return predicate.Empresa(sql.FieldEQ(FieldMaximoUsuarios, v))
+}
+
+// Estado applies equality check predicate on the "estado" field. It's identical to EstadoEQ.
+func Estado(v bool) predicate.Empresa {
+	return predicate.Empresa(sql.FieldEQ(FieldEstado, v))
+}
+
+// Vencimiento applies equality check predicate on the "vencimiento" field. It's identical to VencimientoEQ.
+func Vencimiento(v time.Time) predicate.Empresa {
+	return predicate.Empresa(sql.FieldEQ(FieldVencimiento, v))
 }
 
 // CreadoEnEQ applies the EQ predicate on the "creado_en" field.
@@ -123,46 +128,6 @@ func CreadoEnLT(v time.Time) predicate.Empresa {
 // CreadoEnLTE applies the LTE predicate on the "creado_en" field.
 func CreadoEnLTE(v time.Time) predicate.Empresa {
 	return predicate.Empresa(sql.FieldLTE(FieldCreadoEn, v))
-}
-
-// ActualizadoEnEQ applies the EQ predicate on the "actualizado_en" field.
-func ActualizadoEnEQ(v time.Time) predicate.Empresa {
-	return predicate.Empresa(sql.FieldEQ(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnNEQ applies the NEQ predicate on the "actualizado_en" field.
-func ActualizadoEnNEQ(v time.Time) predicate.Empresa {
-	return predicate.Empresa(sql.FieldNEQ(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnIn applies the In predicate on the "actualizado_en" field.
-func ActualizadoEnIn(vs ...time.Time) predicate.Empresa {
-	return predicate.Empresa(sql.FieldIn(FieldActualizadoEn, vs...))
-}
-
-// ActualizadoEnNotIn applies the NotIn predicate on the "actualizado_en" field.
-func ActualizadoEnNotIn(vs ...time.Time) predicate.Empresa {
-	return predicate.Empresa(sql.FieldNotIn(FieldActualizadoEn, vs...))
-}
-
-// ActualizadoEnGT applies the GT predicate on the "actualizado_en" field.
-func ActualizadoEnGT(v time.Time) predicate.Empresa {
-	return predicate.Empresa(sql.FieldGT(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnGTE applies the GTE predicate on the "actualizado_en" field.
-func ActualizadoEnGTE(v time.Time) predicate.Empresa {
-	return predicate.Empresa(sql.FieldGTE(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnLT applies the LT predicate on the "actualizado_en" field.
-func ActualizadoEnLT(v time.Time) predicate.Empresa {
-	return predicate.Empresa(sql.FieldLT(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnLTE applies the LTE predicate on the "actualizado_en" field.
-func ActualizadoEnLTE(v time.Time) predicate.Empresa {
-	return predicate.Empresa(sql.FieldLTE(FieldActualizadoEn, v))
 }
 
 // NombreEQ applies the EQ predicate on the "nombre" field.
@@ -411,23 +376,63 @@ func MaximoUsuariosLTE(v int) predicate.Empresa {
 }
 
 // EstadoEQ applies the EQ predicate on the "estado" field.
-func EstadoEQ(v Estado) predicate.Empresa {
+func EstadoEQ(v bool) predicate.Empresa {
 	return predicate.Empresa(sql.FieldEQ(FieldEstado, v))
 }
 
 // EstadoNEQ applies the NEQ predicate on the "estado" field.
-func EstadoNEQ(v Estado) predicate.Empresa {
+func EstadoNEQ(v bool) predicate.Empresa {
 	return predicate.Empresa(sql.FieldNEQ(FieldEstado, v))
 }
 
-// EstadoIn applies the In predicate on the "estado" field.
-func EstadoIn(vs ...Estado) predicate.Empresa {
-	return predicate.Empresa(sql.FieldIn(FieldEstado, vs...))
+// VencimientoEQ applies the EQ predicate on the "vencimiento" field.
+func VencimientoEQ(v time.Time) predicate.Empresa {
+	return predicate.Empresa(sql.FieldEQ(FieldVencimiento, v))
 }
 
-// EstadoNotIn applies the NotIn predicate on the "estado" field.
-func EstadoNotIn(vs ...Estado) predicate.Empresa {
-	return predicate.Empresa(sql.FieldNotIn(FieldEstado, vs...))
+// VencimientoNEQ applies the NEQ predicate on the "vencimiento" field.
+func VencimientoNEQ(v time.Time) predicate.Empresa {
+	return predicate.Empresa(sql.FieldNEQ(FieldVencimiento, v))
+}
+
+// VencimientoIn applies the In predicate on the "vencimiento" field.
+func VencimientoIn(vs ...time.Time) predicate.Empresa {
+	return predicate.Empresa(sql.FieldIn(FieldVencimiento, vs...))
+}
+
+// VencimientoNotIn applies the NotIn predicate on the "vencimiento" field.
+func VencimientoNotIn(vs ...time.Time) predicate.Empresa {
+	return predicate.Empresa(sql.FieldNotIn(FieldVencimiento, vs...))
+}
+
+// VencimientoGT applies the GT predicate on the "vencimiento" field.
+func VencimientoGT(v time.Time) predicate.Empresa {
+	return predicate.Empresa(sql.FieldGT(FieldVencimiento, v))
+}
+
+// VencimientoGTE applies the GTE predicate on the "vencimiento" field.
+func VencimientoGTE(v time.Time) predicate.Empresa {
+	return predicate.Empresa(sql.FieldGTE(FieldVencimiento, v))
+}
+
+// VencimientoLT applies the LT predicate on the "vencimiento" field.
+func VencimientoLT(v time.Time) predicate.Empresa {
+	return predicate.Empresa(sql.FieldLT(FieldVencimiento, v))
+}
+
+// VencimientoLTE applies the LTE predicate on the "vencimiento" field.
+func VencimientoLTE(v time.Time) predicate.Empresa {
+	return predicate.Empresa(sql.FieldLTE(FieldVencimiento, v))
+}
+
+// VencimientoIsNil applies the IsNil predicate on the "vencimiento" field.
+func VencimientoIsNil() predicate.Empresa {
+	return predicate.Empresa(sql.FieldIsNull(FieldVencimiento))
+}
+
+// VencimientoNotNil applies the NotNil predicate on the "vencimiento" field.
+func VencimientoNotNil() predicate.Empresa {
+	return predicate.Empresa(sql.FieldNotNull(FieldVencimiento))
 }
 
 // HasUsuariosEmpresa applies the HasEdge predicate on the "usuarios_empresa" edge.

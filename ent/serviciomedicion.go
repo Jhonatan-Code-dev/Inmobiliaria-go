@@ -20,8 +20,6 @@ type ServicioMedicion struct {
 	ID int `json:"id,omitempty"`
 	// CreadoEn holds the value of the "creado_en" field.
 	CreadoEn time.Time `json:"creado_en,omitempty"`
-	// ActualizadoEn holds the value of the "actualizado_en" field.
-	ActualizadoEn time.Time `json:"actualizado_en,omitempty"`
 	// UnidadID holds the value of the "unidad_id" field.
 	UnidadID int `json:"unidad_id,omitempty"`
 	// TipoServicio holds the value of the "tipo_servicio" field.
@@ -81,7 +79,7 @@ func (*ServicioMedicion) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case serviciomedicion.FieldTipoServicio, serviciomedicion.FieldMoneda, serviciomedicion.FieldObservaciones:
 			values[i] = new(sql.NullString)
-		case serviciomedicion.FieldCreadoEn, serviciomedicion.FieldActualizadoEn, serviciomedicion.FieldPeriodoInicio, serviciomedicion.FieldPeriodoFin:
+		case serviciomedicion.FieldCreadoEn, serviciomedicion.FieldPeriodoInicio, serviciomedicion.FieldPeriodoFin:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -109,12 +107,6 @@ func (_m *ServicioMedicion) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field creado_en", values[i])
 			} else if value.Valid {
 				_m.CreadoEn = value.Time
-			}
-		case serviciomedicion.FieldActualizadoEn:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field actualizado_en", values[i])
-			} else if value.Valid {
-				_m.ActualizadoEn = value.Time
 			}
 		case serviciomedicion.FieldUnidadID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -226,9 +218,6 @@ func (_m *ServicioMedicion) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("creado_en=")
 	builder.WriteString(_m.CreadoEn.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("actualizado_en=")
-	builder.WriteString(_m.ActualizadoEn.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("unidad_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.UnidadID))

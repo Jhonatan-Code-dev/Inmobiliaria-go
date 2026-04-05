@@ -9,7 +9,6 @@ import (
 	"rentals-go/ent/empresausuario"
 	"rentals-go/ent/predicate"
 	"rentals-go/ent/rol"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -26,12 +25,6 @@ type RolUpdate struct {
 // Where appends a list predicates to the RolUpdate builder.
 func (_u *RolUpdate) Where(ps ...predicate.Rol) *RolUpdate {
 	_u.mutation.Where(ps...)
-	return _u
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *RolUpdate) SetActualizadoEn(v time.Time) *RolUpdate {
-	_u.mutation.SetActualizadoEn(v)
 	return _u
 }
 
@@ -112,7 +105,6 @@ func (_u *RolUpdate) RemoveUsuariosEmpresa(v ...*EmpresaUsuario) *RolUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *RolUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -135,14 +127,6 @@ func (_u *RolUpdate) Exec(ctx context.Context) error {
 func (_u *RolUpdate) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *RolUpdate) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := rol.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -172,9 +156,6 @@ func (_u *RolUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(rol.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Nombre(); ok {
 		_spec.SetField(rol.FieldNombre, field.TypeString, value)
@@ -248,12 +229,6 @@ type RolUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *RolMutation
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *RolUpdateOne) SetActualizadoEn(v time.Time) *RolUpdateOne {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
 }
 
 // SetNombre sets the "nombre" field.
@@ -346,7 +321,6 @@ func (_u *RolUpdateOne) Select(field string, fields ...string) *RolUpdateOne {
 
 // Save executes the query and returns the updated Rol entity.
 func (_u *RolUpdateOne) Save(ctx context.Context) (*Rol, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -369,14 +343,6 @@ func (_u *RolUpdateOne) Exec(ctx context.Context) error {
 func (_u *RolUpdateOne) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *RolUpdateOne) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := rol.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -423,9 +389,6 @@ func (_u *RolUpdateOne) sqlSave(ctx context.Context) (_node *Rol, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(rol.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Nombre(); ok {
 		_spec.SetField(rol.FieldNombre, field.TypeString, value)

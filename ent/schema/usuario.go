@@ -18,7 +18,11 @@ func (Usuario) Mixin() []ent.Mixin {
 
 func (Usuario) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		entsql.Annotation{Table: "usuarios"},
+		entsql.Annotation{
+			Table:     "usuarios",
+			Charset:   "utf8mb4",
+			Collation: "utf8mb4_bin",
+		},
 	}
 }
 
@@ -26,10 +30,7 @@ func (Usuario) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("usuario").NotEmpty().Unique().MaxLen(120),
 		field.String("hash_contrasena").NotEmpty().Sensitive().MaxLen(255),
-		field.Enum("estado").
-			Values("activo", "inactivo", "bloqueado").
-			Default("activo"),
-		field.Time("ultimo_acceso").Optional().Nillable(),
+		field.Bool("estado").Default(true),
 	}
 }
 

@@ -39,20 +39,6 @@ func (_c *ContratoCreate) SetNillableCreadoEn(v *time.Time) *ContratoCreate {
 	return _c
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_c *ContratoCreate) SetActualizadoEn(v time.Time) *ContratoCreate {
-	_c.mutation.SetActualizadoEn(v)
-	return _c
-}
-
-// SetNillableActualizadoEn sets the "actualizado_en" field if the given value is not nil.
-func (_c *ContratoCreate) SetNillableActualizadoEn(v *time.Time) *ContratoCreate {
-	if v != nil {
-		_c.SetActualizadoEn(*v)
-	}
-	return _c
-}
-
 // SetEmpresaID sets the "empresa_id" field.
 func (_c *ContratoCreate) SetEmpresaID(v int) *ContratoCreate {
 	_c.mutation.SetEmpresaID(v)
@@ -313,10 +299,6 @@ func (_c *ContratoCreate) defaults() {
 		v := contrato.DefaultCreadoEn()
 		_c.mutation.SetCreadoEn(v)
 	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		v := contrato.DefaultActualizadoEn()
-		_c.mutation.SetActualizadoEn(v)
-	}
 	if _, ok := _c.mutation.Tipo(); !ok {
 		v := contrato.DefaultTipo
 		_c.mutation.SetTipo(v)
@@ -355,9 +337,6 @@ func (_c *ContratoCreate) defaults() {
 func (_c *ContratoCreate) check() error {
 	if _, ok := _c.mutation.CreadoEn(); !ok {
 		return &ValidationError{Name: "creado_en", err: errors.New(`ent: missing required field "Contrato.creado_en"`)}
-	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		return &ValidationError{Name: "actualizado_en", err: errors.New(`ent: missing required field "Contrato.actualizado_en"`)}
 	}
 	if _, ok := _c.mutation.EmpresaID(); !ok {
 		return &ValidationError{Name: "empresa_id", err: errors.New(`ent: missing required field "Contrato.empresa_id"`)}
@@ -469,10 +448,6 @@ func (_c *ContratoCreate) createSpec() (*Contrato, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.CreadoEn(); ok {
 		_spec.SetField(contrato.FieldCreadoEn, field.TypeTime, value)
 		_node.CreadoEn = value
-	}
-	if value, ok := _c.mutation.ActualizadoEn(); ok {
-		_spec.SetField(contrato.FieldActualizadoEn, field.TypeTime, value)
-		_node.ActualizadoEn = value
 	}
 	if value, ok := _c.mutation.Codigo(); ok {
 		_spec.SetField(contrato.FieldCodigo, field.TypeString, value)

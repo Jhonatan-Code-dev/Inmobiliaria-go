@@ -33,12 +33,6 @@ func (_u *ContratoUpdate) Where(ps ...predicate.Contrato) *ContratoUpdate {
 	return _u
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *ContratoUpdate) SetActualizadoEn(v time.Time) *ContratoUpdate {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
-}
-
 // SetEmpresaID sets the "empresa_id" field.
 func (_u *ContratoUpdate) SetEmpresaID(v int) *ContratoUpdate {
 	_u.mutation.SetEmpresaID(v)
@@ -415,7 +409,6 @@ func (_u *ContratoUpdate) RemovePagos(v ...*Pago) *ContratoUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *ContratoUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -438,14 +431,6 @@ func (_u *ContratoUpdate) Exec(ctx context.Context) error {
 func (_u *ContratoUpdate) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *ContratoUpdate) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := contrato.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -504,9 +489,6 @@ func (_u *ContratoUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(contrato.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Codigo(); ok {
 		_spec.SetField(contrato.FieldCodigo, field.TypeString, value)
@@ -760,12 +742,6 @@ type ContratoUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *ContratoMutation
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *ContratoUpdateOne) SetActualizadoEn(v time.Time) *ContratoUpdateOne {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
 }
 
 // SetEmpresaID sets the "empresa_id" field.
@@ -1157,7 +1133,6 @@ func (_u *ContratoUpdateOne) Select(field string, fields ...string) *ContratoUpd
 
 // Save executes the query and returns the updated Contrato entity.
 func (_u *ContratoUpdateOne) Save(ctx context.Context) (*Contrato, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -1180,14 +1155,6 @@ func (_u *ContratoUpdateOne) Exec(ctx context.Context) error {
 func (_u *ContratoUpdateOne) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *ContratoUpdateOne) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := contrato.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -1263,9 +1230,6 @@ func (_u *ContratoUpdateOne) sqlSave(ctx context.Context) (_node *Contrato, err 
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(contrato.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Codigo(); ok {
 		_spec.SetField(contrato.FieldCodigo, field.TypeString, value)

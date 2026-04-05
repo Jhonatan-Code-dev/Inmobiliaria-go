@@ -38,20 +38,6 @@ func (_c *GastoCreate) SetNillableCreadoEn(v *time.Time) *GastoCreate {
 	return _c
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_c *GastoCreate) SetActualizadoEn(v time.Time) *GastoCreate {
-	_c.mutation.SetActualizadoEn(v)
-	return _c
-}
-
-// SetNillableActualizadoEn sets the "actualizado_en" field if the given value is not nil.
-func (_c *GastoCreate) SetNillableActualizadoEn(v *time.Time) *GastoCreate {
-	if v != nil {
-		_c.SetActualizadoEn(*v)
-	}
-	return _c
-}
-
 // SetEmpresaID sets the "empresa_id" field.
 func (_c *GastoCreate) SetEmpresaID(v int) *GastoCreate {
 	_c.mutation.SetEmpresaID(v)
@@ -279,10 +265,6 @@ func (_c *GastoCreate) defaults() {
 		v := gasto.DefaultCreadoEn()
 		_c.mutation.SetCreadoEn(v)
 	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		v := gasto.DefaultActualizadoEn()
-		_c.mutation.SetActualizadoEn(v)
-	}
 	if _, ok := _c.mutation.Categoria(); !ok {
 		v := gasto.DefaultCategoria
 		_c.mutation.SetCategoria(v)
@@ -309,9 +291,6 @@ func (_c *GastoCreate) defaults() {
 func (_c *GastoCreate) check() error {
 	if _, ok := _c.mutation.CreadoEn(); !ok {
 		return &ValidationError{Name: "creado_en", err: errors.New(`ent: missing required field "Gasto.creado_en"`)}
-	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		return &ValidationError{Name: "actualizado_en", err: errors.New(`ent: missing required field "Gasto.actualizado_en"`)}
 	}
 	if _, ok := _c.mutation.EmpresaID(); !ok {
 		return &ValidationError{Name: "empresa_id", err: errors.New(`ent: missing required field "Gasto.empresa_id"`)}
@@ -409,10 +388,6 @@ func (_c *GastoCreate) createSpec() (*Gasto, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.CreadoEn(); ok {
 		_spec.SetField(gasto.FieldCreadoEn, field.TypeTime, value)
 		_node.CreadoEn = value
-	}
-	if value, ok := _c.mutation.ActualizadoEn(); ok {
-		_spec.SetField(gasto.FieldActualizadoEn, field.TypeTime, value)
-		_node.ActualizadoEn = value
 	}
 	if value, ok := _c.mutation.Categoria(); ok {
 		_spec.SetField(gasto.FieldCategoria, field.TypeEnum, value)

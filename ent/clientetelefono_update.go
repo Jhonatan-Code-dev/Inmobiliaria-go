@@ -9,7 +9,6 @@ import (
 	"rentals-go/ent/cliente"
 	"rentals-go/ent/clientetelefono"
 	"rentals-go/ent/predicate"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -26,12 +25,6 @@ type ClienteTelefonoUpdate struct {
 // Where appends a list predicates to the ClienteTelefonoUpdate builder.
 func (_u *ClienteTelefonoUpdate) Where(ps ...predicate.ClienteTelefono) *ClienteTelefonoUpdate {
 	_u.mutation.Where(ps...)
-	return _u
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *ClienteTelefonoUpdate) SetActualizadoEn(v time.Time) *ClienteTelefonoUpdate {
-	_u.mutation.SetActualizadoEn(v)
 	return _u
 }
 
@@ -129,7 +122,6 @@ func (_u *ClienteTelefonoUpdate) ClearCliente() *ClienteTelefonoUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *ClienteTelefonoUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -152,14 +144,6 @@ func (_u *ClienteTelefonoUpdate) Exec(ctx context.Context) error {
 func (_u *ClienteTelefonoUpdate) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *ClienteTelefonoUpdate) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := clientetelefono.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -192,9 +176,6 @@ func (_u *ClienteTelefonoUpdate) sqlSave(ctx context.Context) (_node int, err er
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(clientetelefono.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Telefono(); ok {
 		_spec.SetField(clientetelefono.FieldTelefono, field.TypeString, value)
@@ -258,12 +239,6 @@ type ClienteTelefonoUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *ClienteTelefonoMutation
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *ClienteTelefonoUpdateOne) SetActualizadoEn(v time.Time) *ClienteTelefonoUpdateOne {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
 }
 
 // SetClienteID sets the "cliente_id" field.
@@ -373,7 +348,6 @@ func (_u *ClienteTelefonoUpdateOne) Select(field string, fields ...string) *Clie
 
 // Save executes the query and returns the updated ClienteTelefono entity.
 func (_u *ClienteTelefonoUpdateOne) Save(ctx context.Context) (*ClienteTelefono, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -396,14 +370,6 @@ func (_u *ClienteTelefonoUpdateOne) Exec(ctx context.Context) error {
 func (_u *ClienteTelefonoUpdateOne) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *ClienteTelefonoUpdateOne) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := clientetelefono.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -453,9 +419,6 @@ func (_u *ClienteTelefonoUpdateOne) sqlSave(ctx context.Context) (_node *Cliente
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(clientetelefono.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Telefono(); ok {
 		_spec.SetField(clientetelefono.FieldTelefono, field.TypeString, value)

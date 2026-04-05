@@ -11,7 +11,6 @@ import (
 	"rentals-go/ent/predicate"
 	"rentals-go/ent/rol"
 	"rentals-go/ent/usuario"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -28,12 +27,6 @@ type EmpresaUsuarioUpdate struct {
 // Where appends a list predicates to the EmpresaUsuarioUpdate builder.
 func (_u *EmpresaUsuarioUpdate) Where(ps ...predicate.EmpresaUsuario) *EmpresaUsuarioUpdate {
 	_u.mutation.Where(ps...)
-	return _u
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *EmpresaUsuarioUpdate) SetActualizadoEn(v time.Time) *EmpresaUsuarioUpdate {
-	_u.mutation.SetActualizadoEn(v)
 	return _u
 }
 
@@ -147,7 +140,6 @@ func (_u *EmpresaUsuarioUpdate) ClearRol() *EmpresaUsuarioUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *EmpresaUsuarioUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -170,14 +162,6 @@ func (_u *EmpresaUsuarioUpdate) Exec(ctx context.Context) error {
 func (_u *EmpresaUsuarioUpdate) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *EmpresaUsuarioUpdate) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := empresausuario.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -211,9 +195,6 @@ func (_u *EmpresaUsuarioUpdate) sqlSave(ctx context.Context) (_node int, err err
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(empresausuario.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Principal(); ok {
 		_spec.SetField(empresausuario.FieldPrincipal, field.TypeBool, value)
@@ -326,12 +307,6 @@ type EmpresaUsuarioUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *EmpresaUsuarioMutation
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *EmpresaUsuarioUpdateOne) SetActualizadoEn(v time.Time) *EmpresaUsuarioUpdateOne {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
 }
 
 // SetEmpresaID sets the "empresa_id" field.
@@ -457,7 +432,6 @@ func (_u *EmpresaUsuarioUpdateOne) Select(field string, fields ...string) *Empre
 
 // Save executes the query and returns the updated EmpresaUsuario entity.
 func (_u *EmpresaUsuarioUpdateOne) Save(ctx context.Context) (*EmpresaUsuario, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -480,14 +454,6 @@ func (_u *EmpresaUsuarioUpdateOne) Exec(ctx context.Context) error {
 func (_u *EmpresaUsuarioUpdateOne) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *EmpresaUsuarioUpdateOne) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := empresausuario.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -538,9 +504,6 @@ func (_u *EmpresaUsuarioUpdateOne) sqlSave(ctx context.Context) (_node *EmpresaU
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(empresausuario.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Principal(); ok {
 		_spec.SetField(empresausuario.FieldPrincipal, field.TypeBool, value)

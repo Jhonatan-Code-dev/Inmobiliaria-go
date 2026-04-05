@@ -35,12 +35,6 @@ func (_u *EmpresaUpdate) Where(ps ...predicate.Empresa) *EmpresaUpdate {
 	return _u
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *EmpresaUpdate) SetActualizadoEn(v time.Time) *EmpresaUpdate {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
-}
-
 // SetNombre sets the "nombre" field.
 func (_u *EmpresaUpdate) SetNombre(v string) *EmpresaUpdate {
 	_u.mutation.SetNombre(v)
@@ -111,16 +105,36 @@ func (_u *EmpresaUpdate) AddMaximoUsuarios(v int) *EmpresaUpdate {
 }
 
 // SetEstado sets the "estado" field.
-func (_u *EmpresaUpdate) SetEstado(v empresa.Estado) *EmpresaUpdate {
+func (_u *EmpresaUpdate) SetEstado(v bool) *EmpresaUpdate {
 	_u.mutation.SetEstado(v)
 	return _u
 }
 
 // SetNillableEstado sets the "estado" field if the given value is not nil.
-func (_u *EmpresaUpdate) SetNillableEstado(v *empresa.Estado) *EmpresaUpdate {
+func (_u *EmpresaUpdate) SetNillableEstado(v *bool) *EmpresaUpdate {
 	if v != nil {
 		_u.SetEstado(*v)
 	}
+	return _u
+}
+
+// SetVencimiento sets the "vencimiento" field.
+func (_u *EmpresaUpdate) SetVencimiento(v time.Time) *EmpresaUpdate {
+	_u.mutation.SetVencimiento(v)
+	return _u
+}
+
+// SetNillableVencimiento sets the "vencimiento" field if the given value is not nil.
+func (_u *EmpresaUpdate) SetNillableVencimiento(v *time.Time) *EmpresaUpdate {
+	if v != nil {
+		_u.SetVencimiento(*v)
+	}
+	return _u
+}
+
+// ClearVencimiento clears the value of the "vencimiento" field.
+func (_u *EmpresaUpdate) ClearVencimiento() *EmpresaUpdate {
+	_u.mutation.ClearVencimiento()
 	return _u
 }
 
@@ -383,7 +397,6 @@ func (_u *EmpresaUpdate) RemoveMovimientosCaja(v ...*MovimientoCaja) *EmpresaUpd
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *EmpresaUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -409,14 +422,6 @@ func (_u *EmpresaUpdate) ExecX(ctx context.Context) {
 	}
 }
 
-// defaults sets the default values of the builder before save.
-func (_u *EmpresaUpdate) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := empresa.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
-	}
-}
-
 // check runs all checks and user-defined validators on the builder.
 func (_u *EmpresaUpdate) check() error {
 	if v, ok := _u.mutation.Nombre(); ok {
@@ -439,11 +444,6 @@ func (_u *EmpresaUpdate) check() error {
 			return &ValidationError{Name: "maximo_usuarios", err: fmt.Errorf(`ent: validator failed for field "Empresa.maximo_usuarios": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Estado(); ok {
-		if err := empresa.EstadoValidator(v); err != nil {
-			return &ValidationError{Name: "estado", err: fmt.Errorf(`ent: validator failed for field "Empresa.estado": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -458,9 +458,6 @@ func (_u *EmpresaUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(empresa.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Nombre(); ok {
 		_spec.SetField(empresa.FieldNombre, field.TypeString, value)
@@ -481,7 +478,13 @@ func (_u *EmpresaUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.AddField(empresa.FieldMaximoUsuarios, field.TypeInt, value)
 	}
 	if value, ok := _u.mutation.Estado(); ok {
-		_spec.SetField(empresa.FieldEstado, field.TypeEnum, value)
+		_spec.SetField(empresa.FieldEstado, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.Vencimiento(); ok {
+		_spec.SetField(empresa.FieldVencimiento, field.TypeTime, value)
+	}
+	if _u.mutation.VencimientoCleared() {
+		_spec.ClearField(empresa.FieldVencimiento, field.TypeTime)
 	}
 	if _u.mutation.UsuariosEmpresaCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -818,12 +821,6 @@ type EmpresaUpdateOne struct {
 	mutation *EmpresaMutation
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *EmpresaUpdateOne) SetActualizadoEn(v time.Time) *EmpresaUpdateOne {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
-}
-
 // SetNombre sets the "nombre" field.
 func (_u *EmpresaUpdateOne) SetNombre(v string) *EmpresaUpdateOne {
 	_u.mutation.SetNombre(v)
@@ -894,16 +891,36 @@ func (_u *EmpresaUpdateOne) AddMaximoUsuarios(v int) *EmpresaUpdateOne {
 }
 
 // SetEstado sets the "estado" field.
-func (_u *EmpresaUpdateOne) SetEstado(v empresa.Estado) *EmpresaUpdateOne {
+func (_u *EmpresaUpdateOne) SetEstado(v bool) *EmpresaUpdateOne {
 	_u.mutation.SetEstado(v)
 	return _u
 }
 
 // SetNillableEstado sets the "estado" field if the given value is not nil.
-func (_u *EmpresaUpdateOne) SetNillableEstado(v *empresa.Estado) *EmpresaUpdateOne {
+func (_u *EmpresaUpdateOne) SetNillableEstado(v *bool) *EmpresaUpdateOne {
 	if v != nil {
 		_u.SetEstado(*v)
 	}
+	return _u
+}
+
+// SetVencimiento sets the "vencimiento" field.
+func (_u *EmpresaUpdateOne) SetVencimiento(v time.Time) *EmpresaUpdateOne {
+	_u.mutation.SetVencimiento(v)
+	return _u
+}
+
+// SetNillableVencimiento sets the "vencimiento" field if the given value is not nil.
+func (_u *EmpresaUpdateOne) SetNillableVencimiento(v *time.Time) *EmpresaUpdateOne {
+	if v != nil {
+		_u.SetVencimiento(*v)
+	}
+	return _u
+}
+
+// ClearVencimiento clears the value of the "vencimiento" field.
+func (_u *EmpresaUpdateOne) ClearVencimiento() *EmpresaUpdateOne {
+	_u.mutation.ClearVencimiento()
 	return _u
 }
 
@@ -1179,7 +1196,6 @@ func (_u *EmpresaUpdateOne) Select(field string, fields ...string) *EmpresaUpdat
 
 // Save executes the query and returns the updated Empresa entity.
 func (_u *EmpresaUpdateOne) Save(ctx context.Context) (*Empresa, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -1205,14 +1221,6 @@ func (_u *EmpresaUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
-// defaults sets the default values of the builder before save.
-func (_u *EmpresaUpdateOne) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := empresa.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
-	}
-}
-
 // check runs all checks and user-defined validators on the builder.
 func (_u *EmpresaUpdateOne) check() error {
 	if v, ok := _u.mutation.Nombre(); ok {
@@ -1233,11 +1241,6 @@ func (_u *EmpresaUpdateOne) check() error {
 	if v, ok := _u.mutation.MaximoUsuarios(); ok {
 		if err := empresa.MaximoUsuariosValidator(v); err != nil {
 			return &ValidationError{Name: "maximo_usuarios", err: fmt.Errorf(`ent: validator failed for field "Empresa.maximo_usuarios": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Estado(); ok {
-		if err := empresa.EstadoValidator(v); err != nil {
-			return &ValidationError{Name: "estado", err: fmt.Errorf(`ent: validator failed for field "Empresa.estado": %w`, err)}
 		}
 	}
 	return nil
@@ -1272,9 +1275,6 @@ func (_u *EmpresaUpdateOne) sqlSave(ctx context.Context) (_node *Empresa, err er
 			}
 		}
 	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(empresa.FieldActualizadoEn, field.TypeTime, value)
-	}
 	if value, ok := _u.mutation.Nombre(); ok {
 		_spec.SetField(empresa.FieldNombre, field.TypeString, value)
 	}
@@ -1294,7 +1294,13 @@ func (_u *EmpresaUpdateOne) sqlSave(ctx context.Context) (_node *Empresa, err er
 		_spec.AddField(empresa.FieldMaximoUsuarios, field.TypeInt, value)
 	}
 	if value, ok := _u.mutation.Estado(); ok {
-		_spec.SetField(empresa.FieldEstado, field.TypeEnum, value)
+		_spec.SetField(empresa.FieldEstado, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.Vencimiento(); ok {
+		_spec.SetField(empresa.FieldVencimiento, field.TypeTime, value)
+	}
+	if _u.mutation.VencimientoCleared() {
+		_spec.ClearField(empresa.FieldVencimiento, field.TypeTime)
 	}
 	if _u.mutation.UsuariosEmpresaCleared() {
 		edge := &sqlgraph.EdgeSpec{

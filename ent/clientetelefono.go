@@ -20,8 +20,6 @@ type ClienteTelefono struct {
 	ID int `json:"id,omitempty"`
 	// CreadoEn holds the value of the "creado_en" field.
 	CreadoEn time.Time `json:"creado_en,omitempty"`
-	// ActualizadoEn holds the value of the "actualizado_en" field.
-	ActualizadoEn time.Time `json:"actualizado_en,omitempty"`
 	// ClienteID holds the value of the "cliente_id" field.
 	ClienteID int `json:"cliente_id,omitempty"`
 	// Telefono holds the value of the "telefono" field.
@@ -69,7 +67,7 @@ func (*ClienteTelefono) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case clientetelefono.FieldTelefono, clientetelefono.FieldEtiqueta:
 			values[i] = new(sql.NullString)
-		case clientetelefono.FieldCreadoEn, clientetelefono.FieldActualizadoEn:
+		case clientetelefono.FieldCreadoEn:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -97,12 +95,6 @@ func (_m *ClienteTelefono) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field creado_en", values[i])
 			} else if value.Valid {
 				_m.CreadoEn = value.Time
-			}
-		case clientetelefono.FieldActualizadoEn:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field actualizado_en", values[i])
-			} else if value.Valid {
-				_m.ActualizadoEn = value.Time
 			}
 		case clientetelefono.FieldClienteID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -178,9 +170,6 @@ func (_m *ClienteTelefono) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("creado_en=")
 	builder.WriteString(_m.CreadoEn.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("actualizado_en=")
-	builder.WriteString(_m.ActualizadoEn.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("cliente_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.ClienteID))

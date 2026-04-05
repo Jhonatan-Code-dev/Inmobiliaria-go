@@ -41,20 +41,6 @@ func (_c *EmpresaCreate) SetNillableCreadoEn(v *time.Time) *EmpresaCreate {
 	return _c
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_c *EmpresaCreate) SetActualizadoEn(v time.Time) *EmpresaCreate {
-	_c.mutation.SetActualizadoEn(v)
-	return _c
-}
-
-// SetNillableActualizadoEn sets the "actualizado_en" field if the given value is not nil.
-func (_c *EmpresaCreate) SetNillableActualizadoEn(v *time.Time) *EmpresaCreate {
-	if v != nil {
-		_c.SetActualizadoEn(*v)
-	}
-	return _c
-}
-
 // SetNombre sets the "nombre" field.
 func (_c *EmpresaCreate) SetNombre(v string) *EmpresaCreate {
 	_c.mutation.SetNombre(v)
@@ -104,15 +90,29 @@ func (_c *EmpresaCreate) SetNillableMaximoUsuarios(v *int) *EmpresaCreate {
 }
 
 // SetEstado sets the "estado" field.
-func (_c *EmpresaCreate) SetEstado(v empresa.Estado) *EmpresaCreate {
+func (_c *EmpresaCreate) SetEstado(v bool) *EmpresaCreate {
 	_c.mutation.SetEstado(v)
 	return _c
 }
 
 // SetNillableEstado sets the "estado" field if the given value is not nil.
-func (_c *EmpresaCreate) SetNillableEstado(v *empresa.Estado) *EmpresaCreate {
+func (_c *EmpresaCreate) SetNillableEstado(v *bool) *EmpresaCreate {
 	if v != nil {
 		_c.SetEstado(*v)
+	}
+	return _c
+}
+
+// SetVencimiento sets the "vencimiento" field.
+func (_c *EmpresaCreate) SetVencimiento(v time.Time) *EmpresaCreate {
+	_c.mutation.SetVencimiento(v)
+	return _c
+}
+
+// SetNillableVencimiento sets the "vencimiento" field if the given value is not nil.
+func (_c *EmpresaCreate) SetNillableVencimiento(v *time.Time) *EmpresaCreate {
+	if v != nil {
+		_c.SetVencimiento(*v)
 	}
 	return _c
 }
@@ -261,10 +261,6 @@ func (_c *EmpresaCreate) defaults() {
 		v := empresa.DefaultCreadoEn()
 		_c.mutation.SetCreadoEn(v)
 	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		v := empresa.DefaultActualizadoEn()
-		_c.mutation.SetActualizadoEn(v)
-	}
 	if _, ok := _c.mutation.Moneda(); !ok {
 		v := empresa.DefaultMoneda
 		_c.mutation.SetMoneda(v)
@@ -283,9 +279,6 @@ func (_c *EmpresaCreate) defaults() {
 func (_c *EmpresaCreate) check() error {
 	if _, ok := _c.mutation.CreadoEn(); !ok {
 		return &ValidationError{Name: "creado_en", err: errors.New(`ent: missing required field "Empresa.creado_en"`)}
-	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		return &ValidationError{Name: "actualizado_en", err: errors.New(`ent: missing required field "Empresa.actualizado_en"`)}
 	}
 	if _, ok := _c.mutation.Nombre(); !ok {
 		return &ValidationError{Name: "nombre", err: errors.New(`ent: missing required field "Empresa.nombre"`)}
@@ -319,11 +312,6 @@ func (_c *EmpresaCreate) check() error {
 	if _, ok := _c.mutation.Estado(); !ok {
 		return &ValidationError{Name: "estado", err: errors.New(`ent: missing required field "Empresa.estado"`)}
 	}
-	if v, ok := _c.mutation.Estado(); ok {
-		if err := empresa.EstadoValidator(v); err != nil {
-			return &ValidationError{Name: "estado", err: fmt.Errorf(`ent: validator failed for field "Empresa.estado": %w`, err)}
-		}
-	}
 	return nil
 }
 
@@ -354,10 +342,6 @@ func (_c *EmpresaCreate) createSpec() (*Empresa, *sqlgraph.CreateSpec) {
 		_spec.SetField(empresa.FieldCreadoEn, field.TypeTime, value)
 		_node.CreadoEn = value
 	}
-	if value, ok := _c.mutation.ActualizadoEn(); ok {
-		_spec.SetField(empresa.FieldActualizadoEn, field.TypeTime, value)
-		_node.ActualizadoEn = value
-	}
 	if value, ok := _c.mutation.Nombre(); ok {
 		_spec.SetField(empresa.FieldNombre, field.TypeString, value)
 		_node.Nombre = value
@@ -375,8 +359,12 @@ func (_c *EmpresaCreate) createSpec() (*Empresa, *sqlgraph.CreateSpec) {
 		_node.MaximoUsuarios = value
 	}
 	if value, ok := _c.mutation.Estado(); ok {
-		_spec.SetField(empresa.FieldEstado, field.TypeEnum, value)
+		_spec.SetField(empresa.FieldEstado, field.TypeBool, value)
 		_node.Estado = value
+	}
+	if value, ok := _c.mutation.Vencimiento(); ok {
+		_spec.SetField(empresa.FieldVencimiento, field.TypeTime, value)
+		_node.Vencimiento = &value
 	}
 	if nodes := _c.mutation.UsuariosEmpresaIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

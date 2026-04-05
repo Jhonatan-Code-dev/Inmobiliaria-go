@@ -3,7 +3,6 @@
 package usuario
 
 import (
-	"fmt"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -17,16 +16,12 @@ const (
 	FieldID = "id"
 	// FieldCreadoEn holds the string denoting the creado_en field in the database.
 	FieldCreadoEn = "creado_en"
-	// FieldActualizadoEn holds the string denoting the actualizado_en field in the database.
-	FieldActualizadoEn = "actualizado_en"
 	// FieldUsuario holds the string denoting the usuario field in the database.
 	FieldUsuario = "usuario"
 	// FieldHashContrasena holds the string denoting the hash_contrasena field in the database.
 	FieldHashContrasena = "hash_contrasena"
 	// FieldEstado holds the string denoting the estado field in the database.
 	FieldEstado = "estado"
-	// FieldUltimoAcceso holds the string denoting the ultimo_acceso field in the database.
-	FieldUltimoAcceso = "ultimo_acceso"
 	// EdgeEmpresasUsuario holds the string denoting the empresas_usuario edge name in mutations.
 	EdgeEmpresasUsuario = "empresas_usuario"
 	// Table holds the table name of the usuario in the database.
@@ -44,11 +39,9 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldCreadoEn,
-	FieldActualizadoEn,
 	FieldUsuario,
 	FieldHashContrasena,
 	FieldEstado,
-	FieldUltimoAcceso,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -64,42 +57,13 @@ func ValidColumn(column string) bool {
 var (
 	// DefaultCreadoEn holds the default value on creation for the "creado_en" field.
 	DefaultCreadoEn func() time.Time
-	// DefaultActualizadoEn holds the default value on creation for the "actualizado_en" field.
-	DefaultActualizadoEn func() time.Time
-	// UpdateDefaultActualizadoEn holds the default value on update for the "actualizado_en" field.
-	UpdateDefaultActualizadoEn func() time.Time
 	// UsuarioValidator is a validator for the "usuario" field. It is called by the builders before save.
 	UsuarioValidator func(string) error
 	// HashContrasenaValidator is a validator for the "hash_contrasena" field. It is called by the builders before save.
 	HashContrasenaValidator func(string) error
+	// DefaultEstado holds the default value on creation for the "estado" field.
+	DefaultEstado bool
 )
-
-// Estado defines the type for the "estado" enum field.
-type Estado string
-
-// EstadoActivo is the default value of the Estado enum.
-const DefaultEstado = EstadoActivo
-
-// Estado values.
-const (
-	EstadoActivo    Estado = "activo"
-	EstadoInactivo  Estado = "inactivo"
-	EstadoBloqueado Estado = "bloqueado"
-)
-
-func (e Estado) String() string {
-	return string(e)
-}
-
-// EstadoValidator is a validator for the "estado" field enum values. It is called by the builders before save.
-func EstadoValidator(e Estado) error {
-	switch e {
-	case EstadoActivo, EstadoInactivo, EstadoBloqueado:
-		return nil
-	default:
-		return fmt.Errorf("usuario: invalid enum value for estado field: %q", e)
-	}
-}
 
 // OrderOption defines the ordering options for the Usuario queries.
 type OrderOption func(*sql.Selector)
@@ -112,11 +76,6 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 // ByCreadoEn orders the results by the creado_en field.
 func ByCreadoEn(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCreadoEn, opts...).ToFunc()
-}
-
-// ByActualizadoEn orders the results by the actualizado_en field.
-func ByActualizadoEn(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldActualizadoEn, opts...).ToFunc()
 }
 
 // ByUsuario orders the results by the usuario field.
@@ -132,11 +91,6 @@ func ByHashContrasena(opts ...sql.OrderTermOption) OrderOption {
 // ByEstado orders the results by the estado field.
 func ByEstado(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEstado, opts...).ToFunc()
-}
-
-// ByUltimoAcceso orders the results by the ultimo_acceso field.
-func ByUltimoAcceso(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldUltimoAcceso, opts...).ToFunc()
 }
 
 // ByEmpresasUsuarioCount orders the results by empresas_usuario count.

@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"rentals-go/ent/empresausuario"
 	"rentals-go/ent/rol"
-	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -19,34 +18,6 @@ type RolCreate struct {
 	config
 	mutation *RolMutation
 	hooks    []Hook
-}
-
-// SetCreadoEn sets the "creado_en" field.
-func (_c *RolCreate) SetCreadoEn(v time.Time) *RolCreate {
-	_c.mutation.SetCreadoEn(v)
-	return _c
-}
-
-// SetNillableCreadoEn sets the "creado_en" field if the given value is not nil.
-func (_c *RolCreate) SetNillableCreadoEn(v *time.Time) *RolCreate {
-	if v != nil {
-		_c.SetCreadoEn(*v)
-	}
-	return _c
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_c *RolCreate) SetActualizadoEn(v time.Time) *RolCreate {
-	_c.mutation.SetActualizadoEn(v)
-	return _c
-}
-
-// SetNillableActualizadoEn sets the "actualizado_en" field if the given value is not nil.
-func (_c *RolCreate) SetNillableActualizadoEn(v *time.Time) *RolCreate {
-	if v != nil {
-		_c.SetActualizadoEn(*v)
-	}
-	return _c
 }
 
 // SetNombre sets the "nombre" field.
@@ -91,7 +62,6 @@ func (_c *RolCreate) Mutation() *RolMutation {
 
 // Save creates the Rol in the database.
 func (_c *RolCreate) Save(ctx context.Context) (*Rol, error) {
-	_c.defaults()
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -117,26 +87,8 @@ func (_c *RolCreate) ExecX(ctx context.Context) {
 	}
 }
 
-// defaults sets the default values of the builder before save.
-func (_c *RolCreate) defaults() {
-	if _, ok := _c.mutation.CreadoEn(); !ok {
-		v := rol.DefaultCreadoEn()
-		_c.mutation.SetCreadoEn(v)
-	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		v := rol.DefaultActualizadoEn()
-		_c.mutation.SetActualizadoEn(v)
-	}
-}
-
 // check runs all checks and user-defined validators on the builder.
 func (_c *RolCreate) check() error {
-	if _, ok := _c.mutation.CreadoEn(); !ok {
-		return &ValidationError{Name: "creado_en", err: errors.New(`ent: missing required field "Rol.creado_en"`)}
-	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		return &ValidationError{Name: "actualizado_en", err: errors.New(`ent: missing required field "Rol.actualizado_en"`)}
-	}
 	if _, ok := _c.mutation.Nombre(); !ok {
 		return &ValidationError{Name: "nombre", err: errors.New(`ent: missing required field "Rol.nombre"`)}
 	}
@@ -176,14 +128,6 @@ func (_c *RolCreate) createSpec() (*Rol, *sqlgraph.CreateSpec) {
 		_node = &Rol{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(rol.Table, sqlgraph.NewFieldSpec(rol.FieldID, field.TypeInt))
 	)
-	if value, ok := _c.mutation.CreadoEn(); ok {
-		_spec.SetField(rol.FieldCreadoEn, field.TypeTime, value)
-		_node.CreadoEn = value
-	}
-	if value, ok := _c.mutation.ActualizadoEn(); ok {
-		_spec.SetField(rol.FieldActualizadoEn, field.TypeTime, value)
-		_node.ActualizadoEn = value
-	}
 	if value, ok := _c.mutation.Nombre(); ok {
 		_spec.SetField(rol.FieldNombre, field.TypeString, value)
 		_node.Nombre = value
@@ -229,7 +173,6 @@ func (_c *RolCreateBulk) Save(ctx context.Context) ([]*Rol, error) {
 	for i := range _c.builders {
 		func(i int, root context.Context) {
 			builder := _c.builders[i]
-			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*RolMutation)
 				if !ok {

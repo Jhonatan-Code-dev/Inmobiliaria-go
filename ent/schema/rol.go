@@ -13,12 +13,16 @@ type Rol struct {
 }
 
 func (Rol) Mixin() []ent.Mixin {
-	return []ent.Mixin{AuditMixin{}}
+	return nil
 }
 
 func (Rol) Annotations() []schema.Annotation {
 	return []schema.Annotation{
-		entsql.Annotation{Table: "roles"},
+		entsql.Annotation{
+			Table:     "roles",
+			Charset:   "utf8mb4",
+			Collation: "utf8mb4_bin",
+		},
 	}
 }
 

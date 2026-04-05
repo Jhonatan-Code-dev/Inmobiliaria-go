@@ -1,9 +1,9 @@
 basePath: /
 definitions:
-  internal_controller.actualizarEmpresaRequest:
+  controller.actualizarEmpresaRequest:
     properties:
       estado:
-        type: string
+        type: boolean
       moneda:
         type: string
       nombre:
@@ -11,7 +11,7 @@ definitions:
       pais:
         type: string
     type: object
-  internal_controller.adminCredencialesRequest:
+  controller.adminCredencialesRequest:
     properties:
       contrasena:
         type: string
@@ -20,26 +20,26 @@ definitions:
       usuario:
         type: string
     type: object
-  internal_controller.adminCredencialesResponse:
+  controller.adminCredencialesResponse:
     properties:
       id:
         type: integer
       usuario:
         type: string
     type: object
-  internal_controller.adminLoginRequest:
+  controller.adminLoginRequest:
     properties:
       contrasena:
         type: string
       usuario:
         type: string
     type: object
-  internal_controller.adminLoginResponse:
+  controller.adminLoginResponse:
     properties:
       token:
         type: string
     type: object
-  internal_controller.adminProfileResponse:
+  controller.adminProfileResponse:
     properties:
       activo:
         type: boolean
@@ -48,7 +48,7 @@ definitions:
       usuario:
         type: string
     type: object
-  internal_controller.crearEmpresaRequest:
+  controller.crearEmpresaRequest:
     properties:
       empresa:
         properties:
@@ -58,6 +58,8 @@ definitions:
             type: string
           pais:
             type: string
+          suscripcion_dias:
+            type: integer
         type: object
       usuario:
         properties:
@@ -67,17 +69,19 @@ definitions:
             type: string
         type: object
     type: object
-  internal_controller.crearEmpresaResponse:
+  controller.crearEmpresaResponse:
     properties:
       empresa_id:
         type: integer
       usuario_id:
         type: integer
     type: object
-  internal_controller.empresaResponse:
+  controller.empresaDetalleResponse:
     properties:
-      estado:
+      creado_en:
         type: string
+      estado:
+        type: boolean
       id:
         type: integer
       maximo_usuarios:
@@ -85,25 +89,72 @@ definitions:
       moneda:
         type: string
       moneda_info:
-        $ref: '#/definitions/internal_controller.monedaResponse'
+        $ref: '#/definitions/controller.monedaResponse'
       nombre:
         type: string
       pais:
         type: string
+      vencimiento:
+        type: string
     type: object
-  internal_controller.errorResponse:
+  controller.empresaListItemResponse:
+    properties:
+      creado_en:
+        type: string
+      estado:
+        type: boolean
+      id:
+        type: integer
+      nombre:
+        type: string
+      pais:
+        type: string
+      vencimiento:
+        type: string
+    type: object
+  controller.empresaResponse:
+    properties:
+      creado_en:
+        type: string
+      estado:
+        type: boolean
+      id:
+        type: integer
+      maximo_usuarios:
+        type: integer
+      moneda:
+        type: string
+      moneda_info:
+        $ref: '#/definitions/controller.monedaResponse'
+      nombre:
+        type: string
+      pais:
+        type: string
+      vencimiento:
+        type: string
+    type: object
+  controller.errorResponse:
     properties:
       message:
         type: string
     type: object
-  internal_controller.monedaRegionResponse:
+  controller.listadoEmpresasResponse:
+    properties:
+      datos:
+        items:
+          $ref: '#/definitions/controller.empresaListItemResponse'
+        type: array
+      paginacion:
+        $ref: '#/definitions/controller.paginadorResponse'
+    type: object
+  controller.monedaRegionResponse:
     properties:
       codigo:
         type: string
       nombre:
         type: string
     type: object
-  internal_controller.monedaRenderResponse:
+  controller.monedaRenderResponse:
     properties:
       currency:
         type: string
@@ -114,7 +165,7 @@ definitions:
       minimum_fraction_digits:
         type: integer
     type: object
-  internal_controller.monedaResponse:
+  controller.monedaResponse:
     properties:
       codigo:
         type: string
@@ -124,10 +175,21 @@ definitions:
         type: integer
       regiones:
         items:
-          $ref: '#/definitions/internal_controller.monedaRegionResponse'
+          $ref: '#/definitions/controller.monedaRegionResponse'
         type: array
       render:
-        $ref: '#/definitions/internal_controller.monedaRenderResponse'
+        $ref: '#/definitions/controller.monedaRenderResponse'
+    type: object
+  controller.paginadorResponse:
+    properties:
+      pagina:
+        type: integer
+      paginas:
+        type: integer
+      por_pagina:
+        type: integer
+      total:
+        type: integer
     type: object
 info:
   contact: {}
@@ -148,26 +210,26 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/internal_controller.adminCredencialesRequest'
+          $ref: '#/definitions/controller.adminCredencialesRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_controller.adminCredencialesResponse'
+            $ref: '#/definitions/controller.adminCredencialesResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
       security:
       - BearerAuth: []
       summary: Actualizar credenciales
@@ -175,24 +237,33 @@ paths:
       - admin
   /admin/empresas:
     get:
-      description: Retorna todas las empresas registradas.
+      description: Retorna las empresas registradas de forma paginada (máx 10 por
+        página). Permite buscar por nombre.
+      parameters:
+      - default: 1
+        description: Número de página
+        in: query
+        name: pagina
+        type: integer
+      - description: Texto a buscar en el nombre
+        in: query
+        name: busqueda
+        type: string
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/internal_controller.empresaResponse'
-            type: array
+            $ref: '#/definitions/controller.listadoEmpresasResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
       security:
       - BearerAuth: []
       summary: Listado de empresas
@@ -209,26 +280,26 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/internal_controller.crearEmpresaRequest'
+          $ref: '#/definitions/controller.crearEmpresaRequest'
       produces:
       - application/json
       responses:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/internal_controller.crearEmpresaResponse'
+            $ref: '#/definitions/controller.crearEmpresaResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
       security:
       - BearerAuth: []
       summary: Alta de empresa + usuario principal
@@ -251,15 +322,15 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
       security:
       - BearerAuth: []
       summary: Eliminar empresa
@@ -279,19 +350,19 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_controller.empresaResponse'
+            $ref: '#/definitions/controller.empresaResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
       security:
       - BearerAuth: []
       summary: Obtener empresa por ID
@@ -312,29 +383,63 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/internal_controller.actualizarEmpresaRequest'
+          $ref: '#/definitions/controller.actualizarEmpresaRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_controller.empresaResponse'
+            $ref: '#/definitions/controller.empresaResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
       security:
       - BearerAuth: []
       summary: Actualizar empresa
+      tags:
+      - admin
+  /admin/empresas/{id}/detalle:
+    get:
+      description: 'Devuelve todos los datos de una empresa: info general, moneda
+        con render, suscripcion, estado y fechas.'
+      parameters:
+      - description: ID de empresa
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.empresaDetalleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Detalle completo de empresa
       tags:
       - admin
   /admin/login:
@@ -349,26 +454,26 @@ paths:
         name: credentials
         required: true
         schema:
-          $ref: '#/definitions/internal_controller.adminLoginRequest'
+          $ref: '#/definitions/controller.adminLoginRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_controller.adminLoginResponse'
+            $ref: '#/definitions/controller.adminLoginResponse'
         "400":
-          description: Bad Request
+          description: Faltan datos o el formato es incorrecto
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
         "401":
-          description: Unauthorized
+          description: Usuario o contraseña incorrecto
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
         "500":
-          description: Internal Server Error
+          description: Ha ocurrido un error inesperado, intente más tarde
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
       summary: Login admin
       tags:
       - admin
@@ -398,15 +503,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_controller.adminProfileResponse'
+            $ref: '#/definitions/controller.adminProfileResponse'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
       security:
       - BearerAuth: []
       summary: Perfil del administrador autenticado
@@ -422,12 +527,12 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/internal_controller.monedaResponse'
+              $ref: '#/definitions/controller.monedaResponse'
             type: array
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
       summary: Catalogo global de monedas
       tags:
       - catalogos
@@ -446,15 +551,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/internal_controller.monedaResponse'
+            $ref: '#/definitions/controller.monedaResponse'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/internal_controller.errorResponse'
+            $ref: '#/definitions/controller.errorResponse'
       summary: Detalle de moneda
       tags:
       - catalogos

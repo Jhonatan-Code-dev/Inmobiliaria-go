@@ -33,12 +33,6 @@ func (_u *PagoUpdate) Where(ps ...predicate.Pago) *PagoUpdate {
 	return _u
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *PagoUpdate) SetActualizadoEn(v time.Time) *PagoUpdate {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
-}
-
 // SetEmpresaID sets the "empresa_id" field.
 func (_u *PagoUpdate) SetEmpresaID(v int) *PagoUpdate {
 	_u.mutation.SetEmpresaID(v)
@@ -336,7 +330,6 @@ func (_u *PagoUpdate) RemoveMovimientosCaja(v ...*MovimientoCaja) *PagoUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *PagoUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -359,14 +352,6 @@ func (_u *PagoUpdate) Exec(ctx context.Context) error {
 func (_u *PagoUpdate) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *PagoUpdate) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := pago.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -419,9 +404,6 @@ func (_u *PagoUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(pago.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.NumeroRecibo(); ok {
 		_spec.SetField(pago.FieldNumeroRecibo, field.TypeString, value)
@@ -651,12 +633,6 @@ type PagoUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *PagoMutation
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *PagoUpdateOne) SetActualizadoEn(v time.Time) *PagoUpdateOne {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
 }
 
 // SetEmpresaID sets the "empresa_id" field.
@@ -969,7 +945,6 @@ func (_u *PagoUpdateOne) Select(field string, fields ...string) *PagoUpdateOne {
 
 // Save executes the query and returns the updated Pago entity.
 func (_u *PagoUpdateOne) Save(ctx context.Context) (*Pago, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -992,14 +967,6 @@ func (_u *PagoUpdateOne) Exec(ctx context.Context) error {
 func (_u *PagoUpdateOne) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *PagoUpdateOne) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := pago.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -1069,9 +1036,6 @@ func (_u *PagoUpdateOne) sqlSave(ctx context.Context) (_node *Pago, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(pago.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.NumeroRecibo(); ok {
 		_spec.SetField(pago.FieldNumeroRecibo, field.TypeString, value)

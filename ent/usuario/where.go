@@ -60,11 +60,6 @@ func CreadoEn(v time.Time) predicate.Usuario {
 	return predicate.Usuario(sql.FieldEQ(FieldCreadoEn, v))
 }
 
-// ActualizadoEn applies equality check predicate on the "actualizado_en" field. It's identical to ActualizadoEnEQ.
-func ActualizadoEn(v time.Time) predicate.Usuario {
-	return predicate.Usuario(sql.FieldEQ(FieldActualizadoEn, v))
-}
-
 // Usuario applies equality check predicate on the "usuario" field. It's identical to UsuarioEQ.
 func Usuario(v string) predicate.Usuario {
 	return predicate.Usuario(sql.FieldEQ(FieldUsuario, v))
@@ -75,9 +70,9 @@ func HashContrasena(v string) predicate.Usuario {
 	return predicate.Usuario(sql.FieldEQ(FieldHashContrasena, v))
 }
 
-// UltimoAcceso applies equality check predicate on the "ultimo_acceso" field. It's identical to UltimoAccesoEQ.
-func UltimoAcceso(v time.Time) predicate.Usuario {
-	return predicate.Usuario(sql.FieldEQ(FieldUltimoAcceso, v))
+// Estado applies equality check predicate on the "estado" field. It's identical to EstadoEQ.
+func Estado(v bool) predicate.Usuario {
+	return predicate.Usuario(sql.FieldEQ(FieldEstado, v))
 }
 
 // CreadoEnEQ applies the EQ predicate on the "creado_en" field.
@@ -118,46 +113,6 @@ func CreadoEnLT(v time.Time) predicate.Usuario {
 // CreadoEnLTE applies the LTE predicate on the "creado_en" field.
 func CreadoEnLTE(v time.Time) predicate.Usuario {
 	return predicate.Usuario(sql.FieldLTE(FieldCreadoEn, v))
-}
-
-// ActualizadoEnEQ applies the EQ predicate on the "actualizado_en" field.
-func ActualizadoEnEQ(v time.Time) predicate.Usuario {
-	return predicate.Usuario(sql.FieldEQ(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnNEQ applies the NEQ predicate on the "actualizado_en" field.
-func ActualizadoEnNEQ(v time.Time) predicate.Usuario {
-	return predicate.Usuario(sql.FieldNEQ(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnIn applies the In predicate on the "actualizado_en" field.
-func ActualizadoEnIn(vs ...time.Time) predicate.Usuario {
-	return predicate.Usuario(sql.FieldIn(FieldActualizadoEn, vs...))
-}
-
-// ActualizadoEnNotIn applies the NotIn predicate on the "actualizado_en" field.
-func ActualizadoEnNotIn(vs ...time.Time) predicate.Usuario {
-	return predicate.Usuario(sql.FieldNotIn(FieldActualizadoEn, vs...))
-}
-
-// ActualizadoEnGT applies the GT predicate on the "actualizado_en" field.
-func ActualizadoEnGT(v time.Time) predicate.Usuario {
-	return predicate.Usuario(sql.FieldGT(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnGTE applies the GTE predicate on the "actualizado_en" field.
-func ActualizadoEnGTE(v time.Time) predicate.Usuario {
-	return predicate.Usuario(sql.FieldGTE(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnLT applies the LT predicate on the "actualizado_en" field.
-func ActualizadoEnLT(v time.Time) predicate.Usuario {
-	return predicate.Usuario(sql.FieldLT(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnLTE applies the LTE predicate on the "actualizado_en" field.
-func ActualizadoEnLTE(v time.Time) predicate.Usuario {
-	return predicate.Usuario(sql.FieldLTE(FieldActualizadoEn, v))
 }
 
 // UsuarioEQ applies the EQ predicate on the "usuario" field.
@@ -291,73 +246,13 @@ func HashContrasenaContainsFold(v string) predicate.Usuario {
 }
 
 // EstadoEQ applies the EQ predicate on the "estado" field.
-func EstadoEQ(v Estado) predicate.Usuario {
+func EstadoEQ(v bool) predicate.Usuario {
 	return predicate.Usuario(sql.FieldEQ(FieldEstado, v))
 }
 
 // EstadoNEQ applies the NEQ predicate on the "estado" field.
-func EstadoNEQ(v Estado) predicate.Usuario {
+func EstadoNEQ(v bool) predicate.Usuario {
 	return predicate.Usuario(sql.FieldNEQ(FieldEstado, v))
-}
-
-// EstadoIn applies the In predicate on the "estado" field.
-func EstadoIn(vs ...Estado) predicate.Usuario {
-	return predicate.Usuario(sql.FieldIn(FieldEstado, vs...))
-}
-
-// EstadoNotIn applies the NotIn predicate on the "estado" field.
-func EstadoNotIn(vs ...Estado) predicate.Usuario {
-	return predicate.Usuario(sql.FieldNotIn(FieldEstado, vs...))
-}
-
-// UltimoAccesoEQ applies the EQ predicate on the "ultimo_acceso" field.
-func UltimoAccesoEQ(v time.Time) predicate.Usuario {
-	return predicate.Usuario(sql.FieldEQ(FieldUltimoAcceso, v))
-}
-
-// UltimoAccesoNEQ applies the NEQ predicate on the "ultimo_acceso" field.
-func UltimoAccesoNEQ(v time.Time) predicate.Usuario {
-	return predicate.Usuario(sql.FieldNEQ(FieldUltimoAcceso, v))
-}
-
-// UltimoAccesoIn applies the In predicate on the "ultimo_acceso" field.
-func UltimoAccesoIn(vs ...time.Time) predicate.Usuario {
-	return predicate.Usuario(sql.FieldIn(FieldUltimoAcceso, vs...))
-}
-
-// UltimoAccesoNotIn applies the NotIn predicate on the "ultimo_acceso" field.
-func UltimoAccesoNotIn(vs ...time.Time) predicate.Usuario {
-	return predicate.Usuario(sql.FieldNotIn(FieldUltimoAcceso, vs...))
-}
-
-// UltimoAccesoGT applies the GT predicate on the "ultimo_acceso" field.
-func UltimoAccesoGT(v time.Time) predicate.Usuario {
-	return predicate.Usuario(sql.FieldGT(FieldUltimoAcceso, v))
-}
-
-// UltimoAccesoGTE applies the GTE predicate on the "ultimo_acceso" field.
-func UltimoAccesoGTE(v time.Time) predicate.Usuario {
-	return predicate.Usuario(sql.FieldGTE(FieldUltimoAcceso, v))
-}
-
-// UltimoAccesoLT applies the LT predicate on the "ultimo_acceso" field.
-func UltimoAccesoLT(v time.Time) predicate.Usuario {
-	return predicate.Usuario(sql.FieldLT(FieldUltimoAcceso, v))
-}
-
-// UltimoAccesoLTE applies the LTE predicate on the "ultimo_acceso" field.
-func UltimoAccesoLTE(v time.Time) predicate.Usuario {
-	return predicate.Usuario(sql.FieldLTE(FieldUltimoAcceso, v))
-}
-
-// UltimoAccesoIsNil applies the IsNil predicate on the "ultimo_acceso" field.
-func UltimoAccesoIsNil() predicate.Usuario {
-	return predicate.Usuario(sql.FieldIsNull(FieldUltimoAcceso))
-}
-
-// UltimoAccesoNotNil applies the NotNil predicate on the "ultimo_acceso" field.
-func UltimoAccesoNotNil() predicate.Usuario {
-	return predicate.Usuario(sql.FieldNotNull(FieldUltimoAcceso))
 }
 
 // HasEmpresasUsuario applies the HasEdge predicate on the "empresas_usuario" edge.

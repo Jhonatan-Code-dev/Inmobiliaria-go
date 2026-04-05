@@ -47,6 +47,20 @@ func ValidarCodigo(codigo string) error {
 	return nil
 }
 
+// ObtenerMonedaPorPais intenta resolver la moneda por defecto para un codigo de pais (ISO 3166-1 alpha-2).
+func ObtenerMonedaPorPais(pais string) string {
+	pais = strings.ToUpper(strings.TrimSpace(pais))
+	r, err := language.ParseRegion(pais)
+	if err != nil {
+		return ""
+	}
+	unit, _ := currency.FromRegion(r)
+	if unit.String() == "XXX" {
+		return ""
+	}
+	return unit.String()
+}
+
 // ObtenerInfo retorna precision y simbolos de una moneda.
 func ObtenerInfo(codigo string) (Info, error) {
 	unit, scale, increment, err := parseUnit(codigo)

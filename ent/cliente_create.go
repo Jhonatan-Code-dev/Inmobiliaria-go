@@ -39,20 +39,6 @@ func (_c *ClienteCreate) SetNillableCreadoEn(v *time.Time) *ClienteCreate {
 	return _c
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_c *ClienteCreate) SetActualizadoEn(v time.Time) *ClienteCreate {
-	_c.mutation.SetActualizadoEn(v)
-	return _c
-}
-
-// SetNillableActualizadoEn sets the "actualizado_en" field if the given value is not nil.
-func (_c *ClienteCreate) SetNillableActualizadoEn(v *time.Time) *ClienteCreate {
-	if v != nil {
-		_c.SetActualizadoEn(*v)
-	}
-	return _c
-}
-
 // SetEmpresaID sets the "empresa_id" field.
 func (_c *ClienteCreate) SetEmpresaID(v int) *ClienteCreate {
 	_c.mutation.SetEmpresaID(v)
@@ -297,10 +283,6 @@ func (_c *ClienteCreate) defaults() {
 		v := cliente.DefaultCreadoEn()
 		_c.mutation.SetCreadoEn(v)
 	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		v := cliente.DefaultActualizadoEn()
-		_c.mutation.SetActualizadoEn(v)
-	}
 	if _, ok := _c.mutation.Estado(); !ok {
 		v := cliente.DefaultEstado
 		_c.mutation.SetEstado(v)
@@ -311,9 +293,6 @@ func (_c *ClienteCreate) defaults() {
 func (_c *ClienteCreate) check() error {
 	if _, ok := _c.mutation.CreadoEn(); !ok {
 		return &ValidationError{Name: "creado_en", err: errors.New(`ent: missing required field "Cliente.creado_en"`)}
-	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		return &ValidationError{Name: "actualizado_en", err: errors.New(`ent: missing required field "Cliente.actualizado_en"`)}
 	}
 	if _, ok := _c.mutation.EmpresaID(); !ok {
 		return &ValidationError{Name: "empresa_id", err: errors.New(`ent: missing required field "Cliente.empresa_id"`)}
@@ -415,10 +394,6 @@ func (_c *ClienteCreate) createSpec() (*Cliente, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.CreadoEn(); ok {
 		_spec.SetField(cliente.FieldCreadoEn, field.TypeTime, value)
 		_node.CreadoEn = value
-	}
-	if value, ok := _c.mutation.ActualizadoEn(); ok {
-		_spec.SetField(cliente.FieldActualizadoEn, field.TypeTime, value)
-		_node.ActualizadoEn = value
 	}
 	if value, ok := _c.mutation.DocumentoNumero(); ok {
 		_spec.SetField(cliente.FieldDocumentoNumero, field.TypeString, value)

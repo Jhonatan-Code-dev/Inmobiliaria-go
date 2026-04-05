@@ -66,7 +66,6 @@ type AdminMutation struct {
 	typ             string
 	id              *int
 	creado_en       *time.Time
-	actualizado_en  *time.Time
 	usuario         *string
 	hash_contrasena *string
 	activo          *bool
@@ -208,42 +207,6 @@ func (m *AdminMutation) OldCreadoEn(ctx context.Context) (v time.Time, err error
 // ResetCreadoEn resets all changes to the "creado_en" field.
 func (m *AdminMutation) ResetCreadoEn() {
 	m.creado_en = nil
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (m *AdminMutation) SetActualizadoEn(t time.Time) {
-	m.actualizado_en = &t
-}
-
-// ActualizadoEn returns the value of the "actualizado_en" field in the mutation.
-func (m *AdminMutation) ActualizadoEn() (r time.Time, exists bool) {
-	v := m.actualizado_en
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldActualizadoEn returns the old "actualizado_en" field's value of the Admin entity.
-// If the Admin object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *AdminMutation) OldActualizadoEn(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldActualizadoEn is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldActualizadoEn requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldActualizadoEn: %w", err)
-	}
-	return oldValue.ActualizadoEn, nil
-}
-
-// ResetActualizadoEn resets all changes to the "actualizado_en" field.
-func (m *AdminMutation) ResetActualizadoEn() {
-	m.actualizado_en = nil
 }
 
 // SetUsuario sets the "usuario" field.
@@ -388,12 +351,9 @@ func (m *AdminMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *AdminMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 4)
 	if m.creado_en != nil {
 		fields = append(fields, admin.FieldCreadoEn)
-	}
-	if m.actualizado_en != nil {
-		fields = append(fields, admin.FieldActualizadoEn)
 	}
 	if m.usuario != nil {
 		fields = append(fields, admin.FieldUsuario)
@@ -414,8 +374,6 @@ func (m *AdminMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case admin.FieldCreadoEn:
 		return m.CreadoEn()
-	case admin.FieldActualizadoEn:
-		return m.ActualizadoEn()
 	case admin.FieldUsuario:
 		return m.Usuario()
 	case admin.FieldHashContrasena:
@@ -433,8 +391,6 @@ func (m *AdminMutation) OldField(ctx context.Context, name string) (ent.Value, e
 	switch name {
 	case admin.FieldCreadoEn:
 		return m.OldCreadoEn(ctx)
-	case admin.FieldActualizadoEn:
-		return m.OldActualizadoEn(ctx)
 	case admin.FieldUsuario:
 		return m.OldUsuario(ctx)
 	case admin.FieldHashContrasena:
@@ -456,13 +412,6 @@ func (m *AdminMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreadoEn(v)
-		return nil
-	case admin.FieldActualizadoEn:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetActualizadoEn(v)
 		return nil
 	case admin.FieldUsuario:
 		v, ok := value.(string)
@@ -537,9 +486,6 @@ func (m *AdminMutation) ResetField(name string) error {
 	case admin.FieldCreadoEn:
 		m.ResetCreadoEn()
 		return nil
-	case admin.FieldActualizadoEn:
-		m.ResetActualizadoEn()
-		return nil
 	case admin.FieldUsuario:
 		m.ResetUsuario()
 		return nil
@@ -608,7 +554,6 @@ type CargoMutation struct {
 	typ                      string
 	id                       *int
 	creado_en                *time.Time
-	actualizado_en           *time.Time
 	concepto                 *cargo.Concepto
 	descripcion              *string
 	moneda                   *string
@@ -765,42 +710,6 @@ func (m *CargoMutation) OldCreadoEn(ctx context.Context) (v time.Time, err error
 // ResetCreadoEn resets all changes to the "creado_en" field.
 func (m *CargoMutation) ResetCreadoEn() {
 	m.creado_en = nil
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (m *CargoMutation) SetActualizadoEn(t time.Time) {
-	m.actualizado_en = &t
-}
-
-// ActualizadoEn returns the value of the "actualizado_en" field in the mutation.
-func (m *CargoMutation) ActualizadoEn() (r time.Time, exists bool) {
-	v := m.actualizado_en
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldActualizadoEn returns the old "actualizado_en" field's value of the Cargo entity.
-// If the Cargo object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *CargoMutation) OldActualizadoEn(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldActualizadoEn is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldActualizadoEn requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldActualizadoEn: %w", err)
-	}
-	return oldValue.ActualizadoEn, nil
-}
-
-// ResetActualizadoEn resets all changes to the "actualizado_en" field.
-func (m *CargoMutation) ResetActualizadoEn() {
-	m.actualizado_en = nil
 }
 
 // SetContratoID sets the "contrato_id" field.
@@ -1403,12 +1312,9 @@ func (m *CargoMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *CargoMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 13)
 	if m.creado_en != nil {
 		fields = append(fields, cargo.FieldCreadoEn)
-	}
-	if m.actualizado_en != nil {
-		fields = append(fields, cargo.FieldActualizadoEn)
 	}
 	if m.contrato != nil {
 		fields = append(fields, cargo.FieldContratoID)
@@ -1456,8 +1362,6 @@ func (m *CargoMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case cargo.FieldCreadoEn:
 		return m.CreadoEn()
-	case cargo.FieldActualizadoEn:
-		return m.ActualizadoEn()
 	case cargo.FieldContratoID:
 		return m.ContratoID()
 	case cargo.FieldConcepto:
@@ -1493,8 +1397,6 @@ func (m *CargoMutation) OldField(ctx context.Context, name string) (ent.Value, e
 	switch name {
 	case cargo.FieldCreadoEn:
 		return m.OldCreadoEn(ctx)
-	case cargo.FieldActualizadoEn:
-		return m.OldActualizadoEn(ctx)
 	case cargo.FieldContratoID:
 		return m.OldContratoID(ctx)
 	case cargo.FieldConcepto:
@@ -1534,13 +1436,6 @@ func (m *CargoMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreadoEn(v)
-		return nil
-	case cargo.FieldActualizadoEn:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetActualizadoEn(v)
 		return nil
 	case cargo.FieldContratoID:
 		v, ok := value.(int)
@@ -1714,9 +1609,6 @@ func (m *CargoMutation) ResetField(name string) error {
 	case cargo.FieldCreadoEn:
 		m.ResetCreadoEn()
 		return nil
-	case cargo.FieldActualizadoEn:
-		m.ResetActualizadoEn()
-		return nil
 	case cargo.FieldContratoID:
 		m.ResetContratoID()
 		return nil
@@ -1866,7 +1758,6 @@ type ClienteMutation struct {
 	typ                        string
 	id                         *int
 	creado_en                  *time.Time
-	actualizado_en             *time.Time
 	documento_numero           *string
 	nombres                    *string
 	apellidos                  *string
@@ -2029,42 +1920,6 @@ func (m *ClienteMutation) OldCreadoEn(ctx context.Context) (v time.Time, err err
 // ResetCreadoEn resets all changes to the "creado_en" field.
 func (m *ClienteMutation) ResetCreadoEn() {
 	m.creado_en = nil
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (m *ClienteMutation) SetActualizadoEn(t time.Time) {
-	m.actualizado_en = &t
-}
-
-// ActualizadoEn returns the value of the "actualizado_en" field in the mutation.
-func (m *ClienteMutation) ActualizadoEn() (r time.Time, exists bool) {
-	v := m.actualizado_en
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldActualizadoEn returns the old "actualizado_en" field's value of the Cliente entity.
-// If the Cliente object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ClienteMutation) OldActualizadoEn(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldActualizadoEn is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldActualizadoEn requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldActualizadoEn: %w", err)
-	}
-	return oldValue.ActualizadoEn, nil
-}
-
-// ResetActualizadoEn resets all changes to the "actualizado_en" field.
-func (m *ClienteMutation) ResetActualizadoEn() {
-	m.actualizado_en = nil
 }
 
 // SetEmpresaID sets the "empresa_id" field.
@@ -2889,12 +2744,9 @@ func (m *ClienteMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ClienteMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 14)
 	if m.creado_en != nil {
 		fields = append(fields, cliente.FieldCreadoEn)
-	}
-	if m.actualizado_en != nil {
-		fields = append(fields, cliente.FieldActualizadoEn)
 	}
 	if m.empresa != nil {
 		fields = append(fields, cliente.FieldEmpresaID)
@@ -2945,8 +2797,6 @@ func (m *ClienteMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case cliente.FieldCreadoEn:
 		return m.CreadoEn()
-	case cliente.FieldActualizadoEn:
-		return m.ActualizadoEn()
 	case cliente.FieldEmpresaID:
 		return m.EmpresaID()
 	case cliente.FieldTipoIdentificacionID:
@@ -2984,8 +2834,6 @@ func (m *ClienteMutation) OldField(ctx context.Context, name string) (ent.Value,
 	switch name {
 	case cliente.FieldCreadoEn:
 		return m.OldCreadoEn(ctx)
-	case cliente.FieldActualizadoEn:
-		return m.OldActualizadoEn(ctx)
 	case cliente.FieldEmpresaID:
 		return m.OldEmpresaID(ctx)
 	case cliente.FieldTipoIdentificacionID:
@@ -3027,13 +2875,6 @@ func (m *ClienteMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreadoEn(v)
-		return nil
-	case cliente.FieldActualizadoEn:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetActualizadoEn(v)
 		return nil
 	case cliente.FieldEmpresaID:
 		v, ok := value.(int)
@@ -3231,9 +3072,6 @@ func (m *ClienteMutation) ResetField(name string) error {
 	switch name {
 	case cliente.FieldCreadoEn:
 		m.ResetCreadoEn()
-		return nil
-	case cliente.FieldActualizadoEn:
-		m.ResetActualizadoEn()
 		return nil
 	case cliente.FieldEmpresaID:
 		m.ResetEmpresaID()
@@ -3457,7 +3295,6 @@ type ClienteTelefonoMutation struct {
 	typ            string
 	id             *int
 	creado_en      *time.Time
-	actualizado_en *time.Time
 	telefono       *string
 	etiqueta       *string
 	principal      *bool
@@ -3602,42 +3439,6 @@ func (m *ClienteTelefonoMutation) OldCreadoEn(ctx context.Context) (v time.Time,
 // ResetCreadoEn resets all changes to the "creado_en" field.
 func (m *ClienteTelefonoMutation) ResetCreadoEn() {
 	m.creado_en = nil
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (m *ClienteTelefonoMutation) SetActualizadoEn(t time.Time) {
-	m.actualizado_en = &t
-}
-
-// ActualizadoEn returns the value of the "actualizado_en" field in the mutation.
-func (m *ClienteTelefonoMutation) ActualizadoEn() (r time.Time, exists bool) {
-	v := m.actualizado_en
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldActualizadoEn returns the old "actualizado_en" field's value of the ClienteTelefono entity.
-// If the ClienteTelefono object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ClienteTelefonoMutation) OldActualizadoEn(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldActualizadoEn is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldActualizadoEn requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldActualizadoEn: %w", err)
-	}
-	return oldValue.ActualizadoEn, nil
-}
-
-// ResetActualizadoEn resets all changes to the "actualizado_en" field.
-func (m *ClienteTelefonoMutation) ResetActualizadoEn() {
-	m.actualizado_en = nil
 }
 
 // SetClienteID sets the "cliente_id" field.
@@ -3894,12 +3695,9 @@ func (m *ClienteTelefonoMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ClienteTelefonoMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 6)
 	if m.creado_en != nil {
 		fields = append(fields, clientetelefono.FieldCreadoEn)
-	}
-	if m.actualizado_en != nil {
-		fields = append(fields, clientetelefono.FieldActualizadoEn)
 	}
 	if m.cliente != nil {
 		fields = append(fields, clientetelefono.FieldClienteID)
@@ -3926,8 +3724,6 @@ func (m *ClienteTelefonoMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case clientetelefono.FieldCreadoEn:
 		return m.CreadoEn()
-	case clientetelefono.FieldActualizadoEn:
-		return m.ActualizadoEn()
 	case clientetelefono.FieldClienteID:
 		return m.ClienteID()
 	case clientetelefono.FieldTelefono:
@@ -3949,8 +3745,6 @@ func (m *ClienteTelefonoMutation) OldField(ctx context.Context, name string) (en
 	switch name {
 	case clientetelefono.FieldCreadoEn:
 		return m.OldCreadoEn(ctx)
-	case clientetelefono.FieldActualizadoEn:
-		return m.OldActualizadoEn(ctx)
 	case clientetelefono.FieldClienteID:
 		return m.OldClienteID(ctx)
 	case clientetelefono.FieldTelefono:
@@ -3976,13 +3770,6 @@ func (m *ClienteTelefonoMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreadoEn(v)
-		return nil
-	case clientetelefono.FieldActualizadoEn:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetActualizadoEn(v)
 		return nil
 	case clientetelefono.FieldClienteID:
 		v, ok := value.(int)
@@ -4082,9 +3869,6 @@ func (m *ClienteTelefonoMutation) ResetField(name string) error {
 	switch name {
 	case clientetelefono.FieldCreadoEn:
 		m.ResetCreadoEn()
-		return nil
-	case clientetelefono.FieldActualizadoEn:
-		m.ResetActualizadoEn()
 		return nil
 	case clientetelefono.FieldClienteID:
 		m.ResetClienteID()
@@ -4186,7 +3970,6 @@ type ContratoMutation struct {
 	typ                 string
 	id                  *int
 	creado_en           *time.Time
-	actualizado_en      *time.Time
 	codigo              *string
 	tipo                *contrato.Tipo
 	fecha_inicio        *time.Time
@@ -4354,42 +4137,6 @@ func (m *ContratoMutation) OldCreadoEn(ctx context.Context) (v time.Time, err er
 // ResetCreadoEn resets all changes to the "creado_en" field.
 func (m *ContratoMutation) ResetCreadoEn() {
 	m.creado_en = nil
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (m *ContratoMutation) SetActualizadoEn(t time.Time) {
-	m.actualizado_en = &t
-}
-
-// ActualizadoEn returns the value of the "actualizado_en" field in the mutation.
-func (m *ContratoMutation) ActualizadoEn() (r time.Time, exists bool) {
-	v := m.actualizado_en
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldActualizadoEn returns the old "actualizado_en" field's value of the Contrato entity.
-// If the Contrato object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ContratoMutation) OldActualizadoEn(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldActualizadoEn is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldActualizadoEn requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldActualizadoEn: %w", err)
-	}
-	return oldValue.ActualizadoEn, nil
-}
-
-// ResetActualizadoEn resets all changes to the "actualizado_en" field.
-func (m *ContratoMutation) ResetActualizadoEn() {
-	m.actualizado_en = nil
 }
 
 // SetEmpresaID sets the "empresa_id" field.
@@ -5297,12 +5044,9 @@ func (m *ContratoMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ContratoMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 17)
 	if m.creado_en != nil {
 		fields = append(fields, contrato.FieldCreadoEn)
-	}
-	if m.actualizado_en != nil {
-		fields = append(fields, contrato.FieldActualizadoEn)
 	}
 	if m.empresa != nil {
 		fields = append(fields, contrato.FieldEmpresaID)
@@ -5362,8 +5106,6 @@ func (m *ContratoMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case contrato.FieldCreadoEn:
 		return m.CreadoEn()
-	case contrato.FieldActualizadoEn:
-		return m.ActualizadoEn()
 	case contrato.FieldEmpresaID:
 		return m.EmpresaID()
 	case contrato.FieldClienteID:
@@ -5407,8 +5149,6 @@ func (m *ContratoMutation) OldField(ctx context.Context, name string) (ent.Value
 	switch name {
 	case contrato.FieldCreadoEn:
 		return m.OldCreadoEn(ctx)
-	case contrato.FieldActualizadoEn:
-		return m.OldActualizadoEn(ctx)
 	case contrato.FieldEmpresaID:
 		return m.OldEmpresaID(ctx)
 	case contrato.FieldClienteID:
@@ -5456,13 +5196,6 @@ func (m *ContratoMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreadoEn(v)
-		return nil
-	case contrato.FieldActualizadoEn:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetActualizadoEn(v)
 		return nil
 	case contrato.FieldEmpresaID:
 		v, ok := value.(int)
@@ -5694,9 +5427,6 @@ func (m *ContratoMutation) ResetField(name string) error {
 	case contrato.FieldCreadoEn:
 		m.ResetCreadoEn()
 		return nil
-	case contrato.FieldActualizadoEn:
-		m.ResetActualizadoEn()
-		return nil
 	case contrato.FieldEmpresaID:
 		m.ResetEmpresaID()
 		return nil
@@ -5920,13 +5650,13 @@ type EmpresaMutation struct {
 	typ                     string
 	id                      *int
 	creado_en               *time.Time
-	actualizado_en          *time.Time
 	nombre                  *string
 	pais                    *string
 	moneda                  *string
 	maximo_usuarios         *int
 	addmaximo_usuarios      *int
-	estado                  *empresa.Estado
+	estado                  *bool
+	vencimiento             *time.Time
 	clearedFields           map[string]struct{}
 	usuarios_empresa        map[int]struct{}
 	removedusuarios_empresa map[int]struct{}
@@ -6086,42 +5816,6 @@ func (m *EmpresaMutation) OldCreadoEn(ctx context.Context) (v time.Time, err err
 // ResetCreadoEn resets all changes to the "creado_en" field.
 func (m *EmpresaMutation) ResetCreadoEn() {
 	m.creado_en = nil
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (m *EmpresaMutation) SetActualizadoEn(t time.Time) {
-	m.actualizado_en = &t
-}
-
-// ActualizadoEn returns the value of the "actualizado_en" field in the mutation.
-func (m *EmpresaMutation) ActualizadoEn() (r time.Time, exists bool) {
-	v := m.actualizado_en
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldActualizadoEn returns the old "actualizado_en" field's value of the Empresa entity.
-// If the Empresa object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EmpresaMutation) OldActualizadoEn(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldActualizadoEn is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldActualizadoEn requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldActualizadoEn: %w", err)
-	}
-	return oldValue.ActualizadoEn, nil
-}
-
-// ResetActualizadoEn resets all changes to the "actualizado_en" field.
-func (m *EmpresaMutation) ResetActualizadoEn() {
-	m.actualizado_en = nil
 }
 
 // SetNombre sets the "nombre" field.
@@ -6302,12 +5996,12 @@ func (m *EmpresaMutation) ResetMaximoUsuarios() {
 }
 
 // SetEstado sets the "estado" field.
-func (m *EmpresaMutation) SetEstado(e empresa.Estado) {
-	m.estado = &e
+func (m *EmpresaMutation) SetEstado(b bool) {
+	m.estado = &b
 }
 
 // Estado returns the value of the "estado" field in the mutation.
-func (m *EmpresaMutation) Estado() (r empresa.Estado, exists bool) {
+func (m *EmpresaMutation) Estado() (r bool, exists bool) {
 	v := m.estado
 	if v == nil {
 		return
@@ -6318,7 +6012,7 @@ func (m *EmpresaMutation) Estado() (r empresa.Estado, exists bool) {
 // OldEstado returns the old "estado" field's value of the Empresa entity.
 // If the Empresa object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EmpresaMutation) OldEstado(ctx context.Context) (v empresa.Estado, err error) {
+func (m *EmpresaMutation) OldEstado(ctx context.Context) (v bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldEstado is only allowed on UpdateOne operations")
 	}
@@ -6335,6 +6029,55 @@ func (m *EmpresaMutation) OldEstado(ctx context.Context) (v empresa.Estado, err 
 // ResetEstado resets all changes to the "estado" field.
 func (m *EmpresaMutation) ResetEstado() {
 	m.estado = nil
+}
+
+// SetVencimiento sets the "vencimiento" field.
+func (m *EmpresaMutation) SetVencimiento(t time.Time) {
+	m.vencimiento = &t
+}
+
+// Vencimiento returns the value of the "vencimiento" field in the mutation.
+func (m *EmpresaMutation) Vencimiento() (r time.Time, exists bool) {
+	v := m.vencimiento
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVencimiento returns the old "vencimiento" field's value of the Empresa entity.
+// If the Empresa object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EmpresaMutation) OldVencimiento(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVencimiento is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVencimiento requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVencimiento: %w", err)
+	}
+	return oldValue.Vencimiento, nil
+}
+
+// ClearVencimiento clears the value of the "vencimiento" field.
+func (m *EmpresaMutation) ClearVencimiento() {
+	m.vencimiento = nil
+	m.clearedFields[empresa.FieldVencimiento] = struct{}{}
+}
+
+// VencimientoCleared returns if the "vencimiento" field was cleared in this mutation.
+func (m *EmpresaMutation) VencimientoCleared() bool {
+	_, ok := m.clearedFields[empresa.FieldVencimiento]
+	return ok
+}
+
+// ResetVencimiento resets all changes to the "vencimiento" field.
+func (m *EmpresaMutation) ResetVencimiento() {
+	m.vencimiento = nil
+	delete(m.clearedFields, empresa.FieldVencimiento)
 }
 
 // AddUsuariosEmpresaIDs adds the "usuarios_empresa" edge to the EmpresaUsuario entity by ids.
@@ -6753,9 +6496,6 @@ func (m *EmpresaMutation) Fields() []string {
 	if m.creado_en != nil {
 		fields = append(fields, empresa.FieldCreadoEn)
 	}
-	if m.actualizado_en != nil {
-		fields = append(fields, empresa.FieldActualizadoEn)
-	}
 	if m.nombre != nil {
 		fields = append(fields, empresa.FieldNombre)
 	}
@@ -6771,6 +6511,9 @@ func (m *EmpresaMutation) Fields() []string {
 	if m.estado != nil {
 		fields = append(fields, empresa.FieldEstado)
 	}
+	if m.vencimiento != nil {
+		fields = append(fields, empresa.FieldVencimiento)
+	}
 	return fields
 }
 
@@ -6781,8 +6524,6 @@ func (m *EmpresaMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case empresa.FieldCreadoEn:
 		return m.CreadoEn()
-	case empresa.FieldActualizadoEn:
-		return m.ActualizadoEn()
 	case empresa.FieldNombre:
 		return m.Nombre()
 	case empresa.FieldPais:
@@ -6793,6 +6534,8 @@ func (m *EmpresaMutation) Field(name string) (ent.Value, bool) {
 		return m.MaximoUsuarios()
 	case empresa.FieldEstado:
 		return m.Estado()
+	case empresa.FieldVencimiento:
+		return m.Vencimiento()
 	}
 	return nil, false
 }
@@ -6804,8 +6547,6 @@ func (m *EmpresaMutation) OldField(ctx context.Context, name string) (ent.Value,
 	switch name {
 	case empresa.FieldCreadoEn:
 		return m.OldCreadoEn(ctx)
-	case empresa.FieldActualizadoEn:
-		return m.OldActualizadoEn(ctx)
 	case empresa.FieldNombre:
 		return m.OldNombre(ctx)
 	case empresa.FieldPais:
@@ -6816,6 +6557,8 @@ func (m *EmpresaMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldMaximoUsuarios(ctx)
 	case empresa.FieldEstado:
 		return m.OldEstado(ctx)
+	case empresa.FieldVencimiento:
+		return m.OldVencimiento(ctx)
 	}
 	return nil, fmt.Errorf("unknown Empresa field %s", name)
 }
@@ -6831,13 +6574,6 @@ func (m *EmpresaMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreadoEn(v)
-		return nil
-	case empresa.FieldActualizadoEn:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetActualizadoEn(v)
 		return nil
 	case empresa.FieldNombre:
 		v, ok := value.(string)
@@ -6868,11 +6604,18 @@ func (m *EmpresaMutation) SetField(name string, value ent.Value) error {
 		m.SetMaximoUsuarios(v)
 		return nil
 	case empresa.FieldEstado:
-		v, ok := value.(empresa.Estado)
+		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEstado(v)
+		return nil
+	case empresa.FieldVencimiento:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVencimiento(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Empresa field %s", name)
@@ -6922,6 +6665,9 @@ func (m *EmpresaMutation) ClearedFields() []string {
 	if m.FieldCleared(empresa.FieldPais) {
 		fields = append(fields, empresa.FieldPais)
 	}
+	if m.FieldCleared(empresa.FieldVencimiento) {
+		fields = append(fields, empresa.FieldVencimiento)
+	}
 	return fields
 }
 
@@ -6939,6 +6685,9 @@ func (m *EmpresaMutation) ClearField(name string) error {
 	case empresa.FieldPais:
 		m.ClearPais()
 		return nil
+	case empresa.FieldVencimiento:
+		m.ClearVencimiento()
+		return nil
 	}
 	return fmt.Errorf("unknown Empresa nullable field %s", name)
 }
@@ -6949,9 +6698,6 @@ func (m *EmpresaMutation) ResetField(name string) error {
 	switch name {
 	case empresa.FieldCreadoEn:
 		m.ResetCreadoEn()
-		return nil
-	case empresa.FieldActualizadoEn:
-		m.ResetActualizadoEn()
 		return nil
 	case empresa.FieldNombre:
 		m.ResetNombre()
@@ -6967,6 +6713,9 @@ func (m *EmpresaMutation) ResetField(name string) error {
 		return nil
 	case empresa.FieldEstado:
 		m.ResetEstado()
+		return nil
+	case empresa.FieldVencimiento:
+		m.ResetVencimiento()
 		return nil
 	}
 	return fmt.Errorf("unknown Empresa field %s", name)
@@ -7219,7 +6968,6 @@ type EmpresaUsuarioMutation struct {
 	typ            string
 	id             *int
 	creado_en      *time.Time
-	actualizado_en *time.Time
 	principal      *bool
 	estado         *empresausuario.Estado
 	clearedFields  map[string]struct{}
@@ -7366,42 +7114,6 @@ func (m *EmpresaUsuarioMutation) OldCreadoEn(ctx context.Context) (v time.Time, 
 // ResetCreadoEn resets all changes to the "creado_en" field.
 func (m *EmpresaUsuarioMutation) ResetCreadoEn() {
 	m.creado_en = nil
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (m *EmpresaUsuarioMutation) SetActualizadoEn(t time.Time) {
-	m.actualizado_en = &t
-}
-
-// ActualizadoEn returns the value of the "actualizado_en" field in the mutation.
-func (m *EmpresaUsuarioMutation) ActualizadoEn() (r time.Time, exists bool) {
-	v := m.actualizado_en
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldActualizadoEn returns the old "actualizado_en" field's value of the EmpresaUsuario entity.
-// If the EmpresaUsuario object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *EmpresaUsuarioMutation) OldActualizadoEn(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldActualizadoEn is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldActualizadoEn requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldActualizadoEn: %w", err)
-	}
-	return oldValue.ActualizadoEn, nil
-}
-
-// ResetActualizadoEn resets all changes to the "actualizado_en" field.
-func (m *EmpresaUsuarioMutation) ResetActualizadoEn() {
-	m.actualizado_en = nil
 }
 
 // SetEmpresaID sets the "empresa_id" field.
@@ -7699,12 +7411,9 @@ func (m *EmpresaUsuarioMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EmpresaUsuarioMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 6)
 	if m.creado_en != nil {
 		fields = append(fields, empresausuario.FieldCreadoEn)
-	}
-	if m.actualizado_en != nil {
-		fields = append(fields, empresausuario.FieldActualizadoEn)
 	}
 	if m.empresa != nil {
 		fields = append(fields, empresausuario.FieldEmpresaID)
@@ -7731,8 +7440,6 @@ func (m *EmpresaUsuarioMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case empresausuario.FieldCreadoEn:
 		return m.CreadoEn()
-	case empresausuario.FieldActualizadoEn:
-		return m.ActualizadoEn()
 	case empresausuario.FieldEmpresaID:
 		return m.EmpresaID()
 	case empresausuario.FieldUsuarioID:
@@ -7754,8 +7461,6 @@ func (m *EmpresaUsuarioMutation) OldField(ctx context.Context, name string) (ent
 	switch name {
 	case empresausuario.FieldCreadoEn:
 		return m.OldCreadoEn(ctx)
-	case empresausuario.FieldActualizadoEn:
-		return m.OldActualizadoEn(ctx)
 	case empresausuario.FieldEmpresaID:
 		return m.OldEmpresaID(ctx)
 	case empresausuario.FieldUsuarioID:
@@ -7781,13 +7486,6 @@ func (m *EmpresaUsuarioMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreadoEn(v)
-		return nil
-	case empresausuario.FieldActualizadoEn:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetActualizadoEn(v)
 		return nil
 	case empresausuario.FieldEmpresaID:
 		v, ok := value.(int)
@@ -7878,9 +7576,6 @@ func (m *EmpresaUsuarioMutation) ResetField(name string) error {
 	switch name {
 	case empresausuario.FieldCreadoEn:
 		m.ResetCreadoEn()
-		return nil
-	case empresausuario.FieldActualizadoEn:
-		m.ResetActualizadoEn()
 		return nil
 	case empresausuario.FieldEmpresaID:
 		m.ResetEmpresaID()
@@ -8018,7 +7713,6 @@ type GastoMutation struct {
 	typ                     string
 	id                      *int
 	creado_en               *time.Time
-	actualizado_en          *time.Time
 	categoria               *gasto.Categoria
 	descripcion             *string
 	fecha_gasto             *time.Time
@@ -8177,42 +7871,6 @@ func (m *GastoMutation) OldCreadoEn(ctx context.Context) (v time.Time, err error
 // ResetCreadoEn resets all changes to the "creado_en" field.
 func (m *GastoMutation) ResetCreadoEn() {
 	m.creado_en = nil
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (m *GastoMutation) SetActualizadoEn(t time.Time) {
-	m.actualizado_en = &t
-}
-
-// ActualizadoEn returns the value of the "actualizado_en" field in the mutation.
-func (m *GastoMutation) ActualizadoEn() (r time.Time, exists bool) {
-	v := m.actualizado_en
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldActualizadoEn returns the old "actualizado_en" field's value of the Gasto entity.
-// If the Gasto object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GastoMutation) OldActualizadoEn(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldActualizadoEn is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldActualizadoEn requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldActualizadoEn: %w", err)
-	}
-	return oldValue.ActualizadoEn, nil
-}
-
-// ResetActualizadoEn resets all changes to the "actualizado_en" field.
-func (m *GastoMutation) ResetActualizadoEn() {
-	m.actualizado_en = nil
 }
 
 // SetEmpresaID sets the "empresa_id" field.
@@ -8937,12 +8595,9 @@ func (m *GastoMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *GastoMutation) Fields() []string {
-	fields := make([]string, 0, 15)
+	fields := make([]string, 0, 14)
 	if m.creado_en != nil {
 		fields = append(fields, gasto.FieldCreadoEn)
-	}
-	if m.actualizado_en != nil {
-		fields = append(fields, gasto.FieldActualizadoEn)
 	}
 	if m.empresa != nil {
 		fields = append(fields, gasto.FieldEmpresaID)
@@ -8993,8 +8648,6 @@ func (m *GastoMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case gasto.FieldCreadoEn:
 		return m.CreadoEn()
-	case gasto.FieldActualizadoEn:
-		return m.ActualizadoEn()
 	case gasto.FieldEmpresaID:
 		return m.EmpresaID()
 	case gasto.FieldPropiedadID:
@@ -9032,8 +8685,6 @@ func (m *GastoMutation) OldField(ctx context.Context, name string) (ent.Value, e
 	switch name {
 	case gasto.FieldCreadoEn:
 		return m.OldCreadoEn(ctx)
-	case gasto.FieldActualizadoEn:
-		return m.OldActualizadoEn(ctx)
 	case gasto.FieldEmpresaID:
 		return m.OldEmpresaID(ctx)
 	case gasto.FieldPropiedadID:
@@ -9075,13 +8726,6 @@ func (m *GastoMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreadoEn(v)
-		return nil
-	case gasto.FieldActualizadoEn:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetActualizadoEn(v)
 		return nil
 	case gasto.FieldEmpresaID:
 		v, ok := value.(int)
@@ -9274,9 +8918,6 @@ func (m *GastoMutation) ResetField(name string) error {
 	case gasto.FieldCreadoEn:
 		m.ResetCreadoEn()
 		return nil
-	case gasto.FieldActualizadoEn:
-		m.ResetActualizadoEn()
-		return nil
 	case gasto.FieldEmpresaID:
 		m.ResetEmpresaID()
 		return nil
@@ -9465,7 +9106,6 @@ type MovimientoCajaMutation struct {
 	typ              string
 	id               *int
 	creado_en        *time.Time
-	actualizado_en   *time.Time
 	tipo             *movimientocaja.Tipo
 	concepto         *string
 	fecha_movimiento *time.Time
@@ -9619,42 +9259,6 @@ func (m *MovimientoCajaMutation) OldCreadoEn(ctx context.Context) (v time.Time, 
 // ResetCreadoEn resets all changes to the "creado_en" field.
 func (m *MovimientoCajaMutation) ResetCreadoEn() {
 	m.creado_en = nil
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (m *MovimientoCajaMutation) SetActualizadoEn(t time.Time) {
-	m.actualizado_en = &t
-}
-
-// ActualizadoEn returns the value of the "actualizado_en" field in the mutation.
-func (m *MovimientoCajaMutation) ActualizadoEn() (r time.Time, exists bool) {
-	v := m.actualizado_en
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldActualizadoEn returns the old "actualizado_en" field's value of the MovimientoCaja entity.
-// If the MovimientoCaja object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MovimientoCajaMutation) OldActualizadoEn(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldActualizadoEn is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldActualizadoEn requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldActualizadoEn: %w", err)
-	}
-	return oldValue.ActualizadoEn, nil
-}
-
-// ResetActualizadoEn resets all changes to the "actualizado_en" field.
-func (m *MovimientoCajaMutation) ResetActualizadoEn() {
-	m.actualizado_en = nil
 }
 
 // SetEmpresaID sets the "empresa_id" field.
@@ -10240,12 +9844,9 @@ func (m *MovimientoCajaMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *MovimientoCajaMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 12)
 	if m.creado_en != nil {
 		fields = append(fields, movimientocaja.FieldCreadoEn)
-	}
-	if m.actualizado_en != nil {
-		fields = append(fields, movimientocaja.FieldActualizadoEn)
 	}
 	if m.empresa != nil {
 		fields = append(fields, movimientocaja.FieldEmpresaID)
@@ -10290,8 +9891,6 @@ func (m *MovimientoCajaMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case movimientocaja.FieldCreadoEn:
 		return m.CreadoEn()
-	case movimientocaja.FieldActualizadoEn:
-		return m.ActualizadoEn()
 	case movimientocaja.FieldEmpresaID:
 		return m.EmpresaID()
 	case movimientocaja.FieldPagoID:
@@ -10325,8 +9924,6 @@ func (m *MovimientoCajaMutation) OldField(ctx context.Context, name string) (ent
 	switch name {
 	case movimientocaja.FieldCreadoEn:
 		return m.OldCreadoEn(ctx)
-	case movimientocaja.FieldActualizadoEn:
-		return m.OldActualizadoEn(ctx)
 	case movimientocaja.FieldEmpresaID:
 		return m.OldEmpresaID(ctx)
 	case movimientocaja.FieldPagoID:
@@ -10364,13 +9961,6 @@ func (m *MovimientoCajaMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreadoEn(v)
-		return nil
-	case movimientocaja.FieldActualizadoEn:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetActualizadoEn(v)
 		return nil
 	case movimientocaja.FieldEmpresaID:
 		v, ok := value.(int)
@@ -10543,9 +10133,6 @@ func (m *MovimientoCajaMutation) ResetField(name string) error {
 	case movimientocaja.FieldCreadoEn:
 		m.ResetCreadoEn()
 		return nil
-	case movimientocaja.FieldActualizadoEn:
-		m.ResetActualizadoEn()
-		return nil
 	case movimientocaja.FieldEmpresaID:
 		m.ResetEmpresaID()
 		return nil
@@ -10700,7 +10287,6 @@ type PagoMutation struct {
 	typ                     string
 	id                      *int
 	creado_en               *time.Time
-	actualizado_en          *time.Time
 	numero_recibo           *string
 	fecha_pago              *time.Time
 	moneda                  *string
@@ -10860,42 +10446,6 @@ func (m *PagoMutation) OldCreadoEn(ctx context.Context) (v time.Time, err error)
 // ResetCreadoEn resets all changes to the "creado_en" field.
 func (m *PagoMutation) ResetCreadoEn() {
 	m.creado_en = nil
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (m *PagoMutation) SetActualizadoEn(t time.Time) {
-	m.actualizado_en = &t
-}
-
-// ActualizadoEn returns the value of the "actualizado_en" field in the mutation.
-func (m *PagoMutation) ActualizadoEn() (r time.Time, exists bool) {
-	v := m.actualizado_en
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldActualizadoEn returns the old "actualizado_en" field's value of the Pago entity.
-// If the Pago object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PagoMutation) OldActualizadoEn(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldActualizadoEn is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldActualizadoEn requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldActualizadoEn: %w", err)
-	}
-	return oldValue.ActualizadoEn, nil
-}
-
-// ResetActualizadoEn resets all changes to the "actualizado_en" field.
-func (m *PagoMutation) ResetActualizadoEn() {
-	m.actualizado_en = nil
 }
 
 // SetEmpresaID sets the "empresa_id" field.
@@ -11589,12 +11139,9 @@ func (m *PagoMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PagoMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 12)
 	if m.creado_en != nil {
 		fields = append(fields, pago.FieldCreadoEn)
-	}
-	if m.actualizado_en != nil {
-		fields = append(fields, pago.FieldActualizadoEn)
 	}
 	if m.empresa != nil {
 		fields = append(fields, pago.FieldEmpresaID)
@@ -11639,8 +11186,6 @@ func (m *PagoMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case pago.FieldCreadoEn:
 		return m.CreadoEn()
-	case pago.FieldActualizadoEn:
-		return m.ActualizadoEn()
 	case pago.FieldEmpresaID:
 		return m.EmpresaID()
 	case pago.FieldClienteID:
@@ -11674,8 +11219,6 @@ func (m *PagoMutation) OldField(ctx context.Context, name string) (ent.Value, er
 	switch name {
 	case pago.FieldCreadoEn:
 		return m.OldCreadoEn(ctx)
-	case pago.FieldActualizadoEn:
-		return m.OldActualizadoEn(ctx)
 	case pago.FieldEmpresaID:
 		return m.OldEmpresaID(ctx)
 	case pago.FieldClienteID:
@@ -11713,13 +11256,6 @@ func (m *PagoMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreadoEn(v)
-		return nil
-	case pago.FieldActualizadoEn:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetActualizadoEn(v)
 		return nil
 	case pago.FieldEmpresaID:
 		v, ok := value.(int)
@@ -11891,9 +11427,6 @@ func (m *PagoMutation) ResetField(name string) error {
 	switch name {
 	case pago.FieldCreadoEn:
 		m.ResetCreadoEn()
-		return nil
-	case pago.FieldActualizadoEn:
-		m.ResetActualizadoEn()
 		return nil
 	case pago.FieldEmpresaID:
 		m.ResetEmpresaID()
@@ -12103,7 +11636,6 @@ type PagoAplicacionMutation struct {
 	typ               string
 	id                *int
 	creado_en         *time.Time
-	actualizado_en    *time.Time
 	moneda            *string
 	monto_aplicado    *int64
 	addmonto_aplicado *int64
@@ -12249,42 +11781,6 @@ func (m *PagoAplicacionMutation) OldCreadoEn(ctx context.Context) (v time.Time, 
 // ResetCreadoEn resets all changes to the "creado_en" field.
 func (m *PagoAplicacionMutation) ResetCreadoEn() {
 	m.creado_en = nil
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (m *PagoAplicacionMutation) SetActualizadoEn(t time.Time) {
-	m.actualizado_en = &t
-}
-
-// ActualizadoEn returns the value of the "actualizado_en" field in the mutation.
-func (m *PagoAplicacionMutation) ActualizadoEn() (r time.Time, exists bool) {
-	v := m.actualizado_en
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldActualizadoEn returns the old "actualizado_en" field's value of the PagoAplicacion entity.
-// If the PagoAplicacion object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PagoAplicacionMutation) OldActualizadoEn(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldActualizadoEn is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldActualizadoEn requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldActualizadoEn: %w", err)
-	}
-	return oldValue.ActualizadoEn, nil
-}
-
-// ResetActualizadoEn resets all changes to the "actualizado_en" field.
-func (m *PagoAplicacionMutation) ResetActualizadoEn() {
-	m.actualizado_en = nil
 }
 
 // SetPagoID sets the "pago_id" field.
@@ -12539,12 +12035,9 @@ func (m *PagoAplicacionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PagoAplicacionMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 5)
 	if m.creado_en != nil {
 		fields = append(fields, pagoaplicacion.FieldCreadoEn)
-	}
-	if m.actualizado_en != nil {
-		fields = append(fields, pagoaplicacion.FieldActualizadoEn)
 	}
 	if m.pago != nil {
 		fields = append(fields, pagoaplicacion.FieldPagoID)
@@ -12568,8 +12061,6 @@ func (m *PagoAplicacionMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case pagoaplicacion.FieldCreadoEn:
 		return m.CreadoEn()
-	case pagoaplicacion.FieldActualizadoEn:
-		return m.ActualizadoEn()
 	case pagoaplicacion.FieldPagoID:
 		return m.PagoID()
 	case pagoaplicacion.FieldCargoID:
@@ -12589,8 +12080,6 @@ func (m *PagoAplicacionMutation) OldField(ctx context.Context, name string) (ent
 	switch name {
 	case pagoaplicacion.FieldCreadoEn:
 		return m.OldCreadoEn(ctx)
-	case pagoaplicacion.FieldActualizadoEn:
-		return m.OldActualizadoEn(ctx)
 	case pagoaplicacion.FieldPagoID:
 		return m.OldPagoID(ctx)
 	case pagoaplicacion.FieldCargoID:
@@ -12614,13 +12103,6 @@ func (m *PagoAplicacionMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreadoEn(v)
-		return nil
-	case pagoaplicacion.FieldActualizadoEn:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetActualizadoEn(v)
 		return nil
 	case pagoaplicacion.FieldPagoID:
 		v, ok := value.(int)
@@ -12716,9 +12198,6 @@ func (m *PagoAplicacionMutation) ResetField(name string) error {
 	switch name {
 	case pagoaplicacion.FieldCreadoEn:
 		m.ResetCreadoEn()
-		return nil
-	case pagoaplicacion.FieldActualizadoEn:
-		m.ResetActualizadoEn()
 		return nil
 	case pagoaplicacion.FieldPagoID:
 		m.ResetPagoID()
@@ -12835,7 +12314,6 @@ type PropiedadMutation struct {
 	typ               string
 	id                *int
 	creado_en         *time.Time
-	actualizado_en    *time.Time
 	nombre            *string
 	tipo              *propiedad.Tipo
 	descripcion       *string
@@ -12995,42 +12473,6 @@ func (m *PropiedadMutation) OldCreadoEn(ctx context.Context) (v time.Time, err e
 // ResetCreadoEn resets all changes to the "creado_en" field.
 func (m *PropiedadMutation) ResetCreadoEn() {
 	m.creado_en = nil
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (m *PropiedadMutation) SetActualizadoEn(t time.Time) {
-	m.actualizado_en = &t
-}
-
-// ActualizadoEn returns the value of the "actualizado_en" field in the mutation.
-func (m *PropiedadMutation) ActualizadoEn() (r time.Time, exists bool) {
-	v := m.actualizado_en
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldActualizadoEn returns the old "actualizado_en" field's value of the Propiedad entity.
-// If the Propiedad object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PropiedadMutation) OldActualizadoEn(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldActualizadoEn is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldActualizadoEn requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldActualizadoEn: %w", err)
-	}
-	return oldValue.ActualizadoEn, nil
-}
-
-// ResetActualizadoEn resets all changes to the "actualizado_en" field.
-func (m *PropiedadMutation) ResetActualizadoEn() {
-	m.actualizado_en = nil
 }
 
 // SetEmpresaID sets the "empresa_id" field.
@@ -13739,12 +13181,9 @@ func (m *PropiedadMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PropiedadMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 13)
 	if m.creado_en != nil {
 		fields = append(fields, propiedad.FieldCreadoEn)
-	}
-	if m.actualizado_en != nil {
-		fields = append(fields, propiedad.FieldActualizadoEn)
 	}
 	if m.empresa != nil {
 		fields = append(fields, propiedad.FieldEmpresaID)
@@ -13792,8 +13231,6 @@ func (m *PropiedadMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case propiedad.FieldCreadoEn:
 		return m.CreadoEn()
-	case propiedad.FieldActualizadoEn:
-		return m.ActualizadoEn()
 	case propiedad.FieldEmpresaID:
 		return m.EmpresaID()
 	case propiedad.FieldNombre:
@@ -13829,8 +13266,6 @@ func (m *PropiedadMutation) OldField(ctx context.Context, name string) (ent.Valu
 	switch name {
 	case propiedad.FieldCreadoEn:
 		return m.OldCreadoEn(ctx)
-	case propiedad.FieldActualizadoEn:
-		return m.OldActualizadoEn(ctx)
 	case propiedad.FieldEmpresaID:
 		return m.OldEmpresaID(ctx)
 	case propiedad.FieldNombre:
@@ -13870,13 +13305,6 @@ func (m *PropiedadMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreadoEn(v)
-		return nil
-	case propiedad.FieldActualizadoEn:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetActualizadoEn(v)
 		return nil
 	case propiedad.FieldEmpresaID:
 		v, ok := value.(int)
@@ -14074,9 +13502,6 @@ func (m *PropiedadMutation) ResetField(name string) error {
 	case propiedad.FieldCreadoEn:
 		m.ResetCreadoEn()
 		return nil
-	case propiedad.FieldActualizadoEn:
-		m.ResetActualizadoEn()
-		return nil
 	case propiedad.FieldEmpresaID:
 		m.ResetEmpresaID()
 		return nil
@@ -14251,8 +13676,6 @@ type RolMutation struct {
 	op                      Op
 	typ                     string
 	id                      *int
-	creado_en               *time.Time
-	actualizado_en          *time.Time
 	nombre                  *string
 	descripcion             *string
 	clearedFields           map[string]struct{}
@@ -14360,78 +13783,6 @@ func (m *RolMutation) IDs(ctx context.Context) ([]int, error) {
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
-}
-
-// SetCreadoEn sets the "creado_en" field.
-func (m *RolMutation) SetCreadoEn(t time.Time) {
-	m.creado_en = &t
-}
-
-// CreadoEn returns the value of the "creado_en" field in the mutation.
-func (m *RolMutation) CreadoEn() (r time.Time, exists bool) {
-	v := m.creado_en
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreadoEn returns the old "creado_en" field's value of the Rol entity.
-// If the Rol object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RolMutation) OldCreadoEn(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreadoEn is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreadoEn requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreadoEn: %w", err)
-	}
-	return oldValue.CreadoEn, nil
-}
-
-// ResetCreadoEn resets all changes to the "creado_en" field.
-func (m *RolMutation) ResetCreadoEn() {
-	m.creado_en = nil
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (m *RolMutation) SetActualizadoEn(t time.Time) {
-	m.actualizado_en = &t
-}
-
-// ActualizadoEn returns the value of the "actualizado_en" field in the mutation.
-func (m *RolMutation) ActualizadoEn() (r time.Time, exists bool) {
-	v := m.actualizado_en
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldActualizadoEn returns the old "actualizado_en" field's value of the Rol entity.
-// If the Rol object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RolMutation) OldActualizadoEn(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldActualizadoEn is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldActualizadoEn requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldActualizadoEn: %w", err)
-	}
-	return oldValue.ActualizadoEn, nil
-}
-
-// ResetActualizadoEn resets all changes to the "actualizado_en" field.
-func (m *RolMutation) ResetActualizadoEn() {
-	m.actualizado_en = nil
 }
 
 // SetNombre sets the "nombre" field.
@@ -14607,13 +13958,7 @@ func (m *RolMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RolMutation) Fields() []string {
-	fields := make([]string, 0, 4)
-	if m.creado_en != nil {
-		fields = append(fields, rol.FieldCreadoEn)
-	}
-	if m.actualizado_en != nil {
-		fields = append(fields, rol.FieldActualizadoEn)
-	}
+	fields := make([]string, 0, 2)
 	if m.nombre != nil {
 		fields = append(fields, rol.FieldNombre)
 	}
@@ -14628,10 +13973,6 @@ func (m *RolMutation) Fields() []string {
 // schema.
 func (m *RolMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case rol.FieldCreadoEn:
-		return m.CreadoEn()
-	case rol.FieldActualizadoEn:
-		return m.ActualizadoEn()
 	case rol.FieldNombre:
 		return m.Nombre()
 	case rol.FieldDescripcion:
@@ -14645,10 +13986,6 @@ func (m *RolMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *RolMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case rol.FieldCreadoEn:
-		return m.OldCreadoEn(ctx)
-	case rol.FieldActualizadoEn:
-		return m.OldActualizadoEn(ctx)
 	case rol.FieldNombre:
 		return m.OldNombre(ctx)
 	case rol.FieldDescripcion:
@@ -14662,20 +13999,6 @@ func (m *RolMutation) OldField(ctx context.Context, name string) (ent.Value, err
 // type.
 func (m *RolMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case rol.FieldCreadoEn:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreadoEn(v)
-		return nil
-	case rol.FieldActualizadoEn:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetActualizadoEn(v)
-		return nil
 	case rol.FieldNombre:
 		v, ok := value.(string)
 		if !ok {
@@ -14748,12 +14071,6 @@ func (m *RolMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *RolMutation) ResetField(name string) error {
 	switch name {
-	case rol.FieldCreadoEn:
-		m.ResetCreadoEn()
-		return nil
-	case rol.FieldActualizadoEn:
-		m.ResetActualizadoEn()
-		return nil
 	case rol.FieldNombre:
 		m.ResetNombre()
 		return nil
@@ -14855,7 +14172,6 @@ type ServicioMedicionMutation struct {
 	typ                 string
 	id                  *int
 	creado_en           *time.Time
-	actualizado_en      *time.Time
 	tipo_servicio       *serviciomedicion.TipoServicio
 	periodo_inicio      *time.Time
 	periodo_fin         *time.Time
@@ -15011,42 +14327,6 @@ func (m *ServicioMedicionMutation) OldCreadoEn(ctx context.Context) (v time.Time
 // ResetCreadoEn resets all changes to the "creado_en" field.
 func (m *ServicioMedicionMutation) ResetCreadoEn() {
 	m.creado_en = nil
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (m *ServicioMedicionMutation) SetActualizadoEn(t time.Time) {
-	m.actualizado_en = &t
-}
-
-// ActualizadoEn returns the value of the "actualizado_en" field in the mutation.
-func (m *ServicioMedicionMutation) ActualizadoEn() (r time.Time, exists bool) {
-	v := m.actualizado_en
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldActualizadoEn returns the old "actualizado_en" field's value of the ServicioMedicion entity.
-// If the ServicioMedicion object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ServicioMedicionMutation) OldActualizadoEn(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldActualizadoEn is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldActualizadoEn requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldActualizadoEn: %w", err)
-	}
-	return oldValue.ActualizadoEn, nil
-}
-
-// ResetActualizadoEn resets all changes to the "actualizado_en" field.
-func (m *ServicioMedicionMutation) ResetActualizadoEn() {
-	m.actualizado_en = nil
 }
 
 // SetUnidadID sets the "unidad_id" field.
@@ -15619,12 +14899,9 @@ func (m *ServicioMedicionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ServicioMedicionMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 12)
 	if m.creado_en != nil {
 		fields = append(fields, serviciomedicion.FieldCreadoEn)
-	}
-	if m.actualizado_en != nil {
-		fields = append(fields, serviciomedicion.FieldActualizadoEn)
 	}
 	if m.unidad != nil {
 		fields = append(fields, serviciomedicion.FieldUnidadID)
@@ -15669,8 +14946,6 @@ func (m *ServicioMedicionMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case serviciomedicion.FieldCreadoEn:
 		return m.CreadoEn()
-	case serviciomedicion.FieldActualizadoEn:
-		return m.ActualizadoEn()
 	case serviciomedicion.FieldUnidadID:
 		return m.UnidadID()
 	case serviciomedicion.FieldTipoServicio:
@@ -15704,8 +14979,6 @@ func (m *ServicioMedicionMutation) OldField(ctx context.Context, name string) (e
 	switch name {
 	case serviciomedicion.FieldCreadoEn:
 		return m.OldCreadoEn(ctx)
-	case serviciomedicion.FieldActualizadoEn:
-		return m.OldActualizadoEn(ctx)
 	case serviciomedicion.FieldUnidadID:
 		return m.OldUnidadID(ctx)
 	case serviciomedicion.FieldTipoServicio:
@@ -15743,13 +15016,6 @@ func (m *ServicioMedicionMutation) SetField(name string, value ent.Value) error 
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreadoEn(v)
-		return nil
-	case serviciomedicion.FieldActualizadoEn:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetActualizadoEn(v)
 		return nil
 	case serviciomedicion.FieldUnidadID:
 		v, ok := value.(int)
@@ -15952,9 +15218,6 @@ func (m *ServicioMedicionMutation) ResetField(name string) error {
 	case serviciomedicion.FieldCreadoEn:
 		m.ResetCreadoEn()
 		return nil
-	case serviciomedicion.FieldActualizadoEn:
-		m.ResetActualizadoEn()
-		return nil
 	case serviciomedicion.FieldUnidadID:
 		m.ResetUnidadID()
 		return nil
@@ -16073,7 +15336,6 @@ type TipoIdentificacionMutation struct {
 	typ             string
 	id              *int
 	creado_en       *time.Time
-	actualizado_en  *time.Time
 	codigo          *string
 	nombre          *string
 	pais            *string
@@ -16219,42 +15481,6 @@ func (m *TipoIdentificacionMutation) OldCreadoEn(ctx context.Context) (v time.Ti
 // ResetCreadoEn resets all changes to the "creado_en" field.
 func (m *TipoIdentificacionMutation) ResetCreadoEn() {
 	m.creado_en = nil
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (m *TipoIdentificacionMutation) SetActualizadoEn(t time.Time) {
-	m.actualizado_en = &t
-}
-
-// ActualizadoEn returns the value of the "actualizado_en" field in the mutation.
-func (m *TipoIdentificacionMutation) ActualizadoEn() (r time.Time, exists bool) {
-	v := m.actualizado_en
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldActualizadoEn returns the old "actualizado_en" field's value of the TipoIdentificacion entity.
-// If the TipoIdentificacion object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TipoIdentificacionMutation) OldActualizadoEn(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldActualizadoEn is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldActualizadoEn requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldActualizadoEn: %w", err)
-	}
-	return oldValue.ActualizadoEn, nil
-}
-
-// ResetActualizadoEn resets all changes to the "actualizado_en" field.
-func (m *TipoIdentificacionMutation) ResetActualizadoEn() {
-	m.actualizado_en = nil
 }
 
 // SetCodigo sets the "codigo" field.
@@ -16502,12 +15728,9 @@ func (m *TipoIdentificacionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TipoIdentificacionMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 5)
 	if m.creado_en != nil {
 		fields = append(fields, tipoidentificacion.FieldCreadoEn)
-	}
-	if m.actualizado_en != nil {
-		fields = append(fields, tipoidentificacion.FieldActualizadoEn)
 	}
 	if m.codigo != nil {
 		fields = append(fields, tipoidentificacion.FieldCodigo)
@@ -16531,8 +15754,6 @@ func (m *TipoIdentificacionMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case tipoidentificacion.FieldCreadoEn:
 		return m.CreadoEn()
-	case tipoidentificacion.FieldActualizadoEn:
-		return m.ActualizadoEn()
 	case tipoidentificacion.FieldCodigo:
 		return m.Codigo()
 	case tipoidentificacion.FieldNombre:
@@ -16552,8 +15773,6 @@ func (m *TipoIdentificacionMutation) OldField(ctx context.Context, name string) 
 	switch name {
 	case tipoidentificacion.FieldCreadoEn:
 		return m.OldCreadoEn(ctx)
-	case tipoidentificacion.FieldActualizadoEn:
-		return m.OldActualizadoEn(ctx)
 	case tipoidentificacion.FieldCodigo:
 		return m.OldCodigo(ctx)
 	case tipoidentificacion.FieldNombre:
@@ -16577,13 +15796,6 @@ func (m *TipoIdentificacionMutation) SetField(name string, value ent.Value) erro
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreadoEn(v)
-		return nil
-	case tipoidentificacion.FieldActualizadoEn:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetActualizadoEn(v)
 		return nil
 	case tipoidentificacion.FieldCodigo:
 		v, ok := value.(string)
@@ -16673,9 +15885,6 @@ func (m *TipoIdentificacionMutation) ResetField(name string) error {
 	switch name {
 	case tipoidentificacion.FieldCreadoEn:
 		m.ResetCreadoEn()
-		return nil
-	case tipoidentificacion.FieldActualizadoEn:
-		m.ResetActualizadoEn()
 		return nil
 	case tipoidentificacion.FieldCodigo:
 		m.ResetCodigo()
@@ -16784,7 +15993,6 @@ type UnidadMutation struct {
 	typ                        string
 	id                         *int
 	creado_en                  *time.Time
-	actualizado_en             *time.Time
 	codigo                     *string
 	nombre                     *string
 	tipo                       *unidad.Tipo
@@ -16957,42 +16165,6 @@ func (m *UnidadMutation) OldCreadoEn(ctx context.Context) (v time.Time, err erro
 // ResetCreadoEn resets all changes to the "creado_en" field.
 func (m *UnidadMutation) ResetCreadoEn() {
 	m.creado_en = nil
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (m *UnidadMutation) SetActualizadoEn(t time.Time) {
-	m.actualizado_en = &t
-}
-
-// ActualizadoEn returns the value of the "actualizado_en" field in the mutation.
-func (m *UnidadMutation) ActualizadoEn() (r time.Time, exists bool) {
-	v := m.actualizado_en
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldActualizadoEn returns the old "actualizado_en" field's value of the Unidad entity.
-// If the Unidad object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UnidadMutation) OldActualizadoEn(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldActualizadoEn is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldActualizadoEn requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldActualizadoEn: %w", err)
-	}
-	return oldValue.ActualizadoEn, nil
-}
-
-// ResetActualizadoEn resets all changes to the "actualizado_en" field.
-func (m *UnidadMutation) ResetActualizadoEn() {
-	m.actualizado_en = nil
 }
 
 // SetPropiedadID sets the "propiedad_id" field.
@@ -18024,12 +17196,9 @@ func (m *UnidadMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UnidadMutation) Fields() []string {
-	fields := make([]string, 0, 19)
+	fields := make([]string, 0, 18)
 	if m.creado_en != nil {
 		fields = append(fields, unidad.FieldCreadoEn)
-	}
-	if m.actualizado_en != nil {
-		fields = append(fields, unidad.FieldActualizadoEn)
 	}
 	if m.propiedad != nil {
 		fields = append(fields, unidad.FieldPropiedadID)
@@ -18092,8 +17261,6 @@ func (m *UnidadMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case unidad.FieldCreadoEn:
 		return m.CreadoEn()
-	case unidad.FieldActualizadoEn:
-		return m.ActualizadoEn()
 	case unidad.FieldPropiedadID:
 		return m.PropiedadID()
 	case unidad.FieldCodigo:
@@ -18139,8 +17306,6 @@ func (m *UnidadMutation) OldField(ctx context.Context, name string) (ent.Value, 
 	switch name {
 	case unidad.FieldCreadoEn:
 		return m.OldCreadoEn(ctx)
-	case unidad.FieldActualizadoEn:
-		return m.OldActualizadoEn(ctx)
 	case unidad.FieldPropiedadID:
 		return m.OldPropiedadID(ctx)
 	case unidad.FieldCodigo:
@@ -18190,13 +17355,6 @@ func (m *UnidadMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreadoEn(v)
-		return nil
-	case unidad.FieldActualizadoEn:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetActualizadoEn(v)
 		return nil
 	case unidad.FieldPropiedadID:
 		v, ok := value.(int)
@@ -18483,9 +17641,6 @@ func (m *UnidadMutation) ResetField(name string) error {
 	case unidad.FieldCreadoEn:
 		m.ResetCreadoEn()
 		return nil
-	case unidad.FieldActualizadoEn:
-		m.ResetActualizadoEn()
-		return nil
 	case unidad.FieldPropiedadID:
 		m.ResetPropiedadID()
 		return nil
@@ -18702,11 +17857,9 @@ type UsuarioMutation struct {
 	typ                     string
 	id                      *int
 	creado_en               *time.Time
-	actualizado_en          *time.Time
 	usuario                 *string
 	hash_contrasena         *string
-	estado                  *usuario.Estado
-	ultimo_acceso           *time.Time
+	estado                  *bool
 	clearedFields           map[string]struct{}
 	empresas_usuario        map[int]struct{}
 	removedempresas_usuario map[int]struct{}
@@ -18850,42 +18003,6 @@ func (m *UsuarioMutation) ResetCreadoEn() {
 	m.creado_en = nil
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (m *UsuarioMutation) SetActualizadoEn(t time.Time) {
-	m.actualizado_en = &t
-}
-
-// ActualizadoEn returns the value of the "actualizado_en" field in the mutation.
-func (m *UsuarioMutation) ActualizadoEn() (r time.Time, exists bool) {
-	v := m.actualizado_en
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldActualizadoEn returns the old "actualizado_en" field's value of the Usuario entity.
-// If the Usuario object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UsuarioMutation) OldActualizadoEn(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldActualizadoEn is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldActualizadoEn requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldActualizadoEn: %w", err)
-	}
-	return oldValue.ActualizadoEn, nil
-}
-
-// ResetActualizadoEn resets all changes to the "actualizado_en" field.
-func (m *UsuarioMutation) ResetActualizadoEn() {
-	m.actualizado_en = nil
-}
-
 // SetUsuario sets the "usuario" field.
 func (m *UsuarioMutation) SetUsuario(s string) {
 	m.usuario = &s
@@ -18959,12 +18076,12 @@ func (m *UsuarioMutation) ResetHashContrasena() {
 }
 
 // SetEstado sets the "estado" field.
-func (m *UsuarioMutation) SetEstado(u usuario.Estado) {
-	m.estado = &u
+func (m *UsuarioMutation) SetEstado(b bool) {
+	m.estado = &b
 }
 
 // Estado returns the value of the "estado" field in the mutation.
-func (m *UsuarioMutation) Estado() (r usuario.Estado, exists bool) {
+func (m *UsuarioMutation) Estado() (r bool, exists bool) {
 	v := m.estado
 	if v == nil {
 		return
@@ -18975,7 +18092,7 @@ func (m *UsuarioMutation) Estado() (r usuario.Estado, exists bool) {
 // OldEstado returns the old "estado" field's value of the Usuario entity.
 // If the Usuario object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UsuarioMutation) OldEstado(ctx context.Context) (v usuario.Estado, err error) {
+func (m *UsuarioMutation) OldEstado(ctx context.Context) (v bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldEstado is only allowed on UpdateOne operations")
 	}
@@ -18992,55 +18109,6 @@ func (m *UsuarioMutation) OldEstado(ctx context.Context) (v usuario.Estado, err 
 // ResetEstado resets all changes to the "estado" field.
 func (m *UsuarioMutation) ResetEstado() {
 	m.estado = nil
-}
-
-// SetUltimoAcceso sets the "ultimo_acceso" field.
-func (m *UsuarioMutation) SetUltimoAcceso(t time.Time) {
-	m.ultimo_acceso = &t
-}
-
-// UltimoAcceso returns the value of the "ultimo_acceso" field in the mutation.
-func (m *UsuarioMutation) UltimoAcceso() (r time.Time, exists bool) {
-	v := m.ultimo_acceso
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUltimoAcceso returns the old "ultimo_acceso" field's value of the Usuario entity.
-// If the Usuario object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *UsuarioMutation) OldUltimoAcceso(ctx context.Context) (v *time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUltimoAcceso is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUltimoAcceso requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUltimoAcceso: %w", err)
-	}
-	return oldValue.UltimoAcceso, nil
-}
-
-// ClearUltimoAcceso clears the value of the "ultimo_acceso" field.
-func (m *UsuarioMutation) ClearUltimoAcceso() {
-	m.ultimo_acceso = nil
-	m.clearedFields[usuario.FieldUltimoAcceso] = struct{}{}
-}
-
-// UltimoAccesoCleared returns if the "ultimo_acceso" field was cleared in this mutation.
-func (m *UsuarioMutation) UltimoAccesoCleared() bool {
-	_, ok := m.clearedFields[usuario.FieldUltimoAcceso]
-	return ok
-}
-
-// ResetUltimoAcceso resets all changes to the "ultimo_acceso" field.
-func (m *UsuarioMutation) ResetUltimoAcceso() {
-	m.ultimo_acceso = nil
-	delete(m.clearedFields, usuario.FieldUltimoAcceso)
 }
 
 // AddEmpresasUsuarioIDs adds the "empresas_usuario" edge to the EmpresaUsuario entity by ids.
@@ -19131,12 +18199,9 @@ func (m *UsuarioMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *UsuarioMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 4)
 	if m.creado_en != nil {
 		fields = append(fields, usuario.FieldCreadoEn)
-	}
-	if m.actualizado_en != nil {
-		fields = append(fields, usuario.FieldActualizadoEn)
 	}
 	if m.usuario != nil {
 		fields = append(fields, usuario.FieldUsuario)
@@ -19146,9 +18211,6 @@ func (m *UsuarioMutation) Fields() []string {
 	}
 	if m.estado != nil {
 		fields = append(fields, usuario.FieldEstado)
-	}
-	if m.ultimo_acceso != nil {
-		fields = append(fields, usuario.FieldUltimoAcceso)
 	}
 	return fields
 }
@@ -19160,16 +18222,12 @@ func (m *UsuarioMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case usuario.FieldCreadoEn:
 		return m.CreadoEn()
-	case usuario.FieldActualizadoEn:
-		return m.ActualizadoEn()
 	case usuario.FieldUsuario:
 		return m.Usuario()
 	case usuario.FieldHashContrasena:
 		return m.HashContrasena()
 	case usuario.FieldEstado:
 		return m.Estado()
-	case usuario.FieldUltimoAcceso:
-		return m.UltimoAcceso()
 	}
 	return nil, false
 }
@@ -19181,16 +18239,12 @@ func (m *UsuarioMutation) OldField(ctx context.Context, name string) (ent.Value,
 	switch name {
 	case usuario.FieldCreadoEn:
 		return m.OldCreadoEn(ctx)
-	case usuario.FieldActualizadoEn:
-		return m.OldActualizadoEn(ctx)
 	case usuario.FieldUsuario:
 		return m.OldUsuario(ctx)
 	case usuario.FieldHashContrasena:
 		return m.OldHashContrasena(ctx)
 	case usuario.FieldEstado:
 		return m.OldEstado(ctx)
-	case usuario.FieldUltimoAcceso:
-		return m.OldUltimoAcceso(ctx)
 	}
 	return nil, fmt.Errorf("unknown Usuario field %s", name)
 }
@@ -19207,13 +18261,6 @@ func (m *UsuarioMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetCreadoEn(v)
 		return nil
-	case usuario.FieldActualizadoEn:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetActualizadoEn(v)
-		return nil
 	case usuario.FieldUsuario:
 		v, ok := value.(string)
 		if !ok {
@@ -19229,18 +18276,11 @@ func (m *UsuarioMutation) SetField(name string, value ent.Value) error {
 		m.SetHashContrasena(v)
 		return nil
 	case usuario.FieldEstado:
-		v, ok := value.(usuario.Estado)
+		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetEstado(v)
-		return nil
-	case usuario.FieldUltimoAcceso:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUltimoAcceso(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Usuario field %s", name)
@@ -19271,11 +18311,7 @@ func (m *UsuarioMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *UsuarioMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(usuario.FieldUltimoAcceso) {
-		fields = append(fields, usuario.FieldUltimoAcceso)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -19288,11 +18324,6 @@ func (m *UsuarioMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *UsuarioMutation) ClearField(name string) error {
-	switch name {
-	case usuario.FieldUltimoAcceso:
-		m.ClearUltimoAcceso()
-		return nil
-	}
 	return fmt.Errorf("unknown Usuario nullable field %s", name)
 }
 
@@ -19303,9 +18334,6 @@ func (m *UsuarioMutation) ResetField(name string) error {
 	case usuario.FieldCreadoEn:
 		m.ResetCreadoEn()
 		return nil
-	case usuario.FieldActualizadoEn:
-		m.ResetActualizadoEn()
-		return nil
 	case usuario.FieldUsuario:
 		m.ResetUsuario()
 		return nil
@@ -19314,9 +18342,6 @@ func (m *UsuarioMutation) ResetField(name string) error {
 		return nil
 	case usuario.FieldEstado:
 		m.ResetEstado()
-		return nil
-	case usuario.FieldUltimoAcceso:
-		m.ResetUltimoAcceso()
 		return nil
 	}
 	return fmt.Errorf("unknown Usuario field %s", name)

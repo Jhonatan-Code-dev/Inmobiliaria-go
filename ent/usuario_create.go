@@ -35,20 +35,6 @@ func (_c *UsuarioCreate) SetNillableCreadoEn(v *time.Time) *UsuarioCreate {
 	return _c
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_c *UsuarioCreate) SetActualizadoEn(v time.Time) *UsuarioCreate {
-	_c.mutation.SetActualizadoEn(v)
-	return _c
-}
-
-// SetNillableActualizadoEn sets the "actualizado_en" field if the given value is not nil.
-func (_c *UsuarioCreate) SetNillableActualizadoEn(v *time.Time) *UsuarioCreate {
-	if v != nil {
-		_c.SetActualizadoEn(*v)
-	}
-	return _c
-}
-
 // SetUsuario sets the "usuario" field.
 func (_c *UsuarioCreate) SetUsuario(v string) *UsuarioCreate {
 	_c.mutation.SetUsuario(v)
@@ -62,29 +48,15 @@ func (_c *UsuarioCreate) SetHashContrasena(v string) *UsuarioCreate {
 }
 
 // SetEstado sets the "estado" field.
-func (_c *UsuarioCreate) SetEstado(v usuario.Estado) *UsuarioCreate {
+func (_c *UsuarioCreate) SetEstado(v bool) *UsuarioCreate {
 	_c.mutation.SetEstado(v)
 	return _c
 }
 
 // SetNillableEstado sets the "estado" field if the given value is not nil.
-func (_c *UsuarioCreate) SetNillableEstado(v *usuario.Estado) *UsuarioCreate {
+func (_c *UsuarioCreate) SetNillableEstado(v *bool) *UsuarioCreate {
 	if v != nil {
 		_c.SetEstado(*v)
-	}
-	return _c
-}
-
-// SetUltimoAcceso sets the "ultimo_acceso" field.
-func (_c *UsuarioCreate) SetUltimoAcceso(v time.Time) *UsuarioCreate {
-	_c.mutation.SetUltimoAcceso(v)
-	return _c
-}
-
-// SetNillableUltimoAcceso sets the "ultimo_acceso" field if the given value is not nil.
-func (_c *UsuarioCreate) SetNillableUltimoAcceso(v *time.Time) *UsuarioCreate {
-	if v != nil {
-		_c.SetUltimoAcceso(*v)
 	}
 	return _c
 }
@@ -143,10 +115,6 @@ func (_c *UsuarioCreate) defaults() {
 		v := usuario.DefaultCreadoEn()
 		_c.mutation.SetCreadoEn(v)
 	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		v := usuario.DefaultActualizadoEn()
-		_c.mutation.SetActualizadoEn(v)
-	}
 	if _, ok := _c.mutation.Estado(); !ok {
 		v := usuario.DefaultEstado
 		_c.mutation.SetEstado(v)
@@ -157,9 +125,6 @@ func (_c *UsuarioCreate) defaults() {
 func (_c *UsuarioCreate) check() error {
 	if _, ok := _c.mutation.CreadoEn(); !ok {
 		return &ValidationError{Name: "creado_en", err: errors.New(`ent: missing required field "Usuario.creado_en"`)}
-	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		return &ValidationError{Name: "actualizado_en", err: errors.New(`ent: missing required field "Usuario.actualizado_en"`)}
 	}
 	if _, ok := _c.mutation.Usuario(); !ok {
 		return &ValidationError{Name: "usuario", err: errors.New(`ent: missing required field "Usuario.usuario"`)}
@@ -179,11 +144,6 @@ func (_c *UsuarioCreate) check() error {
 	}
 	if _, ok := _c.mutation.Estado(); !ok {
 		return &ValidationError{Name: "estado", err: errors.New(`ent: missing required field "Usuario.estado"`)}
-	}
-	if v, ok := _c.mutation.Estado(); ok {
-		if err := usuario.EstadoValidator(v); err != nil {
-			return &ValidationError{Name: "estado", err: fmt.Errorf(`ent: validator failed for field "Usuario.estado": %w`, err)}
-		}
 	}
 	return nil
 }
@@ -215,10 +175,6 @@ func (_c *UsuarioCreate) createSpec() (*Usuario, *sqlgraph.CreateSpec) {
 		_spec.SetField(usuario.FieldCreadoEn, field.TypeTime, value)
 		_node.CreadoEn = value
 	}
-	if value, ok := _c.mutation.ActualizadoEn(); ok {
-		_spec.SetField(usuario.FieldActualizadoEn, field.TypeTime, value)
-		_node.ActualizadoEn = value
-	}
 	if value, ok := _c.mutation.Usuario(); ok {
 		_spec.SetField(usuario.FieldUsuario, field.TypeString, value)
 		_node.Usuario = value
@@ -228,12 +184,8 @@ func (_c *UsuarioCreate) createSpec() (*Usuario, *sqlgraph.CreateSpec) {
 		_node.HashContrasena = value
 	}
 	if value, ok := _c.mutation.Estado(); ok {
-		_spec.SetField(usuario.FieldEstado, field.TypeEnum, value)
+		_spec.SetField(usuario.FieldEstado, field.TypeBool, value)
 		_node.Estado = value
-	}
-	if value, ok := _c.mutation.UltimoAcceso(); ok {
-		_spec.SetField(usuario.FieldUltimoAcceso, field.TypeTime, value)
-		_node.UltimoAcceso = &value
 	}
 	if nodes := _c.mutation.EmpresasUsuarioIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

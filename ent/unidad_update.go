@@ -12,7 +12,6 @@ import (
 	"rentals-go/ent/propiedad"
 	"rentals-go/ent/serviciomedicion"
 	"rentals-go/ent/unidad"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -29,12 +28,6 @@ type UnidadUpdate struct {
 // Where appends a list predicates to the UnidadUpdate builder.
 func (_u *UnidadUpdate) Where(ps ...predicate.Unidad) *UnidadUpdate {
 	_u.mutation.Where(ps...)
-	return _u
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *UnidadUpdate) SetActualizadoEn(v time.Time) *UnidadUpdate {
-	_u.mutation.SetActualizadoEn(v)
 	return _u
 }
 
@@ -475,7 +468,6 @@ func (_u *UnidadUpdate) RemoveGastos(v ...*Gasto) *UnidadUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *UnidadUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -498,14 +490,6 @@ func (_u *UnidadUpdate) Exec(ctx context.Context) error {
 func (_u *UnidadUpdate) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *UnidadUpdate) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := unidad.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -573,9 +557,6 @@ func (_u *UnidadUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(unidad.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Codigo(); ok {
 		_spec.SetField(unidad.FieldCodigo, field.TypeString, value)
@@ -840,12 +821,6 @@ type UnidadUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *UnidadMutation
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *UnidadUpdateOne) SetActualizadoEn(v time.Time) *UnidadUpdateOne {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
 }
 
 // SetPropiedadID sets the "propiedad_id" field.
@@ -1298,7 +1273,6 @@ func (_u *UnidadUpdateOne) Select(field string, fields ...string) *UnidadUpdateO
 
 // Save executes the query and returns the updated Unidad entity.
 func (_u *UnidadUpdateOne) Save(ctx context.Context) (*Unidad, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -1321,14 +1295,6 @@ func (_u *UnidadUpdateOne) Exec(ctx context.Context) error {
 func (_u *UnidadUpdateOne) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *UnidadUpdateOne) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := unidad.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -1413,9 +1379,6 @@ func (_u *UnidadUpdateOne) sqlSave(ctx context.Context) (_node *Unidad, err erro
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(unidad.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Codigo(); ok {
 		_spec.SetField(unidad.FieldCodigo, field.TypeString, value)

@@ -35,20 +35,6 @@ func (_c *TipoIdentificacionCreate) SetNillableCreadoEn(v *time.Time) *TipoIdent
 	return _c
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_c *TipoIdentificacionCreate) SetActualizadoEn(v time.Time) *TipoIdentificacionCreate {
-	_c.mutation.SetActualizadoEn(v)
-	return _c
-}
-
-// SetNillableActualizadoEn sets the "actualizado_en" field if the given value is not nil.
-func (_c *TipoIdentificacionCreate) SetNillableActualizadoEn(v *time.Time) *TipoIdentificacionCreate {
-	if v != nil {
-		_c.SetActualizadoEn(*v)
-	}
-	return _c
-}
-
 // SetCodigo sets the "codigo" field.
 func (_c *TipoIdentificacionCreate) SetCodigo(v string) *TipoIdentificacionCreate {
 	_c.mutation.SetCodigo(v)
@@ -143,10 +129,6 @@ func (_c *TipoIdentificacionCreate) defaults() {
 		v := tipoidentificacion.DefaultCreadoEn()
 		_c.mutation.SetCreadoEn(v)
 	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		v := tipoidentificacion.DefaultActualizadoEn()
-		_c.mutation.SetActualizadoEn(v)
-	}
 	if _, ok := _c.mutation.Activo(); !ok {
 		v := tipoidentificacion.DefaultActivo
 		_c.mutation.SetActivo(v)
@@ -157,9 +139,6 @@ func (_c *TipoIdentificacionCreate) defaults() {
 func (_c *TipoIdentificacionCreate) check() error {
 	if _, ok := _c.mutation.CreadoEn(); !ok {
 		return &ValidationError{Name: "creado_en", err: errors.New(`ent: missing required field "TipoIdentificacion.creado_en"`)}
-	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		return &ValidationError{Name: "actualizado_en", err: errors.New(`ent: missing required field "TipoIdentificacion.actualizado_en"`)}
 	}
 	if _, ok := _c.mutation.Codigo(); !ok {
 		return &ValidationError{Name: "codigo", err: errors.New(`ent: missing required field "TipoIdentificacion.codigo"`)}
@@ -214,10 +193,6 @@ func (_c *TipoIdentificacionCreate) createSpec() (*TipoIdentificacion, *sqlgraph
 	if value, ok := _c.mutation.CreadoEn(); ok {
 		_spec.SetField(tipoidentificacion.FieldCreadoEn, field.TypeTime, value)
 		_node.CreadoEn = value
-	}
-	if value, ok := _c.mutation.ActualizadoEn(); ok {
-		_spec.SetField(tipoidentificacion.FieldActualizadoEn, field.TypeTime, value)
-		_node.ActualizadoEn = value
 	}
 	if value, ok := _c.mutation.Codigo(); ok {
 		_spec.SetField(tipoidentificacion.FieldCodigo, field.TypeString, value)

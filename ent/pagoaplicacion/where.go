@@ -60,11 +60,6 @@ func CreadoEn(v time.Time) predicate.PagoAplicacion {
 	return predicate.PagoAplicacion(sql.FieldEQ(FieldCreadoEn, v))
 }
 
-// ActualizadoEn applies equality check predicate on the "actualizado_en" field. It's identical to ActualizadoEnEQ.
-func ActualizadoEn(v time.Time) predicate.PagoAplicacion {
-	return predicate.PagoAplicacion(sql.FieldEQ(FieldActualizadoEn, v))
-}
-
 // PagoID applies equality check predicate on the "pago_id" field. It's identical to PagoIDEQ.
 func PagoID(v int) predicate.PagoAplicacion {
 	return predicate.PagoAplicacion(sql.FieldEQ(FieldPagoID, v))
@@ -123,46 +118,6 @@ func CreadoEnLT(v time.Time) predicate.PagoAplicacion {
 // CreadoEnLTE applies the LTE predicate on the "creado_en" field.
 func CreadoEnLTE(v time.Time) predicate.PagoAplicacion {
 	return predicate.PagoAplicacion(sql.FieldLTE(FieldCreadoEn, v))
-}
-
-// ActualizadoEnEQ applies the EQ predicate on the "actualizado_en" field.
-func ActualizadoEnEQ(v time.Time) predicate.PagoAplicacion {
-	return predicate.PagoAplicacion(sql.FieldEQ(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnNEQ applies the NEQ predicate on the "actualizado_en" field.
-func ActualizadoEnNEQ(v time.Time) predicate.PagoAplicacion {
-	return predicate.PagoAplicacion(sql.FieldNEQ(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnIn applies the In predicate on the "actualizado_en" field.
-func ActualizadoEnIn(vs ...time.Time) predicate.PagoAplicacion {
-	return predicate.PagoAplicacion(sql.FieldIn(FieldActualizadoEn, vs...))
-}
-
-// ActualizadoEnNotIn applies the NotIn predicate on the "actualizado_en" field.
-func ActualizadoEnNotIn(vs ...time.Time) predicate.PagoAplicacion {
-	return predicate.PagoAplicacion(sql.FieldNotIn(FieldActualizadoEn, vs...))
-}
-
-// ActualizadoEnGT applies the GT predicate on the "actualizado_en" field.
-func ActualizadoEnGT(v time.Time) predicate.PagoAplicacion {
-	return predicate.PagoAplicacion(sql.FieldGT(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnGTE applies the GTE predicate on the "actualizado_en" field.
-func ActualizadoEnGTE(v time.Time) predicate.PagoAplicacion {
-	return predicate.PagoAplicacion(sql.FieldGTE(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnLT applies the LT predicate on the "actualizado_en" field.
-func ActualizadoEnLT(v time.Time) predicate.PagoAplicacion {
-	return predicate.PagoAplicacion(sql.FieldLT(FieldActualizadoEn, v))
-}
-
-// ActualizadoEnLTE applies the LTE predicate on the "actualizado_en" field.
-func ActualizadoEnLTE(v time.Time) predicate.PagoAplicacion {
-	return predicate.PagoAplicacion(sql.FieldLTE(FieldActualizadoEn, v))
 }
 
 // PagoIDEQ applies the EQ predicate on the "pago_id" field.

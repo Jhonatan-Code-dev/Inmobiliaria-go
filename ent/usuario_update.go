@@ -9,7 +9,6 @@ import (
 	"rentals-go/ent/empresausuario"
 	"rentals-go/ent/predicate"
 	"rentals-go/ent/usuario"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -26,12 +25,6 @@ type UsuarioUpdate struct {
 // Where appends a list predicates to the UsuarioUpdate builder.
 func (_u *UsuarioUpdate) Where(ps ...predicate.Usuario) *UsuarioUpdate {
 	_u.mutation.Where(ps...)
-	return _u
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *UsuarioUpdate) SetActualizadoEn(v time.Time) *UsuarioUpdate {
-	_u.mutation.SetActualizadoEn(v)
 	return _u
 }
 
@@ -64,36 +57,16 @@ func (_u *UsuarioUpdate) SetNillableHashContrasena(v *string) *UsuarioUpdate {
 }
 
 // SetEstado sets the "estado" field.
-func (_u *UsuarioUpdate) SetEstado(v usuario.Estado) *UsuarioUpdate {
+func (_u *UsuarioUpdate) SetEstado(v bool) *UsuarioUpdate {
 	_u.mutation.SetEstado(v)
 	return _u
 }
 
 // SetNillableEstado sets the "estado" field if the given value is not nil.
-func (_u *UsuarioUpdate) SetNillableEstado(v *usuario.Estado) *UsuarioUpdate {
+func (_u *UsuarioUpdate) SetNillableEstado(v *bool) *UsuarioUpdate {
 	if v != nil {
 		_u.SetEstado(*v)
 	}
-	return _u
-}
-
-// SetUltimoAcceso sets the "ultimo_acceso" field.
-func (_u *UsuarioUpdate) SetUltimoAcceso(v time.Time) *UsuarioUpdate {
-	_u.mutation.SetUltimoAcceso(v)
-	return _u
-}
-
-// SetNillableUltimoAcceso sets the "ultimo_acceso" field if the given value is not nil.
-func (_u *UsuarioUpdate) SetNillableUltimoAcceso(v *time.Time) *UsuarioUpdate {
-	if v != nil {
-		_u.SetUltimoAcceso(*v)
-	}
-	return _u
-}
-
-// ClearUltimoAcceso clears the value of the "ultimo_acceso" field.
-func (_u *UsuarioUpdate) ClearUltimoAcceso() *UsuarioUpdate {
-	_u.mutation.ClearUltimoAcceso()
 	return _u
 }
 
@@ -140,7 +113,6 @@ func (_u *UsuarioUpdate) RemoveEmpresasUsuario(v ...*EmpresaUsuario) *UsuarioUpd
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *UsuarioUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -166,14 +138,6 @@ func (_u *UsuarioUpdate) ExecX(ctx context.Context) {
 	}
 }
 
-// defaults sets the default values of the builder before save.
-func (_u *UsuarioUpdate) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := usuario.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
-	}
-}
-
 // check runs all checks and user-defined validators on the builder.
 func (_u *UsuarioUpdate) check() error {
 	if v, ok := _u.mutation.Usuario(); ok {
@@ -184,11 +148,6 @@ func (_u *UsuarioUpdate) check() error {
 	if v, ok := _u.mutation.HashContrasena(); ok {
 		if err := usuario.HashContrasenaValidator(v); err != nil {
 			return &ValidationError{Name: "hash_contrasena", err: fmt.Errorf(`ent: validator failed for field "Usuario.hash_contrasena": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Estado(); ok {
-		if err := usuario.EstadoValidator(v); err != nil {
-			return &ValidationError{Name: "estado", err: fmt.Errorf(`ent: validator failed for field "Usuario.estado": %w`, err)}
 		}
 	}
 	return nil
@@ -206,9 +165,6 @@ func (_u *UsuarioUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			}
 		}
 	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(usuario.FieldActualizadoEn, field.TypeTime, value)
-	}
 	if value, ok := _u.mutation.Usuario(); ok {
 		_spec.SetField(usuario.FieldUsuario, field.TypeString, value)
 	}
@@ -216,13 +172,7 @@ func (_u *UsuarioUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.SetField(usuario.FieldHashContrasena, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Estado(); ok {
-		_spec.SetField(usuario.FieldEstado, field.TypeEnum, value)
-	}
-	if value, ok := _u.mutation.UltimoAcceso(); ok {
-		_spec.SetField(usuario.FieldUltimoAcceso, field.TypeTime, value)
-	}
-	if _u.mutation.UltimoAccesoCleared() {
-		_spec.ClearField(usuario.FieldUltimoAcceso, field.TypeTime)
+		_spec.SetField(usuario.FieldEstado, field.TypeBool, value)
 	}
 	if _u.mutation.EmpresasUsuarioCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -289,12 +239,6 @@ type UsuarioUpdateOne struct {
 	mutation *UsuarioMutation
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *UsuarioUpdateOne) SetActualizadoEn(v time.Time) *UsuarioUpdateOne {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
-}
-
 // SetUsuario sets the "usuario" field.
 func (_u *UsuarioUpdateOne) SetUsuario(v string) *UsuarioUpdateOne {
 	_u.mutation.SetUsuario(v)
@@ -324,36 +268,16 @@ func (_u *UsuarioUpdateOne) SetNillableHashContrasena(v *string) *UsuarioUpdateO
 }
 
 // SetEstado sets the "estado" field.
-func (_u *UsuarioUpdateOne) SetEstado(v usuario.Estado) *UsuarioUpdateOne {
+func (_u *UsuarioUpdateOne) SetEstado(v bool) *UsuarioUpdateOne {
 	_u.mutation.SetEstado(v)
 	return _u
 }
 
 // SetNillableEstado sets the "estado" field if the given value is not nil.
-func (_u *UsuarioUpdateOne) SetNillableEstado(v *usuario.Estado) *UsuarioUpdateOne {
+func (_u *UsuarioUpdateOne) SetNillableEstado(v *bool) *UsuarioUpdateOne {
 	if v != nil {
 		_u.SetEstado(*v)
 	}
-	return _u
-}
-
-// SetUltimoAcceso sets the "ultimo_acceso" field.
-func (_u *UsuarioUpdateOne) SetUltimoAcceso(v time.Time) *UsuarioUpdateOne {
-	_u.mutation.SetUltimoAcceso(v)
-	return _u
-}
-
-// SetNillableUltimoAcceso sets the "ultimo_acceso" field if the given value is not nil.
-func (_u *UsuarioUpdateOne) SetNillableUltimoAcceso(v *time.Time) *UsuarioUpdateOne {
-	if v != nil {
-		_u.SetUltimoAcceso(*v)
-	}
-	return _u
-}
-
-// ClearUltimoAcceso clears the value of the "ultimo_acceso" field.
-func (_u *UsuarioUpdateOne) ClearUltimoAcceso() *UsuarioUpdateOne {
-	_u.mutation.ClearUltimoAcceso()
 	return _u
 }
 
@@ -413,7 +337,6 @@ func (_u *UsuarioUpdateOne) Select(field string, fields ...string) *UsuarioUpdat
 
 // Save executes the query and returns the updated Usuario entity.
 func (_u *UsuarioUpdateOne) Save(ctx context.Context) (*Usuario, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -439,14 +362,6 @@ func (_u *UsuarioUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
-// defaults sets the default values of the builder before save.
-func (_u *UsuarioUpdateOne) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := usuario.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
-	}
-}
-
 // check runs all checks and user-defined validators on the builder.
 func (_u *UsuarioUpdateOne) check() error {
 	if v, ok := _u.mutation.Usuario(); ok {
@@ -457,11 +372,6 @@ func (_u *UsuarioUpdateOne) check() error {
 	if v, ok := _u.mutation.HashContrasena(); ok {
 		if err := usuario.HashContrasenaValidator(v); err != nil {
 			return &ValidationError{Name: "hash_contrasena", err: fmt.Errorf(`ent: validator failed for field "Usuario.hash_contrasena": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Estado(); ok {
-		if err := usuario.EstadoValidator(v); err != nil {
-			return &ValidationError{Name: "estado", err: fmt.Errorf(`ent: validator failed for field "Usuario.estado": %w`, err)}
 		}
 	}
 	return nil
@@ -496,9 +406,6 @@ func (_u *UsuarioUpdateOne) sqlSave(ctx context.Context) (_node *Usuario, err er
 			}
 		}
 	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(usuario.FieldActualizadoEn, field.TypeTime, value)
-	}
 	if value, ok := _u.mutation.Usuario(); ok {
 		_spec.SetField(usuario.FieldUsuario, field.TypeString, value)
 	}
@@ -506,13 +413,7 @@ func (_u *UsuarioUpdateOne) sqlSave(ctx context.Context) (_node *Usuario, err er
 		_spec.SetField(usuario.FieldHashContrasena, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Estado(); ok {
-		_spec.SetField(usuario.FieldEstado, field.TypeEnum, value)
-	}
-	if value, ok := _u.mutation.UltimoAcceso(); ok {
-		_spec.SetField(usuario.FieldUltimoAcceso, field.TypeTime, value)
-	}
-	if _u.mutation.UltimoAccesoCleared() {
-		_spec.ClearField(usuario.FieldUltimoAcceso, field.TypeTime)
+		_spec.SetField(usuario.FieldEstado, field.TypeBool, value)
 	}
 	if _u.mutation.EmpresasUsuarioCleared() {
 		edge := &sqlgraph.EdgeSpec{

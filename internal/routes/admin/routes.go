@@ -18,6 +18,7 @@ func Register(app *fiber.App, appDI *di.App) {
 	protected.Get("/empresas", appDI.AdminCtrl.ListarEmpresas)
 	protected.Post("/empresas", appDI.AdminCtrl.CrearEmpresa)
 	protected.Get("/empresas/:id", appDI.AdminCtrl.ObtenerEmpresa)
+	protected.Get("/empresas/:id/detalle", appDI.AdminCtrl.DetalleEmpresa)
 	protected.Put("/empresas/:id", appDI.AdminCtrl.ActualizarEmpresa)
 	protected.Delete("/empresas/:id", appDI.AdminCtrl.EliminarEmpresa)
 }

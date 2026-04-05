@@ -11,7 +11,7 @@ type (
 	}
 
 	EmpresaRepository interface {
-		Listar(ctx context.Context) ([]*Empresa, error)
+		ListarPaginado(ctx context.Context, limite, offset int, busqueda string) ([]*Empresa, int, error)
 		BuscarPorID(ctx context.Context, id int) (*Empresa, error)
 		Crear(ctx context.Context, emp *Empresa) (*Empresa, error)
 		Actualizar(ctx context.Context, emp *Empresa) (*Empresa, error)

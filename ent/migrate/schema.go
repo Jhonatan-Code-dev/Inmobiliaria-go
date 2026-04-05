@@ -13,7 +13,6 @@ var (
 	AdminsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "creado_en", Type: field.TypeTime},
-		{Name: "actualizado_en", Type: field.TypeTime},
 		{Name: "usuario", Type: field.TypeString, Unique: true, Size: 80},
 		{Name: "hash_contrasena", Type: field.TypeString, Size: 255},
 		{Name: "activo", Type: field.TypeBool, Default: true},
@@ -28,7 +27,6 @@ var (
 	CargosColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "creado_en", Type: field.TypeTime},
-		{Name: "actualizado_en", Type: field.TypeTime},
 		{Name: "concepto", Type: field.TypeEnum, Enums: []string{"renta", "deposito", "agua", "luz", "internet", "mantenimiento", "mora", "otro"}, Default: "renta"},
 		{Name: "descripcion", Type: field.TypeString, Nullable: true, Size: 255},
 		{Name: "moneda", Type: field.TypeString, Size: 3, Default: "PEN"},
@@ -50,7 +48,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cargos_contratos_cargos",
-				Columns:    []*schema.Column{CargosColumns[14]},
+				Columns:    []*schema.Column{CargosColumns[13]},
 				RefColumns: []*schema.Column{ContratosColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -59,7 +57,7 @@ var (
 			{
 				Name:    "cargo_contrato_id_fecha_vencimiento",
 				Unique:  false,
-				Columns: []*schema.Column{CargosColumns[14], CargosColumns[9]},
+				Columns: []*schema.Column{CargosColumns[13], CargosColumns[8]},
 			},
 		},
 	}
@@ -67,7 +65,6 @@ var (
 	ClientesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "creado_en", Type: field.TypeTime},
-		{Name: "actualizado_en", Type: field.TypeTime},
 		{Name: "documento_numero", Type: field.TypeString, Size: 30},
 		{Name: "nombres", Type: field.TypeString, Size: 120},
 		{Name: "apellidos", Type: field.TypeString, Nullable: true, Size: 120},
@@ -90,13 +87,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "clientes_empresas_clientes",
-				Columns:    []*schema.Column{ClientesColumns[14]},
+				Columns:    []*schema.Column{ClientesColumns[13]},
 				RefColumns: []*schema.Column{EmpresasColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "clientes_tipos_identificacion_clientes",
-				Columns:    []*schema.Column{ClientesColumns[15]},
+				Columns:    []*schema.Column{ClientesColumns[14]},
 				RefColumns: []*schema.Column{TiposIdentificacionColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -105,7 +102,7 @@ var (
 			{
 				Name:    "cliente_empresa_id_tipo_identificacion_id_documento_numero",
 				Unique:  true,
-				Columns: []*schema.Column{ClientesColumns[14], ClientesColumns[15], ClientesColumns[3]},
+				Columns: []*schema.Column{ClientesColumns[13], ClientesColumns[14], ClientesColumns[2]},
 			},
 		},
 	}
@@ -113,7 +110,6 @@ var (
 	ClienteTelefonosColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "creado_en", Type: field.TypeTime},
-		{Name: "actualizado_en", Type: field.TypeTime},
 		{Name: "telefono", Type: field.TypeString, Size: 30},
 		{Name: "etiqueta", Type: field.TypeString, Nullable: true, Size: 30},
 		{Name: "principal", Type: field.TypeBool, Default: false},
@@ -128,7 +124,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "cliente_telefonos_clientes_telefonos",
-				Columns:    []*schema.Column{ClienteTelefonosColumns[7]},
+				Columns:    []*schema.Column{ClienteTelefonosColumns[6]},
 				RefColumns: []*schema.Column{ClientesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -138,7 +134,6 @@ var (
 	ContratosColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "creado_en", Type: field.TypeTime},
-		{Name: "actualizado_en", Type: field.TypeTime},
 		{Name: "codigo", Type: field.TypeString, Size: 40},
 		{Name: "tipo", Type: field.TypeEnum, Enums: []string{"alquiler", "reserva"}, Default: "alquiler"},
 		{Name: "fecha_inicio", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "date", "postgres": "date"}},
@@ -164,19 +159,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "contratos_clientes_contratos",
-				Columns:    []*schema.Column{ContratosColumns[16]},
+				Columns:    []*schema.Column{ContratosColumns[15]},
 				RefColumns: []*schema.Column{ClientesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "contratos_empresas_contratos",
-				Columns:    []*schema.Column{ContratosColumns[17]},
+				Columns:    []*schema.Column{ContratosColumns[16]},
 				RefColumns: []*schema.Column{EmpresasColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "contratos_unidades_contratos",
-				Columns:    []*schema.Column{ContratosColumns[18]},
+				Columns:    []*schema.Column{ContratosColumns[17]},
 				RefColumns: []*schema.Column{UnidadesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -185,7 +180,7 @@ var (
 			{
 				Name:    "contrato_empresa_id_codigo",
 				Unique:  true,
-				Columns: []*schema.Column{ContratosColumns[17], ContratosColumns[3]},
+				Columns: []*schema.Column{ContratosColumns[16], ContratosColumns[2]},
 			},
 		},
 	}
@@ -193,12 +188,12 @@ var (
 	EmpresasColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "creado_en", Type: field.TypeTime},
-		{Name: "actualizado_en", Type: field.TypeTime},
 		{Name: "nombre", Type: field.TypeString, Size: 150},
 		{Name: "pais", Type: field.TypeString, Nullable: true, Size: 2},
 		{Name: "moneda", Type: field.TypeString, Size: 3, Default: "PEN"},
 		{Name: "maximo_usuarios", Type: field.TypeInt, Default: 1},
-		{Name: "estado", Type: field.TypeEnum, Enums: []string{"activa", "inactiva", "suspendida"}, Default: "activa"},
+		{Name: "estado", Type: field.TypeBool, Default: true},
+		{Name: "vencimiento", Type: field.TypeTime, Nullable: true},
 	}
 	// EmpresasTable holds the schema information for the "empresas" table.
 	EmpresasTable = &schema.Table{
@@ -209,7 +204,7 @@ var (
 			{
 				Name:    "empresa_nombre",
 				Unique:  false,
-				Columns: []*schema.Column{EmpresasColumns[3]},
+				Columns: []*schema.Column{EmpresasColumns[2]},
 			},
 		},
 	}
@@ -217,7 +212,6 @@ var (
 	EmpresaUsuariosColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "creado_en", Type: field.TypeTime},
-		{Name: "actualizado_en", Type: field.TypeTime},
 		{Name: "principal", Type: field.TypeBool, Default: false},
 		{Name: "estado", Type: field.TypeEnum, Enums: []string{"activo", "invitado", "inactivo"}, Default: "activo"},
 		{Name: "empresa_id", Type: field.TypeInt},
@@ -232,19 +226,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "empresa_usuarios_empresas_usuarios_empresa",
-				Columns:    []*schema.Column{EmpresaUsuariosColumns[5]},
+				Columns:    []*schema.Column{EmpresaUsuariosColumns[4]},
 				RefColumns: []*schema.Column{EmpresasColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "empresa_usuarios_roles_usuarios_empresa",
-				Columns:    []*schema.Column{EmpresaUsuariosColumns[6]},
+				Columns:    []*schema.Column{EmpresaUsuariosColumns[5]},
 				RefColumns: []*schema.Column{RolesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "empresa_usuarios_usuarios_empresas_usuario",
-				Columns:    []*schema.Column{EmpresaUsuariosColumns[7]},
+				Columns:    []*schema.Column{EmpresaUsuariosColumns[6]},
 				RefColumns: []*schema.Column{UsuariosColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -253,7 +247,7 @@ var (
 			{
 				Name:    "empresausuario_empresa_id_usuario_id",
 				Unique:  true,
-				Columns: []*schema.Column{EmpresaUsuariosColumns[5], EmpresaUsuariosColumns[7]},
+				Columns: []*schema.Column{EmpresaUsuariosColumns[4], EmpresaUsuariosColumns[6]},
 			},
 		},
 	}
@@ -261,7 +255,6 @@ var (
 	GastosColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "creado_en", Type: field.TypeTime},
-		{Name: "actualizado_en", Type: field.TypeTime},
 		{Name: "categoria", Type: field.TypeEnum, Enums: []string{"agua", "luz", "internet", "mantenimiento", "limpieza", "impuestos", "reparacion", "otro"}, Default: "otro"},
 		{Name: "descripcion", Type: field.TypeString, Size: 255},
 		{Name: "fecha_gasto", Type: field.TypeTime},
@@ -284,19 +277,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "gastos_empresas_gastos",
-				Columns:    []*schema.Column{GastosColumns[13]},
+				Columns:    []*schema.Column{GastosColumns[12]},
 				RefColumns: []*schema.Column{EmpresasColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "gastos_propiedades_gastos",
-				Columns:    []*schema.Column{GastosColumns[14]},
+				Columns:    []*schema.Column{GastosColumns[13]},
 				RefColumns: []*schema.Column{PropiedadesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "gastos_unidades_gastos",
-				Columns:    []*schema.Column{GastosColumns[15]},
+				Columns:    []*schema.Column{GastosColumns[14]},
 				RefColumns: []*schema.Column{UnidadesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -306,7 +299,6 @@ var (
 	MovimientosCajaColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "creado_en", Type: field.TypeTime},
-		{Name: "actualizado_en", Type: field.TypeTime},
 		{Name: "tipo", Type: field.TypeEnum, Enums: []string{"ingreso", "egreso", "ajuste"}, Default: "ingreso"},
 		{Name: "concepto", Type: field.TypeString, Size: 150},
 		{Name: "fecha_movimiento", Type: field.TypeTime},
@@ -327,19 +319,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "movimientos_caja_empresas_movimientos_caja",
-				Columns:    []*schema.Column{MovimientosCajaColumns[11]},
+				Columns:    []*schema.Column{MovimientosCajaColumns[10]},
 				RefColumns: []*schema.Column{EmpresasColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "movimientos_caja_gastos_movimientos_caja",
-				Columns:    []*schema.Column{MovimientosCajaColumns[12]},
+				Columns:    []*schema.Column{MovimientosCajaColumns[11]},
 				RefColumns: []*schema.Column{GastosColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "movimientos_caja_pagos_movimientos_caja",
-				Columns:    []*schema.Column{MovimientosCajaColumns[13]},
+				Columns:    []*schema.Column{MovimientosCajaColumns[12]},
 				RefColumns: []*schema.Column{PagosColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -349,7 +341,6 @@ var (
 	PagosColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "creado_en", Type: field.TypeTime},
-		{Name: "actualizado_en", Type: field.TypeTime},
 		{Name: "numero_recibo", Type: field.TypeString, Size: 40},
 		{Name: "fecha_pago", Type: field.TypeTime},
 		{Name: "moneda", Type: field.TypeString, Size: 3, Default: "PEN"},
@@ -370,19 +361,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "pagos_clientes_pagos",
-				Columns:    []*schema.Column{PagosColumns[11]},
+				Columns:    []*schema.Column{PagosColumns[10]},
 				RefColumns: []*schema.Column{ClientesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "pagos_contratos_pagos",
-				Columns:    []*schema.Column{PagosColumns[12]},
+				Columns:    []*schema.Column{PagosColumns[11]},
 				RefColumns: []*schema.Column{ContratosColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "pagos_empresas_pagos",
-				Columns:    []*schema.Column{PagosColumns[13]},
+				Columns:    []*schema.Column{PagosColumns[12]},
 				RefColumns: []*schema.Column{EmpresasColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -391,7 +382,7 @@ var (
 			{
 				Name:    "pago_empresa_id_numero_recibo",
 				Unique:  true,
-				Columns: []*schema.Column{PagosColumns[13], PagosColumns[3]},
+				Columns: []*schema.Column{PagosColumns[12], PagosColumns[2]},
 			},
 		},
 	}
@@ -399,7 +390,6 @@ var (
 	PagoAplicacionesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "creado_en", Type: field.TypeTime},
-		{Name: "actualizado_en", Type: field.TypeTime},
 		{Name: "moneda", Type: field.TypeString, Size: 3, Default: "PEN"},
 		{Name: "monto_aplicado", Type: field.TypeInt64, Default: 0},
 		{Name: "cargo_id", Type: field.TypeInt},
@@ -413,13 +403,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "pago_aplicaciones_cargos_aplicaciones_pago",
-				Columns:    []*schema.Column{PagoAplicacionesColumns[5]},
+				Columns:    []*schema.Column{PagoAplicacionesColumns[4]},
 				RefColumns: []*schema.Column{CargosColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "pago_aplicaciones_pagos_aplicaciones",
-				Columns:    []*schema.Column{PagoAplicacionesColumns[6]},
+				Columns:    []*schema.Column{PagoAplicacionesColumns[5]},
 				RefColumns: []*schema.Column{PagosColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -428,7 +418,7 @@ var (
 			{
 				Name:    "pagoaplicacion_pago_id_cargo_id",
 				Unique:  true,
-				Columns: []*schema.Column{PagoAplicacionesColumns[6], PagoAplicacionesColumns[5]},
+				Columns: []*schema.Column{PagoAplicacionesColumns[5], PagoAplicacionesColumns[4]},
 			},
 		},
 	}
@@ -436,7 +426,6 @@ var (
 	PropiedadesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "creado_en", Type: field.TypeTime},
-		{Name: "actualizado_en", Type: field.TypeTime},
 		{Name: "nombre", Type: field.TypeString, Size: 150},
 		{Name: "tipo", Type: field.TypeEnum, Enums: []string{"casa", "edificio", "quinta", "condominio", "otro"}, Default: "casa"},
 		{Name: "descripcion", Type: field.TypeString, Nullable: true, Size: 1000},
@@ -458,7 +447,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "propiedades_empresas_propiedades",
-				Columns:    []*schema.Column{PropiedadesColumns[14]},
+				Columns:    []*schema.Column{PropiedadesColumns[13]},
 				RefColumns: []*schema.Column{EmpresasColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -467,8 +456,6 @@ var (
 	// RolesColumns holds the columns for the "roles" table.
 	RolesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "creado_en", Type: field.TypeTime},
-		{Name: "actualizado_en", Type: field.TypeTime},
 		{Name: "nombre", Type: field.TypeString, Unique: true, Size: 60},
 		{Name: "descripcion", Type: field.TypeString, Nullable: true, Size: 255},
 	}
@@ -482,7 +469,6 @@ var (
 	ServicioMedicionesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "creado_en", Type: field.TypeTime},
-		{Name: "actualizado_en", Type: field.TypeTime},
 		{Name: "tipo_servicio", Type: field.TypeEnum, Enums: []string{"agua", "luz", "gas", "internet", "otro"}, Default: "agua"},
 		{Name: "periodo_inicio", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "date", "postgres": "date"}},
 		{Name: "periodo_fin", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "date", "postgres": "date"}},
@@ -503,7 +489,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "servicio_mediciones_unidades_servicio_mediciones",
-				Columns:    []*schema.Column{ServicioMedicionesColumns[13]},
+				Columns:    []*schema.Column{ServicioMedicionesColumns[12]},
 				RefColumns: []*schema.Column{UnidadesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -512,7 +498,7 @@ var (
 			{
 				Name:    "serviciomedicion_unidad_id_tipo_servicio_periodo_inicio_periodo_fin",
 				Unique:  true,
-				Columns: []*schema.Column{ServicioMedicionesColumns[13], ServicioMedicionesColumns[3], ServicioMedicionesColumns[4], ServicioMedicionesColumns[5]},
+				Columns: []*schema.Column{ServicioMedicionesColumns[12], ServicioMedicionesColumns[2], ServicioMedicionesColumns[3], ServicioMedicionesColumns[4]},
 			},
 		},
 	}
@@ -520,7 +506,6 @@ var (
 	TiposIdentificacionColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "creado_en", Type: field.TypeTime},
-		{Name: "actualizado_en", Type: field.TypeTime},
 		{Name: "codigo", Type: field.TypeString, Size: 20},
 		{Name: "nombre", Type: field.TypeString, Size: 80},
 		{Name: "pais", Type: field.TypeString, Nullable: true, Size: 2},
@@ -535,7 +520,7 @@ var (
 			{
 				Name:    "tipoidentificacion_codigo",
 				Unique:  true,
-				Columns: []*schema.Column{TiposIdentificacionColumns[3]},
+				Columns: []*schema.Column{TiposIdentificacionColumns[2]},
 			},
 		},
 	}
@@ -543,7 +528,6 @@ var (
 	UnidadesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "creado_en", Type: field.TypeTime},
-		{Name: "actualizado_en", Type: field.TypeTime},
 		{Name: "codigo", Type: field.TypeString, Size: 30},
 		{Name: "nombre", Type: field.TypeString, Nullable: true, Size: 120},
 		{Name: "tipo", Type: field.TypeEnum, Enums: []string{"cuarto", "departamento", "casa", "suite", "local", "otro"}, Default: "cuarto"},
@@ -570,7 +554,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "unidades_propiedades_unidades",
-				Columns:    []*schema.Column{UnidadesColumns[19]},
+				Columns:    []*schema.Column{UnidadesColumns[18]},
 				RefColumns: []*schema.Column{PropiedadesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -579,7 +563,7 @@ var (
 			{
 				Name:    "unidad_propiedad_id_codigo",
 				Unique:  true,
-				Columns: []*schema.Column{UnidadesColumns[19], UnidadesColumns[3]},
+				Columns: []*schema.Column{UnidadesColumns[18], UnidadesColumns[2]},
 			},
 		},
 	}
@@ -587,11 +571,9 @@ var (
 	UsuariosColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "creado_en", Type: field.TypeTime},
-		{Name: "actualizado_en", Type: field.TypeTime},
 		{Name: "usuario", Type: field.TypeString, Unique: true, Size: 120},
 		{Name: "hash_contrasena", Type: field.TypeString, Size: 255},
-		{Name: "estado", Type: field.TypeEnum, Enums: []string{"activo", "inactivo", "bloqueado"}, Default: "activo"},
-		{Name: "ultimo_acceso", Type: field.TypeTime, Nullable: true},
+		{Name: "estado", Type: field.TypeBool, Default: true},
 	}
 	// UsuariosTable holds the schema information for the "usuarios" table.
 	UsuariosTable = &schema.Table{
@@ -645,7 +627,9 @@ func init() {
 		Table: "contratos",
 	}
 	EmpresasTable.Annotation = &entsql.Annotation{
-		Table: "empresas",
+		Table:     "empresas",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
 	}
 	EmpresaUsuariosTable.ForeignKeys[0].RefTable = EmpresasTable
 	EmpresaUsuariosTable.ForeignKeys[1].RefTable = RolesTable
@@ -681,7 +665,9 @@ func init() {
 		Table: "propiedades",
 	}
 	RolesTable.Annotation = &entsql.Annotation{
-		Table: "roles",
+		Table:     "roles",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
 	}
 	ServicioMedicionesTable.ForeignKeys[0].RefTable = UnidadesTable
 	ServicioMedicionesTable.Annotation = &entsql.Annotation{
@@ -695,6 +681,8 @@ func init() {
 		Table: "unidades",
 	}
 	UsuariosTable.Annotation = &entsql.Annotation{
-		Table: "usuarios",
+		Table:     "usuarios",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
 	}
 }

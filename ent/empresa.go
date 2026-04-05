@@ -19,8 +19,6 @@ type Empresa struct {
 	ID int `json:"id,omitempty"`
 	// CreadoEn holds the value of the "creado_en" field.
 	CreadoEn time.Time `json:"creado_en,omitempty"`
-	// ActualizadoEn holds the value of the "actualizado_en" field.
-	ActualizadoEn time.Time `json:"actualizado_en,omitempty"`
 	// Nombre holds the value of the "nombre" field.
 	Nombre string `json:"nombre,omitempty"`
 	// Pais holds the value of the "pais" field.
@@ -30,7 +28,9 @@ type Empresa struct {
 	// MaximoUsuarios holds the value of the "maximo_usuarios" field.
 	MaximoUsuarios int `json:"maximo_usuarios,omitempty"`
 	// Estado holds the value of the "estado" field.
-	Estado empresa.Estado `json:"estado,omitempty"`
+	Estado bool `json:"estado,omitempty"`
+	// Vencimiento holds the value of the "vencimiento" field.
+	Vencimiento *time.Time `json:"vencimiento,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EmpresaQuery when eager-loading is set.
 	Edges        EmpresaEdges `json:"edges"`
@@ -126,11 +126,13 @@ func (*Empresa) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case empresa.FieldEstado:
+			values[i] = new(sql.NullBool)
 		case empresa.FieldID, empresa.FieldMaximoUsuarios:
 			values[i] = new(sql.NullInt64)
-		case empresa.FieldNombre, empresa.FieldPais, empresa.FieldMoneda, empresa.FieldEstado:
+		case empresa.FieldNombre, empresa.FieldPais, empresa.FieldMoneda:
 			values[i] = new(sql.NullString)
-		case empresa.FieldCreadoEn, empresa.FieldActualizadoEn:
+		case empresa.FieldCreadoEn, empresa.FieldVencimiento:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -159,12 +161,6 @@ func (_m *Empresa) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.CreadoEn = value.Time
 			}
-		case empresa.FieldActualizadoEn:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field actualizado_en", values[i])
-			} else if value.Valid {
-				_m.ActualizadoEn = value.Time
-			}
 		case empresa.FieldNombre:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field nombre", values[i])
@@ -191,10 +187,17 @@ func (_m *Empresa) assignValues(columns []string, values []any) error {
 				_m.MaximoUsuarios = int(value.Int64)
 			}
 		case empresa.FieldEstado:
-			if value, ok := values[i].(*sql.NullString); !ok {
+			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field estado", values[i])
 			} else if value.Valid {
-				_m.Estado = empresa.Estado(value.String)
+				_m.Estado = value.Bool
+			}
+		case empresa.FieldVencimiento:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field vencimiento", values[i])
+			} else if value.Valid {
+				_m.Vencimiento = new(time.Time)
+				*_m.Vencimiento = value.Time
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -270,9 +273,6 @@ func (_m *Empresa) String() string {
 	builder.WriteString("creado_en=")
 	builder.WriteString(_m.CreadoEn.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("actualizado_en=")
-	builder.WriteString(_m.ActualizadoEn.Format(time.ANSIC))
-	builder.WriteString(", ")
 	builder.WriteString("nombre=")
 	builder.WriteString(_m.Nombre)
 	builder.WriteString(", ")
@@ -289,6 +289,11 @@ func (_m *Empresa) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("estado=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Estado))
+	builder.WriteString(", ")
+	if v := _m.Vencimiento; v != nil {
+		builder.WriteString("vencimiento=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

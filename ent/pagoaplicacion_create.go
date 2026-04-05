@@ -36,20 +36,6 @@ func (_c *PagoAplicacionCreate) SetNillableCreadoEn(v *time.Time) *PagoAplicacio
 	return _c
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_c *PagoAplicacionCreate) SetActualizadoEn(v time.Time) *PagoAplicacionCreate {
-	_c.mutation.SetActualizadoEn(v)
-	return _c
-}
-
-// SetNillableActualizadoEn sets the "actualizado_en" field if the given value is not nil.
-func (_c *PagoAplicacionCreate) SetNillableActualizadoEn(v *time.Time) *PagoAplicacionCreate {
-	if v != nil {
-		_c.SetActualizadoEn(*v)
-	}
-	return _c
-}
-
 // SetPagoID sets the "pago_id" field.
 func (_c *PagoAplicacionCreate) SetPagoID(v int) *PagoAplicacionCreate {
 	_c.mutation.SetPagoID(v)
@@ -139,10 +125,6 @@ func (_c *PagoAplicacionCreate) defaults() {
 		v := pagoaplicacion.DefaultCreadoEn()
 		_c.mutation.SetCreadoEn(v)
 	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		v := pagoaplicacion.DefaultActualizadoEn()
-		_c.mutation.SetActualizadoEn(v)
-	}
 	if _, ok := _c.mutation.Moneda(); !ok {
 		v := pagoaplicacion.DefaultMoneda
 		_c.mutation.SetMoneda(v)
@@ -157,9 +139,6 @@ func (_c *PagoAplicacionCreate) defaults() {
 func (_c *PagoAplicacionCreate) check() error {
 	if _, ok := _c.mutation.CreadoEn(); !ok {
 		return &ValidationError{Name: "creado_en", err: errors.New(`ent: missing required field "PagoAplicacion.creado_en"`)}
-	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		return &ValidationError{Name: "actualizado_en", err: errors.New(`ent: missing required field "PagoAplicacion.actualizado_en"`)}
 	}
 	if _, ok := _c.mutation.PagoID(); !ok {
 		return &ValidationError{Name: "pago_id", err: errors.New(`ent: missing required field "PagoAplicacion.pago_id"`)}
@@ -213,10 +192,6 @@ func (_c *PagoAplicacionCreate) createSpec() (*PagoAplicacion, *sqlgraph.CreateS
 	if value, ok := _c.mutation.CreadoEn(); ok {
 		_spec.SetField(pagoaplicacion.FieldCreadoEn, field.TypeTime, value)
 		_node.CreadoEn = value
-	}
-	if value, ok := _c.mutation.ActualizadoEn(); ok {
-		_spec.SetField(pagoaplicacion.FieldActualizadoEn, field.TypeTime, value)
-		_node.ActualizadoEn = value
 	}
 	if value, ok := _c.mutation.Moneda(); ok {
 		_spec.SetField(pagoaplicacion.FieldMoneda, field.TypeString, value)

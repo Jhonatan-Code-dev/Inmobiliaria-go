@@ -35,20 +35,6 @@ func (_c *ClienteTelefonoCreate) SetNillableCreadoEn(v *time.Time) *ClienteTelef
 	return _c
 }
 
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_c *ClienteTelefonoCreate) SetActualizadoEn(v time.Time) *ClienteTelefonoCreate {
-	_c.mutation.SetActualizadoEn(v)
-	return _c
-}
-
-// SetNillableActualizadoEn sets the "actualizado_en" field if the given value is not nil.
-func (_c *ClienteTelefonoCreate) SetNillableActualizadoEn(v *time.Time) *ClienteTelefonoCreate {
-	if v != nil {
-		_c.SetActualizadoEn(*v)
-	}
-	return _c
-}
-
 // SetClienteID sets the "cliente_id" field.
 func (_c *ClienteTelefonoCreate) SetClienteID(v int) *ClienteTelefonoCreate {
 	_c.mutation.SetClienteID(v)
@@ -147,10 +133,6 @@ func (_c *ClienteTelefonoCreate) defaults() {
 		v := clientetelefono.DefaultCreadoEn()
 		_c.mutation.SetCreadoEn(v)
 	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		v := clientetelefono.DefaultActualizadoEn()
-		_c.mutation.SetActualizadoEn(v)
-	}
 	if _, ok := _c.mutation.Principal(); !ok {
 		v := clientetelefono.DefaultPrincipal
 		_c.mutation.SetPrincipal(v)
@@ -165,9 +147,6 @@ func (_c *ClienteTelefonoCreate) defaults() {
 func (_c *ClienteTelefonoCreate) check() error {
 	if _, ok := _c.mutation.CreadoEn(); !ok {
 		return &ValidationError{Name: "creado_en", err: errors.New(`ent: missing required field "ClienteTelefono.creado_en"`)}
-	}
-	if _, ok := _c.mutation.ActualizadoEn(); !ok {
-		return &ValidationError{Name: "actualizado_en", err: errors.New(`ent: missing required field "ClienteTelefono.actualizado_en"`)}
 	}
 	if _, ok := _c.mutation.ClienteID(); !ok {
 		return &ValidationError{Name: "cliente_id", err: errors.New(`ent: missing required field "ClienteTelefono.cliente_id"`)}
@@ -223,10 +202,6 @@ func (_c *ClienteTelefonoCreate) createSpec() (*ClienteTelefono, *sqlgraph.Creat
 	if value, ok := _c.mutation.CreadoEn(); ok {
 		_spec.SetField(clientetelefono.FieldCreadoEn, field.TypeTime, value)
 		_node.CreadoEn = value
-	}
-	if value, ok := _c.mutation.ActualizadoEn(); ok {
-		_spec.SetField(clientetelefono.FieldActualizadoEn, field.TypeTime, value)
-		_node.ActualizadoEn = value
 	}
 	if value, ok := _c.mutation.Telefono(); ok {
 		_spec.SetField(clientetelefono.FieldTelefono, field.TypeString, value)

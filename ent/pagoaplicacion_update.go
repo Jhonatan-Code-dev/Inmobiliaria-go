@@ -10,7 +10,6 @@ import (
 	"rentals-go/ent/pago"
 	"rentals-go/ent/pagoaplicacion"
 	"rentals-go/ent/predicate"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -27,12 +26,6 @@ type PagoAplicacionUpdate struct {
 // Where appends a list predicates to the PagoAplicacionUpdate builder.
 func (_u *PagoAplicacionUpdate) Where(ps ...predicate.PagoAplicacion) *PagoAplicacionUpdate {
 	_u.mutation.Where(ps...)
-	return _u
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *PagoAplicacionUpdate) SetActualizadoEn(v time.Time) *PagoAplicacionUpdate {
-	_u.mutation.SetActualizadoEn(v)
 	return _u
 }
 
@@ -128,7 +121,6 @@ func (_u *PagoAplicacionUpdate) ClearCargo() *PagoAplicacionUpdate {
 
 // Save executes the query and returns the number of nodes affected by the update operation.
 func (_u *PagoAplicacionUpdate) Save(ctx context.Context) (int, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -151,14 +143,6 @@ func (_u *PagoAplicacionUpdate) Exec(ctx context.Context) error {
 func (_u *PagoAplicacionUpdate) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *PagoAplicacionUpdate) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := pagoaplicacion.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -189,9 +173,6 @@ func (_u *PagoAplicacionUpdate) sqlSave(ctx context.Context) (_node int, err err
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(pagoaplicacion.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Moneda(); ok {
 		_spec.SetField(pagoaplicacion.FieldMoneda, field.TypeString, value)
@@ -278,12 +259,6 @@ type PagoAplicacionUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *PagoAplicacionMutation
-}
-
-// SetActualizadoEn sets the "actualizado_en" field.
-func (_u *PagoAplicacionUpdateOne) SetActualizadoEn(v time.Time) *PagoAplicacionUpdateOne {
-	_u.mutation.SetActualizadoEn(v)
-	return _u
 }
 
 // SetPagoID sets the "pago_id" field.
@@ -391,7 +366,6 @@ func (_u *PagoAplicacionUpdateOne) Select(field string, fields ...string) *PagoA
 
 // Save executes the query and returns the updated PagoAplicacion entity.
 func (_u *PagoAplicacionUpdateOne) Save(ctx context.Context) (*PagoAplicacion, error) {
-	_u.defaults()
 	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
@@ -414,14 +388,6 @@ func (_u *PagoAplicacionUpdateOne) Exec(ctx context.Context) error {
 func (_u *PagoAplicacionUpdateOne) ExecX(ctx context.Context) {
 	if err := _u.Exec(ctx); err != nil {
 		panic(err)
-	}
-}
-
-// defaults sets the default values of the builder before save.
-func (_u *PagoAplicacionUpdateOne) defaults() {
-	if _, ok := _u.mutation.ActualizadoEn(); !ok {
-		v := pagoaplicacion.UpdateDefaultActualizadoEn()
-		_u.mutation.SetActualizadoEn(v)
 	}
 }
 
@@ -469,9 +435,6 @@ func (_u *PagoAplicacionUpdateOne) sqlSave(ctx context.Context) (_node *PagoApli
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := _u.mutation.ActualizadoEn(); ok {
-		_spec.SetField(pagoaplicacion.FieldActualizadoEn, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Moneda(); ok {
 		_spec.SetField(pagoaplicacion.FieldMoneda, field.TypeString, value)

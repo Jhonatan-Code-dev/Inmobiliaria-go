@@ -34,7 +34,6 @@ func TestMySQLUTCIntegration(t *testing.T) {
 		SetNombre("Empresa UTC Test").
 		SetMoneda("USD").
 		SetCreadoEn(marca).
-		SetActualizadoEn(marca).
 		Save(t.Context()); err != nil {
 		t.Fatalf("create empresa error = %v", err)
 	}
@@ -47,23 +46,16 @@ func TestMySQLUTCIntegration(t *testing.T) {
 	defer db.Close()
 
 	var creadoEn time.Time
-	var actualizadoEn time.Time
-	row := db.QueryRow("SELECT creado_en, actualizado_en FROM empresas WHERE nombre = ?", "Empresa UTC Test")
-	if err := row.Scan(&creadoEn, &actualizadoEn); err != nil {
+	row := db.QueryRow("SELECT creado_en FROM empresas WHERE nombre = ?", "Empresa UTC Test")
+	if err := row.Scan(&creadoEn); err != nil {
 		t.Fatalf("scan error = %v", err)
 	}
 
 	if !creadoEn.Equal(marca) {
 		t.Fatalf("creado_en = %s, want %s", creadoEn.Format(time.RFC3339), marca.Format(time.RFC3339))
 	}
-	if !actualizadoEn.Equal(marca) {
-		t.Fatalf("actualizado_en = %s, want %s", actualizadoEn.Format(time.RFC3339), marca.Format(time.RFC3339))
-	}
 	if creadoEn.Location().String() != "UTC" {
 		t.Fatalf("creado_en location = %s, want UTC", creadoEn.Location().String())
-	}
-	if actualizadoEn.Location().String() != "UTC" {
-		t.Fatalf("actualizado_en location = %s, want UTC", actualizadoEn.Location().String())
 	}
 
 	t.Logf("verified UTC read/write end-to-end on database %s", dbName)

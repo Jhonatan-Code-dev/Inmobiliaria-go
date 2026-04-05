@@ -299,12 +299,12 @@ func (_q *RolQuery) WithUsuariosEmpresa(opts ...func(*EmpresaUsuarioQuery)) *Rol
 // Example:
 //
 //	var v []struct {
-//		CreadoEn time.Time `json:"creado_en,omitempty"`
+//		Nombre string `json:"nombre,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Rol.Query().
-//		GroupBy(rol.FieldCreadoEn).
+//		GroupBy(rol.FieldNombre).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (_q *RolQuery) GroupBy(field string, fields ...string) *RolGroupBy {
@@ -322,11 +322,11 @@ func (_q *RolQuery) GroupBy(field string, fields ...string) *RolGroupBy {
 // Example:
 //
 //	var v []struct {
-//		CreadoEn time.Time `json:"creado_en,omitempty"`
+//		Nombre string `json:"nombre,omitempty"`
 //	}
 //
 //	client.Rol.Query().
-//		Select(rol.FieldCreadoEn).
+//		Select(rol.FieldNombre).
 //		Scan(ctx, &v)
 func (_q *RolQuery) Select(fields ...string) *RolSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)

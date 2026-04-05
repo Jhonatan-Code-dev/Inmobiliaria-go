@@ -6,7 +6,7 @@ import (
 	"rentals-go/internal/controller"
 )
 
-// App contiene solo las dependencias base del nuevo proyecto.
+// App contiene solo las dependencias base del nuevo proyecto
 type App struct {
 	Config      *env.Config
 	EntClient   *ent.Client

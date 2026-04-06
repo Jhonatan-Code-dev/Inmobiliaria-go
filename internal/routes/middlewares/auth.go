@@ -40,13 +40,22 @@ func TenantAuth(cfg *env.Config) fiber.Handler {
 }
 
 func parseToken(c *fiber.Ctx, secret []byte) (*auth.Claims, error) {
+	var tokenStr string
 	authHeader := c.Get("Authorization")
-	if authHeader == "" {
+	if authHeader != "" {
+		parts := strings.SplitN(authHeader, " ", 2)
+		if len(parts) == 2 && strings.EqualFold(parts[0], "Bearer") {
+			tokenStr = parts[1]
+		}
+	}
+
+	if tokenStr == "" {
+		tokenStr = c.Cookies("token_usuario")
+	}
+
+	if tokenStr == "" {
 		return nil, fiber.ErrUnauthorized
 	}
-	parts := strings.SplitN(authHeader, " ", 2)
-	if len(parts) != 2 || !strings.EqualFold(parts[0], "Bearer") {
-		return nil, fiber.ErrUnauthorized
-	}
-	return auth.ValidarToken(parts[1], secret)
+
+	return auth.ValidarToken(tokenStr, secret)
 }

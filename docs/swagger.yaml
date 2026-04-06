@@ -189,6 +189,31 @@ definitions:
       total:
         type: integer
     type: object
+  controller.usuarioLoginRequest:
+    properties:
+      contrasena:
+        type: string
+      usuario:
+        type: string
+    type: object
+  controller.usuarioLoginResponse:
+    properties:
+      empresa:
+        $ref: '#/definitions/controller.empresaResponse'
+      token:
+        type: string
+      user:
+        $ref: '#/definitions/controller.usuarioResponse'
+    type: object
+  controller.usuarioResponse:
+    properties:
+      empresa_id:
+        type: integer
+      id:
+        type: integer
+      usuario:
+        type: string
+    type: object
 info:
   contact: {}
   description: API para autenticacion, administracion de empresas y catalogos de soporte
@@ -516,6 +541,46 @@ paths:
       summary: Perfil del administrador autenticado
       tags:
       - admin
+  /auth/login:
+    post:
+      consumes:
+      - application/json
+      description: Permite a un usuario autenticarse y obtener un token JWT. Además,
+        establece una cookie de sesión.
+      parameters:
+      - description: Credenciales de usuario
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controller.usuarioLoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.usuarioLoginResponse'
+        "401":
+          description: Credenciales inválidas
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      summary: Iniciar sesión como usuario
+      tags:
+      - Usuarios
+  /auth/logout:
+    post:
+      description: Elimina el token de sesión (cookie) del navegador.
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Cerrar sesión
+      tags:
+      - Usuarios
   /catalogos/monedas:
     get:
       description: Lista las monedas ISO 4217 actualmente soportadas por el backend.
@@ -562,6 +627,23 @@ paths:
       summary: Detalle de moneda
       tags:
       - catalogos
+  /me:
+    get:
+      description: Retorna los datos del usuario autenticado y su empresa.
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.usuarioLoginResponse'
+        "401":
+          description: No autorizado
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Obtener perfil del usuario actual
+      tags:
+      - Usuarios
 schemes:
 - http
 - https

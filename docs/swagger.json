@@ -501,6 +501,66 @@
                 }
             }
         },
+        "/auth/login": {
+            "post": {
+                "description": "Permite a un usuario autenticarse y obtener un token JWT. Además, establece una cookie de sesión.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Usuarios"
+                ],
+                "summary": "Iniciar sesión como usuario",
+                "parameters": [
+                    {
+                        "description": "Credenciales de usuario",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.usuarioLoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.usuarioLoginResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Credenciales inválidas",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/auth/logout": {
+            "post": {
+                "description": "Elimina el token de sesión (cookie) del navegador.",
+                "tags": [
+                    "Usuarios"
+                ],
+                "summary": "Cerrar sesión",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/catalogos/monedas": {
             "get": {
                 "description": "Lista las monedas ISO 4217 actualmente soportadas por el backend.",
@@ -564,6 +624,34 @@
                     },
                     "500": {
                         "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/me": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Retorna los datos del usuario autenticado y su empresa.",
+                "tags": [
+                    "Usuarios"
+                ],
+                "summary": "Obtener perfil del usuario actual",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.usuarioLoginResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado",
                         "schema": {
                             "$ref": "#/definitions/controller.errorResponse"
                         }
@@ -863,6 +951,45 @@
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "controller.usuarioLoginRequest": {
+            "type": "object",
+            "properties": {
+                "contrasena": {
+                    "type": "string"
+                },
+                "usuario": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.usuarioLoginResponse": {
+            "type": "object",
+            "properties": {
+                "empresa": {
+                    "$ref": "#/definitions/controller.empresaResponse"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/controller.usuarioResponse"
+                }
+            }
+        },
+        "controller.usuarioResponse": {
+            "type": "object",
+            "properties": {
+                "empresa_id": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "usuario": {
+                    "type": "string"
                 }
             }
         }

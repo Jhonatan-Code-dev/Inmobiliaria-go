@@ -62,8 +62,9 @@ type monedaRenderResponse struct {
 }
 
 type usuarioResponse struct {
-	ID      int    `json:"id"`
-	Usuario string `json:"usuario"`
+	ID        int `json:"id"`
+	Usuario   string `json:"usuario"`
+	EmpresaID int `json:"empresa_id"`
 }
 
 func mapEmpresaResponse(e *domain.Empresa) *empresaResponse {

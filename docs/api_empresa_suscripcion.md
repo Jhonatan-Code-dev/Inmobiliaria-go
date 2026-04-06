@@ -76,8 +76,7 @@ GET /admin/empresas?pagina=1&busqueda=inmobiliaria
       "nombre": "Inmobiliaria Global S.A.",
       "pais": "PE",
       "estado": true,
-      "vencimiento": "2027-04-05T15:00:34Z",
-      "creado_en": "2026-04-05T15:00:34Z"
+      "vencimiento": "2027-04-05T15:00:34Z"
     }
   ],
   "paginacion": {
@@ -102,7 +101,7 @@ GET /admin/empresas?pagina=1&busqueda=inmobiliaria
 
 ## 3. Detalle Completo de Empresa
 
-Devuelve **todos** los datos de una empresa: información general, moneda con configuración de render para el frontend, suscripción, estado y fechas.
+Devuelve **todos** los datos de una empresa: información general, suscripción, estado y fechas.
 
 - **Endpoint:** `GET /admin/empresas/{id}/detalle`
 - **Autenticación:** Bearer Token.
@@ -119,17 +118,6 @@ GET /admin/empresas/1/detalle
   "nombre": "Inmobiliaria Global S.A.",
   "pais": "PE",
   "moneda": "PEN",
-  "moneda_info": {
-    "codigo": "PEN",
-    "decimales": 2,
-    "incremento": 1,
-    "render": {
-      "metodo": "Intl.NumberFormat",
-      "currency": "PEN",
-      "minimum_fraction_digits": 2,
-      "maximum_fraction_digits": 2
-    }
-  },
   "maximo_usuarios": 1,
   "estado": true,
   "vencimiento": "2027-04-05T15:00:34Z",
@@ -145,37 +133,14 @@ GET /admin/empresas/1/detalle
 | `nombre` | string | Nombre comercial. |
 | `pais` | string | Código ISO 2 letras del país. |
 | `moneda` | string | Código ISO 3 letras de la moneda. |
-| `moneda_info` | object | Configuración completa de la moneda (ver abajo). |
 | `maximo_usuarios` | number | Límite de usuarios permitidos. |
 | `estado` | boolean | `true` = activa, `false` = inactiva. |
 | `vencimiento` | string (ISO 8601) | Fecha de expiración de la suscripción en UTC. Puede estar vacío si no se asignó. |
 | `creado_en` | string (ISO 8601) | Fecha de creación en UTC. |
 
-### Campos de `moneda_info`
 
-| Campo | Tipo | Descripción |
-| :--- | :--- | :--- |
-| `codigo` | string | Código de la moneda (`"PEN"`, `"USD"`, etc). |
-| `decimales` | number | Cantidad de decimales (ej: `2`). |
-| `incremento` | number | Incremento mínimo. |
-| `render.metodo` | string | Método de renderizado sugerido (`"Intl.NumberFormat"`). |
-| `render.currency` | string | Código de moneda para `Intl.NumberFormat`. |
-| `render.minimum_fraction_digits` | number | Decimales mínimos a mostrar. |
-| `render.maximum_fraction_digits` | number | Decimales máximos a mostrar. |
 
-### Ejemplo de uso en Frontend (JavaScript)
-```javascript
-// Formatear montos usando moneda_info
-const { moneda_info } = empresa;
-const formatter = new Intl.NumberFormat('es-PE', {
-  style: 'currency',
-  currency: moneda_info.render.currency,
-  minimumFractionDigits: moneda_info.render.minimum_fraction_digits,
-  maximumFractionDigits: moneda_info.render.maximum_fraction_digits,
-});
 
-console.log(formatter.format(1500.50)); // S/ 1,500.50
-```
 
 ---
 
@@ -185,3 +150,48 @@ console.log(formatter.format(1500.50)); // S/ 1,500.50
 2. **Fechas UTC:** Todas las fechas vienen en formato ISO 8601 con zona horaria UTC (`Z`). Conviértelas a la zona local del usuario para mostrarlas.
 3. **Suscripción:** Si `suscripcion_dias` fue `0` al registrar, `vencimiento` estará vacío (acceso sin límite de tiempo).
 4. **Paginación:** La lista de empresas siempre viene envuelta en `datos` + `paginacion`. Nunca es un array suelto.
+
+---
+
+## 4. Actualizar Empresa
+
+Actualiza los datos de una empresa de forma parcial. Puedes enviar únicamente los campos que deseas modificar; los demás mantendrán su valor actual.
+
+- **Endpoint:** `PUT /admin/empresas/{id}`
+- **Autenticación:** Bearer Token.
+
+### Request Body (Opcional por campo)
+
+| Campo | Tipo | Descripción |
+| :--- | :--- | :--- |
+| `nombre` | string | Nombre comercial. |
+| `pais` | string | Código ISO 2 letras del país. (Su actualización derivará automáticamente la moneda). |
+| `maximo_usuarios` | number | Límite de usuarios. |
+| `estado` | boolean | Activa (`true`) o Inactiva (`false`). |
+| `vencimiento` | string | Fecha de vencimiento exacta (ISO 8601 UTC). Envía `""` para que no tenga límite. |
+| `dias_vencimiento` | number | Extender vencimiento por N días a partir de hoy. (Si se envía, tiene prioridad sobre `vencimiento`). |
+
+### Ejemplo Request
+
+```json
+{
+  "dias_vencimiento": 30,
+  "maximo_usuarios": 10
+}
+```
+
+### Response (200 OK)
+
+Devuelve los datos generales actualizados, similar a la respuesta base de una empresa (sin la configuración completa de la moneda ni detalles exhaustivos, que se pueden consultar en `/detalle`).
+
+```json
+{
+  "id": 1,
+  "nombre": "Inmobiliaria Global S.A.",
+  "pais": "PE",
+  "moneda": "PEN",
+  "estado": false,
+  "vencimiento": "2027-04-05T15:00:34Z",
+  "creado_en": "2026-04-05T15:00:34Z"
+}
+```

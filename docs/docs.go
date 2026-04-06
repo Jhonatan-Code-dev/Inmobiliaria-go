@@ -236,7 +236,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Actualiza los datos generales de una empresa.",
+                "description": "Actualiza los datos de una empresa de forma parcial. Solo se actualizarán los campos enviados en el body.",
                 "consumes": [
                     "application/json"
                 ],
@@ -347,7 +347,7 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Devuelve todos los datos de una empresa: info general, moneda con render, suscripcion, estado y fechas.",
+                "description": "Devuelve todos los datos de una empresa: info general, suscripcion, estado y fechas.",
                 "produces": [
                     "application/json"
                 ],
@@ -579,16 +579,22 @@ const docTemplate = `{
         "controller.actualizarEmpresaRequest": {
             "type": "object",
             "properties": {
+                "dias_vencimiento": {
+                    "type": "integer"
+                },
                 "estado": {
                     "type": "boolean"
                 },
-                "moneda": {
-                    "type": "string"
+                "maximo_usuarios": {
+                    "type": "integer"
                 },
                 "nombre": {
                     "type": "string"
                 },
                 "pais": {
+                    "type": "string"
+                },
+                "vencimiento": {
                     "type": "string"
                 }
             }
@@ -713,9 +719,6 @@ const docTemplate = `{
                 "moneda": {
                     "type": "string"
                 },
-                "moneda_info": {
-                    "$ref": "#/definitions/controller.monedaResponse"
-                },
                 "nombre": {
                     "type": "string"
                 },
@@ -730,9 +733,6 @@ const docTemplate = `{
         "controller.empresaListItemResponse": {
             "type": "object",
             "properties": {
-                "creado_en": {
-                    "type": "string"
-                },
                 "estado": {
                     "type": "boolean"
                 },
@@ -767,9 +767,6 @@ const docTemplate = `{
                 },
                 "moneda": {
                     "type": "string"
-                },
-                "moneda_info": {
-                    "$ref": "#/definitions/controller.monedaResponse"
                 },
                 "nombre": {
                     "type": "string"

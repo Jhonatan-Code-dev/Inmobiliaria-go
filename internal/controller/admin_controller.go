@@ -9,6 +9,7 @@ import (
 	"rentals-go/config/security"
 	"rentals-go/internal/domain"
 	"rentals-go/internal/pkg/moneda"
+	"rentals-go/internal/pkg/tiempo"
 	"rentals-go/internal/service"
 
 	"github.com/gofiber/fiber/v2"
@@ -43,10 +44,12 @@ type crearEmpresaResponse struct {
 }
 
 type actualizarEmpresaRequest struct {
-	Nombre string `json:"nombre"`
-	Pais   string `json:"pais"`
-	Moneda string `json:"moneda"`
-	Estado bool   `json:"estado"`
+	Nombre         *string `json:"nombre"`
+	Pais           *string `json:"pais"`
+	MaximoUsuarios  *int    `json:"maximo_usuarios"`
+	Estado          *bool   `json:"estado"`
+	Vencimiento     *string `json:"vencimiento"`
+	DiasVencimiento *int    `json:"dias_vencimiento"`
 }
 
 type adminCredencialesRequest struct {
@@ -247,7 +250,7 @@ func (h *AdminController) ObtenerEmpresa(c *fiber.Ctx) error {
 
 // DetalleEmpresa godoc
 // @Summary Detalle completo de empresa
-// @Description Devuelve todos los datos de una empresa: info general, moneda con render, suscripcion, estado y fechas.
+// @Description Devuelve todos los datos de una empresa: info general, suscripcion, estado y fechas.
 // @Tags admin
 // @Produce json
 // @Security BearerAuth
@@ -311,7 +314,6 @@ func (h *AdminController) ListarEmpresas(c *fiber.Ctx) error {
 				Pais:        e.Pais,
 				Estado:      e.Estado,
 				Vencimiento: e.Vencimiento,
-				CreadoEn:    e.CreadoEn,
 			})
 		}
 	}
@@ -329,7 +331,7 @@ func (h *AdminController) ListarEmpresas(c *fiber.Ctx) error {
 
 // ActualizarEmpresa godoc
 // @Summary Actualizar empresa
-// @Description Actualiza los datos generales de una empresa.
+// @Description Actualiza los datos de una empresa de forma parcial. Solo se actualizarán los campos enviados en el body.
 // @Tags admin
 // @Accept json
 // @Produce json
@@ -351,25 +353,47 @@ func (h *AdminController) ActualizarEmpresa(c *fiber.Ctx) error {
 	if err := c.BodyParser(&req); err != nil {
 		return fiber.ErrBadRequest
 	}
-	if req.Nombre == "" {
-		return fiber.ErrBadRequest
+
+	empresaExistente, err := h.svc.ObtenerEmpresa(c.Context(), id)
+	if err != nil || empresaExistente == nil {
+		return fiber.ErrNotFound
 	}
 
-	monedaCod := moneda.NormalizarCodigo(req.Moneda)
-	if monedaCod == "" {
-		monedaCod = moneda.ObtenerMonedaPorPais(req.Pais)
+	if req.Nombre != nil {
+		if strings.TrimSpace(*req.Nombre) == "" {
+			return fiber.NewError(http.StatusBadRequest, "el nombre no puede estar vacío")
+		}
+		empresaExistente.Nombre = *req.Nombre
 	}
-	if monedaCod == "" {
-		monedaCod = "PEN"
+	if req.Pais != nil {
+		empresaExistente.Pais = *req.Pais
+		empresaExistente.Moneda = "" // Se deducirá automáticamente según el nuevo país
+	}
+	if req.MaximoUsuarios != nil {
+		empresaExistente.MaximoUsuarios = *req.MaximoUsuarios
+	}
+	if req.Estado != nil {
+		empresaExistente.Estado = *req.Estado
+	}
+	if req.DiasVencimiento != nil {
+		if *req.DiasVencimiento <= 0 {
+			empresaExistente.Vencimiento = time.Time{} // Sin vencimiento
+		} else {
+			empresaExistente.Vencimiento = tiempo.AhoraUTC().AddDate(0, 0, *req.DiasVencimiento)
+		}
+	} else if req.Vencimiento != nil {
+		if *req.Vencimiento == "" {
+			empresaExistente.Vencimiento = time.Time{}
+		} else {
+			t, err := time.Parse(time.RFC3339, *req.Vencimiento)
+			if err != nil {
+				return fiber.NewError(http.StatusBadRequest, "formato de vencimiento inválido. Debe ser ISO 8601 (RFC3339)")
+			}
+			empresaExistente.Vencimiento = t.UTC()
+		}
 	}
 
-	empresa, err := h.svc.ActualizarEmpresa(c.Context(), &domain.Empresa{
-		ID:     id,
-		Nombre: req.Nombre,
-		Pais:   req.Pais,
-		Moneda: monedaCod,
-		Estado: req.Estado,
-	})
+	empresaActualizada, err := h.svc.ActualizarEmpresa(c.Context(), empresaExistente)
 	if err != nil {
 		if err == service.ErrMonedaInvalida {
 			return fiber.NewError(http.StatusBadRequest, err.Error())
@@ -377,7 +401,7 @@ func (h *AdminController) ActualizarEmpresa(c *fiber.Ctx) error {
 		return fiber.ErrInternalServerError
 	}
 
-	return c.JSON(mapEmpresaResponse(empresa))
+	return c.JSON(mapEmpresaResponse(empresaActualizada))
 }
 
 // EliminarEmpresa godoc
@@ -398,6 +422,12 @@ func (h *AdminController) EliminarEmpresa(c *fiber.Ctx) error {
 		return fiber.ErrBadRequest
 	}
 	if err := h.svc.EliminarEmpresa(c.Context(), id); err != nil {
+		if err == service.ErrEmpresaConDatos {
+			return c.Status(fiber.StatusBadRequest).JSON(errorResponse{Message: err.Error()})
+		}
+		if strings.Contains(err.Error(), "not found") {
+			return c.Status(fiber.StatusNotFound).JSON(errorResponse{Message: "empresa no encontrada"})
+		}
 		return fiber.ErrInternalServerError
 	}
 	return c.SendStatus(http.StatusNoContent)

@@ -15,120 +15,90 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/admin/dashboard/stats": {
-            "get": {
-                "description": "Retorna los totales de empresas, usuarios y rutas registradas en el sistema.",
+        "/admin/credenciales": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Actualiza el usuario y contraseña de un administrador. Si no se envía ID en el body, se actualiza el admin autenticado.",
+                "consumes": [
+                    "application/json"
+                ],
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Administración - Dashboard"
+                    "admin"
                 ],
-                "summary": "Obtener estadísticas globales del sistema",
+                "summary": "Actualizar credenciales",
+                "parameters": [
+                    {
+                        "description": "Datos de credenciales",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.adminCredencialesRequest"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/empresacontroller.DashboardStatsDTO"
+                            "$ref": "#/definitions/controller.adminCredencialesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     },
                     "500": {
-                        "description": "error: fallo interno al obtener estadísticas",
+                        "description": "Internal Server Error",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     }
                 }
             }
         },
         "/admin/empresas": {
-            "put": {
-                "description": "Actualiza el nombre y/o la fecha de corte de una empresa específica usando su ID.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Administración - Empresas"
-                ],
-                "summary": "Actualizar datos de una empresa",
-                "parameters": [
-                    {
-                        "description": "Datos de la actualización",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/empresacontroller.ActualizarEmpresaRequestDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "message: empresa actualizada exitosamente",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "error: datos inválidos",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "error: no se pudo actualizar la empresa",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/empresas-detalles": {
             "get": {
-                "description": "Retorna un listado paginado de empresas, incluyendo sus usuarios asociados y sus respectivos roles.",
-                "consumes": [
-                    "application/json"
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
                 ],
+                "description": "Retorna las empresas registradas de forma paginada (máx 10 por página). Permite buscar por nombre.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Administración - Empresas"
+                    "admin"
                 ],
-                "summary": "Obtener lista detallada de empresas con usuarios y roles",
+                "summary": "Listado de empresas",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Número de página (default: 1)",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Cantidad por página (default: 10)",
-                        "name": "limit",
+                        "default": 1,
+                        "description": "Número de página",
+                        "name": "pagina",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "Criterio de orden (recientes, vencimiento) (default: recientes)",
-                        "name": "sort_by",
+                        "description": "Texto a buscar en el nombre",
+                        "name": "busqueda",
                         "in": "query"
                     }
                 ],
@@ -136,132 +106,30 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/empresacontroller.PaginatedEmpresasResponseDTO"
+                            "$ref": "#/definitions/controller.listadoEmpresasResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     },
                     "500": {
-                        "description": "error: no se pudo obtener la lista detallada",
+                        "description": "Internal Server Error",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     }
                 }
-            }
-        },
-        "/admin/empresas-paginadas": {
-            "get": {
-                "description": "Retorna un listado filtrado y paginado de todas las empresas registradas en el sistema.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Administración - Empresas"
-                ],
-                "summary": "Obtener lista de empresas con paginación",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Número de página (default: 1)",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Cantidad por página (default: 10)",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Buscar por nombre de empresa",
-                        "name": "search",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Criterio de orden (recientes, vencimiento) (default: recientes)",
-                        "name": "sort_by",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/empresacontroller.PaginatedEmpresasSimpleResponseDTO"
-                        }
-                    },
-                    "500": {
-                        "description": "error: no se pudo obtener la lista paginada",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/empresas-rutas": {
-            "get": {
-                "description": "Retorna todas las rutas de una empresa específica junto con sus administradores y trabajadores asignados.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Administración - Empresas"
-                ],
-                "summary": "Obtener lista detallada de rutas de una empresa",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID de la empresa",
-                        "name": "id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/empresacontroller.EmpresaRutasDetalladasResponseDTO"
-                        }
-                    },
-                    "400": {
-                        "description": "error: id de empresa requerido",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "error: no se pudo obtener el listado de rutas",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/empresas/admin-general": {
+            },
             "post": {
-                "description": "Crea un nuevo usuario con rol 'admin' vinculado a la empresa, con acceso a todas sus rutas.",
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Crea una empresa y su usuario principal en una sola operacion. Requiere autenticacion de administrador. Solo nombre, pais, usuario y contraseña.",
                 "consumes": [
                     "application/json"
                 ],
@@ -269,63 +137,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Administración - Empresas"
+                    "admin"
                 ],
-                "summary": "Registrar administrador general de empresa",
+                "summary": "Alta de empresa + usuario principal",
                 "parameters": [
                     {
-                        "description": "Datos del administrador general",
-                        "name": "config",
+                        "description": "Datos de empresa y usuario",
+                        "name": "body",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/empresacontroller.RegistrarAdminGeneralRequestDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "message: Administrador general registrado",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "error: datos inválidos",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/empresas/nueva-ruta": {
-            "post": {
-                "description": "Crea una nueva ruta (número incremental) para una empresa existente, con su admin y 2 trabajadores.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Administración - Empresas"
-                ],
-                "summary": "Añadir nueva ruta a empresa",
-                "parameters": [
-                    {
-                        "description": "Configuración de la nueva ruta",
-                        "name": "config",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/empresacontroller.AgregarRutaRequestDTO"
+                            "$ref": "#/definitions/controller.crearEmpresaRequest"
                         }
                     }
                 ],
@@ -333,90 +155,49 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/empresacontroller.AgregarRutaResponseDTO"
+                            "$ref": "#/definitions/controller.crearEmpresaResponse"
                         }
                     },
                     "400": {
-                        "description": "error: datos inválidos",
+                        "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     },
-                    "404": {
-                        "description": "error: empresa no encontrada",
+                    "401": {
+                        "description": "Unauthorized",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/empresas/nuevo-supervisor": {
-            "post": {
-                "description": "Crea un nuevo usuario con rol 'supervisor' vinculado a la empresa, con acceso automático a todas sus rutas.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Administración - Empresas"
-                ],
-                "summary": "Registrar supervisor de empresa",
-                "parameters": [
-                    {
-                        "description": "Datos del supervisor",
-                        "name": "config",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/empresacontroller.RegistrarSupervisorRequestDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "message: Supervisor registrado",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     },
-                    "400": {
-                        "description": "error: datos inválidos",
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     }
                 }
             }
         },
         "/admin/empresas/{id}": {
-            "delete": {
-                "description": "Elimina una empresa y sus usuarios (admin y trabajadores) solo si NO tienen historial operativo (clientes, préstamos, movimientos de caja, etc.).",
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Devuelve el detalle de una empresa.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Administración - Empresas"
+                    "admin"
                 ],
-                "summary": "Eliminar empresa de forma segura",
+                "summary": "Obtener empresa por ID",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "ID de la empresa",
+                        "description": "ID de empresa",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -426,33 +207,36 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/empresacontroller.EliminarEmpresaResponseDTO"
+                            "$ref": "#/definitions/controller.empresaResponse"
                         }
                     },
                     "400": {
-                        "description": "error: no se puede eliminar por historial existente",
+                        "description": "Bad Request",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     },
                     "500": {
-                        "description": "error: fallo interno al eliminar",
+                        "description": "Internal Server Error",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     }
                 }
-            }
-        },
-        "/admin/login": {
-            "post": {
-                "description": "Autentica a un usuario administrador y devuelve un JWT",
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Actualiza los datos de una empresa de forma parcial. Solo se actualizarán los campos enviados en el body.",
                 "consumes": [
                     "application/json"
                 ],
@@ -460,17 +244,24 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Administración - Auth"
+                    "admin"
                 ],
-                "summary": "Iniciar sesión administrador",
+                "summary": "Actualizar empresa",
                 "parameters": [
                     {
-                        "description": "Credenciales de login",
-                        "name": "login",
+                        "type": "integer",
+                        "description": "ID de empresa",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Datos de empresa",
+                        "name": "body",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/authadmincontroller.LoginRequestDTO"
+                            "$ref": "#/definitions/controller.actualizarEmpresaRequest"
                         }
                     }
                 ],
@@ -478,16 +269,176 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/authadmincontroller.LoginResponseDTO"
+                            "$ref": "#/definitions/controller.empresaResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     },
                     "401": {
-                        "description": "error: credenciales inválidas",
+                        "description": "Unauthorized",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Elimina una empresa por ID.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Eliminar empresa",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de empresa",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/empresas/{id}/detalle": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Devuelve todos los datos de una empresa: info general, suscripcion, estado y fechas.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Detalle completo de empresa",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de empresa",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.empresaDetalleResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/admin/login": {
+            "post": {
+                "description": "Autentica a un administrador y devuelve el JWT que el frontend debe enviar en el header Authorization.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "admin"
+                ],
+                "summary": "Login admin",
+                "parameters": [
+                    {
+                        "description": "Credenciales",
+                        "name": "credentials",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.adminLoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.adminLoginResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Faltan datos o el formato es incorrecto",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Usuario o contraseña incorrecto",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Ha ocurrido un error inesperado, intente más tarde",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     }
                 }
@@ -495,17 +446,17 @@ const docTemplate = `{
         },
         "/admin/logout": {
             "post": {
-                "description": "Invalida la sesión del usuario eliminando la cookie de acceso",
+                "description": "Cierra la sesión del administrador actual eliminando la cookie de autenticación.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Administración - Auth"
+                    "admin"
                 ],
-                "summary": "Cerrar sesión",
+                "summary": "Logout admin",
                 "responses": {
                     "200": {
-                        "description": "mensaje: sesión cerrada exitosamente",
+                        "description": "OK",
                         "schema": {
                             "type": "object",
                             "additionalProperties": {
@@ -523,1834 +474,101 @@ const docTemplate = `{
                         "BearerAuth": []
                     }
                 ],
-                "description": "Obtiene la información del usuario autenticado",
+                "description": "Retorna los datos del administrador autenticado a partir del token Bearer enviado por el frontend.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Administración - Auth"
+                    "admin"
                 ],
-                "summary": "Obtener perfil actual",
+                "summary": "Perfil del administrador autenticado",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/authadmincontroller.UsuarioDTO"
+                            "$ref": "#/definitions/controller.adminProfileResponse"
                         }
                     },
                     "401": {
-                        "description": "error: no autorizado",
+                        "description": "Unauthorized",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/admin/onboarding": {
-            "post": {
-                "description": "Crea una empresa, su primera ruta, un administrador y 2 trabajadores.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Administración - Empresas"
-                ],
-                "summary": "Configuración completa de empresa",
-                "parameters": [
-                    {
-                        "description": "Datos de configuración",
-                        "name": "onboarding",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/empresacontroller.ConfigurarEmpresaRequestDTO"
-                        }
-                    },
-                    {
-                        "description": "Ejemplo de cuerpo",
-                        "name": "example_body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/empresacontroller.ConfigurarEmpresaRequestDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/empresacontroller.ConfigurarEmpresaResponseDTO"
-                        }
-                    },
-                    "400": {
-                        "description": "error: datos inválidos",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     },
                     "500": {
-                        "description": "error: fallo al configurar empresa",
+                        "description": "Internal Server Error",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     }
                 }
             }
         },
-        "/admin/usuarios/{id}": {
-            "put": {
-                "description": "Permite a un administrador cambiar el nombre de usuario y/o la contraseña de cualquier usuario del sistema por su ID.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Administración - Usuarios"
-                ],
-                "summary": "Actualizar credenciales de un usuario",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID del usuario",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Datos a actualizar",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/gestionusuariocontroller.ActualizarUsuarioRequestDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/gestionusuariocontroller.ActualizarUsuarioResponseDTO"
-                        }
-                    },
-                    "400": {
-                        "description": "error: datos inválidos",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "error: fallo al actualizar usuario",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/administracion/empresas": {
+        "/catalogos/monedas": {
             "get": {
-                "description": "Retorna un listado filtrado de todas las empresas registradas en el sistema.",
-                "consumes": [
-                    "application/json"
-                ],
+                "description": "Lista las monedas ISO 4217 actualmente soportadas por el backend.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Administración - Empresas"
+                    "catalogos"
                 ],
-                "summary": "Obtener lista de empresas",
+                "summary": "Catalogo global de monedas",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/empresacontroller.EmpresaJSON"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "error: no se pudo obtener la lista de empresas",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/login": {
-            "post": {
-                "description": "Autentica a un usuario de empresa y establece una cookie JWT.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Autenticación"
-                ],
-                "summary": "Login de usuario (Trabajador/Supervisor)",
-                "parameters": [
-                    {
-                        "description": "Credenciales",
-                        "name": "login",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/authusuariocontroller.LoginRequestDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/authusuariocontroller.LoginResponseDTO"
-                        }
-                    },
-                    "401": {
-                        "description": "error: credenciales inválidas",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/logout": {
-            "post": {
-                "description": "Elimina la cookie de autenticación.",
-                "tags": [
-                    "Usuario - Autenticación"
-                ],
-                "summary": "Cerrar sesión de usuario",
-                "responses": {
-                    "200": {
-                        "description": "message: sesión cerrada",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/auth/me": {
-            "get": {
-                "description": "Retorna la información del usuario basada en el token de la sesión.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Autenticación"
-                ],
-                "summary": "Obtener perfil del usuario autenticado",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/authusuariocontroller.UsuarioDTO"
-                        }
-                    },
-                    "401": {
-                        "description": "error: no autorizado",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/config/pagos/empresa": {
-            "post": {
-                "description": "Asigna los métodos de pago seleccionados a una empresa",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Configuración"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/config/pagos/empresa/{empresaId}": {
-            "get": {
-                "description": "Devuelve una lista de los tipos de pago seleccionados por una empresa específica",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Configuración"
-                ],
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID de la Empresa",
-                        "name": "empresaId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/paymentcontroller.PaymentMethodDTO"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/config/pagos/empresa/{empresaId}/tipo/{tipoId}": {
-            "post": {
-                "description": "Vincula un tipo de pago específico a una empresa",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Configuración"
-                ],
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID de la Empresa",
-                        "name": "empresaId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "ID del Tipo de Pago",
-                        "name": "tipoId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Desvincula un tipo de pago específico de una empresa",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Configuración"
-                ],
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID de la Empresa",
-                        "name": "empresaId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "ID del Tipo de Pago",
-                        "name": "tipoId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/config/pagos/tipos": {
-            "get": {
-                "description": "Devuelve una lista de todos los tipos de pago globales",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Configuración"
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/paymentcontroller.PaymentMethodDTO"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/user/catalogos/direcciones": {
-            "get": {
-                "description": "Retorna la lista de tipos de dirección disponibles.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Catálogos"
-                ],
-                "summary": "Listar tipos de dirección",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/maestrocontroller.MaestroDTO"
+                                "$ref": "#/definitions/controller.monedaResponse"
                             }
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     }
                 }
             }
         },
-        "/user/catalogos/identificaciones": {
+        "/catalogos/monedas/{codigo}": {
             "get": {
-                "description": "Retorna la lista de tipos de identificación disponibles.",
+                "description": "Retorna precision y simbolos de una moneda ISO 4217.",
                 "produces": [
                     "application/json"
                 ],
                 "tags": [
-                    "Catálogos"
+                    "catalogos"
                 ],
-                "summary": "Listar tipos de identificación",
+                "summary": "Detalle de moneda",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Codigo ISO 4217",
+                        "name": "codigo",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/maestrocontroller.MaestroDTO"
-                            }
+                            "$ref": "#/definitions/controller.monedaResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/catalogos/telefonos": {
-            "get": {
-                "description": "Retorna la lista de tipos de teléfono disponibles.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Catálogos"
-                ],
-                "summary": "Listar tipos de teléfono",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/maestrocontroller.MaestroDTO"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/clientes": {
-            "post": {
-                "description": "Registrar un nuevo cliente. La imagen es obligatoria y debe ser subida previamente (Presigned URL).",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Clientes"
-                ],
-                "summary": "Registrar cliente",
-                "parameters": [
-                    {
-                        "description": "Datos del cliente e imagen",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/clientecontroller.RegistrarClienteRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/clientecontroller.RegistrarClienteResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "error: datos inválidos",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "error: no autorizado",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "error: fallo interno",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/clientes/empresa/{id_empresa}/ruta/{id_ruta}": {
-            "get": {
-                "description": "Retorna la lista completa de clientes asociados a una empresa y ruta con paginación.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Clientes"
-                ],
-                "summary": "Listar clientes por empresa y ruta",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID de la Empresa",
-                        "name": "id_empresa",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "ID de la Ruta",
-                        "name": "id_ruta",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Buscar por nombre o identificación",
-                        "name": "search",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Página (default: 1)",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Límite (default: 10)",
-                        "name": "limit",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/clientecontroller.PaginatedClientesResponseJSON"
-                        }
-                    },
-                    "400": {
-                        "description": "error: IDs inválidos",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "error: no autorizado",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "error: fallo interno",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/clientes/fotos": {
-            "delete": {
-                "description": "Elimina uno o varios registros de fotos de galería asociados a clientes de la empresa y limpia Oracle Storage.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Clientes"
-                ],
-                "summary": "Eliminar fotos de galería de clientes de forma masiva",
-                "parameters": [
-                    {
-                        "description": "Lista de IDs de fotos a eliminar",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/clientecontroller.EliminarFotosRequestDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "fotos eliminadas exitosamente",
-                        "schema": {
-                            "$ref": "#/definitions/domain.MessageResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "datos inválidos o IDs faltantes",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "no autorizado",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "acceso denegado",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/clientes/presigned-url": {
-            "get": {
-                "description": "Genera una URL temporal para que el cliente suba una imagen directamente a Oracle Storage. Válida por 15 min.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Clientes"
-                ],
-                "summary": "Obtener URL pre-firmada para subir foto",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Extensión del archivo (ej: .jpg, .png)",
-                        "name": "extension",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "upload_url, key",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "error: no autorizado",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "error: fallo interno",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/clientes/video": {
-            "post": {
-                "description": "Almacena la URL de un video de YouTube asociado a un cliente con una fecha específica.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Clientes"
-                ],
-                "summary": "Registrar un video de YouTube para el cliente",
-                "parameters": [
-                    {
-                        "description": "Datos del video",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/clientecontroller.RegistrarVideoRequestDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "video registrado exitosamente",
-                        "schema": {
-                            "$ref": "#/definitions/domain.MessageResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "datos inválidos o URL no es de YouTube",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "no autorizado",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "acceso denegado",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "cliente no encontrado",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/clientes/videos": {
-            "delete": {
-                "description": "Elimina uno o varios registros de videos asociados a clientes de la empresa.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Clientes"
-                ],
-                "summary": "Eliminar videos de clientes de forma masiva",
-                "parameters": [
-                    {
-                        "description": "Lista de IDs de videos a eliminar",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/clientecontroller.EliminarVideosRequestDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "videos eliminados exitosamente",
-                        "schema": {
-                            "$ref": "#/definitions/domain.MessageResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "datos inválidos o IDs faltantes",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "no autorizado",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "acceso denegado",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/clientes/{id}": {
-            "get": {
-                "description": "Retorna toda la información de un cliente incluyendo teléfonos, direcciones, correos y fotos.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Clientes"
-                ],
-                "summary": "Obtener detalle completo de un cliente",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID del cliente",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/clientecontroller.ClienteDetalleResponseDTO"
-                        }
-                    },
-                    "401": {
-                        "description": "no autorizado",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "acceso denegado",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "cliente no encontrado",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "put": {
-                "description": "Actualiza datos con límites: máx 2 correos, 3 teléfonos (1 principal), 3 direcciones (1 principal). Sin duplicados.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Clientes"
-                ],
-                "summary": "Actualizar datos de cliente",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID del Cliente",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Datos a actualizar",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/clientecontroller.ActualizarClienteRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "mensaje: cliente actualizado",
-                        "schema": {
-                            "$ref": "#/definitions/domain.MessageResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "error: datos inválidos",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "error: no autorizado",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "error: cliente no encontrado",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "error: fallo interno",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    }
-                }
-            },
-            "delete": {
-                "description": "Elimina un cliente si no tiene historial de préstamos.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Clientes"
-                ],
-                "summary": "Eliminar un cliente",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID del Cliente",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "mensaje: cliente eliminado",
-                        "schema": {
-                            "$ref": "#/definitions/domain.MessageResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "error: ID inválido o tiene historial",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "error: no autorizado",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "error: cliente no encontrado",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    },
-                    "500": {
-                        "description": "error: fallo interno",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/clientes/{id}/videos": {
-            "get": {
-                "description": "Retorna la lista paginada de videos de un cliente con filtros opcionales de fecha.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Clientes"
-                ],
-                "summary": "Listar videos de un cliente",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID del cliente",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Página (default: 1)",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Límite (default: 5, máximo 5)",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Fecha inicio (YYYY-MM-DD)",
-                        "name": "from_date",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Fecha fin (YYYY-MM-DD)",
-                        "name": "to_date",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/clientecontroller.PaginatedVideosResponseJSON"
-                        }
-                    },
-                    "401": {
-                        "description": "no autorizado",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    },
-                    "403": {
-                        "description": "acceso denegado",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    },
-                    "404": {
-                        "description": "cliente no encontrado",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ErrorResponse"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/gastos": {
-            "get": {
-                "description": "Ver el historial de gastos del usuario autenticado con filtros de fecha y paginación.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Gastos"
-                ],
-                "summary": "Listar historial de gastos",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Página (default: 1)",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Límite (default: 5, max: 5)",
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Fecha inicio (YYYY-MM-DD)",
-                        "name": "from_date",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "Fecha fin (YYYY-MM-DD)",
-                        "name": "to_date",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "401": {
-                        "description": "error: no autorizado",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "error: fallo interno",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "Registra un gasto y lo descuenta automáticamente del saldo de la caja de la ruta. Permite saldo negativo.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Gastos"
-                ],
-                "summary": "Registrar un gasto",
-                "parameters": [
-                    {
-                        "description": "Datos del gasto",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/gastocontroller.RegistrarGastoRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/gastocontroller.GastoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "error: datos inválidos",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "error: no autorizado",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "error: acceso denegado",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/user/gastos/presigned-url": {
-            "get": {
-                "description": "Genera una URL temporal para subir una imagen de gasto a la carpeta 'gastos/'. Válida por 15 min.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Gastos"
-                ],
-                "summary": "Obtener URL pre-firmada para subir foto de gasto",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Extensión del archivo (ej: .jpg, .png)",
-                        "name": "extension",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "upload_url, key",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "error: extensión inválida",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "error: fallo interno",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/user/gastos/{id}": {
-            "delete": {
-                "description": "Elimina un gasto por su ID, revirtiendo el saldo en la caja y limpiando los archivos en el storage.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Gastos"
-                ],
-                "summary": "Eliminar un gasto",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID del Gasto",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/gastocontroller.GastoResponse"
-                        }
-                    },
-                    "401": {
-                        "description": "error: no autorizado",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "error: acceso denegado",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "404": {
-                        "description": "error: no encontrado",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "error: fallo interno",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/user/mis-rutas": {
-            "get": {
-                "description": "Retorna las rutas a las que el usuario autenticado tiene acceso (extraído del token).",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Rutas"
-                ],
-                "summary": "Listar mis rutas asignadas",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/usuariocontroller.RutaAccesoDTO"
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "error: no autorizado",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/user/prestamos": {
-            "post": {
-                "description": "Registra un préstamo para un cliente, genera sus cuotas automáticamente y descuenta el capital de la caja.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Préstamos"
-                ],
-                "summary": "Registrar un nuevo préstamo",
-                "parameters": [
-                    {
-                        "description": "Datos del préstamo",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/prestamocontroller.RegistrarPrestamoRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "Created",
-                        "schema": {
-                            "$ref": "#/definitions/prestamocontroller.RegistrarPrestamoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "error: datos inválidos",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "error: no autorizado",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "403": {
-                        "description": "error: acceso denegado",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "error: fallo interno",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/user/prestamos/cotizar": {
-            "post": {
-                "description": "Simula un préstamo y devuelve el detalle de las cuotas sin persistir datos.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Préstamos"
-                ],
-                "summary": "Cotizar un préstamo",
-                "parameters": [
-                    {
-                        "description": "Datos para cotizar",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/prestamocontroller.CotizarPrestamoRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/prestamocontroller.CotizarPrestamoResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "error: datos inválidos",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "401": {
-                        "description": "error: no autorizado",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "error: fallo interno",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/user/team/caja/aporte": {
-            "post": {
-                "description": "Suma dinero al saldo actual de la caja como aporte de base.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Caja"
-                ],
-                "summary": "Inyectar capital (Aporte de Base)",
-                "parameters": [
-                    {
-                        "description": "Datos del aporte",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/usuariocontroller.AporteBaseRequestDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "message: aporte registrado",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/user/team/caja/base": {
-            "post": {
-                "description": "Suma dinero al saldo actual de la caja como base inicial o nueva base de ingreso.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Caja"
-                ],
-                "summary": "Registrar Base de Ingreso",
-                "parameters": [
-                    {
-                        "description": "Datos de la base",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/usuariocontroller.CajaBaseRequestDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "message: base registrada",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/user/team/caja/resumen/{ruta_id}": {
-            "get": {
-                "description": "Retorna el saldo actual y estado de la caja de una ruta.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Caja"
-                ],
-                "summary": "Obtener resumen de caja por ruta",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID de la ruta",
-                        "name": "ruta_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/usuariocontroller.CajaResumenResponseDTO"
-                        }
-                    }
-                }
-            }
-        },
-        "/user/team/caja/status": {
-            "patch": {
-                "description": "Cambia la política de bloqueo de la caja (true=activa, false=bloqueada).",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Caja"
-                ],
-                "summary": "Bloquear o activar caja",
-                "parameters": [
-                    {
-                        "description": "Estado de la caja",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/usuariocontroller.UpdateCajaStatusRequestDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "message: estado de caja actualizado",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/user/team/password": {
-            "patch": {
-                "description": "Resetea la contraseña de un miembro del equipo.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Gestión Equipo"
-                ],
-                "summary": "Cambiar contraseña de un usuario",
-                "parameters": [
-                    {
-                        "description": "Nueva contraseña",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/usuariocontroller.UpdatePasswordRequestDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "message: contraseña actualizada",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "error: datos inválidos",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/user/team/resumen-gestion": {
-            "get": {
-                "description": "Retorna todas las rutas con sus usuarios y todos los supervisores con sus accesos.",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Gestión Equipo"
-                ],
-                "summary": "Obtener resumen de gestión de equipo",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/usuariocontroller.ResumenGestionDTO"
-                        }
-                    },
-                    "401": {
-                        "description": "error: no autorizado",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "error: fallo interno",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/user/team/rutas/asignar": {
-            "post": {
-                "description": "Otorga permiso de acceso a una ruta para un usuario específico.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Gestión Equipo"
-                ],
-                "summary": "Asignar acceso a ruta",
-                "parameters": [
-                    {
-                        "description": "Datos de asignación",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/usuariocontroller.AsignarRutaRequestDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "201": {
-                        "description": "message: ruta asignada",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/user/team/rutas/quitar": {
-            "delete": {
-                "description": "Elimina el permiso de acceso a una ruta para un usuario específico.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Gestión Equipo"
-                ],
-                "summary": "Quitar acceso a ruta",
-                "parameters": [
-                    {
-                        "description": "Datos de desasignación",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/usuariocontroller.AsignarRutaRequestDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "message: acceso removido",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/user/team/status": {
-            "patch": {
-                "description": "Activa o desactiva a un miembro del equipo.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Usuario - Gestión Equipo"
-                ],
-                "summary": "Cambiar estado de un usuario",
-                "parameters": [
-                    {
-                        "description": "Datos del estado",
-                        "name": "request",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/usuariocontroller.UpdateStatusRequestDTO"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "message: estado actualizado",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "error: datos inválidos",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     }
                 }
@@ -2358,702 +576,16 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "authadmincontroller.LoginRequestDTO": {
-            "type": "object",
-            "required": [
-                "pass",
-                "usuario"
-            ],
-            "properties": {
-                "pass": {
-                    "type": "string"
-                },
-                "usuario": {
-                    "type": "string"
-                }
-            }
-        },
-        "authadmincontroller.LoginResponseDTO": {
+        "controller.actualizarEmpresaRequest": {
             "type": "object",
             "properties": {
-                "usuario": {
-                    "$ref": "#/definitions/authadmincontroller.UsuarioDTO"
-                }
-            }
-        },
-        "authadmincontroller.UsuarioDTO": {
-            "type": "object",
-            "properties": {
-                "id": {
+                "dias_vencimiento": {
                     "type": "integer"
-                },
-                "rol": {
-                    "type": "string"
-                },
-                "usuario": {
-                    "type": "string"
-                }
-            }
-        },
-        "authusuariocontroller.LoginRequestDTO": {
-            "type": "object",
-            "properties": {
-                "password": {
-                    "type": "string",
-                    "example": "secret123"
-                },
-                "usuario": {
-                    "type": "string",
-                    "example": "trabajador1"
-                }
-            }
-        },
-        "authusuariocontroller.LoginResponseDTO": {
-            "type": "object",
-            "properties": {
-                "empresa_id": {
-                    "type": "integer"
-                },
-                "empresa_nombre": {
-                    "type": "string"
                 },
                 "estado": {
-                    "type": "integer"
-                },
-                "fecha_corte": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "pais": {
-                    "type": "string"
-                },
-                "rol": {
-                    "type": "string"
-                },
-                "usuario": {
-                    "type": "string"
-                }
-            }
-        },
-        "authusuariocontroller.UsuarioDTO": {
-            "type": "object",
-            "properties": {
-                "empresa_id": {
-                    "type": "integer"
-                },
-                "empresa_nombre": {
-                    "type": "string"
-                },
-                "estado": {
-                    "type": "integer"
-                },
-                "fecha_corte": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "pais": {
-                    "type": "string"
-                },
-                "rol": {
-                    "type": "string"
-                },
-                "usuario": {
-                    "type": "string"
-                }
-            }
-        },
-        "clientecontroller.ActualizarClienteRequest": {
-            "type": "object",
-            "properties": {
-                "correos": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "direcciones": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/clientecontroller.DireccionClienteDTO"
-                    }
-                },
-                "foto_perfil": {
-                    "type": "string"
-                },
-                "galeria": {
-                    "type": "array",
-                    "maxItems": 2,
-                    "items": {
-                        "$ref": "#/definitions/clientecontroller.FotoClienteDTO"
-                    }
-                },
-                "identificacion": {
-                    "type": "string",
-                    "maxLength": 30,
-                    "minLength": 3
-                },
-                "nombre_completo": {
-                    "type": "string",
-                    "maxLength": 200,
-                    "minLength": 3
-                },
-                "nombre_referencia": {
-                    "type": "string",
-                    "maxLength": 30,
-                    "minLength": 2
-                },
-                "telefonos": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/clientecontroller.TelefonoClienteDTO"
-                    }
-                },
-                "tipo_identificacion_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "clientecontroller.ClienteDetalleResponseDTO": {
-            "type": "object",
-            "properties": {
-                "correos": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "direcciones": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/clientecontroller.DireccionDetalleDTO"
-                    }
-                },
-                "fecha_registro": {
-                    "type": "string"
-                },
-                "foto_cliente": {
-                    "type": "string"
-                },
-                "fotos": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/clientecontroller.FotoDetalleDTO"
-                    }
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "identificacion": {
-                    "type": "string"
-                },
-                "nombre_completo": {
-                    "type": "string"
-                },
-                "nombre_referencia": {
-                    "type": "string"
-                },
-                "telefonos": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/clientecontroller.TelefonoDetalleDTO"
-                    }
-                },
-                "tipo_documento": {
-                    "type": "string"
-                }
-            }
-        },
-        "clientecontroller.ClienteListaJSON": {
-            "type": "object",
-            "properties": {
-                "foto_cliente": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "identificacion": {
-                    "type": "string"
-                },
-                "nombre_completo": {
-                    "type": "string"
-                },
-                "tipo_documento": {
-                    "type": "string"
-                }
-            }
-        },
-        "clientecontroller.DireccionClienteDTO": {
-            "type": "object",
-            "required": [
-                "direccion",
-                "lat",
-                "lng",
-                "tipo_direccion_id"
-            ],
-            "properties": {
-                "direccion": {
-                    "type": "string",
-                    "maxLength": 255,
-                    "minLength": 2
-                },
-                "lat": {
-                    "type": "number"
-                },
-                "lng": {
-                    "type": "number"
-                },
-                "principal": {
                     "type": "boolean"
                 },
-                "referencia": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "tipo_direccion_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "clientecontroller.DireccionDetalleDTO": {
-            "type": "object",
-            "properties": {
-                "direccion": {
-                    "type": "string"
-                },
-                "icono": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "lat": {
-                    "type": "number"
-                },
-                "lng": {
-                    "type": "number"
-                },
-                "principal": {
-                    "type": "boolean"
-                },
-                "referencia": {
-                    "type": "string"
-                },
-                "tipo": {
-                    "type": "string"
-                }
-            }
-        },
-        "clientecontroller.EliminarFotosRequestDTO": {
-            "type": "object",
-            "required": [
-                "ids"
-            ],
-            "properties": {
-                "ids": {
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                        "type": "integer"
-                    }
-                }
-            }
-        },
-        "clientecontroller.EliminarVideosRequestDTO": {
-            "type": "object",
-            "required": [
-                "ids"
-            ],
-            "properties": {
-                "ids": {
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                        "type": "integer"
-                    }
-                }
-            }
-        },
-        "clientecontroller.FotoClienteDTO": {
-            "type": "object",
-            "required": [
-                "key"
-            ],
-            "properties": {
-                "descripcion": {
-                    "type": "string",
-                    "maxLength": 255
-                },
-                "key": {
-                    "type": "string"
-                }
-            }
-        },
-        "clientecontroller.FotoDetalleDTO": {
-            "type": "object",
-            "properties": {
-                "descripcion": {
-                    "type": "string"
-                },
-                "foto": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "clientecontroller.PaginatedClientesResponseJSON": {
-            "type": "object",
-            "properties": {
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/clientecontroller.ClienteListaJSON"
-                    }
-                },
-                "pagination": {
-                    "$ref": "#/definitions/clientecontroller.PaginationMetadataJSON"
-                }
-            }
-        },
-        "clientecontroller.PaginatedVideosResponseJSON": {
-            "type": "object",
-            "properties": {
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/clientecontroller.VideoClienteJSON"
-                    }
-                },
-                "pagination": {
-                    "$ref": "#/definitions/clientecontroller.PaginationMetadataJSON"
-                }
-            }
-        },
-        "clientecontroller.PaginationMetadataJSON": {
-            "type": "object",
-            "properties": {
-                "current_page": {
-                    "type": "integer"
-                },
-                "page_size": {
-                    "type": "integer"
-                },
-                "total_items": {
-                    "type": "integer"
-                },
-                "total_pages": {
-                    "type": "integer"
-                }
-            }
-        },
-        "clientecontroller.RegistrarClienteRequest": {
-            "type": "object",
-            "required": [
-                "direcciones",
-                "foto_perfil",
-                "identificacion",
-                "nombre_completo",
-                "tipo_identificacion_id"
-            ],
-            "properties": {
-                "correos": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "direcciones": {
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                        "$ref": "#/definitions/clientecontroller.DireccionClienteDTO"
-                    }
-                },
-                "foto_perfil": {
-                    "type": "string"
-                },
-                "galeria": {
-                    "type": "array",
-                    "maxItems": 2,
-                    "items": {
-                        "$ref": "#/definitions/clientecontroller.FotoClienteDTO"
-                    }
-                },
-                "identificacion": {
-                    "type": "string",
-                    "maxLength": 30,
-                    "minLength": 3
-                },
-                "nombre_completo": {
-                    "type": "string",
-                    "maxLength": 200,
-                    "minLength": 3
-                },
-                "nombre_referencia": {
-                    "type": "string",
-                    "maxLength": 30,
-                    "minLength": 2
-                },
-                "ruta_id": {
-                    "type": "integer"
-                },
-                "telefonos": {
-                    "type": "array",
-                    "minItems": 1,
-                    "items": {
-                        "$ref": "#/definitions/clientecontroller.TelefonoClienteDTO"
-                    }
-                },
-                "tipo_identificacion_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "clientecontroller.RegistrarClienteResponse": {
-            "type": "object",
-            "properties": {
-                "asignado_a_ruta": {
-                    "type": "boolean"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "mensaje": {
-                    "type": "string"
-                },
-                "nombre_completo": {
-                    "type": "string"
-                }
-            }
-        },
-        "clientecontroller.RegistrarVideoRequestDTO": {
-            "type": "object",
-            "required": [
-                "cliente_id",
-                "fecha",
-                "url"
-            ],
-            "properties": {
-                "cliente_id": {
-                    "type": "integer"
-                },
-                "fecha": {
-                    "description": "Formato YYYY-MM-DD",
-                    "type": "string"
-                },
-                "url": {
-                    "type": "string"
-                }
-            }
-        },
-        "clientecontroller.TelefonoClienteDTO": {
-            "type": "object",
-            "required": [
-                "telefono",
-                "tipo_telefono_id"
-            ],
-            "properties": {
-                "permitir_llamada": {
-                    "type": "boolean"
-                },
-                "permitir_whatsapp": {
-                    "type": "boolean"
-                },
-                "principal": {
-                    "type": "boolean"
-                },
-                "telefono": {
-                    "type": "string"
-                },
-                "tipo_telefono_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "clientecontroller.TelefonoDetalleDTO": {
-            "type": "object",
-            "properties": {
-                "icono": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "permitir_llamada": {
-                    "type": "boolean"
-                },
-                "permitir_whatsapp": {
-                    "type": "boolean"
-                },
-                "principal": {
-                    "type": "boolean"
-                },
-                "telefono": {
-                    "type": "string"
-                },
-                "tipo": {
-                    "type": "string"
-                }
-            }
-        },
-        "clientecontroller.VideoClienteJSON": {
-            "type": "object",
-            "properties": {
-                "fecha": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "url": {
-                    "type": "string"
-                }
-            }
-        },
-        "domain.ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "string"
-                }
-            }
-        },
-        "domain.MessageResponse": {
-            "type": "object",
-            "properties": {
-                "mensaje": {
-                    "type": "string"
-                }
-            }
-        },
-        "empresacontroller.ActualizarEmpresaRequestDTO": {
-            "type": "object",
-            "required": [
-                "id"
-            ],
-            "properties": {
-                "dias_corte": {
-                    "type": "integer"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "nombre": {
-                    "type": "string"
-                },
-                "pais": {
-                    "type": "string"
-                }
-            }
-        },
-        "empresacontroller.AgregarRutaRequestDTO": {
-            "type": "object",
-            "properties": {
-                "administrador": {
-                    "$ref": "#/definitions/empresacontroller.UsuarioOnboardingDTO"
-                },
-                "empresa_id": {
-                    "type": "integer"
-                },
-                "trabajadores": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/empresacontroller.UsuarioOnboardingDTO"
-                    }
-                }
-            }
-        },
-        "empresacontroller.AgregarRutaResponseDTO": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                },
-                "ruta_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "empresacontroller.ConfigurarEmpresaRequestDTO": {
-            "type": "object",
-            "required": [
-                "administrador",
-                "dias_corte",
-                "empresa_nombre",
-                "pais",
-                "trabajadores"
-            ],
-            "properties": {
-                "administrador": {
-                    "$ref": "#/definitions/empresacontroller.UsuarioOnboardingDTO"
-                },
-                "dias_corte": {
-                    "type": "integer",
-                    "minimum": 1
-                },
-                "empresa_nombre": {
-                    "type": "string"
-                },
-                "pais": {
-                    "type": "string"
-                },
-                "trabajadores": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/empresacontroller.UsuarioOnboardingDTO"
-                    }
-                }
-            }
-        },
-        "empresacontroller.ConfigurarEmpresaResponseDTO": {
-            "type": "object",
-            "properties": {
-                "empresa_id": {
-                    "type": "integer"
-                },
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "empresacontroller.DashboardStatsDTO": {
-            "type": "object",
-            "properties": {
-                "total_empresas": {
-                    "type": "integer"
-                },
-                "total_rutas": {
-                    "type": "integer"
-                },
-                "total_usuarios": {
-                    "type": "integer"
-                }
-            }
-        },
-        "empresacontroller.EliminarEmpresaResponseDTO": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "empresacontroller.EmpresaDetalladaDTO": {
-            "type": "object",
-            "properties": {
-                "fecha_corte": {
-                    "type": "string"
-                },
-                "fecha_registro": {
-                    "type": "string"
-                },
-                "id": {
+                "maximo_usuarios": {
                     "type": "integer"
                 },
                 "nombre": {
@@ -3062,475 +594,106 @@ const docTemplate = `{
                 "pais": {
                     "type": "string"
                 },
-                "usuarios": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/empresacontroller.UsuarioRelacionadoDTO"
-                    }
+                "vencimiento": {
+                    "type": "string"
                 }
             }
         },
-        "empresacontroller.EmpresaJSON": {
+        "controller.adminCredencialesRequest": {
             "type": "object",
             "properties": {
-                "fecha_corte": {
-                    "type": "string"
-                },
-                "fecha_registro": {
+                "contrasena": {
                     "type": "string"
                 },
                 "id": {
                     "type": "integer"
                 },
-                "nombre": {
-                    "type": "string"
-                },
-                "pais": {
+                "usuario": {
                     "type": "string"
                 }
             }
         },
-        "empresacontroller.EmpresaRutasDetalladasResponseDTO": {
+        "controller.adminCredencialesResponse": {
             "type": "object",
             "properties": {
-                "admins_generales": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/empresacontroller.UsuarioAsignadoDTO"
-                    }
+                "id": {
+                    "type": "integer"
                 },
-                "rutas": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/empresacontroller.RutaDetalladaDTO"
-                    }
-                },
-                "supervisor": {
-                    "$ref": "#/definitions/empresacontroller.UsuarioAsignadoDTO"
+                "usuario": {
+                    "type": "string"
                 }
             }
         },
-        "empresacontroller.PaginatedEmpresasResponseDTO": {
+        "controller.adminLoginRequest": {
             "type": "object",
             "properties": {
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/empresacontroller.EmpresaDetalladaDTO"
+                "contrasena": {
+                    "type": "string"
+                },
+                "usuario": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.adminLoginResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.adminProfileResponse": {
+            "type": "object",
+            "properties": {
+                "activo": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "usuario": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.crearEmpresaRequest": {
+            "type": "object",
+            "properties": {
+                "empresa": {
+                    "type": "object",
+                    "properties": {
+                        "moneda": {
+                            "type": "string"
+                        },
+                        "nombre": {
+                            "type": "string"
+                        },
+                        "pais": {
+                            "type": "string"
+                        },
+                        "suscripcion_dias": {
+                            "type": "integer"
+                        }
                     }
                 },
-                "pagination": {
-                    "$ref": "#/definitions/empresacontroller.PaginationMetadataDTO"
-                }
-            }
-        },
-        "empresacontroller.PaginatedEmpresasSimpleResponseDTO": {
-            "type": "object",
-            "properties": {
-                "items": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/empresacontroller.EmpresaJSON"
+                "usuario": {
+                    "type": "object",
+                    "properties": {
+                        "password": {
+                            "type": "string"
+                        },
+                        "usuario": {
+                            "type": "string"
+                        }
                     }
-                },
-                "pagination": {
-                    "$ref": "#/definitions/empresacontroller.PaginationMetadataDTO"
                 }
             }
         },
-        "empresacontroller.PaginationMetadataDTO": {
-            "type": "object",
-            "properties": {
-                "current_page": {
-                    "type": "integer"
-                },
-                "page_size": {
-                    "type": "integer"
-                },
-                "total_items": {
-                    "type": "integer"
-                },
-                "total_pages": {
-                    "type": "integer"
-                }
-            }
-        },
-        "empresacontroller.RegistrarAdminGeneralRequestDTO": {
+        "controller.crearEmpresaResponse": {
             "type": "object",
             "properties": {
                 "empresa_id": {
-                    "type": "integer"
-                },
-                "usuario": {
-                    "$ref": "#/definitions/empresacontroller.UsuarioOnboardingDTO"
-                }
-            }
-        },
-        "empresacontroller.RegistrarSupervisorRequestDTO": {
-            "type": "object",
-            "properties": {
-                "empresa_id": {
-                    "type": "integer"
-                },
-                "usuario": {
-                    "$ref": "#/definitions/empresacontroller.UsuarioOnboardingDTO"
-                }
-            }
-        },
-        "empresacontroller.RutaDetalladaDTO": {
-            "type": "object",
-            "properties": {
-                "administradores": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/empresacontroller.UsuarioAsignadoDTO"
-                    }
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "numero_ruta": {
-                    "type": "string"
-                },
-                "trabajadores": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/empresacontroller.UsuarioAsignadoDTO"
-                    }
-                }
-            }
-        },
-        "empresacontroller.UsuarioAsignadoDTO": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "usuario": {
-                    "type": "string"
-                }
-            }
-        },
-        "empresacontroller.UsuarioOnboardingDTO": {
-            "type": "object",
-            "required": [
-                "pass",
-                "usuario"
-            ],
-            "properties": {
-                "pass": {
-                    "type": "string",
-                    "minLength": 6
-                },
-                "usuario": {
-                    "type": "string",
-                    "minLength": 4
-                }
-            }
-        },
-        "empresacontroller.UsuarioRelacionadoDTO": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "rol": {
-                    "type": "string"
-                },
-                "usuario": {
-                    "type": "string"
-                }
-            }
-        },
-        "gastocontroller.GastoResponse": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "mensaje": {
-                    "type": "string"
-                },
-                "nuevo_saldo": {
-                    "type": "number"
-                }
-            }
-        },
-        "gastocontroller.RegistrarGastoRequest": {
-            "type": "object",
-            "required": [
-                "descripcion",
-                "id_tipo_pago",
-                "monto",
-                "ruta_id"
-            ],
-            "properties": {
-                "descripcion": {
-                    "type": "string"
-                },
-                "fecha": {
-                    "type": "string"
-                },
-                "fotos": {
-                    "type": "array",
-                    "maxItems": 2,
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "id_tipo_pago": {
-                    "type": "integer"
-                },
-                "monto": {
-                    "type": "number"
-                },
-                "ruta_id": {
-                    "type": "integer"
-                },
-                "video": {
-                    "type": "string"
-                }
-            }
-        },
-        "gestionusuariocontroller.ActualizarUsuarioRequestDTO": {
-            "type": "object",
-            "properties": {
-                "pass": {
-                    "type": "string",
-                    "example": "secreto_nuevo"
-                },
-                "usuario": {
-                    "type": "string",
-                    "example": "admin_nuevo"
-                }
-            }
-        },
-        "gestionusuariocontroller.ActualizarUsuarioResponseDTO": {
-            "type": "object",
-            "properties": {
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "maestrocontroller.MaestroDTO": {
-            "type": "object",
-            "properties": {
-                "icono": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "nombre": {
-                    "type": "string"
-                }
-            }
-        },
-        "paymentcontroller.PaymentMethodDTO": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "nombre": {
-                    "type": "string"
-                }
-            }
-        },
-        "prestamocontroller.CotizarPrestamoRequest": {
-            "type": "object",
-            "required": [
-                "cuotas",
-                "monto_prestar",
-                "tasa_interes",
-                "tipo_periodo",
-                "valor_salto"
-            ],
-            "properties": {
-                "cuotas": {
-                    "type": "integer"
-                },
-                "fecha_inicio_cuotas": {
-                    "type": "string"
-                },
-                "monto_prestar": {
-                    "type": "number"
-                },
-                "tasa_interes": {
-                    "type": "number",
-                    "minimum": 0
-                },
-                "tipo_periodo": {
-                    "type": "string",
-                    "enum": [
-                        "dias",
-                        "meses"
-                    ]
-                },
-                "valor_salto": {
-                    "type": "integer"
-                }
-            }
-        },
-        "prestamocontroller.CotizarPrestamoResponse": {
-            "type": "object",
-            "properties": {
-                "cuotas": {
-                    "type": "integer"
-                },
-                "detalle": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/prestamocontroller.CuotaDetalleDTO"
-                    }
-                },
-                "monto_cuota": {
-                    "type": "number"
-                },
-                "monto_prestar": {
-                    "type": "number"
-                },
-                "monto_total": {
-                    "type": "number"
-                },
-                "tasa_interes": {
-                    "type": "number"
-                }
-            }
-        },
-        "prestamocontroller.CuotaDetalleDTO": {
-            "type": "object",
-            "properties": {
-                "fecha_pago": {
-                    "type": "string"
-                },
-                "interes_cuota": {
-                    "type": "number"
-                },
-                "monto_cuota": {
-                    "type": "number"
-                },
-                "numero_cuota": {
-                    "type": "integer"
-                }
-            }
-        },
-        "prestamocontroller.MetodoPagoRequest": {
-            "type": "object",
-            "required": [
-                "monto",
-                "tipo_pago_id"
-            ],
-            "properties": {
-                "monto": {
-                    "type": "number"
-                },
-                "tipo_pago_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "prestamocontroller.RegistrarPrestamoRequest": {
-            "type": "object",
-            "required": [
-                "cliente_id",
-                "cuotas",
-                "fecha_prestamo",
-                "pagos",
-                "ruta_id",
-                "tasa_interes",
-                "tipo_periodo",
-                "valor_salto"
-            ],
-            "properties": {
-                "cliente_id": {
-                    "type": "integer"
-                },
-                "cuotas": {
-                    "type": "integer"
-                },
-                "descripcion": {
-                    "type": "string"
-                },
-                "fecha_inicio_cuotas": {
-                    "type": "string"
-                },
-                "fecha_prestamo": {
-                    "type": "string"
-                },
-                "id_tipo_pago_tercero": {
-                    "type": "integer"
-                },
-                "monto_pago_tercero": {
-                    "type": "number"
-                },
-                "pagos": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/prestamocontroller.MetodoPagoRequest"
-                    }
-                },
-                "ruta_id": {
-                    "type": "integer"
-                },
-                "tasa_interes": {
-                    "type": "number",
-                    "minimum": 0
-                },
-                "tipo_periodo": {
-                    "type": "string",
-                    "enum": [
-                        "dias",
-                        "meses"
-                    ]
-                },
-                "valor_salto": {
-                    "type": "integer"
-                }
-            }
-        },
-        "prestamocontroller.RegistrarPrestamoResponse": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
-                },
-                "mensaje": {
-                    "type": "string"
-                },
-                "nuevo_saldo": {
-                    "type": "number"
-                }
-            }
-        },
-        "usuariocontroller.AporteBaseRequestDTO": {
-            "type": "object",
-            "required": [
-                "id_tipo_pago",
-                "monto",
-                "ruta_id"
-            ],
-            "properties": {
-                "id_tipo_pago": {
-                    "type": "integer"
-                },
-                "monto": {
-                    "type": "number"
-                },
-                "ruta_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "usuariocontroller.AsignarRutaRequestDTO": {
-            "type": "object",
-            "required": [
-                "ruta_id",
-                "usuario_id"
-            ],
-            "properties": {
-                "ruta_id": {
                     "type": "integer"
                 },
                 "usuario_id": {
@@ -3538,94 +701,36 @@ const docTemplate = `{
                 }
             }
         },
-        "usuariocontroller.CajaBaseRequestDTO": {
-            "type": "object",
-            "required": [
-                "id_tipo_pago",
-                "monto",
-                "ruta_id"
-            ],
-            "properties": {
-                "id_tipo_pago": {
-                    "type": "integer"
-                },
-                "monto": {
-                    "type": "number"
-                },
-                "ruta_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "usuariocontroller.CajaResumenResponseDTO": {
+        "controller.empresaDetalleResponse": {
             "type": "object",
             "properties": {
+                "creado_en": {
+                    "type": "string"
+                },
                 "estado": {
                     "type": "boolean"
                 },
                 "id": {
                     "type": "integer"
                 },
-                "ruta_id": {
+                "maximo_usuarios": {
                     "type": "integer"
                 },
-                "saldo_actual": {
-                    "type": "number"
-                }
-            }
-        },
-        "usuariocontroller.ResumenGestionDTO": {
-            "type": "object",
-            "properties": {
-                "rutas": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/usuariocontroller.RutaUsuariosResponseDTO"
-                    }
+                "moneda": {
+                    "type": "string"
                 },
-                "supervisores": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/usuariocontroller.SupervisorGestionDTO"
-                    }
-                }
-            }
-        },
-        "usuariocontroller.RutaAccesoDTO": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer"
+                "nombre": {
+                    "type": "string"
                 },
-                "numero_ruta": {
+                "pais": {
+                    "type": "string"
+                },
+                "vencimiento": {
                     "type": "string"
                 }
             }
         },
-        "usuariocontroller.RutaUsuariosResponseDTO": {
-            "type": "object",
-            "properties": {
-                "administradores": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/usuariocontroller.UsuarioAsignadoDTO"
-                    }
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "numero_ruta": {
-                    "type": "string"
-                },
-                "trabajadores": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/usuariocontroller.UsuarioAsignadoDTO"
-                    }
-                }
-            }
-        },
-        "usuariocontroller.SupervisorGestionDTO": {
+        "controller.empresaListItemResponse": {
             "type": "object",
             "properties": {
                 "estado": {
@@ -3634,93 +739,155 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "rutas_asignadas": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/usuariocontroller.RutaAccesoDTO"
-                    }
+                "nombre": {
+                    "type": "string"
                 },
-                "rutas_disponibles": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/usuariocontroller.RutaAccesoDTO"
-                    }
+                "pais": {
+                    "type": "string"
                 },
-                "usuario": {
+                "vencimiento": {
                     "type": "string"
                 }
             }
         },
-        "usuariocontroller.UpdateCajaStatusRequestDTO": {
+        "controller.empresaResponse": {
             "type": "object",
-            "required": [
-                "ruta_id"
-            ],
             "properties": {
-                "estado": {
-                    "description": "true = activa, false = bloqueada",
-                    "type": "boolean"
+                "creado_en": {
+                    "type": "string"
                 },
-                "ruta_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "usuariocontroller.UpdatePasswordRequestDTO": {
-            "type": "object",
-            "required": [
-                "nueva_pass",
-                "usuario_id"
-            ],
-            "properties": {
-                "nueva_pass": {
-                    "type": "string",
-                    "minLength": 6
-                },
-                "usuario_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "usuariocontroller.UpdateStatusRequestDTO": {
-            "type": "object",
-            "required": [
-                "usuario_id"
-            ],
-            "properties": {
-                "estado": {
-                    "type": "boolean"
-                },
-                "usuario_id": {
-                    "type": "integer"
-                }
-            }
-        },
-        "usuariocontroller.UsuarioAsignadoDTO": {
-            "type": "object",
-            "properties": {
                 "estado": {
                     "type": "boolean"
                 },
                 "id": {
                     "type": "integer"
                 },
-                "usuario": {
+                "maximo_usuarios": {
+                    "type": "integer"
+                },
+                "moneda": {
+                    "type": "string"
+                },
+                "nombre": {
+                    "type": "string"
+                },
+                "pais": {
+                    "type": "string"
+                },
+                "vencimiento": {
                     "type": "string"
                 }
             }
+        },
+        "controller.errorResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.listadoEmpresasResponse": {
+            "type": "object",
+            "properties": {
+                "datos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/controller.empresaListItemResponse"
+                    }
+                },
+                "paginacion": {
+                    "$ref": "#/definitions/controller.paginadorResponse"
+                }
+            }
+        },
+        "controller.monedaRegionResponse": {
+            "type": "object",
+            "properties": {
+                "codigo": {
+                    "type": "string"
+                },
+                "nombre": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.monedaRenderResponse": {
+            "type": "object",
+            "properties": {
+                "currency": {
+                    "type": "string"
+                },
+                "maximum_fraction_digits": {
+                    "type": "integer"
+                },
+                "metodo": {
+                    "type": "string"
+                },
+                "minimum_fraction_digits": {
+                    "type": "integer"
+                }
+            }
+        },
+        "controller.monedaResponse": {
+            "type": "object",
+            "properties": {
+                "codigo": {
+                    "type": "string"
+                },
+                "decimales": {
+                    "type": "integer"
+                },
+                "incremento": {
+                    "type": "integer"
+                },
+                "regiones": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/controller.monedaRegionResponse"
+                    }
+                },
+                "render": {
+                    "$ref": "#/definitions/controller.monedaRenderResponse"
+                }
+            }
+        },
+        "controller.paginadorResponse": {
+            "type": "object",
+            "properties": {
+                "pagina": {
+                    "type": "integer"
+                },
+                "paginas": {
+                    "type": "integer"
+                },
+                "por_pagina": {
+                    "type": "integer"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Token JWT en formato: Bearer \u003ctoken\u003e",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
         }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "1.0",
 	Host:             "",
-	BasePath:         "",
-	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	BasePath:         "/",
+	Schemes:          []string{"http", "https"},
+	Title:            "Rentals Go API",
+	Description:      "API para autenticacion, administracion de empresas y catalogos de soporte para el frontend de Rentals Go.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

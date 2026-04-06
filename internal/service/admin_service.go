@@ -17,6 +17,7 @@ var (
 	ErrMonedaInvalida       = errors.New("moneda inválida")
 	ErrUsuarioAdminInvalido = errors.New("usuario de admin inválido")
 	ErrContrasenaInvalida   = errors.New("contraseña inválida")
+	ErrEmpresaConDatos      = errors.New("no se puede eliminar la empresa porque tiene registros asociados (usuarios, clientes, etc)")
 )
 
 type AdminService struct {
@@ -128,7 +129,18 @@ func (s *AdminService) ActualizarEmpresa(ctx context.Context, emp *domain.Empres
 }
 
 func (s *AdminService) EliminarEmpresa(ctx context.Context, id int) error {
-	return s.empresaRepo.Eliminar(ctx, id)
+	_, err := s.empresaRepo.BuscarPorID(ctx, id)
+	if err != nil {
+		return err // Ya sea not found u otro
+	}
+	err = s.empresaRepo.Eliminar(ctx, id)
+	if err != nil {
+		if strings.Contains(err.Error(), "ForeignKey") || strings.Contains(err.Error(), "foreign key") || strings.Contains(err.Error(), "1217") || strings.Contains(err.Error(), "1451") {
+			return ErrEmpresaConDatos
+		}
+		return err
+	}
+	return nil
 }
 
 func (s *AdminService) ActualizarCredenciales(ctx context.Context, adminID int, usuarioNuevo, contrasenaNueva string) (*domain.Admin, error) {

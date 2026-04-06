@@ -2,13 +2,17 @@ basePath: /
 definitions:
   controller.actualizarEmpresaRequest:
     properties:
+      dias_vencimiento:
+        type: integer
       estado:
         type: boolean
-      moneda:
-        type: string
+      maximo_usuarios:
+        type: integer
       nombre:
         type: string
       pais:
+        type: string
+      vencimiento:
         type: string
     type: object
   controller.adminCredencialesRequest:
@@ -88,8 +92,6 @@ definitions:
         type: integer
       moneda:
         type: string
-      moneda_info:
-        $ref: '#/definitions/controller.monedaResponse'
       nombre:
         type: string
       pais:
@@ -99,8 +101,6 @@ definitions:
     type: object
   controller.empresaListItemResponse:
     properties:
-      creado_en:
-        type: string
       estado:
         type: boolean
       id:
@@ -124,8 +124,6 @@ definitions:
         type: integer
       moneda:
         type: string
-      moneda_info:
-        $ref: '#/definitions/controller.monedaResponse'
       nombre:
         type: string
       pais:
@@ -371,7 +369,8 @@ paths:
     put:
       consumes:
       - application/json
-      description: Actualiza los datos generales de una empresa.
+      description: Actualiza los datos de una empresa de forma parcial. Solo se actualizarán
+        los campos enviados en el body.
       parameters:
       - description: ID de empresa
         in: path
@@ -410,8 +409,8 @@ paths:
       - admin
   /admin/empresas/{id}/detalle:
     get:
-      description: 'Devuelve todos los datos de una empresa: info general, moneda
-        con render, suscripcion, estado y fechas.'
+      description: 'Devuelve todos los datos de una empresa: info general, suscripcion,
+        estado y fechas.'
       parameters:
       - description: ID de empresa
         in: path

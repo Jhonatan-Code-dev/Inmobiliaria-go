@@ -4,7 +4,6 @@ import (
 	"time"
 
 	"rentals-go/internal/domain"
-	"rentals-go/internal/pkg/moneda"
 )
 
 type errorResponse struct {
@@ -12,15 +11,14 @@ type errorResponse struct {
 }
 
 type empresaResponse struct {
-	ID             int             `json:"id"`
-	Nombre         string          `json:"nombre"`
-	Pais           string          `json:"pais,omitempty"`
-	Moneda         string          `json:"moneda"`
-	MonedaInfo     *monedaResponse `json:"moneda_info,omitempty"`
-	MaximoUsuarios int             `json:"maximo_usuarios"`
-	Estado         bool            `json:"estado"`
-	Vencimiento    time.Time       `json:"vencimiento,omitempty"`
-	CreadoEn       time.Time       `json:"creado_en"`
+	ID             int       `json:"id"`
+	Nombre         string    `json:"nombre"`
+	Pais           string    `json:"pais,omitempty"`
+	Moneda         string    `json:"moneda"`
+	MaximoUsuarios int       `json:"maximo_usuarios"`
+	Estado         bool      `json:"estado"`
+	Vencimiento    time.Time `json:"vencimiento,omitempty"`
+	CreadoEn       time.Time `json:"creado_en"`
 }
 
 type empresaListItemResponse struct {
@@ -29,7 +27,6 @@ type empresaListItemResponse struct {
 	Pais        string    `json:"pais,omitempty"`
 	Estado      bool      `json:"estado"`
 	Vencimiento time.Time `json:"vencimiento,omitempty"`
-	CreadoEn    time.Time `json:"creado_en"`
 }
 
 type paginadorResponse struct {
@@ -83,34 +80,18 @@ func mapEmpresaResponse(e *domain.Empresa) *empresaResponse {
 		Vencimiento:    e.Vencimiento,
 		CreadoEn:       e.CreadoEn,
 	}
-	if info, err := moneda.ObtenerInfo(e.Moneda); err == nil {
-		mapped := monedaResponse{
-			Codigo:     info.Codigo,
-			Decimales:  info.Decimales,
-			Incremento: info.Incremento,
-			Regiones:   nil, // Usually not needed in empresa detail
-			Render: monedaRenderResponse{
-				Metodo:                info.Render.Metodo,
-				Currency:              info.Render.Currency,
-				MinimumFractionDigits: info.Render.MinimumFractionDigits,
-				MaximumFractionDigits: info.Render.MaximumFractionDigits,
-			},
-		}
-		resp.MonedaInfo = &mapped
-	}
 	return resp
 }
 
 type empresaDetalleResponse struct {
-	ID             int             `json:"id"`
-	Nombre         string          `json:"nombre"`
-	Pais           string          `json:"pais,omitempty"`
-	Moneda         string          `json:"moneda"`
-	MonedaInfo     *monedaResponse `json:"moneda_info,omitempty"`
-	MaximoUsuarios int             `json:"maximo_usuarios"`
-	Estado         bool            `json:"estado"`
-	Vencimiento    time.Time       `json:"vencimiento,omitempty"`
-	CreadoEn       time.Time       `json:"creado_en"`
+	ID             int       `json:"id"`
+	Nombre         string    `json:"nombre"`
+	Pais           string    `json:"pais,omitempty"`
+	Moneda         string    `json:"moneda"`
+	MaximoUsuarios int       `json:"maximo_usuarios"`
+	Estado         bool      `json:"estado"`
+	Vencimiento    time.Time `json:"vencimiento,omitempty"`
+	CreadoEn       time.Time `json:"creado_en"`
 }
 
 func mapEmpresaDetalleResponse(e *domain.Empresa) *empresaDetalleResponse {
@@ -126,20 +107,6 @@ func mapEmpresaDetalleResponse(e *domain.Empresa) *empresaDetalleResponse {
 		Estado:         e.Estado,
 		Vencimiento:    e.Vencimiento,
 		CreadoEn:       e.CreadoEn,
-	}
-	if info, err := moneda.ObtenerInfo(e.Moneda); err == nil {
-		mapped := monedaResponse{
-			Codigo:     info.Codigo,
-			Decimales:  info.Decimales,
-			Incremento: info.Incremento,
-			Render: monedaRenderResponse{
-				Metodo:                info.Render.Metodo,
-				Currency:              info.Render.Currency,
-				MinimumFractionDigits: info.Render.MinimumFractionDigits,
-				MaximumFractionDigits: info.Render.MaximumFractionDigits,
-			},
-		}
-		resp.MonedaInfo = &mapped
 	}
 	return resp
 }

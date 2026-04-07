@@ -31,10 +31,20 @@ func main() {
 	}()
 
 	app := fiber.New()
+	origins := appDI.Config.AllowedOrigins
+	if origins == "*" {
+		// Fiber no permite "*" con AllowCredentials=true. 
+		// Si es desarrollo y se quiere permitir todo, es común usar un string vacío o manejarlo por request, 
+		// pero una forma común en este repo es listar los orígenes o dejar que el middleware maneje el "*" si credentials es false.
+		// Para soportar cookies de cualquier origen en dev, usamos un pequeño truco o listamos los más comunes.
+		origins = "http://localhost:3000,http://localhost:5173,http://localhost:8080,http://127.0.0.1:3000,http://127.0.0.1:5173"
+	}
+
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: appDI.Config.AllowedOrigins,
-		AllowHeaders: "Origin, Content-Type, Accept, Authorization",
-		AllowMethods: "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+		AllowOrigins:     origins,
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization, X-Requested-With",
+		AllowMethods:     "GET,POST,PUT,PATCH,DELETE,OPTIONS",
+		AllowCredentials: true,
 	}))
 	routes.Register(app, appDI)
 	log.Printf("API corriendo en http://localhost:%s\n", appDI.Config.Port)

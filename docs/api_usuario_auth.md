@@ -1,24 +1,33 @@
-# Documentación de API: Autenticación de Usuarios
+# Documentación de API: Autenticación de Usuarios (Tenant)
 
-Documentación de los endpoints de autenticación y perfil para usuarios de empresas (tenants).
+Esta API permite el acceso y gestión de perfil para los usuarios pertenecientes a una empresa (Business Users). El sistema utiliza autenticación basada en JWT, que puede ser manejado mediante una **cookie HTTP-only** o el encabezado **Authorization**.
+
+## Resumen de Endpoints
+
+| Método | Endpoint | Descripción | Acceso |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/auth/login` | Iniciar sesión y obtener token/cookie. | Público |
+| `POST` | `/auth/logout` | Cerrar sesión y limpiar cookie. | Autenticado |
+| `GET` | `/me` | Obtener datos del usuario y de su empresa. | Autenticado |
 
 ---
 
 ## 1. Inicio de Sesión (Login)
 
-Permite a un usuario autenticarse en el sistema. Al tener éxito, el servidor devuelve un token JWT y establece una cookie de sesión `token_usuario` (HTTP-only).
+Autentica a un usuario y establece una sesión.
 
-- **Endpoint:** `POST /auth/login`
-- **Autenticación:** Ninguna (Público).
+- **URL:** `/auth/login`
+- **Método:** `POST`
+- **Headers:** `Content-Type: application/json`
 
-### Request Body
+### Body (JSON)
 
 | Campo | Tipo | Requerido | Descripción |
 | :--- | :--- | :--- | :--- |
-| `usuario` | string | **Sí** | Nombre de usuario. |
-| `contrasena` | string | **Sí** | Contraseña del usuario. |
+| `usuario` | string | Sí | Nombre de usuario (login). |
+| `contrasena` | string | Sí | Contraseña de acceso. |
 
-### Ejemplo Request
+**Ejemplo de Request:**
 ```json
 {
   "usuario": "yona_admin",
@@ -26,7 +35,11 @@ Permite a un usuario autenticarse en el sistema. Al tener éxito, el servidor de
 }
 ```
 
-### Response (200 OK)
+### Respuestas
+
+#### Success (200 OK)
+Devuelve el token JWT y los datos básicos del usuario y su empresa. Se establece la cookie `token_usuario` automáticamente.
+
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
@@ -48,20 +61,28 @@ Permite a un usuario autenticarse en el sistema. Al tener éxito, el servidor de
 }
 ```
 
-### Notas del Login
-1. **Cookie:** El servidor envía una cookie `token_usuario`. El frontend puede usarla automáticamente si el navegador está configurado para enviar cookies en las peticiones (CORS con `withCredentials: true`).
-2. **Token:** Se devuelve el token explícitamente para aplicaciones que prefieran guardarlo en `localStorage` o enviarlo en el header `Authorization: Bearer <token>`.
+#### Unauthorized (401 Unauthorized)
+Credenciales incorrectas o usuario inexistente.
+
+```json
+{
+  "message": "credenciales inválidas"
+}
+```
 
 ---
 
 ## 2. Cerrar Sesión (Logout)
 
-Invalida la sesión del usuario eliminando la cookie `token_usuario`.
+Invalida la sesión del usuario eliminando la cookie del navegador.
 
-- **Endpoint:** `POST /auth/logout`
-- **Autenticación:** Ninguna (Se recomienda estar autenticado, pero limpia la cookie de todos modos).
+- **URL:** `/auth/logout`
+- **Método:** `POST`
+- **Acceso:** Se recomienda estar autenticado.
 
-### Response (200 OK)
+### Respuestas
+
+#### Success (200 OK)
 ```json
 {
   "message": "sesión cerrada"
@@ -72,20 +93,18 @@ Invalida la sesión del usuario eliminando la cookie `token_usuario`.
 
 ## 3. Obtener Perfil (Me)
 
-Retorna la información del usuario actualmente autenticado basado en el token o cookie enviada.
+Retorna la información del usuario actualmente autenticado y los datos de su empresa.
 
-- **Endpoint:** `GET /me`
-- **Autenticación:** Requerida (Bearer Token o Cookie `token_usuario`).
+- **URL:** `/me`
+- **Método:** `GET`
+- **Headers:** `Authorization: Bearer <token>` (opcional si se usa cookie)
 
-### Ejemplo Request
-```
-GET /me
-Authorization: Bearer <token>
-```
+### Respuestas
 
-### Response (200 OK)
+#### Success (200 OK)
 ```json
 {
+  "token": "",
   "user": {
     "id": 12,
     "usuario": "yona_admin",
@@ -103,8 +122,11 @@ Authorization: Bearer <token>
   }
 }
 ```
+*Nota: El campo `token` se devuelve vacío en este endpoint.*
 
-### Response (401 Unauthorized)
+#### Unauthorized (401 Unauthorized)
+Token inválido, expirado o falta de sesión.
+
 ```json
 {
   "message": "Unauthorized"
@@ -113,21 +135,33 @@ Authorization: Bearer <token>
 
 ---
 
-## Resumen de Estructuras
+## Detalles de Estructuras
 
 ### Objeto `user`
 | Campo | Tipo | Descripción |
 | :--- | :--- | :--- |
 | `id` | number | ID único del usuario. |
-| `usuario` | string | Nombre de usuario (login). |
-| `empresa_id` | number | ID de la empresa a la que pertenece. |
+| `usuario` | string | Nombre de usuario. |
+| `empresa_id` | number | ID de la empresa vinculada. |
 
 ### Objeto `empresa`
 | Campo | Tipo | Descripción |
 | :--- | :--- | :--- |
 | `id` | number | ID único de la empresa. |
-| `nombre` | string | Nombre comercial de la empresa. |
-| `pais` | string | Código ISO del país. |
-| `moneda` | string | Código ISO de la moneda (PEN, USD, etc). |
-| `estado` | boolean | Estado de la cuenta de la empresa. |
-| `vencimiento` | string | Fecha de expiración de la suscripción (ISO 8601 UTC). |
+| `nombre` | string | Nombre de la empresa. |
+| `pais` | string | Código ISO de país (ej. PE). |
+| `moneda` | string | Código ISO de la moneda principal (ej. PEN). |
+| `maximo_usuarios` | number | Límite de usuarios permitidos para esta empresa. |
+| `estado` | boolean | `true` si la empresa está activa. |
+| `vencimiento` | string | Fecha de expiración de la suscripción (ISO 8601). |
+| `creado_en` | string | Fecha de registro de la empresa. |
+
+---
+
+## Notas de Implementación (Frontend)
+
+1. **Manejo de Autenticación:** 
+   - El sistema soporta **Cookies** (recomendado para Web) y **Bearer Token** (recomendado para Mobile).
+   - Si usas cookies, asegúrate de configurar `withCredentials: true` en tus peticiones de Axios o Fetch.
+2. **Timezones:** Todas las fechas se entregan en formato UTC (Z). Se recomienda convertirlas a la zona horaria local del dispositivo para visualización.
+3. **CORS:** Las peticiones deben provenir de orígenes permitidos configurados en el servidor.

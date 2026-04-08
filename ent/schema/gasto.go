@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
@@ -13,7 +14,7 @@ type Gasto struct {
 }
 
 func (Gasto) Mixin() []ent.Mixin {
-	return []ent.Mixin{AuditMixin{}}
+	return nil
 }
 
 func (Gasto) Annotations() []schema.Annotation {
@@ -25,24 +26,13 @@ func (Gasto) Annotations() []schema.Annotation {
 func (Gasto) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int("empresa_id"),
-		field.Int("propiedad_id").Optional().Nillable(),
-		field.Int("unidad_id").Optional().Nillable(),
-		field.Enum("categoria").
-			Values("agua", "luz", "internet", "mantenimiento", "limpieza", "impuestos", "reparacion", "otro").
-			Default("otro"),
+		field.Float("monto").
+			SchemaType(map[string]string{
+				dialect.MySQL: "decimal(12,2)",
+			}),
+		field.Time("fecha"),
+		field.Int("tipo_pago_id"),
 		field.String("descripcion").NotEmpty().MaxLen(255),
-		field.Time("fecha_gasto"),
-		codigoMoneda("moneda", "PEN"),
-		montoExacto("monto"),
-		field.Enum("metodo_pago").
-			Values("efectivo", "transferencia", "yape", "plin", "tarjeta", "deposito", "otro").
-			Default("efectivo"),
-		field.String("referencia").Optional().Nillable().MaxLen(120),
-		field.String("pagado_a").Optional().Nillable().MaxLen(150),
-		field.Enum("estado").
-			Values("pendiente", "pagado", "anulado").
-			Default("pagado"),
-		field.String("notas").Optional().Nillable().MaxLen(1000),
 	}
 }
 
@@ -53,13 +43,10 @@ func (Gasto) Edges() []ent.Edge {
 			Field("empresa_id").
 			Required().
 			Unique(),
-		edge.From("propiedad", Propiedad.Type).
+		edge.From("tipo_pago", TipoPago.Type).
 			Ref("gastos").
-			Field("propiedad_id").
-			Unique(),
-		edge.From("unidad", Unidad.Type).
-			Ref("gastos").
-			Field("unidad_id").
+			Field("tipo_pago_id").
+			Required().
 			Unique(),
 		edge.To("movimientos_caja", MovimientoCaja.Type),
 	}

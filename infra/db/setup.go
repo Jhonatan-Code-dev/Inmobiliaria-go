@@ -23,6 +23,9 @@ func Setup(dsn string) (*ent.Client, error) {
 	if err := seedAdmin(client); err != nil {
 		return nil, err
 	}
+	if err := SeedTiposPago(client); err != nil {
+		return nil, err
+	}
 
 	return client, nil
 }

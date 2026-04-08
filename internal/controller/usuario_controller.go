@@ -15,9 +15,10 @@ type usuarioLoginRequest struct {
 }
 
 type usuarioLoginResponse struct {
-	Token string           `json:"token"`
-	User  usuarioResponse  `json:"user"`
-	Emp   *empresaResponse `json:"empresa,omitempty"`
+	Token     string           `json:"token"`
+	EmpresaID int              `json:"empresa_id"`
+	User      usuarioResponse  `json:"user"`
+	Emp       *empresaResponse `json:"empresa,omitempty"`
 }
 
 type UsuarioController struct {
@@ -49,7 +50,8 @@ func (h *UsuarioController) Login(c *fiber.Ctx) error {
 	}
 	c.Cookie(&fiber.Cookie{Name: "token_usuario", Value: token, HTTPOnly: true, Path: "/"})
 	return c.JSON(usuarioLoginResponse{
-		Token: token,
+		Token:     token,
+		EmpresaID: user.EmpresaID,
 		User: usuarioResponse{
 			ID:        user.ID,
 			Usuario:   user.Usuario,
@@ -95,6 +97,7 @@ func (h *UsuarioController) Perfil(c *fiber.Ctx) error {
 		return c.Status(http.StatusInternalServerError).JSON(errorResponse{Message: "error interno"})
 	}
 	return c.JSON(usuarioLoginResponse{
+		EmpresaID: user.EmpresaID,
 		User: usuarioResponse{
 			ID:        user.ID,
 			Usuario:   user.Usuario,

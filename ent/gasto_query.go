@@ -11,8 +11,7 @@ import (
 	"rentals-go/ent/gasto"
 	"rentals-go/ent/movimientocaja"
 	"rentals-go/ent/predicate"
-	"rentals-go/ent/propiedad"
-	"rentals-go/ent/unidad"
+	"rentals-go/ent/tipopago"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -28,8 +27,7 @@ type GastoQuery struct {
 	inters              []Interceptor
 	predicates          []predicate.Gasto
 	withEmpresa         *EmpresaQuery
-	withPropiedad       *PropiedadQuery
-	withUnidad          *UnidadQuery
+	withTipoPago        *TipoPagoQuery
 	withMovimientosCaja *MovimientoCajaQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -89,9 +87,9 @@ func (_q *GastoQuery) QueryEmpresa() *EmpresaQuery {
 	return query
 }
 
-// QueryPropiedad chains the current query on the "propiedad" edge.
-func (_q *GastoQuery) QueryPropiedad() *PropiedadQuery {
-	query := (&PropiedadClient{config: _q.config}).Query()
+// QueryTipoPago chains the current query on the "tipo_pago" edge.
+func (_q *GastoQuery) QueryTipoPago() *TipoPagoQuery {
+	query := (&TipoPagoClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -102,30 +100,8 @@ func (_q *GastoQuery) QueryPropiedad() *PropiedadQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(gasto.Table, gasto.FieldID, selector),
-			sqlgraph.To(propiedad.Table, propiedad.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, gasto.PropiedadTable, gasto.PropiedadColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryUnidad chains the current query on the "unidad" edge.
-func (_q *GastoQuery) QueryUnidad() *UnidadQuery {
-	query := (&UnidadClient{config: _q.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := _q.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(gasto.Table, gasto.FieldID, selector),
-			sqlgraph.To(unidad.Table, unidad.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, gasto.UnidadTable, gasto.UnidadColumn),
+			sqlgraph.To(tipopago.Table, tipopago.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, gasto.TipoPagoTable, gasto.TipoPagoColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -348,8 +324,7 @@ func (_q *GastoQuery) Clone() *GastoQuery {
 		inters:              append([]Interceptor{}, _q.inters...),
 		predicates:          append([]predicate.Gasto{}, _q.predicates...),
 		withEmpresa:         _q.withEmpresa.Clone(),
-		withPropiedad:       _q.withPropiedad.Clone(),
-		withUnidad:          _q.withUnidad.Clone(),
+		withTipoPago:        _q.withTipoPago.Clone(),
 		withMovimientosCaja: _q.withMovimientosCaja.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
@@ -368,25 +343,14 @@ func (_q *GastoQuery) WithEmpresa(opts ...func(*EmpresaQuery)) *GastoQuery {
 	return _q
 }
 
-// WithPropiedad tells the query-builder to eager-load the nodes that are connected to
-// the "propiedad" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *GastoQuery) WithPropiedad(opts ...func(*PropiedadQuery)) *GastoQuery {
-	query := (&PropiedadClient{config: _q.config}).Query()
+// WithTipoPago tells the query-builder to eager-load the nodes that are connected to
+// the "tipo_pago" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *GastoQuery) WithTipoPago(opts ...func(*TipoPagoQuery)) *GastoQuery {
+	query := (&TipoPagoClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	_q.withPropiedad = query
-	return _q
-}
-
-// WithUnidad tells the query-builder to eager-load the nodes that are connected to
-// the "unidad" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *GastoQuery) WithUnidad(opts ...func(*UnidadQuery)) *GastoQuery {
-	query := (&UnidadClient{config: _q.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	_q.withUnidad = query
+	_q.withTipoPago = query
 	return _q
 }
 
@@ -407,12 +371,12 @@ func (_q *GastoQuery) WithMovimientosCaja(opts ...func(*MovimientoCajaQuery)) *G
 // Example:
 //
 //	var v []struct {
-//		CreadoEn time.Time `json:"creado_en,omitempty"`
+//		EmpresaID int `json:"empresa_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.Gasto.Query().
-//		GroupBy(gasto.FieldCreadoEn).
+//		GroupBy(gasto.FieldEmpresaID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 func (_q *GastoQuery) GroupBy(field string, fields ...string) *GastoGroupBy {
@@ -430,11 +394,11 @@ func (_q *GastoQuery) GroupBy(field string, fields ...string) *GastoGroupBy {
 // Example:
 //
 //	var v []struct {
-//		CreadoEn time.Time `json:"creado_en,omitempty"`
+//		EmpresaID int `json:"empresa_id,omitempty"`
 //	}
 //
 //	client.Gasto.Query().
-//		Select(gasto.FieldCreadoEn).
+//		Select(gasto.FieldEmpresaID).
 //		Scan(ctx, &v)
 func (_q *GastoQuery) Select(fields ...string) *GastoSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
@@ -479,10 +443,9 @@ func (_q *GastoQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Gasto,
 	var (
 		nodes       = []*Gasto{}
 		_spec       = _q.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [3]bool{
 			_q.withEmpresa != nil,
-			_q.withPropiedad != nil,
-			_q.withUnidad != nil,
+			_q.withTipoPago != nil,
 			_q.withMovimientosCaja != nil,
 		}
 	)
@@ -510,15 +473,9 @@ func (_q *GastoQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Gasto,
 			return nil, err
 		}
 	}
-	if query := _q.withPropiedad; query != nil {
-		if err := _q.loadPropiedad(ctx, query, nodes, nil,
-			func(n *Gasto, e *Propiedad) { n.Edges.Propiedad = e }); err != nil {
-			return nil, err
-		}
-	}
-	if query := _q.withUnidad; query != nil {
-		if err := _q.loadUnidad(ctx, query, nodes, nil,
-			func(n *Gasto, e *Unidad) { n.Edges.Unidad = e }); err != nil {
+	if query := _q.withTipoPago; query != nil {
+		if err := _q.loadTipoPago(ctx, query, nodes, nil,
+			func(n *Gasto, e *TipoPago) { n.Edges.TipoPago = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -561,14 +518,11 @@ func (_q *GastoQuery) loadEmpresa(ctx context.Context, query *EmpresaQuery, node
 	}
 	return nil
 }
-func (_q *GastoQuery) loadPropiedad(ctx context.Context, query *PropiedadQuery, nodes []*Gasto, init func(*Gasto), assign func(*Gasto, *Propiedad)) error {
+func (_q *GastoQuery) loadTipoPago(ctx context.Context, query *TipoPagoQuery, nodes []*Gasto, init func(*Gasto), assign func(*Gasto, *TipoPago)) error {
 	ids := make([]int, 0, len(nodes))
 	nodeids := make(map[int][]*Gasto)
 	for i := range nodes {
-		if nodes[i].PropiedadID == nil {
-			continue
-		}
-		fk := *nodes[i].PropiedadID
+		fk := nodes[i].TipoPagoID
 		if _, ok := nodeids[fk]; !ok {
 			ids = append(ids, fk)
 		}
@@ -577,7 +531,7 @@ func (_q *GastoQuery) loadPropiedad(ctx context.Context, query *PropiedadQuery, 
 	if len(ids) == 0 {
 		return nil
 	}
-	query.Where(propiedad.IDIn(ids...))
+	query.Where(tipopago.IDIn(ids...))
 	neighbors, err := query.All(ctx)
 	if err != nil {
 		return err
@@ -585,39 +539,7 @@ func (_q *GastoQuery) loadPropiedad(ctx context.Context, query *PropiedadQuery, 
 	for _, n := range neighbors {
 		nodes, ok := nodeids[n.ID]
 		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "propiedad_id" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
-func (_q *GastoQuery) loadUnidad(ctx context.Context, query *UnidadQuery, nodes []*Gasto, init func(*Gasto), assign func(*Gasto, *Unidad)) error {
-	ids := make([]int, 0, len(nodes))
-	nodeids := make(map[int][]*Gasto)
-	for i := range nodes {
-		if nodes[i].UnidadID == nil {
-			continue
-		}
-		fk := *nodes[i].UnidadID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(unidad.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "unidad_id" returned %v`, n.ID)
+			return fmt.Errorf(`unexpected foreign-key "tipo_pago_id" returned %v`, n.ID)
 		}
 		for i := range nodes {
 			assign(nodes[i], n)
@@ -687,11 +609,8 @@ func (_q *GastoQuery) querySpec() *sqlgraph.QuerySpec {
 		if _q.withEmpresa != nil {
 			_spec.Node.AddColumnOnce(gasto.FieldEmpresaID)
 		}
-		if _q.withPropiedad != nil {
-			_spec.Node.AddColumnOnce(gasto.FieldPropiedadID)
-		}
-		if _q.withUnidad != nil {
-			_spec.Node.AddColumnOnce(gasto.FieldUnidadID)
+		if _q.withTipoPago != nil {
+			_spec.Node.AddColumnOnce(gasto.FieldTipoPagoID)
 		}
 	}
 	if ps := _q.predicates; len(ps) > 0 {

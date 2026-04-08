@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"math"
 	"rentals-go/ent/contrato"
-	"rentals-go/ent/gasto"
 	"rentals-go/ent/predicate"
 	"rentals-go/ent/propiedad"
 	"rentals-go/ent/serviciomedicion"
@@ -30,7 +29,6 @@ type UnidadQuery struct {
 	withPropiedad          *PropiedadQuery
 	withContratos          *ContratoQuery
 	withServicioMediciones *ServicioMedicionQuery
-	withGastos             *GastoQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -126,28 +124,6 @@ func (_q *UnidadQuery) QueryServicioMediciones() *ServicioMedicionQuery {
 			sqlgraph.From(unidad.Table, unidad.FieldID, selector),
 			sqlgraph.To(serviciomedicion.Table, serviciomedicion.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, unidad.ServicioMedicionesTable, unidad.ServicioMedicionesColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryGastos chains the current query on the "gastos" edge.
-func (_q *UnidadQuery) QueryGastos() *GastoQuery {
-	query := (&GastoClient{config: _q.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := _q.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(unidad.Table, unidad.FieldID, selector),
-			sqlgraph.To(gasto.Table, gasto.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, unidad.GastosTable, unidad.GastosColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -350,7 +326,6 @@ func (_q *UnidadQuery) Clone() *UnidadQuery {
 		withPropiedad:          _q.withPropiedad.Clone(),
 		withContratos:          _q.withContratos.Clone(),
 		withServicioMediciones: _q.withServicioMediciones.Clone(),
-		withGastos:             _q.withGastos.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -387,17 +362,6 @@ func (_q *UnidadQuery) WithServicioMediciones(opts ...func(*ServicioMedicionQuer
 		opt(query)
 	}
 	_q.withServicioMediciones = query
-	return _q
-}
-
-// WithGastos tells the query-builder to eager-load the nodes that are connected to
-// the "gastos" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *UnidadQuery) WithGastos(opts ...func(*GastoQuery)) *UnidadQuery {
-	query := (&GastoClient{config: _q.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	_q.withGastos = query
 	return _q
 }
 
@@ -479,11 +443,10 @@ func (_q *UnidadQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Unida
 	var (
 		nodes       = []*Unidad{}
 		_spec       = _q.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [3]bool{
 			_q.withPropiedad != nil,
 			_q.withContratos != nil,
 			_q.withServicioMediciones != nil,
-			_q.withGastos != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -523,13 +486,6 @@ func (_q *UnidadQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Unida
 			func(n *Unidad, e *ServicioMedicion) {
 				n.Edges.ServicioMediciones = append(n.Edges.ServicioMediciones, e)
 			}); err != nil {
-			return nil, err
-		}
-	}
-	if query := _q.withGastos; query != nil {
-		if err := _q.loadGastos(ctx, query, nodes,
-			func(n *Unidad) { n.Edges.Gastos = []*Gasto{} },
-			func(n *Unidad, e *Gasto) { n.Edges.Gastos = append(n.Edges.Gastos, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -620,39 +576,6 @@ func (_q *UnidadQuery) loadServicioMediciones(ctx context.Context, query *Servic
 		node, ok := nodeids[fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "unidad_id" returned %v for node %v`, fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
-}
-func (_q *UnidadQuery) loadGastos(ctx context.Context, query *GastoQuery, nodes []*Unidad, init func(*Unidad), assign func(*Unidad, *Gasto)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[int]*Unidad)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(gasto.FieldUnidadID)
-	}
-	query.Where(predicate.Gasto(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(unidad.GastosColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.UnidadID
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "unidad_id" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "unidad_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

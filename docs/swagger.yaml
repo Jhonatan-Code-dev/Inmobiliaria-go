@@ -136,11 +136,59 @@ definitions:
       message:
         type: string
     type: object
+  controller.gastoRequest:
+    properties:
+      descripcion:
+        example: Pago de servicios básicos
+        type: string
+      empresa_id:
+        example: 1
+        type: integer
+      fecha:
+        example: "2024-04-07"
+        type: string
+      monto:
+        example: 50
+        type: number
+      tipo_pago_id:
+        example: 3
+        type: integer
+    type: object
+  controller.gastoResponse:
+    properties:
+      descripcion:
+        example: Pago de servicios básicos
+        type: string
+      empresa_id:
+        example: 1
+        type: integer
+      fecha:
+        example: "2024-04-07T00:00:00Z"
+        type: string
+      id:
+        example: 10
+        type: integer
+      monto:
+        example: 50
+        type: number
+      tipo_pago_id:
+        example: 3
+        type: integer
+    type: object
   controller.listadoEmpresasResponse:
     properties:
       datos:
         items:
           $ref: '#/definitions/controller.empresaListItemResponse'
+        type: array
+      paginacion:
+        $ref: '#/definitions/controller.paginadorResponse'
+    type: object
+  controller.listadoGastosResponse:
+    properties:
+      datos:
+        items:
+          $ref: '#/definitions/controller.gastoResponse'
         type: array
       paginacion:
         $ref: '#/definitions/controller.paginadorResponse'
@@ -189,6 +237,15 @@ definitions:
       total:
         type: integer
     type: object
+  controller.tipoPagoResponse:
+    properties:
+      id:
+        example: 1
+        type: integer
+      nombre:
+        example: efectivo
+        type: string
+    type: object
   controller.usuarioLoginRequest:
     properties:
       contrasena:
@@ -200,6 +257,8 @@ definitions:
     properties:
       empresa:
         $ref: '#/definitions/controller.empresaResponse'
+      empresa_id:
+        type: integer
       token:
         type: string
       user:
@@ -541,6 +600,138 @@ paths:
       summary: Perfil del administrador autenticado
       tags:
       - admin
+  /api/user/gastos:
+    get:
+      description: 'Obtiene una lista paginada de gastos (máx 10). Filtros opcionales:
+        anio, mes, desde, hasta, fecha.'
+      parameters:
+      - default: 1
+        description: Número de página
+        in: query
+        name: pag
+        type: integer
+      - description: Año del gasto
+        in: query
+        name: anio
+        type: integer
+      - description: Mes del gasto (1-12)
+        in: query
+        name: mes
+        type: integer
+      - description: Fecha inicio (YYYY-MM-DD)
+        in: query
+        name: desde
+        type: string
+      - description: Fecha fin (YYYY-MM-DD)
+        in: query
+        name: hasta
+        type: string
+      - description: Fecha exacta (YYYY-MM-DD)
+        in: query
+        name: fecha
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.listadoGastosResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar gastos con filtros y paginación
+      tags:
+      - Gastos
+    post:
+      consumes:
+      - application/json
+      description: Crea un nuevo gasto y un movimiento de egreso en caja automático.
+      parameters:
+      - description: Datos del gasto
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controller.gastoRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controller.gastoResponse'
+      security:
+      - BearerAuth: []
+      summary: Registrar un nuevo gasto
+      tags:
+      - Gastos
+  /api/user/gastos/{id}:
+    delete:
+      description: Elimina el registro de gasto permanentemente.
+      parameters:
+      - description: ID del gasto
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Eliminar un gasto
+      tags:
+      - Gastos
+    put:
+      consumes:
+      - application/json
+      description: Actualiza los datos de un gasto existente.
+      parameters:
+      - description: ID del gasto
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Datos a actualizar
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controller.gastoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.gastoResponse'
+      security:
+      - BearerAuth: []
+      summary: Actualizar un gasto
+      tags:
+      - Gastos
+  /api/user/gastos/tipos-pago:
+    get:
+      description: Obtiene la lista de tipos de pago disponibles (Yape, Plin, Efectivo,
+        etc.)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/controller.tipoPagoResponse'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Listar los tipos de métodos de pago
+      tags:
+      - Gastos
   /auth/login:
     post:
       consumes:

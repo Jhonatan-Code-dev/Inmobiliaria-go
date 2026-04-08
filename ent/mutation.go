@@ -22,6 +22,7 @@ import (
 	"rentals-go/ent/rol"
 	"rentals-go/ent/serviciomedicion"
 	"rentals-go/ent/tipoidentificacion"
+	"rentals-go/ent/tipopago"
 	"rentals-go/ent/unidad"
 	"rentals-go/ent/usuario"
 	"sync"
@@ -55,6 +56,7 @@ const (
 	TypeRol                = "Rol"
 	TypeServicioMedicion   = "ServicioMedicion"
 	TypeTipoIdentificacion = "TipoIdentificacion"
+	TypeTipoPago           = "TipoPago"
 	TypeUnidad             = "Unidad"
 	TypeUsuario            = "Usuario"
 )
@@ -7712,25 +7714,15 @@ type GastoMutation struct {
 	op                      Op
 	typ                     string
 	id                      *int
-	creado_en               *time.Time
-	categoria               *gasto.Categoria
+	monto                   *float64
+	addmonto                *float64
+	fecha                   *time.Time
 	descripcion             *string
-	fecha_gasto             *time.Time
-	moneda                  *string
-	monto                   *int64
-	addmonto                *int64
-	metodo_pago             *gasto.MetodoPago
-	referencia              *string
-	pagado_a                *string
-	estado                  *gasto.Estado
-	notas                   *string
 	clearedFields           map[string]struct{}
 	empresa                 *int
 	clearedempresa          bool
-	propiedad               *int
-	clearedpropiedad        bool
-	unidad                  *int
-	clearedunidad           bool
+	tipo_pago               *int
+	clearedtipo_pago        bool
 	movimientos_caja        map[int]struct{}
 	removedmovimientos_caja map[int]struct{}
 	clearedmovimientos_caja bool
@@ -7837,42 +7829,6 @@ func (m *GastoMutation) IDs(ctx context.Context) ([]int, error) {
 	}
 }
 
-// SetCreadoEn sets the "creado_en" field.
-func (m *GastoMutation) SetCreadoEn(t time.Time) {
-	m.creado_en = &t
-}
-
-// CreadoEn returns the value of the "creado_en" field in the mutation.
-func (m *GastoMutation) CreadoEn() (r time.Time, exists bool) {
-	v := m.creado_en
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreadoEn returns the old "creado_en" field's value of the Gasto entity.
-// If the Gasto object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GastoMutation) OldCreadoEn(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCreadoEn is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCreadoEn requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreadoEn: %w", err)
-	}
-	return oldValue.CreadoEn, nil
-}
-
-// ResetCreadoEn resets all changes to the "creado_en" field.
-func (m *GastoMutation) ResetCreadoEn() {
-	m.creado_en = nil
-}
-
 // SetEmpresaID sets the "empresa_id" field.
 func (m *GastoMutation) SetEmpresaID(i int) {
 	m.empresa = &i
@@ -7909,138 +7865,132 @@ func (m *GastoMutation) ResetEmpresaID() {
 	m.empresa = nil
 }
 
-// SetPropiedadID sets the "propiedad_id" field.
-func (m *GastoMutation) SetPropiedadID(i int) {
-	m.propiedad = &i
+// SetMonto sets the "monto" field.
+func (m *GastoMutation) SetMonto(f float64) {
+	m.monto = &f
+	m.addmonto = nil
 }
 
-// PropiedadID returns the value of the "propiedad_id" field in the mutation.
-func (m *GastoMutation) PropiedadID() (r int, exists bool) {
-	v := m.propiedad
+// Monto returns the value of the "monto" field in the mutation.
+func (m *GastoMutation) Monto() (r float64, exists bool) {
+	v := m.monto
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldPropiedadID returns the old "propiedad_id" field's value of the Gasto entity.
+// OldMonto returns the old "monto" field's value of the Gasto entity.
 // If the Gasto object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GastoMutation) OldPropiedadID(ctx context.Context) (v *int, err error) {
+func (m *GastoMutation) OldMonto(ctx context.Context) (v float64, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPropiedadID is only allowed on UpdateOne operations")
+		return v, errors.New("OldMonto is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPropiedadID requires an ID field in the mutation")
+		return v, errors.New("OldMonto requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPropiedadID: %w", err)
+		return v, fmt.Errorf("querying old value for OldMonto: %w", err)
 	}
-	return oldValue.PropiedadID, nil
+	return oldValue.Monto, nil
 }
 
-// ClearPropiedadID clears the value of the "propiedad_id" field.
-func (m *GastoMutation) ClearPropiedadID() {
-	m.propiedad = nil
-	m.clearedFields[gasto.FieldPropiedadID] = struct{}{}
+// AddMonto adds f to the "monto" field.
+func (m *GastoMutation) AddMonto(f float64) {
+	if m.addmonto != nil {
+		*m.addmonto += f
+	} else {
+		m.addmonto = &f
+	}
 }
 
-// PropiedadIDCleared returns if the "propiedad_id" field was cleared in this mutation.
-func (m *GastoMutation) PropiedadIDCleared() bool {
-	_, ok := m.clearedFields[gasto.FieldPropiedadID]
-	return ok
-}
-
-// ResetPropiedadID resets all changes to the "propiedad_id" field.
-func (m *GastoMutation) ResetPropiedadID() {
-	m.propiedad = nil
-	delete(m.clearedFields, gasto.FieldPropiedadID)
-}
-
-// SetUnidadID sets the "unidad_id" field.
-func (m *GastoMutation) SetUnidadID(i int) {
-	m.unidad = &i
-}
-
-// UnidadID returns the value of the "unidad_id" field in the mutation.
-func (m *GastoMutation) UnidadID() (r int, exists bool) {
-	v := m.unidad
+// AddedMonto returns the value that was added to the "monto" field in this mutation.
+func (m *GastoMutation) AddedMonto() (r float64, exists bool) {
+	v := m.addmonto
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldUnidadID returns the old "unidad_id" field's value of the Gasto entity.
-// If the Gasto object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GastoMutation) OldUnidadID(ctx context.Context) (v *int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUnidadID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUnidadID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUnidadID: %w", err)
-	}
-	return oldValue.UnidadID, nil
+// ResetMonto resets all changes to the "monto" field.
+func (m *GastoMutation) ResetMonto() {
+	m.monto = nil
+	m.addmonto = nil
 }
 
-// ClearUnidadID clears the value of the "unidad_id" field.
-func (m *GastoMutation) ClearUnidadID() {
-	m.unidad = nil
-	m.clearedFields[gasto.FieldUnidadID] = struct{}{}
+// SetFecha sets the "fecha" field.
+func (m *GastoMutation) SetFecha(t time.Time) {
+	m.fecha = &t
 }
 
-// UnidadIDCleared returns if the "unidad_id" field was cleared in this mutation.
-func (m *GastoMutation) UnidadIDCleared() bool {
-	_, ok := m.clearedFields[gasto.FieldUnidadID]
-	return ok
-}
-
-// ResetUnidadID resets all changes to the "unidad_id" field.
-func (m *GastoMutation) ResetUnidadID() {
-	m.unidad = nil
-	delete(m.clearedFields, gasto.FieldUnidadID)
-}
-
-// SetCategoria sets the "categoria" field.
-func (m *GastoMutation) SetCategoria(ga gasto.Categoria) {
-	m.categoria = &ga
-}
-
-// Categoria returns the value of the "categoria" field in the mutation.
-func (m *GastoMutation) Categoria() (r gasto.Categoria, exists bool) {
-	v := m.categoria
+// Fecha returns the value of the "fecha" field in the mutation.
+func (m *GastoMutation) Fecha() (r time.Time, exists bool) {
+	v := m.fecha
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldCategoria returns the old "categoria" field's value of the Gasto entity.
+// OldFecha returns the old "fecha" field's value of the Gasto entity.
 // If the Gasto object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GastoMutation) OldCategoria(ctx context.Context) (v gasto.Categoria, err error) {
+func (m *GastoMutation) OldFecha(ctx context.Context) (v time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCategoria is only allowed on UpdateOne operations")
+		return v, errors.New("OldFecha is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCategoria requires an ID field in the mutation")
+		return v, errors.New("OldFecha requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCategoria: %w", err)
+		return v, fmt.Errorf("querying old value for OldFecha: %w", err)
 	}
-	return oldValue.Categoria, nil
+	return oldValue.Fecha, nil
 }
 
-// ResetCategoria resets all changes to the "categoria" field.
-func (m *GastoMutation) ResetCategoria() {
-	m.categoria = nil
+// ResetFecha resets all changes to the "fecha" field.
+func (m *GastoMutation) ResetFecha() {
+	m.fecha = nil
+}
+
+// SetTipoPagoID sets the "tipo_pago_id" field.
+func (m *GastoMutation) SetTipoPagoID(i int) {
+	m.tipo_pago = &i
+}
+
+// TipoPagoID returns the value of the "tipo_pago_id" field in the mutation.
+func (m *GastoMutation) TipoPagoID() (r int, exists bool) {
+	v := m.tipo_pago
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTipoPagoID returns the old "tipo_pago_id" field's value of the Gasto entity.
+// If the Gasto object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *GastoMutation) OldTipoPagoID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTipoPagoID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTipoPagoID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTipoPagoID: %w", err)
+	}
+	return oldValue.TipoPagoID, nil
+}
+
+// ResetTipoPagoID resets all changes to the "tipo_pago_id" field.
+func (m *GastoMutation) ResetTipoPagoID() {
+	m.tipo_pago = nil
 }
 
 // SetDescripcion sets the "descripcion" field.
@@ -8079,353 +8029,6 @@ func (m *GastoMutation) ResetDescripcion() {
 	m.descripcion = nil
 }
 
-// SetFechaGasto sets the "fecha_gasto" field.
-func (m *GastoMutation) SetFechaGasto(t time.Time) {
-	m.fecha_gasto = &t
-}
-
-// FechaGasto returns the value of the "fecha_gasto" field in the mutation.
-func (m *GastoMutation) FechaGasto() (r time.Time, exists bool) {
-	v := m.fecha_gasto
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldFechaGasto returns the old "fecha_gasto" field's value of the Gasto entity.
-// If the Gasto object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GastoMutation) OldFechaGasto(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldFechaGasto is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldFechaGasto requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldFechaGasto: %w", err)
-	}
-	return oldValue.FechaGasto, nil
-}
-
-// ResetFechaGasto resets all changes to the "fecha_gasto" field.
-func (m *GastoMutation) ResetFechaGasto() {
-	m.fecha_gasto = nil
-}
-
-// SetMoneda sets the "moneda" field.
-func (m *GastoMutation) SetMoneda(s string) {
-	m.moneda = &s
-}
-
-// Moneda returns the value of the "moneda" field in the mutation.
-func (m *GastoMutation) Moneda() (r string, exists bool) {
-	v := m.moneda
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldMoneda returns the old "moneda" field's value of the Gasto entity.
-// If the Gasto object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GastoMutation) OldMoneda(ctx context.Context) (v string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldMoneda is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldMoneda requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldMoneda: %w", err)
-	}
-	return oldValue.Moneda, nil
-}
-
-// ResetMoneda resets all changes to the "moneda" field.
-func (m *GastoMutation) ResetMoneda() {
-	m.moneda = nil
-}
-
-// SetMonto sets the "monto" field.
-func (m *GastoMutation) SetMonto(i int64) {
-	m.monto = &i
-	m.addmonto = nil
-}
-
-// Monto returns the value of the "monto" field in the mutation.
-func (m *GastoMutation) Monto() (r int64, exists bool) {
-	v := m.monto
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldMonto returns the old "monto" field's value of the Gasto entity.
-// If the Gasto object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GastoMutation) OldMonto(ctx context.Context) (v int64, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldMonto is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldMonto requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldMonto: %w", err)
-	}
-	return oldValue.Monto, nil
-}
-
-// AddMonto adds i to the "monto" field.
-func (m *GastoMutation) AddMonto(i int64) {
-	if m.addmonto != nil {
-		*m.addmonto += i
-	} else {
-		m.addmonto = &i
-	}
-}
-
-// AddedMonto returns the value that was added to the "monto" field in this mutation.
-func (m *GastoMutation) AddedMonto() (r int64, exists bool) {
-	v := m.addmonto
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetMonto resets all changes to the "monto" field.
-func (m *GastoMutation) ResetMonto() {
-	m.monto = nil
-	m.addmonto = nil
-}
-
-// SetMetodoPago sets the "metodo_pago" field.
-func (m *GastoMutation) SetMetodoPago(gp gasto.MetodoPago) {
-	m.metodo_pago = &gp
-}
-
-// MetodoPago returns the value of the "metodo_pago" field in the mutation.
-func (m *GastoMutation) MetodoPago() (r gasto.MetodoPago, exists bool) {
-	v := m.metodo_pago
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldMetodoPago returns the old "metodo_pago" field's value of the Gasto entity.
-// If the Gasto object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GastoMutation) OldMetodoPago(ctx context.Context) (v gasto.MetodoPago, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldMetodoPago is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldMetodoPago requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldMetodoPago: %w", err)
-	}
-	return oldValue.MetodoPago, nil
-}
-
-// ResetMetodoPago resets all changes to the "metodo_pago" field.
-func (m *GastoMutation) ResetMetodoPago() {
-	m.metodo_pago = nil
-}
-
-// SetReferencia sets the "referencia" field.
-func (m *GastoMutation) SetReferencia(s string) {
-	m.referencia = &s
-}
-
-// Referencia returns the value of the "referencia" field in the mutation.
-func (m *GastoMutation) Referencia() (r string, exists bool) {
-	v := m.referencia
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldReferencia returns the old "referencia" field's value of the Gasto entity.
-// If the Gasto object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GastoMutation) OldReferencia(ctx context.Context) (v *string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldReferencia is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldReferencia requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldReferencia: %w", err)
-	}
-	return oldValue.Referencia, nil
-}
-
-// ClearReferencia clears the value of the "referencia" field.
-func (m *GastoMutation) ClearReferencia() {
-	m.referencia = nil
-	m.clearedFields[gasto.FieldReferencia] = struct{}{}
-}
-
-// ReferenciaCleared returns if the "referencia" field was cleared in this mutation.
-func (m *GastoMutation) ReferenciaCleared() bool {
-	_, ok := m.clearedFields[gasto.FieldReferencia]
-	return ok
-}
-
-// ResetReferencia resets all changes to the "referencia" field.
-func (m *GastoMutation) ResetReferencia() {
-	m.referencia = nil
-	delete(m.clearedFields, gasto.FieldReferencia)
-}
-
-// SetPagadoA sets the "pagado_a" field.
-func (m *GastoMutation) SetPagadoA(s string) {
-	m.pagado_a = &s
-}
-
-// PagadoA returns the value of the "pagado_a" field in the mutation.
-func (m *GastoMutation) PagadoA() (r string, exists bool) {
-	v := m.pagado_a
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldPagadoA returns the old "pagado_a" field's value of the Gasto entity.
-// If the Gasto object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GastoMutation) OldPagadoA(ctx context.Context) (v *string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldPagadoA is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldPagadoA requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldPagadoA: %w", err)
-	}
-	return oldValue.PagadoA, nil
-}
-
-// ClearPagadoA clears the value of the "pagado_a" field.
-func (m *GastoMutation) ClearPagadoA() {
-	m.pagado_a = nil
-	m.clearedFields[gasto.FieldPagadoA] = struct{}{}
-}
-
-// PagadoACleared returns if the "pagado_a" field was cleared in this mutation.
-func (m *GastoMutation) PagadoACleared() bool {
-	_, ok := m.clearedFields[gasto.FieldPagadoA]
-	return ok
-}
-
-// ResetPagadoA resets all changes to the "pagado_a" field.
-func (m *GastoMutation) ResetPagadoA() {
-	m.pagado_a = nil
-	delete(m.clearedFields, gasto.FieldPagadoA)
-}
-
-// SetEstado sets the "estado" field.
-func (m *GastoMutation) SetEstado(ga gasto.Estado) {
-	m.estado = &ga
-}
-
-// Estado returns the value of the "estado" field in the mutation.
-func (m *GastoMutation) Estado() (r gasto.Estado, exists bool) {
-	v := m.estado
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldEstado returns the old "estado" field's value of the Gasto entity.
-// If the Gasto object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GastoMutation) OldEstado(ctx context.Context) (v gasto.Estado, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldEstado is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldEstado requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldEstado: %w", err)
-	}
-	return oldValue.Estado, nil
-}
-
-// ResetEstado resets all changes to the "estado" field.
-func (m *GastoMutation) ResetEstado() {
-	m.estado = nil
-}
-
-// SetNotas sets the "notas" field.
-func (m *GastoMutation) SetNotas(s string) {
-	m.notas = &s
-}
-
-// Notas returns the value of the "notas" field in the mutation.
-func (m *GastoMutation) Notas() (r string, exists bool) {
-	v := m.notas
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldNotas returns the old "notas" field's value of the Gasto entity.
-// If the Gasto object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *GastoMutation) OldNotas(ctx context.Context) (v *string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldNotas is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldNotas requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldNotas: %w", err)
-	}
-	return oldValue.Notas, nil
-}
-
-// ClearNotas clears the value of the "notas" field.
-func (m *GastoMutation) ClearNotas() {
-	m.notas = nil
-	m.clearedFields[gasto.FieldNotas] = struct{}{}
-}
-
-// NotasCleared returns if the "notas" field was cleared in this mutation.
-func (m *GastoMutation) NotasCleared() bool {
-	_, ok := m.clearedFields[gasto.FieldNotas]
-	return ok
-}
-
-// ResetNotas resets all changes to the "notas" field.
-func (m *GastoMutation) ResetNotas() {
-	m.notas = nil
-	delete(m.clearedFields, gasto.FieldNotas)
-}
-
 // ClearEmpresa clears the "empresa" edge to the Empresa entity.
 func (m *GastoMutation) ClearEmpresa() {
 	m.clearedempresa = true
@@ -8453,58 +8056,31 @@ func (m *GastoMutation) ResetEmpresa() {
 	m.clearedempresa = false
 }
 
-// ClearPropiedad clears the "propiedad" edge to the Propiedad entity.
-func (m *GastoMutation) ClearPropiedad() {
-	m.clearedpropiedad = true
-	m.clearedFields[gasto.FieldPropiedadID] = struct{}{}
+// ClearTipoPago clears the "tipo_pago" edge to the TipoPago entity.
+func (m *GastoMutation) ClearTipoPago() {
+	m.clearedtipo_pago = true
+	m.clearedFields[gasto.FieldTipoPagoID] = struct{}{}
 }
 
-// PropiedadCleared reports if the "propiedad" edge to the Propiedad entity was cleared.
-func (m *GastoMutation) PropiedadCleared() bool {
-	return m.PropiedadIDCleared() || m.clearedpropiedad
+// TipoPagoCleared reports if the "tipo_pago" edge to the TipoPago entity was cleared.
+func (m *GastoMutation) TipoPagoCleared() bool {
+	return m.clearedtipo_pago
 }
 
-// PropiedadIDs returns the "propiedad" edge IDs in the mutation.
+// TipoPagoIDs returns the "tipo_pago" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// PropiedadID instead. It exists only for internal usage by the builders.
-func (m *GastoMutation) PropiedadIDs() (ids []int) {
-	if id := m.propiedad; id != nil {
+// TipoPagoID instead. It exists only for internal usage by the builders.
+func (m *GastoMutation) TipoPagoIDs() (ids []int) {
+	if id := m.tipo_pago; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetPropiedad resets all changes to the "propiedad" edge.
-func (m *GastoMutation) ResetPropiedad() {
-	m.propiedad = nil
-	m.clearedpropiedad = false
-}
-
-// ClearUnidad clears the "unidad" edge to the Unidad entity.
-func (m *GastoMutation) ClearUnidad() {
-	m.clearedunidad = true
-	m.clearedFields[gasto.FieldUnidadID] = struct{}{}
-}
-
-// UnidadCleared reports if the "unidad" edge to the Unidad entity was cleared.
-func (m *GastoMutation) UnidadCleared() bool {
-	return m.UnidadIDCleared() || m.clearedunidad
-}
-
-// UnidadIDs returns the "unidad" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// UnidadID instead. It exists only for internal usage by the builders.
-func (m *GastoMutation) UnidadIDs() (ids []int) {
-	if id := m.unidad; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetUnidad resets all changes to the "unidad" edge.
-func (m *GastoMutation) ResetUnidad() {
-	m.unidad = nil
-	m.clearedunidad = false
+// ResetTipoPago resets all changes to the "tipo_pago" edge.
+func (m *GastoMutation) ResetTipoPago() {
+	m.tipo_pago = nil
+	m.clearedtipo_pago = false
 }
 
 // AddMovimientosCajaIDs adds the "movimientos_caja" edge to the MovimientoCaja entity by ids.
@@ -8595,48 +8171,21 @@ func (m *GastoMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *GastoMutation) Fields() []string {
-	fields := make([]string, 0, 14)
-	if m.creado_en != nil {
-		fields = append(fields, gasto.FieldCreadoEn)
-	}
+	fields := make([]string, 0, 5)
 	if m.empresa != nil {
 		fields = append(fields, gasto.FieldEmpresaID)
-	}
-	if m.propiedad != nil {
-		fields = append(fields, gasto.FieldPropiedadID)
-	}
-	if m.unidad != nil {
-		fields = append(fields, gasto.FieldUnidadID)
-	}
-	if m.categoria != nil {
-		fields = append(fields, gasto.FieldCategoria)
-	}
-	if m.descripcion != nil {
-		fields = append(fields, gasto.FieldDescripcion)
-	}
-	if m.fecha_gasto != nil {
-		fields = append(fields, gasto.FieldFechaGasto)
-	}
-	if m.moneda != nil {
-		fields = append(fields, gasto.FieldMoneda)
 	}
 	if m.monto != nil {
 		fields = append(fields, gasto.FieldMonto)
 	}
-	if m.metodo_pago != nil {
-		fields = append(fields, gasto.FieldMetodoPago)
+	if m.fecha != nil {
+		fields = append(fields, gasto.FieldFecha)
 	}
-	if m.referencia != nil {
-		fields = append(fields, gasto.FieldReferencia)
+	if m.tipo_pago != nil {
+		fields = append(fields, gasto.FieldTipoPagoID)
 	}
-	if m.pagado_a != nil {
-		fields = append(fields, gasto.FieldPagadoA)
-	}
-	if m.estado != nil {
-		fields = append(fields, gasto.FieldEstado)
-	}
-	if m.notas != nil {
-		fields = append(fields, gasto.FieldNotas)
+	if m.descripcion != nil {
+		fields = append(fields, gasto.FieldDescripcion)
 	}
 	return fields
 }
@@ -8646,34 +8195,16 @@ func (m *GastoMutation) Fields() []string {
 // schema.
 func (m *GastoMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case gasto.FieldCreadoEn:
-		return m.CreadoEn()
 	case gasto.FieldEmpresaID:
 		return m.EmpresaID()
-	case gasto.FieldPropiedadID:
-		return m.PropiedadID()
-	case gasto.FieldUnidadID:
-		return m.UnidadID()
-	case gasto.FieldCategoria:
-		return m.Categoria()
-	case gasto.FieldDescripcion:
-		return m.Descripcion()
-	case gasto.FieldFechaGasto:
-		return m.FechaGasto()
-	case gasto.FieldMoneda:
-		return m.Moneda()
 	case gasto.FieldMonto:
 		return m.Monto()
-	case gasto.FieldMetodoPago:
-		return m.MetodoPago()
-	case gasto.FieldReferencia:
-		return m.Referencia()
-	case gasto.FieldPagadoA:
-		return m.PagadoA()
-	case gasto.FieldEstado:
-		return m.Estado()
-	case gasto.FieldNotas:
-		return m.Notas()
+	case gasto.FieldFecha:
+		return m.Fecha()
+	case gasto.FieldTipoPagoID:
+		return m.TipoPagoID()
+	case gasto.FieldDescripcion:
+		return m.Descripcion()
 	}
 	return nil, false
 }
@@ -8683,34 +8214,16 @@ func (m *GastoMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *GastoMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case gasto.FieldCreadoEn:
-		return m.OldCreadoEn(ctx)
 	case gasto.FieldEmpresaID:
 		return m.OldEmpresaID(ctx)
-	case gasto.FieldPropiedadID:
-		return m.OldPropiedadID(ctx)
-	case gasto.FieldUnidadID:
-		return m.OldUnidadID(ctx)
-	case gasto.FieldCategoria:
-		return m.OldCategoria(ctx)
-	case gasto.FieldDescripcion:
-		return m.OldDescripcion(ctx)
-	case gasto.FieldFechaGasto:
-		return m.OldFechaGasto(ctx)
-	case gasto.FieldMoneda:
-		return m.OldMoneda(ctx)
 	case gasto.FieldMonto:
 		return m.OldMonto(ctx)
-	case gasto.FieldMetodoPago:
-		return m.OldMetodoPago(ctx)
-	case gasto.FieldReferencia:
-		return m.OldReferencia(ctx)
-	case gasto.FieldPagadoA:
-		return m.OldPagadoA(ctx)
-	case gasto.FieldEstado:
-		return m.OldEstado(ctx)
-	case gasto.FieldNotas:
-		return m.OldNotas(ctx)
+	case gasto.FieldFecha:
+		return m.OldFecha(ctx)
+	case gasto.FieldTipoPagoID:
+		return m.OldTipoPagoID(ctx)
+	case gasto.FieldDescripcion:
+		return m.OldDescripcion(ctx)
 	}
 	return nil, fmt.Errorf("unknown Gasto field %s", name)
 }
@@ -8720,13 +8233,6 @@ func (m *GastoMutation) OldField(ctx context.Context, name string) (ent.Value, e
 // type.
 func (m *GastoMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case gasto.FieldCreadoEn:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreadoEn(v)
-		return nil
 	case gasto.FieldEmpresaID:
 		v, ok := value.(int)
 		if !ok {
@@ -8734,26 +8240,26 @@ func (m *GastoMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetEmpresaID(v)
 		return nil
-	case gasto.FieldPropiedadID:
+	case gasto.FieldMonto:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMonto(v)
+		return nil
+	case gasto.FieldFecha:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFecha(v)
+		return nil
+	case gasto.FieldTipoPagoID:
 		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetPropiedadID(v)
-		return nil
-	case gasto.FieldUnidadID:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUnidadID(v)
-		return nil
-	case gasto.FieldCategoria:
-		v, ok := value.(gasto.Categoria)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCategoria(v)
+		m.SetTipoPagoID(v)
 		return nil
 	case gasto.FieldDescripcion:
 		v, ok := value.(string)
@@ -8761,62 +8267,6 @@ func (m *GastoMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDescripcion(v)
-		return nil
-	case gasto.FieldFechaGasto:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetFechaGasto(v)
-		return nil
-	case gasto.FieldMoneda:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetMoneda(v)
-		return nil
-	case gasto.FieldMonto:
-		v, ok := value.(int64)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetMonto(v)
-		return nil
-	case gasto.FieldMetodoPago:
-		v, ok := value.(gasto.MetodoPago)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetMetodoPago(v)
-		return nil
-	case gasto.FieldReferencia:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetReferencia(v)
-		return nil
-	case gasto.FieldPagadoA:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetPagadoA(v)
-		return nil
-	case gasto.FieldEstado:
-		v, ok := value.(gasto.Estado)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetEstado(v)
-		return nil
-	case gasto.FieldNotas:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetNotas(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Gasto field %s", name)
@@ -8849,7 +8299,7 @@ func (m *GastoMutation) AddedField(name string) (ent.Value, bool) {
 func (m *GastoMutation) AddField(name string, value ent.Value) error {
 	switch name {
 	case gasto.FieldMonto:
-		v, ok := value.(int64)
+		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -8862,23 +8312,7 @@ func (m *GastoMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *GastoMutation) ClearedFields() []string {
-	var fields []string
-	if m.FieldCleared(gasto.FieldPropiedadID) {
-		fields = append(fields, gasto.FieldPropiedadID)
-	}
-	if m.FieldCleared(gasto.FieldUnidadID) {
-		fields = append(fields, gasto.FieldUnidadID)
-	}
-	if m.FieldCleared(gasto.FieldReferencia) {
-		fields = append(fields, gasto.FieldReferencia)
-	}
-	if m.FieldCleared(gasto.FieldPagadoA) {
-		fields = append(fields, gasto.FieldPagadoA)
-	}
-	if m.FieldCleared(gasto.FieldNotas) {
-		fields = append(fields, gasto.FieldNotas)
-	}
-	return fields
+	return nil
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -8891,23 +8325,6 @@ func (m *GastoMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *GastoMutation) ClearField(name string) error {
-	switch name {
-	case gasto.FieldPropiedadID:
-		m.ClearPropiedadID()
-		return nil
-	case gasto.FieldUnidadID:
-		m.ClearUnidadID()
-		return nil
-	case gasto.FieldReferencia:
-		m.ClearReferencia()
-		return nil
-	case gasto.FieldPagadoA:
-		m.ClearPagadoA()
-		return nil
-	case gasto.FieldNotas:
-		m.ClearNotas()
-		return nil
-	}
 	return fmt.Errorf("unknown Gasto nullable field %s", name)
 }
 
@@ -8915,47 +8332,20 @@ func (m *GastoMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *GastoMutation) ResetField(name string) error {
 	switch name {
-	case gasto.FieldCreadoEn:
-		m.ResetCreadoEn()
-		return nil
 	case gasto.FieldEmpresaID:
 		m.ResetEmpresaID()
-		return nil
-	case gasto.FieldPropiedadID:
-		m.ResetPropiedadID()
-		return nil
-	case gasto.FieldUnidadID:
-		m.ResetUnidadID()
-		return nil
-	case gasto.FieldCategoria:
-		m.ResetCategoria()
-		return nil
-	case gasto.FieldDescripcion:
-		m.ResetDescripcion()
-		return nil
-	case gasto.FieldFechaGasto:
-		m.ResetFechaGasto()
-		return nil
-	case gasto.FieldMoneda:
-		m.ResetMoneda()
 		return nil
 	case gasto.FieldMonto:
 		m.ResetMonto()
 		return nil
-	case gasto.FieldMetodoPago:
-		m.ResetMetodoPago()
+	case gasto.FieldFecha:
+		m.ResetFecha()
 		return nil
-	case gasto.FieldReferencia:
-		m.ResetReferencia()
+	case gasto.FieldTipoPagoID:
+		m.ResetTipoPagoID()
 		return nil
-	case gasto.FieldPagadoA:
-		m.ResetPagadoA()
-		return nil
-	case gasto.FieldEstado:
-		m.ResetEstado()
-		return nil
-	case gasto.FieldNotas:
-		m.ResetNotas()
+	case gasto.FieldDescripcion:
+		m.ResetDescripcion()
 		return nil
 	}
 	return fmt.Errorf("unknown Gasto field %s", name)
@@ -8963,15 +8353,12 @@ func (m *GastoMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *GastoMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	if m.empresa != nil {
 		edges = append(edges, gasto.EdgeEmpresa)
 	}
-	if m.propiedad != nil {
-		edges = append(edges, gasto.EdgePropiedad)
-	}
-	if m.unidad != nil {
-		edges = append(edges, gasto.EdgeUnidad)
+	if m.tipo_pago != nil {
+		edges = append(edges, gasto.EdgeTipoPago)
 	}
 	if m.movimientos_caja != nil {
 		edges = append(edges, gasto.EdgeMovimientosCaja)
@@ -8987,12 +8374,8 @@ func (m *GastoMutation) AddedIDs(name string) []ent.Value {
 		if id := m.empresa; id != nil {
 			return []ent.Value{*id}
 		}
-	case gasto.EdgePropiedad:
-		if id := m.propiedad; id != nil {
-			return []ent.Value{*id}
-		}
-	case gasto.EdgeUnidad:
-		if id := m.unidad; id != nil {
+	case gasto.EdgeTipoPago:
+		if id := m.tipo_pago; id != nil {
 			return []ent.Value{*id}
 		}
 	case gasto.EdgeMovimientosCaja:
@@ -9007,7 +8390,7 @@ func (m *GastoMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *GastoMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	if m.removedmovimientos_caja != nil {
 		edges = append(edges, gasto.EdgeMovimientosCaja)
 	}
@@ -9030,15 +8413,12 @@ func (m *GastoMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *GastoMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	if m.clearedempresa {
 		edges = append(edges, gasto.EdgeEmpresa)
 	}
-	if m.clearedpropiedad {
-		edges = append(edges, gasto.EdgePropiedad)
-	}
-	if m.clearedunidad {
-		edges = append(edges, gasto.EdgeUnidad)
+	if m.clearedtipo_pago {
+		edges = append(edges, gasto.EdgeTipoPago)
 	}
 	if m.clearedmovimientos_caja {
 		edges = append(edges, gasto.EdgeMovimientosCaja)
@@ -9052,10 +8432,8 @@ func (m *GastoMutation) EdgeCleared(name string) bool {
 	switch name {
 	case gasto.EdgeEmpresa:
 		return m.clearedempresa
-	case gasto.EdgePropiedad:
-		return m.clearedpropiedad
-	case gasto.EdgeUnidad:
-		return m.clearedunidad
+	case gasto.EdgeTipoPago:
+		return m.clearedtipo_pago
 	case gasto.EdgeMovimientosCaja:
 		return m.clearedmovimientos_caja
 	}
@@ -9069,11 +8447,8 @@ func (m *GastoMutation) ClearEdge(name string) error {
 	case gasto.EdgeEmpresa:
 		m.ClearEmpresa()
 		return nil
-	case gasto.EdgePropiedad:
-		m.ClearPropiedad()
-		return nil
-	case gasto.EdgeUnidad:
-		m.ClearUnidad()
+	case gasto.EdgeTipoPago:
+		m.ClearTipoPago()
 		return nil
 	}
 	return fmt.Errorf("unknown Gasto unique edge %s", name)
@@ -9086,11 +8461,8 @@ func (m *GastoMutation) ResetEdge(name string) error {
 	case gasto.EdgeEmpresa:
 		m.ResetEmpresa()
 		return nil
-	case gasto.EdgePropiedad:
-		m.ResetPropiedad()
-		return nil
-	case gasto.EdgeUnidad:
-		m.ResetUnidad()
+	case gasto.EdgeTipoPago:
+		m.ResetTipoPago()
 		return nil
 	case gasto.EdgeMovimientosCaja:
 		m.ResetMovimientosCaja()
@@ -12333,9 +11705,6 @@ type PropiedadMutation struct {
 	unidades          map[int]struct{}
 	removedunidades   map[int]struct{}
 	clearedunidades   bool
-	gastos            map[int]struct{}
-	removedgastos     map[int]struct{}
-	clearedgastos     bool
 	done              bool
 	oldValue          func(context.Context) (*Propiedad, error)
 	predicates        []predicate.Propiedad
@@ -13093,60 +12462,6 @@ func (m *PropiedadMutation) ResetUnidades() {
 	m.removedunidades = nil
 }
 
-// AddGastoIDs adds the "gastos" edge to the Gasto entity by ids.
-func (m *PropiedadMutation) AddGastoIDs(ids ...int) {
-	if m.gastos == nil {
-		m.gastos = make(map[int]struct{})
-	}
-	for i := range ids {
-		m.gastos[ids[i]] = struct{}{}
-	}
-}
-
-// ClearGastos clears the "gastos" edge to the Gasto entity.
-func (m *PropiedadMutation) ClearGastos() {
-	m.clearedgastos = true
-}
-
-// GastosCleared reports if the "gastos" edge to the Gasto entity was cleared.
-func (m *PropiedadMutation) GastosCleared() bool {
-	return m.clearedgastos
-}
-
-// RemoveGastoIDs removes the "gastos" edge to the Gasto entity by IDs.
-func (m *PropiedadMutation) RemoveGastoIDs(ids ...int) {
-	if m.removedgastos == nil {
-		m.removedgastos = make(map[int]struct{})
-	}
-	for i := range ids {
-		delete(m.gastos, ids[i])
-		m.removedgastos[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedGastos returns the removed IDs of the "gastos" edge to the Gasto entity.
-func (m *PropiedadMutation) RemovedGastosIDs() (ids []int) {
-	for id := range m.removedgastos {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// GastosIDs returns the "gastos" edge IDs in the mutation.
-func (m *PropiedadMutation) GastosIDs() (ids []int) {
-	for id := range m.gastos {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetGastos resets all changes to the "gastos" edge.
-func (m *PropiedadMutation) ResetGastos() {
-	m.gastos = nil
-	m.clearedgastos = false
-	m.removedgastos = nil
-}
-
 // Where appends a list predicates to the PropiedadMutation builder.
 func (m *PropiedadMutation) Where(ps ...predicate.Propiedad) {
 	m.predicates = append(m.predicates, ps...)
@@ -13544,15 +12859,12 @@ func (m *PropiedadMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PropiedadMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 2)
 	if m.empresa != nil {
 		edges = append(edges, propiedad.EdgeEmpresa)
 	}
 	if m.unidades != nil {
 		edges = append(edges, propiedad.EdgeUnidades)
-	}
-	if m.gastos != nil {
-		edges = append(edges, propiedad.EdgeGastos)
 	}
 	return edges
 }
@@ -13571,24 +12883,15 @@ func (m *PropiedadMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case propiedad.EdgeGastos:
-		ids := make([]ent.Value, 0, len(m.gastos))
-		for id := range m.gastos {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PropiedadMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 2)
 	if m.removedunidades != nil {
 		edges = append(edges, propiedad.EdgeUnidades)
-	}
-	if m.removedgastos != nil {
-		edges = append(edges, propiedad.EdgeGastos)
 	}
 	return edges
 }
@@ -13603,27 +12906,18 @@ func (m *PropiedadMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case propiedad.EdgeGastos:
-		ids := make([]ent.Value, 0, len(m.removedgastos))
-		for id := range m.removedgastos {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PropiedadMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 2)
 	if m.clearedempresa {
 		edges = append(edges, propiedad.EdgeEmpresa)
 	}
 	if m.clearedunidades {
 		edges = append(edges, propiedad.EdgeUnidades)
-	}
-	if m.clearedgastos {
-		edges = append(edges, propiedad.EdgeGastos)
 	}
 	return edges
 }
@@ -13636,8 +12930,6 @@ func (m *PropiedadMutation) EdgeCleared(name string) bool {
 		return m.clearedempresa
 	case propiedad.EdgeUnidades:
 		return m.clearedunidades
-	case propiedad.EdgeGastos:
-		return m.clearedgastos
 	}
 	return false
 }
@@ -13662,9 +12954,6 @@ func (m *PropiedadMutation) ResetEdge(name string) error {
 		return nil
 	case propiedad.EdgeUnidades:
 		m.ResetUnidades()
-		return nil
-	case propiedad.EdgeGastos:
-		m.ResetGastos()
 		return nil
 	}
 	return fmt.Errorf("unknown Propiedad edge %s", name)
@@ -15986,6 +15275,425 @@ func (m *TipoIdentificacionMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown TipoIdentificacion edge %s", name)
 }
 
+// TipoPagoMutation represents an operation that mutates the TipoPago nodes in the graph.
+type TipoPagoMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *int
+	nombre        *string
+	clearedFields map[string]struct{}
+	gastos        map[int]struct{}
+	removedgastos map[int]struct{}
+	clearedgastos bool
+	done          bool
+	oldValue      func(context.Context) (*TipoPago, error)
+	predicates    []predicate.TipoPago
+}
+
+var _ ent.Mutation = (*TipoPagoMutation)(nil)
+
+// tipopagoOption allows management of the mutation configuration using functional options.
+type tipopagoOption func(*TipoPagoMutation)
+
+// newTipoPagoMutation creates new mutation for the TipoPago entity.
+func newTipoPagoMutation(c config, op Op, opts ...tipopagoOption) *TipoPagoMutation {
+	m := &TipoPagoMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeTipoPago,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withTipoPagoID sets the ID field of the mutation.
+func withTipoPagoID(id int) tipopagoOption {
+	return func(m *TipoPagoMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *TipoPago
+		)
+		m.oldValue = func(ctx context.Context) (*TipoPago, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().TipoPago.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withTipoPago sets the old TipoPago of the mutation.
+func withTipoPago(node *TipoPago) tipopagoOption {
+	return func(m *TipoPagoMutation) {
+		m.oldValue = func(context.Context) (*TipoPago, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m TipoPagoMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m TipoPagoMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *TipoPagoMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *TipoPagoMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().TipoPago.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetNombre sets the "nombre" field.
+func (m *TipoPagoMutation) SetNombre(s string) {
+	m.nombre = &s
+}
+
+// Nombre returns the value of the "nombre" field in the mutation.
+func (m *TipoPagoMutation) Nombre() (r string, exists bool) {
+	v := m.nombre
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNombre returns the old "nombre" field's value of the TipoPago entity.
+// If the TipoPago object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TipoPagoMutation) OldNombre(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNombre is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNombre requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNombre: %w", err)
+	}
+	return oldValue.Nombre, nil
+}
+
+// ResetNombre resets all changes to the "nombre" field.
+func (m *TipoPagoMutation) ResetNombre() {
+	m.nombre = nil
+}
+
+// AddGastoIDs adds the "gastos" edge to the Gasto entity by ids.
+func (m *TipoPagoMutation) AddGastoIDs(ids ...int) {
+	if m.gastos == nil {
+		m.gastos = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.gastos[ids[i]] = struct{}{}
+	}
+}
+
+// ClearGastos clears the "gastos" edge to the Gasto entity.
+func (m *TipoPagoMutation) ClearGastos() {
+	m.clearedgastos = true
+}
+
+// GastosCleared reports if the "gastos" edge to the Gasto entity was cleared.
+func (m *TipoPagoMutation) GastosCleared() bool {
+	return m.clearedgastos
+}
+
+// RemoveGastoIDs removes the "gastos" edge to the Gasto entity by IDs.
+func (m *TipoPagoMutation) RemoveGastoIDs(ids ...int) {
+	if m.removedgastos == nil {
+		m.removedgastos = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.gastos, ids[i])
+		m.removedgastos[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedGastos returns the removed IDs of the "gastos" edge to the Gasto entity.
+func (m *TipoPagoMutation) RemovedGastosIDs() (ids []int) {
+	for id := range m.removedgastos {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// GastosIDs returns the "gastos" edge IDs in the mutation.
+func (m *TipoPagoMutation) GastosIDs() (ids []int) {
+	for id := range m.gastos {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetGastos resets all changes to the "gastos" edge.
+func (m *TipoPagoMutation) ResetGastos() {
+	m.gastos = nil
+	m.clearedgastos = false
+	m.removedgastos = nil
+}
+
+// Where appends a list predicates to the TipoPagoMutation builder.
+func (m *TipoPagoMutation) Where(ps ...predicate.TipoPago) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the TipoPagoMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *TipoPagoMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.TipoPago, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *TipoPagoMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *TipoPagoMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (TipoPago).
+func (m *TipoPagoMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *TipoPagoMutation) Fields() []string {
+	fields := make([]string, 0, 1)
+	if m.nombre != nil {
+		fields = append(fields, tipopago.FieldNombre)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *TipoPagoMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case tipopago.FieldNombre:
+		return m.Nombre()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *TipoPagoMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case tipopago.FieldNombre:
+		return m.OldNombre(ctx)
+	}
+	return nil, fmt.Errorf("unknown TipoPago field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TipoPagoMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case tipopago.FieldNombre:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNombre(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TipoPago field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *TipoPagoMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *TipoPagoMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TipoPagoMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown TipoPago numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *TipoPagoMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *TipoPagoMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *TipoPagoMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown TipoPago nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *TipoPagoMutation) ResetField(name string) error {
+	switch name {
+	case tipopago.FieldNombre:
+		m.ResetNombre()
+		return nil
+	}
+	return fmt.Errorf("unknown TipoPago field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *TipoPagoMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.gastos != nil {
+		edges = append(edges, tipopago.EdgeGastos)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *TipoPagoMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case tipopago.EdgeGastos:
+		ids := make([]ent.Value, 0, len(m.gastos))
+		for id := range m.gastos {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *TipoPagoMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.removedgastos != nil {
+		edges = append(edges, tipopago.EdgeGastos)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *TipoPagoMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case tipopago.EdgeGastos:
+		ids := make([]ent.Value, 0, len(m.removedgastos))
+		for id := range m.removedgastos {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *TipoPagoMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedgastos {
+		edges = append(edges, tipopago.EdgeGastos)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *TipoPagoMutation) EdgeCleared(name string) bool {
+	switch name {
+	case tipopago.EdgeGastos:
+		return m.clearedgastos
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *TipoPagoMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown TipoPago unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *TipoPagoMutation) ResetEdge(name string) error {
+	switch name {
+	case tipopago.EdgeGastos:
+		m.ResetGastos()
+		return nil
+	}
+	return fmt.Errorf("unknown TipoPago edge %s", name)
+}
+
 // UnidadMutation represents an operation that mutates the Unidad nodes in the graph.
 type UnidadMutation struct {
 	config
@@ -16025,9 +15733,6 @@ type UnidadMutation struct {
 	servicio_mediciones        map[int]struct{}
 	removedservicio_mediciones map[int]struct{}
 	clearedservicio_mediciones bool
-	gastos                     map[int]struct{}
-	removedgastos              map[int]struct{}
-	clearedgastos              bool
 	done                       bool
 	oldValue                   func(context.Context) (*Unidad, error)
 	predicates                 []predicate.Unidad
@@ -17108,60 +16813,6 @@ func (m *UnidadMutation) ResetServicioMediciones() {
 	m.removedservicio_mediciones = nil
 }
 
-// AddGastoIDs adds the "gastos" edge to the Gasto entity by ids.
-func (m *UnidadMutation) AddGastoIDs(ids ...int) {
-	if m.gastos == nil {
-		m.gastos = make(map[int]struct{})
-	}
-	for i := range ids {
-		m.gastos[ids[i]] = struct{}{}
-	}
-}
-
-// ClearGastos clears the "gastos" edge to the Gasto entity.
-func (m *UnidadMutation) ClearGastos() {
-	m.clearedgastos = true
-}
-
-// GastosCleared reports if the "gastos" edge to the Gasto entity was cleared.
-func (m *UnidadMutation) GastosCleared() bool {
-	return m.clearedgastos
-}
-
-// RemoveGastoIDs removes the "gastos" edge to the Gasto entity by IDs.
-func (m *UnidadMutation) RemoveGastoIDs(ids ...int) {
-	if m.removedgastos == nil {
-		m.removedgastos = make(map[int]struct{})
-	}
-	for i := range ids {
-		delete(m.gastos, ids[i])
-		m.removedgastos[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedGastos returns the removed IDs of the "gastos" edge to the Gasto entity.
-func (m *UnidadMutation) RemovedGastosIDs() (ids []int) {
-	for id := range m.removedgastos {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// GastosIDs returns the "gastos" edge IDs in the mutation.
-func (m *UnidadMutation) GastosIDs() (ids []int) {
-	for id := range m.gastos {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetGastos resets all changes to the "gastos" edge.
-func (m *UnidadMutation) ResetGastos() {
-	m.gastos = nil
-	m.clearedgastos = false
-	m.removedgastos = nil
-}
-
 // Where appends a list predicates to the UnidadMutation builder.
 func (m *UnidadMutation) Where(ps ...predicate.Unidad) {
 	m.predicates = append(m.predicates, ps...)
@@ -17698,7 +17349,7 @@ func (m *UnidadMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UnidadMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	if m.propiedad != nil {
 		edges = append(edges, unidad.EdgePropiedad)
 	}
@@ -17707,9 +17358,6 @@ func (m *UnidadMutation) AddedEdges() []string {
 	}
 	if m.servicio_mediciones != nil {
 		edges = append(edges, unidad.EdgeServicioMediciones)
-	}
-	if m.gastos != nil {
-		edges = append(edges, unidad.EdgeGastos)
 	}
 	return edges
 }
@@ -17734,27 +17382,18 @@ func (m *UnidadMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case unidad.EdgeGastos:
-		ids := make([]ent.Value, 0, len(m.gastos))
-		for id := range m.gastos {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UnidadMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	if m.removedcontratos != nil {
 		edges = append(edges, unidad.EdgeContratos)
 	}
 	if m.removedservicio_mediciones != nil {
 		edges = append(edges, unidad.EdgeServicioMediciones)
-	}
-	if m.removedgastos != nil {
-		edges = append(edges, unidad.EdgeGastos)
 	}
 	return edges
 }
@@ -17775,19 +17414,13 @@ func (m *UnidadMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case unidad.EdgeGastos:
-		ids := make([]ent.Value, 0, len(m.removedgastos))
-		for id := range m.removedgastos {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UnidadMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	if m.clearedpropiedad {
 		edges = append(edges, unidad.EdgePropiedad)
 	}
@@ -17796,9 +17429,6 @@ func (m *UnidadMutation) ClearedEdges() []string {
 	}
 	if m.clearedservicio_mediciones {
 		edges = append(edges, unidad.EdgeServicioMediciones)
-	}
-	if m.clearedgastos {
-		edges = append(edges, unidad.EdgeGastos)
 	}
 	return edges
 }
@@ -17813,8 +17443,6 @@ func (m *UnidadMutation) EdgeCleared(name string) bool {
 		return m.clearedcontratos
 	case unidad.EdgeServicioMediciones:
 		return m.clearedservicio_mediciones
-	case unidad.EdgeGastos:
-		return m.clearedgastos
 	}
 	return false
 }
@@ -17842,9 +17470,6 @@ func (m *UnidadMutation) ResetEdge(name string) error {
 		return nil
 	case unidad.EdgeServicioMediciones:
 		m.ResetServicioMediciones()
-		return nil
-	case unidad.EdgeGastos:
-		m.ResetGastos()
 		return nil
 	}
 	return fmt.Errorf("unknown Unidad edge %s", name)

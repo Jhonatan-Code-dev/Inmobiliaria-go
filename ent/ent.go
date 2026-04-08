@@ -22,6 +22,7 @@ import (
 	"rentals-go/ent/rol"
 	"rentals-go/ent/serviciomedicion"
 	"rentals-go/ent/tipoidentificacion"
+	"rentals-go/ent/tipopago"
 	"rentals-go/ent/unidad"
 	"rentals-go/ent/usuario"
 	"sync"
@@ -104,6 +105,7 @@ func checkColumn(t, c string) error {
 			rol.Table:                rol.ValidColumn,
 			serviciomedicion.Table:   serviciomedicion.ValidColumn,
 			tipoidentificacion.Table: tipoidentificacion.ValidColumn,
+			tipopago.Table:           tipopago.ValidColumn,
 			unidad.Table:             unidad.ValidColumn,
 			usuario.Table:            usuario.ValidColumn,
 		})

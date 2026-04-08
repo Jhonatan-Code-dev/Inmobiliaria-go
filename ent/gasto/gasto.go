@@ -3,9 +3,6 @@
 package gasto
 
 import (
-	"fmt"
-	"time"
-
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -15,40 +12,20 @@ const (
 	Label = "gasto"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldCreadoEn holds the string denoting the creado_en field in the database.
-	FieldCreadoEn = "creado_en"
 	// FieldEmpresaID holds the string denoting the empresa_id field in the database.
 	FieldEmpresaID = "empresa_id"
-	// FieldPropiedadID holds the string denoting the propiedad_id field in the database.
-	FieldPropiedadID = "propiedad_id"
-	// FieldUnidadID holds the string denoting the unidad_id field in the database.
-	FieldUnidadID = "unidad_id"
-	// FieldCategoria holds the string denoting the categoria field in the database.
-	FieldCategoria = "categoria"
-	// FieldDescripcion holds the string denoting the descripcion field in the database.
-	FieldDescripcion = "descripcion"
-	// FieldFechaGasto holds the string denoting the fecha_gasto field in the database.
-	FieldFechaGasto = "fecha_gasto"
-	// FieldMoneda holds the string denoting the moneda field in the database.
-	FieldMoneda = "moneda"
 	// FieldMonto holds the string denoting the monto field in the database.
 	FieldMonto = "monto"
-	// FieldMetodoPago holds the string denoting the metodo_pago field in the database.
-	FieldMetodoPago = "metodo_pago"
-	// FieldReferencia holds the string denoting the referencia field in the database.
-	FieldReferencia = "referencia"
-	// FieldPagadoA holds the string denoting the pagado_a field in the database.
-	FieldPagadoA = "pagado_a"
-	// FieldEstado holds the string denoting the estado field in the database.
-	FieldEstado = "estado"
-	// FieldNotas holds the string denoting the notas field in the database.
-	FieldNotas = "notas"
+	// FieldFecha holds the string denoting the fecha field in the database.
+	FieldFecha = "fecha"
+	// FieldTipoPagoID holds the string denoting the tipo_pago_id field in the database.
+	FieldTipoPagoID = "tipo_pago_id"
+	// FieldDescripcion holds the string denoting the descripcion field in the database.
+	FieldDescripcion = "descripcion"
 	// EdgeEmpresa holds the string denoting the empresa edge name in mutations.
 	EdgeEmpresa = "empresa"
-	// EdgePropiedad holds the string denoting the propiedad edge name in mutations.
-	EdgePropiedad = "propiedad"
-	// EdgeUnidad holds the string denoting the unidad edge name in mutations.
-	EdgeUnidad = "unidad"
+	// EdgeTipoPago holds the string denoting the tipo_pago edge name in mutations.
+	EdgeTipoPago = "tipo_pago"
 	// EdgeMovimientosCaja holds the string denoting the movimientos_caja edge name in mutations.
 	EdgeMovimientosCaja = "movimientos_caja"
 	// Table holds the table name of the gasto in the database.
@@ -60,20 +37,13 @@ const (
 	EmpresaInverseTable = "empresas"
 	// EmpresaColumn is the table column denoting the empresa relation/edge.
 	EmpresaColumn = "empresa_id"
-	// PropiedadTable is the table that holds the propiedad relation/edge.
-	PropiedadTable = "gastos"
-	// PropiedadInverseTable is the table name for the Propiedad entity.
-	// It exists in this package in order to avoid circular dependency with the "propiedad" package.
-	PropiedadInverseTable = "propiedades"
-	// PropiedadColumn is the table column denoting the propiedad relation/edge.
-	PropiedadColumn = "propiedad_id"
-	// UnidadTable is the table that holds the unidad relation/edge.
-	UnidadTable = "gastos"
-	// UnidadInverseTable is the table name for the Unidad entity.
-	// It exists in this package in order to avoid circular dependency with the "unidad" package.
-	UnidadInverseTable = "unidades"
-	// UnidadColumn is the table column denoting the unidad relation/edge.
-	UnidadColumn = "unidad_id"
+	// TipoPagoTable is the table that holds the tipo_pago relation/edge.
+	TipoPagoTable = "gastos"
+	// TipoPagoInverseTable is the table name for the TipoPago entity.
+	// It exists in this package in order to avoid circular dependency with the "tipopago" package.
+	TipoPagoInverseTable = "tipos_pago"
+	// TipoPagoColumn is the table column denoting the tipo_pago relation/edge.
+	TipoPagoColumn = "tipo_pago_id"
 	// MovimientosCajaTable is the table that holds the movimientos_caja relation/edge.
 	MovimientosCajaTable = "movimientos_caja"
 	// MovimientosCajaInverseTable is the table name for the MovimientoCaja entity.
@@ -86,20 +56,11 @@ const (
 // Columns holds all SQL columns for gasto fields.
 var Columns = []string{
 	FieldID,
-	FieldCreadoEn,
 	FieldEmpresaID,
-	FieldPropiedadID,
-	FieldUnidadID,
-	FieldCategoria,
-	FieldDescripcion,
-	FieldFechaGasto,
-	FieldMoneda,
 	FieldMonto,
-	FieldMetodoPago,
-	FieldReferencia,
-	FieldPagadoA,
-	FieldEstado,
-	FieldNotas,
+	FieldFecha,
+	FieldTipoPagoID,
+	FieldDescripcion,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -113,113 +74,9 @@ func ValidColumn(column string) bool {
 }
 
 var (
-	// DefaultCreadoEn holds the default value on creation for the "creado_en" field.
-	DefaultCreadoEn func() time.Time
 	// DescripcionValidator is a validator for the "descripcion" field. It is called by the builders before save.
 	DescripcionValidator func(string) error
-	// DefaultMoneda holds the default value on creation for the "moneda" field.
-	DefaultMoneda string
-	// MonedaValidator is a validator for the "moneda" field. It is called by the builders before save.
-	MonedaValidator func(string) error
-	// DefaultMonto holds the default value on creation for the "monto" field.
-	DefaultMonto int64
-	// ReferenciaValidator is a validator for the "referencia" field. It is called by the builders before save.
-	ReferenciaValidator func(string) error
-	// PagadoAValidator is a validator for the "pagado_a" field. It is called by the builders before save.
-	PagadoAValidator func(string) error
-	// NotasValidator is a validator for the "notas" field. It is called by the builders before save.
-	NotasValidator func(string) error
 )
-
-// Categoria defines the type for the "categoria" enum field.
-type Categoria string
-
-// CategoriaOtro is the default value of the Categoria enum.
-const DefaultCategoria = CategoriaOtro
-
-// Categoria values.
-const (
-	CategoriaAgua          Categoria = "agua"
-	CategoriaLuz           Categoria = "luz"
-	CategoriaInternet      Categoria = "internet"
-	CategoriaMantenimiento Categoria = "mantenimiento"
-	CategoriaLimpieza      Categoria = "limpieza"
-	CategoriaImpuestos     Categoria = "impuestos"
-	CategoriaReparacion    Categoria = "reparacion"
-	CategoriaOtro          Categoria = "otro"
-)
-
-func (c Categoria) String() string {
-	return string(c)
-}
-
-// CategoriaValidator is a validator for the "categoria" field enum values. It is called by the builders before save.
-func CategoriaValidator(c Categoria) error {
-	switch c {
-	case CategoriaAgua, CategoriaLuz, CategoriaInternet, CategoriaMantenimiento, CategoriaLimpieza, CategoriaImpuestos, CategoriaReparacion, CategoriaOtro:
-		return nil
-	default:
-		return fmt.Errorf("gasto: invalid enum value for categoria field: %q", c)
-	}
-}
-
-// MetodoPago defines the type for the "metodo_pago" enum field.
-type MetodoPago string
-
-// MetodoPagoEfectivo is the default value of the MetodoPago enum.
-const DefaultMetodoPago = MetodoPagoEfectivo
-
-// MetodoPago values.
-const (
-	MetodoPagoEfectivo      MetodoPago = "efectivo"
-	MetodoPagoTransferencia MetodoPago = "transferencia"
-	MetodoPagoYape          MetodoPago = "yape"
-	MetodoPagoPlin          MetodoPago = "plin"
-	MetodoPagoTarjeta       MetodoPago = "tarjeta"
-	MetodoPagoDeposito      MetodoPago = "deposito"
-	MetodoPagoOtro          MetodoPago = "otro"
-)
-
-func (mp MetodoPago) String() string {
-	return string(mp)
-}
-
-// MetodoPagoValidator is a validator for the "metodo_pago" field enum values. It is called by the builders before save.
-func MetodoPagoValidator(mp MetodoPago) error {
-	switch mp {
-	case MetodoPagoEfectivo, MetodoPagoTransferencia, MetodoPagoYape, MetodoPagoPlin, MetodoPagoTarjeta, MetodoPagoDeposito, MetodoPagoOtro:
-		return nil
-	default:
-		return fmt.Errorf("gasto: invalid enum value for metodo_pago field: %q", mp)
-	}
-}
-
-// Estado defines the type for the "estado" enum field.
-type Estado string
-
-// EstadoPagado is the default value of the Estado enum.
-const DefaultEstado = EstadoPagado
-
-// Estado values.
-const (
-	EstadoPendiente Estado = "pendiente"
-	EstadoPagado    Estado = "pagado"
-	EstadoAnulado   Estado = "anulado"
-)
-
-func (e Estado) String() string {
-	return string(e)
-}
-
-// EstadoValidator is a validator for the "estado" field enum values. It is called by the builders before save.
-func EstadoValidator(e Estado) error {
-	switch e {
-	case EstadoPendiente, EstadoPagado, EstadoAnulado:
-		return nil
-	default:
-		return fmt.Errorf("gasto: invalid enum value for estado field: %q", e)
-	}
-}
 
 // OrderOption defines the ordering options for the Gasto queries.
 type OrderOption func(*sql.Selector)
@@ -229,44 +86,9 @@ func ByID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldID, opts...).ToFunc()
 }
 
-// ByCreadoEn orders the results by the creado_en field.
-func ByCreadoEn(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCreadoEn, opts...).ToFunc()
-}
-
 // ByEmpresaID orders the results by the empresa_id field.
 func ByEmpresaID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldEmpresaID, opts...).ToFunc()
-}
-
-// ByPropiedadID orders the results by the propiedad_id field.
-func ByPropiedadID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPropiedadID, opts...).ToFunc()
-}
-
-// ByUnidadID orders the results by the unidad_id field.
-func ByUnidadID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldUnidadID, opts...).ToFunc()
-}
-
-// ByCategoria orders the results by the categoria field.
-func ByCategoria(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCategoria, opts...).ToFunc()
-}
-
-// ByDescripcion orders the results by the descripcion field.
-func ByDescripcion(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldDescripcion, opts...).ToFunc()
-}
-
-// ByFechaGasto orders the results by the fecha_gasto field.
-func ByFechaGasto(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldFechaGasto, opts...).ToFunc()
-}
-
-// ByMoneda orders the results by the moneda field.
-func ByMoneda(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldMoneda, opts...).ToFunc()
 }
 
 // ByMonto orders the results by the monto field.
@@ -274,29 +96,19 @@ func ByMonto(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldMonto, opts...).ToFunc()
 }
 
-// ByMetodoPago orders the results by the metodo_pago field.
-func ByMetodoPago(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldMetodoPago, opts...).ToFunc()
+// ByFecha orders the results by the fecha field.
+func ByFecha(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFecha, opts...).ToFunc()
 }
 
-// ByReferencia orders the results by the referencia field.
-func ByReferencia(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldReferencia, opts...).ToFunc()
+// ByTipoPagoID orders the results by the tipo_pago_id field.
+func ByTipoPagoID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTipoPagoID, opts...).ToFunc()
 }
 
-// ByPagadoA orders the results by the pagado_a field.
-func ByPagadoA(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPagadoA, opts...).ToFunc()
-}
-
-// ByEstado orders the results by the estado field.
-func ByEstado(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldEstado, opts...).ToFunc()
-}
-
-// ByNotas orders the results by the notas field.
-func ByNotas(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldNotas, opts...).ToFunc()
+// ByDescripcion orders the results by the descripcion field.
+func ByDescripcion(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDescripcion, opts...).ToFunc()
 }
 
 // ByEmpresaField orders the results by empresa field.
@@ -306,17 +118,10 @@ func ByEmpresaField(field string, opts ...sql.OrderTermOption) OrderOption {
 	}
 }
 
-// ByPropiedadField orders the results by propiedad field.
-func ByPropiedadField(field string, opts ...sql.OrderTermOption) OrderOption {
+// ByTipoPagoField orders the results by tipo_pago field.
+func ByTipoPagoField(field string, opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newPropiedadStep(), sql.OrderByField(field, opts...))
-	}
-}
-
-// ByUnidadField orders the results by unidad field.
-func ByUnidadField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newUnidadStep(), sql.OrderByField(field, opts...))
+		sqlgraph.OrderByNeighborTerms(s, newTipoPagoStep(), sql.OrderByField(field, opts...))
 	}
 }
 
@@ -340,18 +145,11 @@ func newEmpresaStep() *sqlgraph.Step {
 		sqlgraph.Edge(sqlgraph.M2O, true, EmpresaTable, EmpresaColumn),
 	)
 }
-func newPropiedadStep() *sqlgraph.Step {
+func newTipoPagoStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(PropiedadInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, PropiedadTable, PropiedadColumn),
-	)
-}
-func newUnidadStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(UnidadInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, UnidadTable, UnidadColumn),
+		sqlgraph.To(TipoPagoInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, TipoPagoTable, TipoPagoColumn),
 	)
 }
 func newMovimientosCajaStep() *sqlgraph.Step {

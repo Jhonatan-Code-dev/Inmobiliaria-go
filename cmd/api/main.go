@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"strings"
 
 	"rentals-go/di"
 	"rentals-go/internal/routes"
@@ -31,22 +32,47 @@ func main() {
 	}()
 
 	app := fiber.New()
-	origins := appDI.Config.AllowedOrigins
-	if origins == "*" {
-		// Fiber no permite "*" con AllowCredentials=true. 
-		// Si es desarrollo y se quiere permitir todo, es común usar un string vacío o manejarlo por request, 
-		// pero una forma común en este repo es listar los orígenes o dejar que el middleware maneje el "*" si credentials es false.
-		// Para soportar cookies de cualquier origen en dev, usamos un pequeño truco o listamos los más comunes.
-		origins = "http://localhost:3000,http://localhost:5173,http://localhost:8080,http://127.0.0.1:3000,http://127.0.0.1:5173"
-	}
+	origins := normalizarAllowedOrigins(appDI.Config.AllowedOrigins)
 
-	app.Use(cors.New(cors.Config{
-		AllowOrigins:     origins,
+	corsConfig := cors.Config{
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization, X-Requested-With",
 		AllowMethods:     "GET,POST,PUT,PATCH,DELETE,OPTIONS",
 		AllowCredentials: true,
-	}))
+	}
+
+	if origins == "*" {
+		corsConfig.AllowOriginsFunc = func(origin string) bool {
+			return strings.TrimSpace(origin) != ""
+		}
+	} else {
+		corsConfig.AllowOrigins = origins
+	}
+
+	app.Use(cors.New(corsConfig))
 	routes.Register(app, appDI)
 	log.Printf("API corriendo en http://localhost:%s\n", appDI.Config.Port)
 	log.Fatal(app.Listen(":" + appDI.Config.Port))
+}
+
+func normalizarAllowedOrigins(origins string) string {
+	origins = strings.TrimSpace(origins)
+	if origins == "" || origins == "*" {
+		return "*"
+	}
+
+	partes := strings.Split(origins, ",")
+	normalizados := make([]string, 0, len(partes))
+	for _, origen := range partes {
+		origen = strings.TrimSpace(origen)
+		if origen == "" {
+			continue
+		}
+		normalizados = append(normalizados, origen)
+	}
+
+	if len(normalizados) == 0 {
+		return "*"
+	}
+
+	return strings.Join(normalizados, ",")
 }

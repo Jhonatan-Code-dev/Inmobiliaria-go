@@ -20,12 +20,20 @@ var RepositorySet = wire.NewSet(
 	wire.Bind(new(domain.RolRepository), new(*repository.RolRepoEnt)),
 	repository.NewMembresiaRepo,
 	wire.Bind(new(domain.MembresiaRepository), new(*repository.MembresiaRepoEnt)),
+	repository.NewGastoRepo,
+	wire.Bind(new(domain.GastoRepository), new(*repository.GastoRepoEnt)),
+	repository.NewMovimientoCajaRepo,
+	wire.Bind(new(domain.MovimientoCajaRepository), new(*repository.MovimientoCajaRepoEnt)),
+	repository.NewTipoPagoRepo,
+	wire.Bind(new(domain.TipoPagoRepository), new(*repository.TipoPagoRepoEnt)),
 )
 
 var ServiceSet = wire.NewSet(
 	service.NewAdminService,
 	service.NewMonedaService,
 	service.NewUsuarioService,
+	service.NewGastoService,
+	wire.Bind(new(domain.GastoService), new(*service.GastoService)),
 	ProvideJWTSecret,
 )
 
@@ -33,4 +41,5 @@ var ControllerSet = wire.NewSet(
 	controller.NewAdminController,
 	controller.NewMonedaController,
 	controller.NewUsuarioController,
+	controller.NewGastoController,
 )

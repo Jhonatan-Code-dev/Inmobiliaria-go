@@ -501,6 +501,213 @@
                 }
             }
         },
+        "/api/user/gastos": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Obtiene una lista paginada de gastos (máx 10). Filtros opcionales: anio, mes, desde, hasta, fecha.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Gastos"
+                ],
+                "summary": "Listar gastos con filtros y paginación",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Número de página",
+                        "name": "pag",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Año del gasto",
+                        "name": "anio",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Mes del gasto (1-12)",
+                        "name": "mes",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Fecha inicio (YYYY-MM-DD)",
+                        "name": "desde",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Fecha fin (YYYY-MM-DD)",
+                        "name": "hasta",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Fecha exacta (YYYY-MM-DD)",
+                        "name": "fecha",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.listadoGastosResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Crea un nuevo gasto y un movimiento de egreso en caja automático.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Gastos"
+                ],
+                "summary": "Registrar un nuevo gasto",
+                "parameters": [
+                    {
+                        "description": "Datos del gasto",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.gastoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/controller.gastoResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/gastos/tipos-pago": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Obtiene la lista de tipos de pago disponibles (Yape, Plin, Efectivo, etc.)",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Gastos"
+                ],
+                "summary": "Listar los tipos de métodos de pago",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/controller.tipoPagoResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/gastos/{id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Actualiza los datos de un gasto existente.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Gastos"
+                ],
+                "summary": "Actualizar un gasto",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del gasto",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Datos a actualizar",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.gastoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.gastoResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Elimina el registro de gasto permanentemente.",
+                "tags": [
+                    "Gastos"
+                ],
+                "summary": "Eliminar un gasto",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del gasto",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/auth/login": {
             "post": {
                 "description": "Permite a un usuario autenticarse y obtener un token JWT. Además, establece una cookie de sesión.",
@@ -872,6 +1079,60 @@
                 }
             }
         },
+        "controller.gastoRequest": {
+            "type": "object",
+            "properties": {
+                "descripcion": {
+                    "type": "string",
+                    "example": "Pago de servicios básicos"
+                },
+                "empresa_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "fecha": {
+                    "type": "string",
+                    "example": "2024-04-07"
+                },
+                "monto": {
+                    "type": "number",
+                    "example": 50
+                },
+                "tipo_pago_id": {
+                    "type": "integer",
+                    "example": 3
+                }
+            }
+        },
+        "controller.gastoResponse": {
+            "type": "object",
+            "properties": {
+                "descripcion": {
+                    "type": "string",
+                    "example": "Pago de servicios básicos"
+                },
+                "empresa_id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "fecha": {
+                    "type": "string",
+                    "example": "2024-04-07T00:00:00Z"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 10
+                },
+                "monto": {
+                    "type": "number",
+                    "example": 50
+                },
+                "tipo_pago_id": {
+                    "type": "integer",
+                    "example": 3
+                }
+            }
+        },
         "controller.listadoEmpresasResponse": {
             "type": "object",
             "properties": {
@@ -879,6 +1140,20 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/controller.empresaListItemResponse"
+                    }
+                },
+                "paginacion": {
+                    "$ref": "#/definitions/controller.paginadorResponse"
+                }
+            }
+        },
+        "controller.listadoGastosResponse": {
+            "type": "object",
+            "properties": {
+                "datos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/controller.gastoResponse"
                     }
                 },
                 "paginacion": {
@@ -954,6 +1229,19 @@
                 }
             }
         },
+        "controller.tipoPagoResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "nombre": {
+                    "type": "string",
+                    "example": "efectivo"
+                }
+            }
+        },
         "controller.usuarioLoginRequest": {
             "type": "object",
             "properties": {
@@ -970,6 +1258,9 @@
             "properties": {
                 "empresa": {
                     "$ref": "#/definitions/controller.empresaResponse"
+                },
+                "empresa_id": {
+                    "type": "integer"
                 },
                 "token": {
                     "type": "string"

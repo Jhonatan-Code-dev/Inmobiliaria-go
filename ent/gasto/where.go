@@ -55,99 +55,29 @@ func IDLTE(id int) predicate.Gasto {
 	return predicate.Gasto(sql.FieldLTE(FieldID, id))
 }
 
-// CreadoEn applies equality check predicate on the "creado_en" field. It's identical to CreadoEnEQ.
-func CreadoEn(v time.Time) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEQ(FieldCreadoEn, v))
-}
-
 // EmpresaID applies equality check predicate on the "empresa_id" field. It's identical to EmpresaIDEQ.
 func EmpresaID(v int) predicate.Gasto {
 	return predicate.Gasto(sql.FieldEQ(FieldEmpresaID, v))
 }
 
-// PropiedadID applies equality check predicate on the "propiedad_id" field. It's identical to PropiedadIDEQ.
-func PropiedadID(v int) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEQ(FieldPropiedadID, v))
+// Monto applies equality check predicate on the "monto" field. It's identical to MontoEQ.
+func Monto(v float64) predicate.Gasto {
+	return predicate.Gasto(sql.FieldEQ(FieldMonto, v))
 }
 
-// UnidadID applies equality check predicate on the "unidad_id" field. It's identical to UnidadIDEQ.
-func UnidadID(v int) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEQ(FieldUnidadID, v))
+// Fecha applies equality check predicate on the "fecha" field. It's identical to FechaEQ.
+func Fecha(v time.Time) predicate.Gasto {
+	return predicate.Gasto(sql.FieldEQ(FieldFecha, v))
+}
+
+// TipoPagoID applies equality check predicate on the "tipo_pago_id" field. It's identical to TipoPagoIDEQ.
+func TipoPagoID(v int) predicate.Gasto {
+	return predicate.Gasto(sql.FieldEQ(FieldTipoPagoID, v))
 }
 
 // Descripcion applies equality check predicate on the "descripcion" field. It's identical to DescripcionEQ.
 func Descripcion(v string) predicate.Gasto {
 	return predicate.Gasto(sql.FieldEQ(FieldDescripcion, v))
-}
-
-// FechaGasto applies equality check predicate on the "fecha_gasto" field. It's identical to FechaGastoEQ.
-func FechaGasto(v time.Time) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEQ(FieldFechaGasto, v))
-}
-
-// Moneda applies equality check predicate on the "moneda" field. It's identical to MonedaEQ.
-func Moneda(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEQ(FieldMoneda, v))
-}
-
-// Monto applies equality check predicate on the "monto" field. It's identical to MontoEQ.
-func Monto(v int64) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEQ(FieldMonto, v))
-}
-
-// Referencia applies equality check predicate on the "referencia" field. It's identical to ReferenciaEQ.
-func Referencia(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEQ(FieldReferencia, v))
-}
-
-// PagadoA applies equality check predicate on the "pagado_a" field. It's identical to PagadoAEQ.
-func PagadoA(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEQ(FieldPagadoA, v))
-}
-
-// Notas applies equality check predicate on the "notas" field. It's identical to NotasEQ.
-func Notas(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEQ(FieldNotas, v))
-}
-
-// CreadoEnEQ applies the EQ predicate on the "creado_en" field.
-func CreadoEnEQ(v time.Time) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEQ(FieldCreadoEn, v))
-}
-
-// CreadoEnNEQ applies the NEQ predicate on the "creado_en" field.
-func CreadoEnNEQ(v time.Time) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNEQ(FieldCreadoEn, v))
-}
-
-// CreadoEnIn applies the In predicate on the "creado_en" field.
-func CreadoEnIn(vs ...time.Time) predicate.Gasto {
-	return predicate.Gasto(sql.FieldIn(FieldCreadoEn, vs...))
-}
-
-// CreadoEnNotIn applies the NotIn predicate on the "creado_en" field.
-func CreadoEnNotIn(vs ...time.Time) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNotIn(FieldCreadoEn, vs...))
-}
-
-// CreadoEnGT applies the GT predicate on the "creado_en" field.
-func CreadoEnGT(v time.Time) predicate.Gasto {
-	return predicate.Gasto(sql.FieldGT(FieldCreadoEn, v))
-}
-
-// CreadoEnGTE applies the GTE predicate on the "creado_en" field.
-func CreadoEnGTE(v time.Time) predicate.Gasto {
-	return predicate.Gasto(sql.FieldGTE(FieldCreadoEn, v))
-}
-
-// CreadoEnLT applies the LT predicate on the "creado_en" field.
-func CreadoEnLT(v time.Time) predicate.Gasto {
-	return predicate.Gasto(sql.FieldLT(FieldCreadoEn, v))
-}
-
-// CreadoEnLTE applies the LTE predicate on the "creado_en" field.
-func CreadoEnLTE(v time.Time) predicate.Gasto {
-	return predicate.Gasto(sql.FieldLTE(FieldCreadoEn, v))
 }
 
 // EmpresaIDEQ applies the EQ predicate on the "empresa_id" field.
@@ -170,84 +100,104 @@ func EmpresaIDNotIn(vs ...int) predicate.Gasto {
 	return predicate.Gasto(sql.FieldNotIn(FieldEmpresaID, vs...))
 }
 
-// PropiedadIDEQ applies the EQ predicate on the "propiedad_id" field.
-func PropiedadIDEQ(v int) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEQ(FieldPropiedadID, v))
+// MontoEQ applies the EQ predicate on the "monto" field.
+func MontoEQ(v float64) predicate.Gasto {
+	return predicate.Gasto(sql.FieldEQ(FieldMonto, v))
 }
 
-// PropiedadIDNEQ applies the NEQ predicate on the "propiedad_id" field.
-func PropiedadIDNEQ(v int) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNEQ(FieldPropiedadID, v))
+// MontoNEQ applies the NEQ predicate on the "monto" field.
+func MontoNEQ(v float64) predicate.Gasto {
+	return predicate.Gasto(sql.FieldNEQ(FieldMonto, v))
 }
 
-// PropiedadIDIn applies the In predicate on the "propiedad_id" field.
-func PropiedadIDIn(vs ...int) predicate.Gasto {
-	return predicate.Gasto(sql.FieldIn(FieldPropiedadID, vs...))
+// MontoIn applies the In predicate on the "monto" field.
+func MontoIn(vs ...float64) predicate.Gasto {
+	return predicate.Gasto(sql.FieldIn(FieldMonto, vs...))
 }
 
-// PropiedadIDNotIn applies the NotIn predicate on the "propiedad_id" field.
-func PropiedadIDNotIn(vs ...int) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNotIn(FieldPropiedadID, vs...))
+// MontoNotIn applies the NotIn predicate on the "monto" field.
+func MontoNotIn(vs ...float64) predicate.Gasto {
+	return predicate.Gasto(sql.FieldNotIn(FieldMonto, vs...))
 }
 
-// PropiedadIDIsNil applies the IsNil predicate on the "propiedad_id" field.
-func PropiedadIDIsNil() predicate.Gasto {
-	return predicate.Gasto(sql.FieldIsNull(FieldPropiedadID))
+// MontoGT applies the GT predicate on the "monto" field.
+func MontoGT(v float64) predicate.Gasto {
+	return predicate.Gasto(sql.FieldGT(FieldMonto, v))
 }
 
-// PropiedadIDNotNil applies the NotNil predicate on the "propiedad_id" field.
-func PropiedadIDNotNil() predicate.Gasto {
-	return predicate.Gasto(sql.FieldNotNull(FieldPropiedadID))
+// MontoGTE applies the GTE predicate on the "monto" field.
+func MontoGTE(v float64) predicate.Gasto {
+	return predicate.Gasto(sql.FieldGTE(FieldMonto, v))
 }
 
-// UnidadIDEQ applies the EQ predicate on the "unidad_id" field.
-func UnidadIDEQ(v int) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEQ(FieldUnidadID, v))
+// MontoLT applies the LT predicate on the "monto" field.
+func MontoLT(v float64) predicate.Gasto {
+	return predicate.Gasto(sql.FieldLT(FieldMonto, v))
 }
 
-// UnidadIDNEQ applies the NEQ predicate on the "unidad_id" field.
-func UnidadIDNEQ(v int) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNEQ(FieldUnidadID, v))
+// MontoLTE applies the LTE predicate on the "monto" field.
+func MontoLTE(v float64) predicate.Gasto {
+	return predicate.Gasto(sql.FieldLTE(FieldMonto, v))
 }
 
-// UnidadIDIn applies the In predicate on the "unidad_id" field.
-func UnidadIDIn(vs ...int) predicate.Gasto {
-	return predicate.Gasto(sql.FieldIn(FieldUnidadID, vs...))
+// FechaEQ applies the EQ predicate on the "fecha" field.
+func FechaEQ(v time.Time) predicate.Gasto {
+	return predicate.Gasto(sql.FieldEQ(FieldFecha, v))
 }
 
-// UnidadIDNotIn applies the NotIn predicate on the "unidad_id" field.
-func UnidadIDNotIn(vs ...int) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNotIn(FieldUnidadID, vs...))
+// FechaNEQ applies the NEQ predicate on the "fecha" field.
+func FechaNEQ(v time.Time) predicate.Gasto {
+	return predicate.Gasto(sql.FieldNEQ(FieldFecha, v))
 }
 
-// UnidadIDIsNil applies the IsNil predicate on the "unidad_id" field.
-func UnidadIDIsNil() predicate.Gasto {
-	return predicate.Gasto(sql.FieldIsNull(FieldUnidadID))
+// FechaIn applies the In predicate on the "fecha" field.
+func FechaIn(vs ...time.Time) predicate.Gasto {
+	return predicate.Gasto(sql.FieldIn(FieldFecha, vs...))
 }
 
-// UnidadIDNotNil applies the NotNil predicate on the "unidad_id" field.
-func UnidadIDNotNil() predicate.Gasto {
-	return predicate.Gasto(sql.FieldNotNull(FieldUnidadID))
+// FechaNotIn applies the NotIn predicate on the "fecha" field.
+func FechaNotIn(vs ...time.Time) predicate.Gasto {
+	return predicate.Gasto(sql.FieldNotIn(FieldFecha, vs...))
 }
 
-// CategoriaEQ applies the EQ predicate on the "categoria" field.
-func CategoriaEQ(v Categoria) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEQ(FieldCategoria, v))
+// FechaGT applies the GT predicate on the "fecha" field.
+func FechaGT(v time.Time) predicate.Gasto {
+	return predicate.Gasto(sql.FieldGT(FieldFecha, v))
 }
 
-// CategoriaNEQ applies the NEQ predicate on the "categoria" field.
-func CategoriaNEQ(v Categoria) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNEQ(FieldCategoria, v))
+// FechaGTE applies the GTE predicate on the "fecha" field.
+func FechaGTE(v time.Time) predicate.Gasto {
+	return predicate.Gasto(sql.FieldGTE(FieldFecha, v))
 }
 
-// CategoriaIn applies the In predicate on the "categoria" field.
-func CategoriaIn(vs ...Categoria) predicate.Gasto {
-	return predicate.Gasto(sql.FieldIn(FieldCategoria, vs...))
+// FechaLT applies the LT predicate on the "fecha" field.
+func FechaLT(v time.Time) predicate.Gasto {
+	return predicate.Gasto(sql.FieldLT(FieldFecha, v))
 }
 
-// CategoriaNotIn applies the NotIn predicate on the "categoria" field.
-func CategoriaNotIn(vs ...Categoria) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNotIn(FieldCategoria, vs...))
+// FechaLTE applies the LTE predicate on the "fecha" field.
+func FechaLTE(v time.Time) predicate.Gasto {
+	return predicate.Gasto(sql.FieldLTE(FieldFecha, v))
+}
+
+// TipoPagoIDEQ applies the EQ predicate on the "tipo_pago_id" field.
+func TipoPagoIDEQ(v int) predicate.Gasto {
+	return predicate.Gasto(sql.FieldEQ(FieldTipoPagoID, v))
+}
+
+// TipoPagoIDNEQ applies the NEQ predicate on the "tipo_pago_id" field.
+func TipoPagoIDNEQ(v int) predicate.Gasto {
+	return predicate.Gasto(sql.FieldNEQ(FieldTipoPagoID, v))
+}
+
+// TipoPagoIDIn applies the In predicate on the "tipo_pago_id" field.
+func TipoPagoIDIn(vs ...int) predicate.Gasto {
+	return predicate.Gasto(sql.FieldIn(FieldTipoPagoID, vs...))
+}
+
+// TipoPagoIDNotIn applies the NotIn predicate on the "tipo_pago_id" field.
+func TipoPagoIDNotIn(vs ...int) predicate.Gasto {
+	return predicate.Gasto(sql.FieldNotIn(FieldTipoPagoID, vs...))
 }
 
 // DescripcionEQ applies the EQ predicate on the "descripcion" field.
@@ -315,416 +265,6 @@ func DescripcionContainsFold(v string) predicate.Gasto {
 	return predicate.Gasto(sql.FieldContainsFold(FieldDescripcion, v))
 }
 
-// FechaGastoEQ applies the EQ predicate on the "fecha_gasto" field.
-func FechaGastoEQ(v time.Time) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEQ(FieldFechaGasto, v))
-}
-
-// FechaGastoNEQ applies the NEQ predicate on the "fecha_gasto" field.
-func FechaGastoNEQ(v time.Time) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNEQ(FieldFechaGasto, v))
-}
-
-// FechaGastoIn applies the In predicate on the "fecha_gasto" field.
-func FechaGastoIn(vs ...time.Time) predicate.Gasto {
-	return predicate.Gasto(sql.FieldIn(FieldFechaGasto, vs...))
-}
-
-// FechaGastoNotIn applies the NotIn predicate on the "fecha_gasto" field.
-func FechaGastoNotIn(vs ...time.Time) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNotIn(FieldFechaGasto, vs...))
-}
-
-// FechaGastoGT applies the GT predicate on the "fecha_gasto" field.
-func FechaGastoGT(v time.Time) predicate.Gasto {
-	return predicate.Gasto(sql.FieldGT(FieldFechaGasto, v))
-}
-
-// FechaGastoGTE applies the GTE predicate on the "fecha_gasto" field.
-func FechaGastoGTE(v time.Time) predicate.Gasto {
-	return predicate.Gasto(sql.FieldGTE(FieldFechaGasto, v))
-}
-
-// FechaGastoLT applies the LT predicate on the "fecha_gasto" field.
-func FechaGastoLT(v time.Time) predicate.Gasto {
-	return predicate.Gasto(sql.FieldLT(FieldFechaGasto, v))
-}
-
-// FechaGastoLTE applies the LTE predicate on the "fecha_gasto" field.
-func FechaGastoLTE(v time.Time) predicate.Gasto {
-	return predicate.Gasto(sql.FieldLTE(FieldFechaGasto, v))
-}
-
-// MonedaEQ applies the EQ predicate on the "moneda" field.
-func MonedaEQ(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEQ(FieldMoneda, v))
-}
-
-// MonedaNEQ applies the NEQ predicate on the "moneda" field.
-func MonedaNEQ(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNEQ(FieldMoneda, v))
-}
-
-// MonedaIn applies the In predicate on the "moneda" field.
-func MonedaIn(vs ...string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldIn(FieldMoneda, vs...))
-}
-
-// MonedaNotIn applies the NotIn predicate on the "moneda" field.
-func MonedaNotIn(vs ...string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNotIn(FieldMoneda, vs...))
-}
-
-// MonedaGT applies the GT predicate on the "moneda" field.
-func MonedaGT(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldGT(FieldMoneda, v))
-}
-
-// MonedaGTE applies the GTE predicate on the "moneda" field.
-func MonedaGTE(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldGTE(FieldMoneda, v))
-}
-
-// MonedaLT applies the LT predicate on the "moneda" field.
-func MonedaLT(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldLT(FieldMoneda, v))
-}
-
-// MonedaLTE applies the LTE predicate on the "moneda" field.
-func MonedaLTE(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldLTE(FieldMoneda, v))
-}
-
-// MonedaContains applies the Contains predicate on the "moneda" field.
-func MonedaContains(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldContains(FieldMoneda, v))
-}
-
-// MonedaHasPrefix applies the HasPrefix predicate on the "moneda" field.
-func MonedaHasPrefix(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldHasPrefix(FieldMoneda, v))
-}
-
-// MonedaHasSuffix applies the HasSuffix predicate on the "moneda" field.
-func MonedaHasSuffix(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldHasSuffix(FieldMoneda, v))
-}
-
-// MonedaEqualFold applies the EqualFold predicate on the "moneda" field.
-func MonedaEqualFold(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEqualFold(FieldMoneda, v))
-}
-
-// MonedaContainsFold applies the ContainsFold predicate on the "moneda" field.
-func MonedaContainsFold(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldContainsFold(FieldMoneda, v))
-}
-
-// MontoEQ applies the EQ predicate on the "monto" field.
-func MontoEQ(v int64) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEQ(FieldMonto, v))
-}
-
-// MontoNEQ applies the NEQ predicate on the "monto" field.
-func MontoNEQ(v int64) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNEQ(FieldMonto, v))
-}
-
-// MontoIn applies the In predicate on the "monto" field.
-func MontoIn(vs ...int64) predicate.Gasto {
-	return predicate.Gasto(sql.FieldIn(FieldMonto, vs...))
-}
-
-// MontoNotIn applies the NotIn predicate on the "monto" field.
-func MontoNotIn(vs ...int64) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNotIn(FieldMonto, vs...))
-}
-
-// MontoGT applies the GT predicate on the "monto" field.
-func MontoGT(v int64) predicate.Gasto {
-	return predicate.Gasto(sql.FieldGT(FieldMonto, v))
-}
-
-// MontoGTE applies the GTE predicate on the "monto" field.
-func MontoGTE(v int64) predicate.Gasto {
-	return predicate.Gasto(sql.FieldGTE(FieldMonto, v))
-}
-
-// MontoLT applies the LT predicate on the "monto" field.
-func MontoLT(v int64) predicate.Gasto {
-	return predicate.Gasto(sql.FieldLT(FieldMonto, v))
-}
-
-// MontoLTE applies the LTE predicate on the "monto" field.
-func MontoLTE(v int64) predicate.Gasto {
-	return predicate.Gasto(sql.FieldLTE(FieldMonto, v))
-}
-
-// MetodoPagoEQ applies the EQ predicate on the "metodo_pago" field.
-func MetodoPagoEQ(v MetodoPago) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEQ(FieldMetodoPago, v))
-}
-
-// MetodoPagoNEQ applies the NEQ predicate on the "metodo_pago" field.
-func MetodoPagoNEQ(v MetodoPago) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNEQ(FieldMetodoPago, v))
-}
-
-// MetodoPagoIn applies the In predicate on the "metodo_pago" field.
-func MetodoPagoIn(vs ...MetodoPago) predicate.Gasto {
-	return predicate.Gasto(sql.FieldIn(FieldMetodoPago, vs...))
-}
-
-// MetodoPagoNotIn applies the NotIn predicate on the "metodo_pago" field.
-func MetodoPagoNotIn(vs ...MetodoPago) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNotIn(FieldMetodoPago, vs...))
-}
-
-// ReferenciaEQ applies the EQ predicate on the "referencia" field.
-func ReferenciaEQ(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEQ(FieldReferencia, v))
-}
-
-// ReferenciaNEQ applies the NEQ predicate on the "referencia" field.
-func ReferenciaNEQ(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNEQ(FieldReferencia, v))
-}
-
-// ReferenciaIn applies the In predicate on the "referencia" field.
-func ReferenciaIn(vs ...string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldIn(FieldReferencia, vs...))
-}
-
-// ReferenciaNotIn applies the NotIn predicate on the "referencia" field.
-func ReferenciaNotIn(vs ...string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNotIn(FieldReferencia, vs...))
-}
-
-// ReferenciaGT applies the GT predicate on the "referencia" field.
-func ReferenciaGT(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldGT(FieldReferencia, v))
-}
-
-// ReferenciaGTE applies the GTE predicate on the "referencia" field.
-func ReferenciaGTE(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldGTE(FieldReferencia, v))
-}
-
-// ReferenciaLT applies the LT predicate on the "referencia" field.
-func ReferenciaLT(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldLT(FieldReferencia, v))
-}
-
-// ReferenciaLTE applies the LTE predicate on the "referencia" field.
-func ReferenciaLTE(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldLTE(FieldReferencia, v))
-}
-
-// ReferenciaContains applies the Contains predicate on the "referencia" field.
-func ReferenciaContains(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldContains(FieldReferencia, v))
-}
-
-// ReferenciaHasPrefix applies the HasPrefix predicate on the "referencia" field.
-func ReferenciaHasPrefix(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldHasPrefix(FieldReferencia, v))
-}
-
-// ReferenciaHasSuffix applies the HasSuffix predicate on the "referencia" field.
-func ReferenciaHasSuffix(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldHasSuffix(FieldReferencia, v))
-}
-
-// ReferenciaIsNil applies the IsNil predicate on the "referencia" field.
-func ReferenciaIsNil() predicate.Gasto {
-	return predicate.Gasto(sql.FieldIsNull(FieldReferencia))
-}
-
-// ReferenciaNotNil applies the NotNil predicate on the "referencia" field.
-func ReferenciaNotNil() predicate.Gasto {
-	return predicate.Gasto(sql.FieldNotNull(FieldReferencia))
-}
-
-// ReferenciaEqualFold applies the EqualFold predicate on the "referencia" field.
-func ReferenciaEqualFold(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEqualFold(FieldReferencia, v))
-}
-
-// ReferenciaContainsFold applies the ContainsFold predicate on the "referencia" field.
-func ReferenciaContainsFold(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldContainsFold(FieldReferencia, v))
-}
-
-// PagadoAEQ applies the EQ predicate on the "pagado_a" field.
-func PagadoAEQ(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEQ(FieldPagadoA, v))
-}
-
-// PagadoANEQ applies the NEQ predicate on the "pagado_a" field.
-func PagadoANEQ(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNEQ(FieldPagadoA, v))
-}
-
-// PagadoAIn applies the In predicate on the "pagado_a" field.
-func PagadoAIn(vs ...string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldIn(FieldPagadoA, vs...))
-}
-
-// PagadoANotIn applies the NotIn predicate on the "pagado_a" field.
-func PagadoANotIn(vs ...string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNotIn(FieldPagadoA, vs...))
-}
-
-// PagadoAGT applies the GT predicate on the "pagado_a" field.
-func PagadoAGT(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldGT(FieldPagadoA, v))
-}
-
-// PagadoAGTE applies the GTE predicate on the "pagado_a" field.
-func PagadoAGTE(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldGTE(FieldPagadoA, v))
-}
-
-// PagadoALT applies the LT predicate on the "pagado_a" field.
-func PagadoALT(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldLT(FieldPagadoA, v))
-}
-
-// PagadoALTE applies the LTE predicate on the "pagado_a" field.
-func PagadoALTE(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldLTE(FieldPagadoA, v))
-}
-
-// PagadoAContains applies the Contains predicate on the "pagado_a" field.
-func PagadoAContains(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldContains(FieldPagadoA, v))
-}
-
-// PagadoAHasPrefix applies the HasPrefix predicate on the "pagado_a" field.
-func PagadoAHasPrefix(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldHasPrefix(FieldPagadoA, v))
-}
-
-// PagadoAHasSuffix applies the HasSuffix predicate on the "pagado_a" field.
-func PagadoAHasSuffix(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldHasSuffix(FieldPagadoA, v))
-}
-
-// PagadoAIsNil applies the IsNil predicate on the "pagado_a" field.
-func PagadoAIsNil() predicate.Gasto {
-	return predicate.Gasto(sql.FieldIsNull(FieldPagadoA))
-}
-
-// PagadoANotNil applies the NotNil predicate on the "pagado_a" field.
-func PagadoANotNil() predicate.Gasto {
-	return predicate.Gasto(sql.FieldNotNull(FieldPagadoA))
-}
-
-// PagadoAEqualFold applies the EqualFold predicate on the "pagado_a" field.
-func PagadoAEqualFold(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEqualFold(FieldPagadoA, v))
-}
-
-// PagadoAContainsFold applies the ContainsFold predicate on the "pagado_a" field.
-func PagadoAContainsFold(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldContainsFold(FieldPagadoA, v))
-}
-
-// EstadoEQ applies the EQ predicate on the "estado" field.
-func EstadoEQ(v Estado) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEQ(FieldEstado, v))
-}
-
-// EstadoNEQ applies the NEQ predicate on the "estado" field.
-func EstadoNEQ(v Estado) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNEQ(FieldEstado, v))
-}
-
-// EstadoIn applies the In predicate on the "estado" field.
-func EstadoIn(vs ...Estado) predicate.Gasto {
-	return predicate.Gasto(sql.FieldIn(FieldEstado, vs...))
-}
-
-// EstadoNotIn applies the NotIn predicate on the "estado" field.
-func EstadoNotIn(vs ...Estado) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNotIn(FieldEstado, vs...))
-}
-
-// NotasEQ applies the EQ predicate on the "notas" field.
-func NotasEQ(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEQ(FieldNotas, v))
-}
-
-// NotasNEQ applies the NEQ predicate on the "notas" field.
-func NotasNEQ(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNEQ(FieldNotas, v))
-}
-
-// NotasIn applies the In predicate on the "notas" field.
-func NotasIn(vs ...string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldIn(FieldNotas, vs...))
-}
-
-// NotasNotIn applies the NotIn predicate on the "notas" field.
-func NotasNotIn(vs ...string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldNotIn(FieldNotas, vs...))
-}
-
-// NotasGT applies the GT predicate on the "notas" field.
-func NotasGT(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldGT(FieldNotas, v))
-}
-
-// NotasGTE applies the GTE predicate on the "notas" field.
-func NotasGTE(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldGTE(FieldNotas, v))
-}
-
-// NotasLT applies the LT predicate on the "notas" field.
-func NotasLT(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldLT(FieldNotas, v))
-}
-
-// NotasLTE applies the LTE predicate on the "notas" field.
-func NotasLTE(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldLTE(FieldNotas, v))
-}
-
-// NotasContains applies the Contains predicate on the "notas" field.
-func NotasContains(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldContains(FieldNotas, v))
-}
-
-// NotasHasPrefix applies the HasPrefix predicate on the "notas" field.
-func NotasHasPrefix(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldHasPrefix(FieldNotas, v))
-}
-
-// NotasHasSuffix applies the HasSuffix predicate on the "notas" field.
-func NotasHasSuffix(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldHasSuffix(FieldNotas, v))
-}
-
-// NotasIsNil applies the IsNil predicate on the "notas" field.
-func NotasIsNil() predicate.Gasto {
-	return predicate.Gasto(sql.FieldIsNull(FieldNotas))
-}
-
-// NotasNotNil applies the NotNil predicate on the "notas" field.
-func NotasNotNil() predicate.Gasto {
-	return predicate.Gasto(sql.FieldNotNull(FieldNotas))
-}
-
-// NotasEqualFold applies the EqualFold predicate on the "notas" field.
-func NotasEqualFold(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldEqualFold(FieldNotas, v))
-}
-
-// NotasContainsFold applies the ContainsFold predicate on the "notas" field.
-func NotasContainsFold(v string) predicate.Gasto {
-	return predicate.Gasto(sql.FieldContainsFold(FieldNotas, v))
-}
-
 // HasEmpresa applies the HasEdge predicate on the "empresa" edge.
 func HasEmpresa() predicate.Gasto {
 	return predicate.Gasto(func(s *sql.Selector) {
@@ -748,44 +288,21 @@ func HasEmpresaWith(preds ...predicate.Empresa) predicate.Gasto {
 	})
 }
 
-// HasPropiedad applies the HasEdge predicate on the "propiedad" edge.
-func HasPropiedad() predicate.Gasto {
+// HasTipoPago applies the HasEdge predicate on the "tipo_pago" edge.
+func HasTipoPago() predicate.Gasto {
 	return predicate.Gasto(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, PropiedadTable, PropiedadColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, TipoPagoTable, TipoPagoColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasPropiedadWith applies the HasEdge predicate on the "propiedad" edge with a given conditions (other predicates).
-func HasPropiedadWith(preds ...predicate.Propiedad) predicate.Gasto {
+// HasTipoPagoWith applies the HasEdge predicate on the "tipo_pago" edge with a given conditions (other predicates).
+func HasTipoPagoWith(preds ...predicate.TipoPago) predicate.Gasto {
 	return predicate.Gasto(func(s *sql.Selector) {
-		step := newPropiedadStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasUnidad applies the HasEdge predicate on the "unidad" edge.
-func HasUnidad() predicate.Gasto {
-	return predicate.Gasto(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, UnidadTable, UnidadColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasUnidadWith applies the HasEdge predicate on the "unidad" edge with a given conditions (other predicates).
-func HasUnidadWith(preds ...predicate.Unidad) predicate.Gasto {
-	return predicate.Gasto(func(s *sql.Selector) {
-		step := newUnidadStep()
+		step := newTipoPagoStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

@@ -51,6 +51,9 @@ type ServicioMedicion func(*sql.Selector)
 // TipoIdentificacion is the predicate function for tipoidentificacion builders.
 type TipoIdentificacion func(*sql.Selector)
 
+// TipoPago is the predicate function for tipopago builders.
+type TipoPago func(*sql.Selector)
+
 // Unidad is the predicate function for unidad builders.
 type Unidad func(*sql.Selector)
 

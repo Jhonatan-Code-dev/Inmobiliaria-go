@@ -6,8 +6,7 @@ import (
 	"fmt"
 	"rentals-go/ent/empresa"
 	"rentals-go/ent/gasto"
-	"rentals-go/ent/propiedad"
-	"rentals-go/ent/unidad"
+	"rentals-go/ent/tipopago"
 	"strings"
 	"time"
 
@@ -20,34 +19,16 @@ type Gasto struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
-	// CreadoEn holds the value of the "creado_en" field.
-	CreadoEn time.Time `json:"creado_en,omitempty"`
 	// EmpresaID holds the value of the "empresa_id" field.
 	EmpresaID int `json:"empresa_id,omitempty"`
-	// PropiedadID holds the value of the "propiedad_id" field.
-	PropiedadID *int `json:"propiedad_id,omitempty"`
-	// UnidadID holds the value of the "unidad_id" field.
-	UnidadID *int `json:"unidad_id,omitempty"`
-	// Categoria holds the value of the "categoria" field.
-	Categoria gasto.Categoria `json:"categoria,omitempty"`
+	// Monto holds the value of the "monto" field.
+	Monto float64 `json:"monto,omitempty"`
+	// Fecha holds the value of the "fecha" field.
+	Fecha time.Time `json:"fecha,omitempty"`
+	// TipoPagoID holds the value of the "tipo_pago_id" field.
+	TipoPagoID int `json:"tipo_pago_id,omitempty"`
 	// Descripcion holds the value of the "descripcion" field.
 	Descripcion string `json:"descripcion,omitempty"`
-	// FechaGasto holds the value of the "fecha_gasto" field.
-	FechaGasto time.Time `json:"fecha_gasto,omitempty"`
-	// Moneda holds the value of the "moneda" field.
-	Moneda string `json:"moneda,omitempty"`
-	// Monto holds the value of the "monto" field.
-	Monto int64 `json:"monto,omitempty"`
-	// MetodoPago holds the value of the "metodo_pago" field.
-	MetodoPago gasto.MetodoPago `json:"metodo_pago,omitempty"`
-	// Referencia holds the value of the "referencia" field.
-	Referencia *string `json:"referencia,omitempty"`
-	// PagadoA holds the value of the "pagado_a" field.
-	PagadoA *string `json:"pagado_a,omitempty"`
-	// Estado holds the value of the "estado" field.
-	Estado gasto.Estado `json:"estado,omitempty"`
-	// Notas holds the value of the "notas" field.
-	Notas *string `json:"notas,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the GastoQuery when eager-loading is set.
 	Edges        GastoEdges `json:"edges"`
@@ -58,15 +39,13 @@ type Gasto struct {
 type GastoEdges struct {
 	// Empresa holds the value of the empresa edge.
 	Empresa *Empresa `json:"empresa,omitempty"`
-	// Propiedad holds the value of the propiedad edge.
-	Propiedad *Propiedad `json:"propiedad,omitempty"`
-	// Unidad holds the value of the unidad edge.
-	Unidad *Unidad `json:"unidad,omitempty"`
+	// TipoPago holds the value of the tipo_pago edge.
+	TipoPago *TipoPago `json:"tipo_pago,omitempty"`
 	// MovimientosCaja holds the value of the movimientos_caja edge.
 	MovimientosCaja []*MovimientoCaja `json:"movimientos_caja,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [3]bool
 }
 
 // EmpresaOrErr returns the Empresa value or an error if the edge
@@ -80,32 +59,21 @@ func (e GastoEdges) EmpresaOrErr() (*Empresa, error) {
 	return nil, &NotLoadedError{edge: "empresa"}
 }
 
-// PropiedadOrErr returns the Propiedad value or an error if the edge
+// TipoPagoOrErr returns the TipoPago value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e GastoEdges) PropiedadOrErr() (*Propiedad, error) {
-	if e.Propiedad != nil {
-		return e.Propiedad, nil
+func (e GastoEdges) TipoPagoOrErr() (*TipoPago, error) {
+	if e.TipoPago != nil {
+		return e.TipoPago, nil
 	} else if e.loadedTypes[1] {
-		return nil, &NotFoundError{label: propiedad.Label}
+		return nil, &NotFoundError{label: tipopago.Label}
 	}
-	return nil, &NotLoadedError{edge: "propiedad"}
-}
-
-// UnidadOrErr returns the Unidad value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e GastoEdges) UnidadOrErr() (*Unidad, error) {
-	if e.Unidad != nil {
-		return e.Unidad, nil
-	} else if e.loadedTypes[2] {
-		return nil, &NotFoundError{label: unidad.Label}
-	}
-	return nil, &NotLoadedError{edge: "unidad"}
+	return nil, &NotLoadedError{edge: "tipo_pago"}
 }
 
 // MovimientosCajaOrErr returns the MovimientosCaja value or an error if the edge
 // was not loaded in eager-loading.
 func (e GastoEdges) MovimientosCajaOrErr() ([]*MovimientoCaja, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[2] {
 		return e.MovimientosCaja, nil
 	}
 	return nil, &NotLoadedError{edge: "movimientos_caja"}
@@ -116,11 +84,13 @@ func (*Gasto) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case gasto.FieldID, gasto.FieldEmpresaID, gasto.FieldPropiedadID, gasto.FieldUnidadID, gasto.FieldMonto:
+		case gasto.FieldMonto:
+			values[i] = new(sql.NullFloat64)
+		case gasto.FieldID, gasto.FieldEmpresaID, gasto.FieldTipoPagoID:
 			values[i] = new(sql.NullInt64)
-		case gasto.FieldCategoria, gasto.FieldDescripcion, gasto.FieldMoneda, gasto.FieldMetodoPago, gasto.FieldReferencia, gasto.FieldPagadoA, gasto.FieldEstado, gasto.FieldNotas:
+		case gasto.FieldDescripcion:
 			values[i] = new(sql.NullString)
-		case gasto.FieldCreadoEn, gasto.FieldFechaGasto:
+		case gasto.FieldFecha:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -143,94 +113,35 @@ func (_m *Gasto) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			_m.ID = int(value.Int64)
-		case gasto.FieldCreadoEn:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field creado_en", values[i])
-			} else if value.Valid {
-				_m.CreadoEn = value.Time
-			}
 		case gasto.FieldEmpresaID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field empresa_id", values[i])
 			} else if value.Valid {
 				_m.EmpresaID = int(value.Int64)
 			}
-		case gasto.FieldPropiedadID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field propiedad_id", values[i])
+		case gasto.FieldMonto:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field monto", values[i])
 			} else if value.Valid {
-				_m.PropiedadID = new(int)
-				*_m.PropiedadID = int(value.Int64)
+				_m.Monto = value.Float64
 			}
-		case gasto.FieldUnidadID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field unidad_id", values[i])
+		case gasto.FieldFecha:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field fecha", values[i])
 			} else if value.Valid {
-				_m.UnidadID = new(int)
-				*_m.UnidadID = int(value.Int64)
+				_m.Fecha = value.Time
 			}
-		case gasto.FieldCategoria:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field categoria", values[i])
+		case gasto.FieldTipoPagoID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field tipo_pago_id", values[i])
 			} else if value.Valid {
-				_m.Categoria = gasto.Categoria(value.String)
+				_m.TipoPagoID = int(value.Int64)
 			}
 		case gasto.FieldDescripcion:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field descripcion", values[i])
 			} else if value.Valid {
 				_m.Descripcion = value.String
-			}
-		case gasto.FieldFechaGasto:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field fecha_gasto", values[i])
-			} else if value.Valid {
-				_m.FechaGasto = value.Time
-			}
-		case gasto.FieldMoneda:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field moneda", values[i])
-			} else if value.Valid {
-				_m.Moneda = value.String
-			}
-		case gasto.FieldMonto:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field monto", values[i])
-			} else if value.Valid {
-				_m.Monto = value.Int64
-			}
-		case gasto.FieldMetodoPago:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field metodo_pago", values[i])
-			} else if value.Valid {
-				_m.MetodoPago = gasto.MetodoPago(value.String)
-			}
-		case gasto.FieldReferencia:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field referencia", values[i])
-			} else if value.Valid {
-				_m.Referencia = new(string)
-				*_m.Referencia = value.String
-			}
-		case gasto.FieldPagadoA:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field pagado_a", values[i])
-			} else if value.Valid {
-				_m.PagadoA = new(string)
-				*_m.PagadoA = value.String
-			}
-		case gasto.FieldEstado:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field estado", values[i])
-			} else if value.Valid {
-				_m.Estado = gasto.Estado(value.String)
-			}
-		case gasto.FieldNotas:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field notas", values[i])
-			} else if value.Valid {
-				_m.Notas = new(string)
-				*_m.Notas = value.String
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -250,14 +161,9 @@ func (_m *Gasto) QueryEmpresa() *EmpresaQuery {
 	return NewGastoClient(_m.config).QueryEmpresa(_m)
 }
 
-// QueryPropiedad queries the "propiedad" edge of the Gasto entity.
-func (_m *Gasto) QueryPropiedad() *PropiedadQuery {
-	return NewGastoClient(_m.config).QueryPropiedad(_m)
-}
-
-// QueryUnidad queries the "unidad" edge of the Gasto entity.
-func (_m *Gasto) QueryUnidad() *UnidadQuery {
-	return NewGastoClient(_m.config).QueryUnidad(_m)
+// QueryTipoPago queries the "tipo_pago" edge of the Gasto entity.
+func (_m *Gasto) QueryTipoPago() *TipoPagoQuery {
+	return NewGastoClient(_m.config).QueryTipoPago(_m)
 }
 
 // QueryMovimientosCaja queries the "movimientos_caja" edge of the Gasto entity.
@@ -288,57 +194,20 @@ func (_m *Gasto) String() string {
 	var builder strings.Builder
 	builder.WriteString("Gasto(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
-	builder.WriteString("creado_en=")
-	builder.WriteString(_m.CreadoEn.Format(time.ANSIC))
-	builder.WriteString(", ")
 	builder.WriteString("empresa_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.EmpresaID))
-	builder.WriteString(", ")
-	if v := _m.PropiedadID; v != nil {
-		builder.WriteString("propiedad_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	if v := _m.UnidadID; v != nil {
-		builder.WriteString("unidad_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	builder.WriteString("categoria=")
-	builder.WriteString(fmt.Sprintf("%v", _m.Categoria))
-	builder.WriteString(", ")
-	builder.WriteString("descripcion=")
-	builder.WriteString(_m.Descripcion)
-	builder.WriteString(", ")
-	builder.WriteString("fecha_gasto=")
-	builder.WriteString(_m.FechaGasto.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("moneda=")
-	builder.WriteString(_m.Moneda)
 	builder.WriteString(", ")
 	builder.WriteString("monto=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Monto))
 	builder.WriteString(", ")
-	builder.WriteString("metodo_pago=")
-	builder.WriteString(fmt.Sprintf("%v", _m.MetodoPago))
+	builder.WriteString("fecha=")
+	builder.WriteString(_m.Fecha.Format(time.ANSIC))
 	builder.WriteString(", ")
-	if v := _m.Referencia; v != nil {
-		builder.WriteString("referencia=")
-		builder.WriteString(*v)
-	}
+	builder.WriteString("tipo_pago_id=")
+	builder.WriteString(fmt.Sprintf("%v", _m.TipoPagoID))
 	builder.WriteString(", ")
-	if v := _m.PagadoA; v != nil {
-		builder.WriteString("pagado_a=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	builder.WriteString("estado=")
-	builder.WriteString(fmt.Sprintf("%v", _m.Estado))
-	builder.WriteString(", ")
-	if v := _m.Notas; v != nil {
-		builder.WriteString("notas=")
-		builder.WriteString(*v)
-	}
+	builder.WriteString("descripcion=")
+	builder.WriteString(_m.Descripcion)
 	builder.WriteByte(')')
 	return builder.String()
 }

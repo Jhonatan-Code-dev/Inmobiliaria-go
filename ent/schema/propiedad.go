@@ -51,6 +51,5 @@ func (Propiedad) Edges() []ent.Edge {
 			Required().
 			Unique(),
 		edge.To("unidades", Unidad.Type),
-		edge.To("gastos", Gasto.Type),
 	}
 }

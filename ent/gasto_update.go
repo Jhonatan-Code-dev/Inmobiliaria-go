@@ -10,8 +10,7 @@ import (
 	"rentals-go/ent/gasto"
 	"rentals-go/ent/movimientocaja"
 	"rentals-go/ent/predicate"
-	"rentals-go/ent/propiedad"
-	"rentals-go/ent/unidad"
+	"rentals-go/ent/tipopago"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -46,56 +45,51 @@ func (_u *GastoUpdate) SetNillableEmpresaID(v *int) *GastoUpdate {
 	return _u
 }
 
-// SetPropiedadID sets the "propiedad_id" field.
-func (_u *GastoUpdate) SetPropiedadID(v int) *GastoUpdate {
-	_u.mutation.SetPropiedadID(v)
+// SetMonto sets the "monto" field.
+func (_u *GastoUpdate) SetMonto(v float64) *GastoUpdate {
+	_u.mutation.ResetMonto()
+	_u.mutation.SetMonto(v)
 	return _u
 }
 
-// SetNillablePropiedadID sets the "propiedad_id" field if the given value is not nil.
-func (_u *GastoUpdate) SetNillablePropiedadID(v *int) *GastoUpdate {
+// SetNillableMonto sets the "monto" field if the given value is not nil.
+func (_u *GastoUpdate) SetNillableMonto(v *float64) *GastoUpdate {
 	if v != nil {
-		_u.SetPropiedadID(*v)
+		_u.SetMonto(*v)
 	}
 	return _u
 }
 
-// ClearPropiedadID clears the value of the "propiedad_id" field.
-func (_u *GastoUpdate) ClearPropiedadID() *GastoUpdate {
-	_u.mutation.ClearPropiedadID()
+// AddMonto adds value to the "monto" field.
+func (_u *GastoUpdate) AddMonto(v float64) *GastoUpdate {
+	_u.mutation.AddMonto(v)
 	return _u
 }
 
-// SetUnidadID sets the "unidad_id" field.
-func (_u *GastoUpdate) SetUnidadID(v int) *GastoUpdate {
-	_u.mutation.SetUnidadID(v)
+// SetFecha sets the "fecha" field.
+func (_u *GastoUpdate) SetFecha(v time.Time) *GastoUpdate {
+	_u.mutation.SetFecha(v)
 	return _u
 }
 
-// SetNillableUnidadID sets the "unidad_id" field if the given value is not nil.
-func (_u *GastoUpdate) SetNillableUnidadID(v *int) *GastoUpdate {
+// SetNillableFecha sets the "fecha" field if the given value is not nil.
+func (_u *GastoUpdate) SetNillableFecha(v *time.Time) *GastoUpdate {
 	if v != nil {
-		_u.SetUnidadID(*v)
+		_u.SetFecha(*v)
 	}
 	return _u
 }
 
-// ClearUnidadID clears the value of the "unidad_id" field.
-func (_u *GastoUpdate) ClearUnidadID() *GastoUpdate {
-	_u.mutation.ClearUnidadID()
+// SetTipoPagoID sets the "tipo_pago_id" field.
+func (_u *GastoUpdate) SetTipoPagoID(v int) *GastoUpdate {
+	_u.mutation.SetTipoPagoID(v)
 	return _u
 }
 
-// SetCategoria sets the "categoria" field.
-func (_u *GastoUpdate) SetCategoria(v gasto.Categoria) *GastoUpdate {
-	_u.mutation.SetCategoria(v)
-	return _u
-}
-
-// SetNillableCategoria sets the "categoria" field if the given value is not nil.
-func (_u *GastoUpdate) SetNillableCategoria(v *gasto.Categoria) *GastoUpdate {
+// SetNillableTipoPagoID sets the "tipo_pago_id" field if the given value is not nil.
+func (_u *GastoUpdate) SetNillableTipoPagoID(v *int) *GastoUpdate {
 	if v != nil {
-		_u.SetCategoria(*v)
+		_u.SetTipoPagoID(*v)
 	}
 	return _u
 }
@@ -114,156 +108,14 @@ func (_u *GastoUpdate) SetNillableDescripcion(v *string) *GastoUpdate {
 	return _u
 }
 
-// SetFechaGasto sets the "fecha_gasto" field.
-func (_u *GastoUpdate) SetFechaGasto(v time.Time) *GastoUpdate {
-	_u.mutation.SetFechaGasto(v)
-	return _u
-}
-
-// SetNillableFechaGasto sets the "fecha_gasto" field if the given value is not nil.
-func (_u *GastoUpdate) SetNillableFechaGasto(v *time.Time) *GastoUpdate {
-	if v != nil {
-		_u.SetFechaGasto(*v)
-	}
-	return _u
-}
-
-// SetMoneda sets the "moneda" field.
-func (_u *GastoUpdate) SetMoneda(v string) *GastoUpdate {
-	_u.mutation.SetMoneda(v)
-	return _u
-}
-
-// SetNillableMoneda sets the "moneda" field if the given value is not nil.
-func (_u *GastoUpdate) SetNillableMoneda(v *string) *GastoUpdate {
-	if v != nil {
-		_u.SetMoneda(*v)
-	}
-	return _u
-}
-
-// SetMonto sets the "monto" field.
-func (_u *GastoUpdate) SetMonto(v int64) *GastoUpdate {
-	_u.mutation.ResetMonto()
-	_u.mutation.SetMonto(v)
-	return _u
-}
-
-// SetNillableMonto sets the "monto" field if the given value is not nil.
-func (_u *GastoUpdate) SetNillableMonto(v *int64) *GastoUpdate {
-	if v != nil {
-		_u.SetMonto(*v)
-	}
-	return _u
-}
-
-// AddMonto adds value to the "monto" field.
-func (_u *GastoUpdate) AddMonto(v int64) *GastoUpdate {
-	_u.mutation.AddMonto(v)
-	return _u
-}
-
-// SetMetodoPago sets the "metodo_pago" field.
-func (_u *GastoUpdate) SetMetodoPago(v gasto.MetodoPago) *GastoUpdate {
-	_u.mutation.SetMetodoPago(v)
-	return _u
-}
-
-// SetNillableMetodoPago sets the "metodo_pago" field if the given value is not nil.
-func (_u *GastoUpdate) SetNillableMetodoPago(v *gasto.MetodoPago) *GastoUpdate {
-	if v != nil {
-		_u.SetMetodoPago(*v)
-	}
-	return _u
-}
-
-// SetReferencia sets the "referencia" field.
-func (_u *GastoUpdate) SetReferencia(v string) *GastoUpdate {
-	_u.mutation.SetReferencia(v)
-	return _u
-}
-
-// SetNillableReferencia sets the "referencia" field if the given value is not nil.
-func (_u *GastoUpdate) SetNillableReferencia(v *string) *GastoUpdate {
-	if v != nil {
-		_u.SetReferencia(*v)
-	}
-	return _u
-}
-
-// ClearReferencia clears the value of the "referencia" field.
-func (_u *GastoUpdate) ClearReferencia() *GastoUpdate {
-	_u.mutation.ClearReferencia()
-	return _u
-}
-
-// SetPagadoA sets the "pagado_a" field.
-func (_u *GastoUpdate) SetPagadoA(v string) *GastoUpdate {
-	_u.mutation.SetPagadoA(v)
-	return _u
-}
-
-// SetNillablePagadoA sets the "pagado_a" field if the given value is not nil.
-func (_u *GastoUpdate) SetNillablePagadoA(v *string) *GastoUpdate {
-	if v != nil {
-		_u.SetPagadoA(*v)
-	}
-	return _u
-}
-
-// ClearPagadoA clears the value of the "pagado_a" field.
-func (_u *GastoUpdate) ClearPagadoA() *GastoUpdate {
-	_u.mutation.ClearPagadoA()
-	return _u
-}
-
-// SetEstado sets the "estado" field.
-func (_u *GastoUpdate) SetEstado(v gasto.Estado) *GastoUpdate {
-	_u.mutation.SetEstado(v)
-	return _u
-}
-
-// SetNillableEstado sets the "estado" field if the given value is not nil.
-func (_u *GastoUpdate) SetNillableEstado(v *gasto.Estado) *GastoUpdate {
-	if v != nil {
-		_u.SetEstado(*v)
-	}
-	return _u
-}
-
-// SetNotas sets the "notas" field.
-func (_u *GastoUpdate) SetNotas(v string) *GastoUpdate {
-	_u.mutation.SetNotas(v)
-	return _u
-}
-
-// SetNillableNotas sets the "notas" field if the given value is not nil.
-func (_u *GastoUpdate) SetNillableNotas(v *string) *GastoUpdate {
-	if v != nil {
-		_u.SetNotas(*v)
-	}
-	return _u
-}
-
-// ClearNotas clears the value of the "notas" field.
-func (_u *GastoUpdate) ClearNotas() *GastoUpdate {
-	_u.mutation.ClearNotas()
-	return _u
-}
-
 // SetEmpresa sets the "empresa" edge to the Empresa entity.
 func (_u *GastoUpdate) SetEmpresa(v *Empresa) *GastoUpdate {
 	return _u.SetEmpresaID(v.ID)
 }
 
-// SetPropiedad sets the "propiedad" edge to the Propiedad entity.
-func (_u *GastoUpdate) SetPropiedad(v *Propiedad) *GastoUpdate {
-	return _u.SetPropiedadID(v.ID)
-}
-
-// SetUnidad sets the "unidad" edge to the Unidad entity.
-func (_u *GastoUpdate) SetUnidad(v *Unidad) *GastoUpdate {
-	return _u.SetUnidadID(v.ID)
+// SetTipoPago sets the "tipo_pago" edge to the TipoPago entity.
+func (_u *GastoUpdate) SetTipoPago(v *TipoPago) *GastoUpdate {
+	return _u.SetTipoPagoID(v.ID)
 }
 
 // AddMovimientosCajaIDs adds the "movimientos_caja" edge to the MovimientoCaja entity by IDs.
@@ -292,15 +144,9 @@ func (_u *GastoUpdate) ClearEmpresa() *GastoUpdate {
 	return _u
 }
 
-// ClearPropiedad clears the "propiedad" edge to the Propiedad entity.
-func (_u *GastoUpdate) ClearPropiedad() *GastoUpdate {
-	_u.mutation.ClearPropiedad()
-	return _u
-}
-
-// ClearUnidad clears the "unidad" edge to the Unidad entity.
-func (_u *GastoUpdate) ClearUnidad() *GastoUpdate {
-	_u.mutation.ClearUnidad()
+// ClearTipoPago clears the "tipo_pago" edge to the TipoPago entity.
+func (_u *GastoUpdate) ClearTipoPago() *GastoUpdate {
+	_u.mutation.ClearTipoPago()
 	return _u
 }
 
@@ -354,48 +200,16 @@ func (_u *GastoUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *GastoUpdate) check() error {
-	if v, ok := _u.mutation.Categoria(); ok {
-		if err := gasto.CategoriaValidator(v); err != nil {
-			return &ValidationError{Name: "categoria", err: fmt.Errorf(`ent: validator failed for field "Gasto.categoria": %w`, err)}
-		}
-	}
 	if v, ok := _u.mutation.Descripcion(); ok {
 		if err := gasto.DescripcionValidator(v); err != nil {
 			return &ValidationError{Name: "descripcion", err: fmt.Errorf(`ent: validator failed for field "Gasto.descripcion": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Moneda(); ok {
-		if err := gasto.MonedaValidator(v); err != nil {
-			return &ValidationError{Name: "moneda", err: fmt.Errorf(`ent: validator failed for field "Gasto.moneda": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.MetodoPago(); ok {
-		if err := gasto.MetodoPagoValidator(v); err != nil {
-			return &ValidationError{Name: "metodo_pago", err: fmt.Errorf(`ent: validator failed for field "Gasto.metodo_pago": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Referencia(); ok {
-		if err := gasto.ReferenciaValidator(v); err != nil {
-			return &ValidationError{Name: "referencia", err: fmt.Errorf(`ent: validator failed for field "Gasto.referencia": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.PagadoA(); ok {
-		if err := gasto.PagadoAValidator(v); err != nil {
-			return &ValidationError{Name: "pagado_a", err: fmt.Errorf(`ent: validator failed for field "Gasto.pagado_a": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Estado(); ok {
-		if err := gasto.EstadoValidator(v); err != nil {
-			return &ValidationError{Name: "estado", err: fmt.Errorf(`ent: validator failed for field "Gasto.estado": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Notas(); ok {
-		if err := gasto.NotasValidator(v); err != nil {
-			return &ValidationError{Name: "notas", err: fmt.Errorf(`ent: validator failed for field "Gasto.notas": %w`, err)}
-		}
-	}
 	if _u.mutation.EmpresaCleared() && len(_u.mutation.EmpresaIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Gasto.empresa"`)
+	}
+	if _u.mutation.TipoPagoCleared() && len(_u.mutation.TipoPagoIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "Gasto.tipo_pago"`)
 	}
 	return nil
 }
@@ -412,47 +226,17 @@ func (_u *GastoUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			}
 		}
 	}
-	if value, ok := _u.mutation.Categoria(); ok {
-		_spec.SetField(gasto.FieldCategoria, field.TypeEnum, value)
+	if value, ok := _u.mutation.Monto(); ok {
+		_spec.SetField(gasto.FieldMonto, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedMonto(); ok {
+		_spec.AddField(gasto.FieldMonto, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.Fecha(); ok {
+		_spec.SetField(gasto.FieldFecha, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Descripcion(); ok {
 		_spec.SetField(gasto.FieldDescripcion, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.FechaGasto(); ok {
-		_spec.SetField(gasto.FieldFechaGasto, field.TypeTime, value)
-	}
-	if value, ok := _u.mutation.Moneda(); ok {
-		_spec.SetField(gasto.FieldMoneda, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Monto(); ok {
-		_spec.SetField(gasto.FieldMonto, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.AddedMonto(); ok {
-		_spec.AddField(gasto.FieldMonto, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.MetodoPago(); ok {
-		_spec.SetField(gasto.FieldMetodoPago, field.TypeEnum, value)
-	}
-	if value, ok := _u.mutation.Referencia(); ok {
-		_spec.SetField(gasto.FieldReferencia, field.TypeString, value)
-	}
-	if _u.mutation.ReferenciaCleared() {
-		_spec.ClearField(gasto.FieldReferencia, field.TypeString)
-	}
-	if value, ok := _u.mutation.PagadoA(); ok {
-		_spec.SetField(gasto.FieldPagadoA, field.TypeString, value)
-	}
-	if _u.mutation.PagadoACleared() {
-		_spec.ClearField(gasto.FieldPagadoA, field.TypeString)
-	}
-	if value, ok := _u.mutation.Estado(); ok {
-		_spec.SetField(gasto.FieldEstado, field.TypeEnum, value)
-	}
-	if value, ok := _u.mutation.Notas(); ok {
-		_spec.SetField(gasto.FieldNotas, field.TypeString, value)
-	}
-	if _u.mutation.NotasCleared() {
-		_spec.ClearField(gasto.FieldNotas, field.TypeString)
 	}
 	if _u.mutation.EmpresaCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -483,57 +267,28 @@ func (_u *GastoUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.PropiedadCleared() {
+	if _u.mutation.TipoPagoCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   gasto.PropiedadTable,
-			Columns: []string{gasto.PropiedadColumn},
+			Table:   gasto.TipoPagoTable,
+			Columns: []string{gasto.TipoPagoColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(propiedad.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(tipopago.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.PropiedadIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.TipoPagoIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   gasto.PropiedadTable,
-			Columns: []string{gasto.PropiedadColumn},
+			Table:   gasto.TipoPagoTable,
+			Columns: []string{gasto.TipoPagoColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(propiedad.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.UnidadCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   gasto.UnidadTable,
-			Columns: []string{gasto.UnidadColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(unidad.FieldID, field.TypeInt),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.UnidadIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   gasto.UnidadTable,
-			Columns: []string{gasto.UnidadColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(unidad.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(tipopago.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -620,56 +375,51 @@ func (_u *GastoUpdateOne) SetNillableEmpresaID(v *int) *GastoUpdateOne {
 	return _u
 }
 
-// SetPropiedadID sets the "propiedad_id" field.
-func (_u *GastoUpdateOne) SetPropiedadID(v int) *GastoUpdateOne {
-	_u.mutation.SetPropiedadID(v)
+// SetMonto sets the "monto" field.
+func (_u *GastoUpdateOne) SetMonto(v float64) *GastoUpdateOne {
+	_u.mutation.ResetMonto()
+	_u.mutation.SetMonto(v)
 	return _u
 }
 
-// SetNillablePropiedadID sets the "propiedad_id" field if the given value is not nil.
-func (_u *GastoUpdateOne) SetNillablePropiedadID(v *int) *GastoUpdateOne {
+// SetNillableMonto sets the "monto" field if the given value is not nil.
+func (_u *GastoUpdateOne) SetNillableMonto(v *float64) *GastoUpdateOne {
 	if v != nil {
-		_u.SetPropiedadID(*v)
+		_u.SetMonto(*v)
 	}
 	return _u
 }
 
-// ClearPropiedadID clears the value of the "propiedad_id" field.
-func (_u *GastoUpdateOne) ClearPropiedadID() *GastoUpdateOne {
-	_u.mutation.ClearPropiedadID()
+// AddMonto adds value to the "monto" field.
+func (_u *GastoUpdateOne) AddMonto(v float64) *GastoUpdateOne {
+	_u.mutation.AddMonto(v)
 	return _u
 }
 
-// SetUnidadID sets the "unidad_id" field.
-func (_u *GastoUpdateOne) SetUnidadID(v int) *GastoUpdateOne {
-	_u.mutation.SetUnidadID(v)
+// SetFecha sets the "fecha" field.
+func (_u *GastoUpdateOne) SetFecha(v time.Time) *GastoUpdateOne {
+	_u.mutation.SetFecha(v)
 	return _u
 }
 
-// SetNillableUnidadID sets the "unidad_id" field if the given value is not nil.
-func (_u *GastoUpdateOne) SetNillableUnidadID(v *int) *GastoUpdateOne {
+// SetNillableFecha sets the "fecha" field if the given value is not nil.
+func (_u *GastoUpdateOne) SetNillableFecha(v *time.Time) *GastoUpdateOne {
 	if v != nil {
-		_u.SetUnidadID(*v)
+		_u.SetFecha(*v)
 	}
 	return _u
 }
 
-// ClearUnidadID clears the value of the "unidad_id" field.
-func (_u *GastoUpdateOne) ClearUnidadID() *GastoUpdateOne {
-	_u.mutation.ClearUnidadID()
+// SetTipoPagoID sets the "tipo_pago_id" field.
+func (_u *GastoUpdateOne) SetTipoPagoID(v int) *GastoUpdateOne {
+	_u.mutation.SetTipoPagoID(v)
 	return _u
 }
 
-// SetCategoria sets the "categoria" field.
-func (_u *GastoUpdateOne) SetCategoria(v gasto.Categoria) *GastoUpdateOne {
-	_u.mutation.SetCategoria(v)
-	return _u
-}
-
-// SetNillableCategoria sets the "categoria" field if the given value is not nil.
-func (_u *GastoUpdateOne) SetNillableCategoria(v *gasto.Categoria) *GastoUpdateOne {
+// SetNillableTipoPagoID sets the "tipo_pago_id" field if the given value is not nil.
+func (_u *GastoUpdateOne) SetNillableTipoPagoID(v *int) *GastoUpdateOne {
 	if v != nil {
-		_u.SetCategoria(*v)
+		_u.SetTipoPagoID(*v)
 	}
 	return _u
 }
@@ -688,156 +438,14 @@ func (_u *GastoUpdateOne) SetNillableDescripcion(v *string) *GastoUpdateOne {
 	return _u
 }
 
-// SetFechaGasto sets the "fecha_gasto" field.
-func (_u *GastoUpdateOne) SetFechaGasto(v time.Time) *GastoUpdateOne {
-	_u.mutation.SetFechaGasto(v)
-	return _u
-}
-
-// SetNillableFechaGasto sets the "fecha_gasto" field if the given value is not nil.
-func (_u *GastoUpdateOne) SetNillableFechaGasto(v *time.Time) *GastoUpdateOne {
-	if v != nil {
-		_u.SetFechaGasto(*v)
-	}
-	return _u
-}
-
-// SetMoneda sets the "moneda" field.
-func (_u *GastoUpdateOne) SetMoneda(v string) *GastoUpdateOne {
-	_u.mutation.SetMoneda(v)
-	return _u
-}
-
-// SetNillableMoneda sets the "moneda" field if the given value is not nil.
-func (_u *GastoUpdateOne) SetNillableMoneda(v *string) *GastoUpdateOne {
-	if v != nil {
-		_u.SetMoneda(*v)
-	}
-	return _u
-}
-
-// SetMonto sets the "monto" field.
-func (_u *GastoUpdateOne) SetMonto(v int64) *GastoUpdateOne {
-	_u.mutation.ResetMonto()
-	_u.mutation.SetMonto(v)
-	return _u
-}
-
-// SetNillableMonto sets the "monto" field if the given value is not nil.
-func (_u *GastoUpdateOne) SetNillableMonto(v *int64) *GastoUpdateOne {
-	if v != nil {
-		_u.SetMonto(*v)
-	}
-	return _u
-}
-
-// AddMonto adds value to the "monto" field.
-func (_u *GastoUpdateOne) AddMonto(v int64) *GastoUpdateOne {
-	_u.mutation.AddMonto(v)
-	return _u
-}
-
-// SetMetodoPago sets the "metodo_pago" field.
-func (_u *GastoUpdateOne) SetMetodoPago(v gasto.MetodoPago) *GastoUpdateOne {
-	_u.mutation.SetMetodoPago(v)
-	return _u
-}
-
-// SetNillableMetodoPago sets the "metodo_pago" field if the given value is not nil.
-func (_u *GastoUpdateOne) SetNillableMetodoPago(v *gasto.MetodoPago) *GastoUpdateOne {
-	if v != nil {
-		_u.SetMetodoPago(*v)
-	}
-	return _u
-}
-
-// SetReferencia sets the "referencia" field.
-func (_u *GastoUpdateOne) SetReferencia(v string) *GastoUpdateOne {
-	_u.mutation.SetReferencia(v)
-	return _u
-}
-
-// SetNillableReferencia sets the "referencia" field if the given value is not nil.
-func (_u *GastoUpdateOne) SetNillableReferencia(v *string) *GastoUpdateOne {
-	if v != nil {
-		_u.SetReferencia(*v)
-	}
-	return _u
-}
-
-// ClearReferencia clears the value of the "referencia" field.
-func (_u *GastoUpdateOne) ClearReferencia() *GastoUpdateOne {
-	_u.mutation.ClearReferencia()
-	return _u
-}
-
-// SetPagadoA sets the "pagado_a" field.
-func (_u *GastoUpdateOne) SetPagadoA(v string) *GastoUpdateOne {
-	_u.mutation.SetPagadoA(v)
-	return _u
-}
-
-// SetNillablePagadoA sets the "pagado_a" field if the given value is not nil.
-func (_u *GastoUpdateOne) SetNillablePagadoA(v *string) *GastoUpdateOne {
-	if v != nil {
-		_u.SetPagadoA(*v)
-	}
-	return _u
-}
-
-// ClearPagadoA clears the value of the "pagado_a" field.
-func (_u *GastoUpdateOne) ClearPagadoA() *GastoUpdateOne {
-	_u.mutation.ClearPagadoA()
-	return _u
-}
-
-// SetEstado sets the "estado" field.
-func (_u *GastoUpdateOne) SetEstado(v gasto.Estado) *GastoUpdateOne {
-	_u.mutation.SetEstado(v)
-	return _u
-}
-
-// SetNillableEstado sets the "estado" field if the given value is not nil.
-func (_u *GastoUpdateOne) SetNillableEstado(v *gasto.Estado) *GastoUpdateOne {
-	if v != nil {
-		_u.SetEstado(*v)
-	}
-	return _u
-}
-
-// SetNotas sets the "notas" field.
-func (_u *GastoUpdateOne) SetNotas(v string) *GastoUpdateOne {
-	_u.mutation.SetNotas(v)
-	return _u
-}
-
-// SetNillableNotas sets the "notas" field if the given value is not nil.
-func (_u *GastoUpdateOne) SetNillableNotas(v *string) *GastoUpdateOne {
-	if v != nil {
-		_u.SetNotas(*v)
-	}
-	return _u
-}
-
-// ClearNotas clears the value of the "notas" field.
-func (_u *GastoUpdateOne) ClearNotas() *GastoUpdateOne {
-	_u.mutation.ClearNotas()
-	return _u
-}
-
 // SetEmpresa sets the "empresa" edge to the Empresa entity.
 func (_u *GastoUpdateOne) SetEmpresa(v *Empresa) *GastoUpdateOne {
 	return _u.SetEmpresaID(v.ID)
 }
 
-// SetPropiedad sets the "propiedad" edge to the Propiedad entity.
-func (_u *GastoUpdateOne) SetPropiedad(v *Propiedad) *GastoUpdateOne {
-	return _u.SetPropiedadID(v.ID)
-}
-
-// SetUnidad sets the "unidad" edge to the Unidad entity.
-func (_u *GastoUpdateOne) SetUnidad(v *Unidad) *GastoUpdateOne {
-	return _u.SetUnidadID(v.ID)
+// SetTipoPago sets the "tipo_pago" edge to the TipoPago entity.
+func (_u *GastoUpdateOne) SetTipoPago(v *TipoPago) *GastoUpdateOne {
+	return _u.SetTipoPagoID(v.ID)
 }
 
 // AddMovimientosCajaIDs adds the "movimientos_caja" edge to the MovimientoCaja entity by IDs.
@@ -866,15 +474,9 @@ func (_u *GastoUpdateOne) ClearEmpresa() *GastoUpdateOne {
 	return _u
 }
 
-// ClearPropiedad clears the "propiedad" edge to the Propiedad entity.
-func (_u *GastoUpdateOne) ClearPropiedad() *GastoUpdateOne {
-	_u.mutation.ClearPropiedad()
-	return _u
-}
-
-// ClearUnidad clears the "unidad" edge to the Unidad entity.
-func (_u *GastoUpdateOne) ClearUnidad() *GastoUpdateOne {
-	_u.mutation.ClearUnidad()
+// ClearTipoPago clears the "tipo_pago" edge to the TipoPago entity.
+func (_u *GastoUpdateOne) ClearTipoPago() *GastoUpdateOne {
+	_u.mutation.ClearTipoPago()
 	return _u
 }
 
@@ -941,48 +543,16 @@ func (_u *GastoUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *GastoUpdateOne) check() error {
-	if v, ok := _u.mutation.Categoria(); ok {
-		if err := gasto.CategoriaValidator(v); err != nil {
-			return &ValidationError{Name: "categoria", err: fmt.Errorf(`ent: validator failed for field "Gasto.categoria": %w`, err)}
-		}
-	}
 	if v, ok := _u.mutation.Descripcion(); ok {
 		if err := gasto.DescripcionValidator(v); err != nil {
 			return &ValidationError{Name: "descripcion", err: fmt.Errorf(`ent: validator failed for field "Gasto.descripcion": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Moneda(); ok {
-		if err := gasto.MonedaValidator(v); err != nil {
-			return &ValidationError{Name: "moneda", err: fmt.Errorf(`ent: validator failed for field "Gasto.moneda": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.MetodoPago(); ok {
-		if err := gasto.MetodoPagoValidator(v); err != nil {
-			return &ValidationError{Name: "metodo_pago", err: fmt.Errorf(`ent: validator failed for field "Gasto.metodo_pago": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Referencia(); ok {
-		if err := gasto.ReferenciaValidator(v); err != nil {
-			return &ValidationError{Name: "referencia", err: fmt.Errorf(`ent: validator failed for field "Gasto.referencia": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.PagadoA(); ok {
-		if err := gasto.PagadoAValidator(v); err != nil {
-			return &ValidationError{Name: "pagado_a", err: fmt.Errorf(`ent: validator failed for field "Gasto.pagado_a": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Estado(); ok {
-		if err := gasto.EstadoValidator(v); err != nil {
-			return &ValidationError{Name: "estado", err: fmt.Errorf(`ent: validator failed for field "Gasto.estado": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Notas(); ok {
-		if err := gasto.NotasValidator(v); err != nil {
-			return &ValidationError{Name: "notas", err: fmt.Errorf(`ent: validator failed for field "Gasto.notas": %w`, err)}
-		}
-	}
 	if _u.mutation.EmpresaCleared() && len(_u.mutation.EmpresaIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Gasto.empresa"`)
+	}
+	if _u.mutation.TipoPagoCleared() && len(_u.mutation.TipoPagoIDs()) > 0 {
+		return errors.New(`ent: clearing a required unique edge "Gasto.tipo_pago"`)
 	}
 	return nil
 }
@@ -1016,47 +586,17 @@ func (_u *GastoUpdateOne) sqlSave(ctx context.Context) (_node *Gasto, err error)
 			}
 		}
 	}
-	if value, ok := _u.mutation.Categoria(); ok {
-		_spec.SetField(gasto.FieldCategoria, field.TypeEnum, value)
+	if value, ok := _u.mutation.Monto(); ok {
+		_spec.SetField(gasto.FieldMonto, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedMonto(); ok {
+		_spec.AddField(gasto.FieldMonto, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.Fecha(); ok {
+		_spec.SetField(gasto.FieldFecha, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.Descripcion(); ok {
 		_spec.SetField(gasto.FieldDescripcion, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.FechaGasto(); ok {
-		_spec.SetField(gasto.FieldFechaGasto, field.TypeTime, value)
-	}
-	if value, ok := _u.mutation.Moneda(); ok {
-		_spec.SetField(gasto.FieldMoneda, field.TypeString, value)
-	}
-	if value, ok := _u.mutation.Monto(); ok {
-		_spec.SetField(gasto.FieldMonto, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.AddedMonto(); ok {
-		_spec.AddField(gasto.FieldMonto, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.MetodoPago(); ok {
-		_spec.SetField(gasto.FieldMetodoPago, field.TypeEnum, value)
-	}
-	if value, ok := _u.mutation.Referencia(); ok {
-		_spec.SetField(gasto.FieldReferencia, field.TypeString, value)
-	}
-	if _u.mutation.ReferenciaCleared() {
-		_spec.ClearField(gasto.FieldReferencia, field.TypeString)
-	}
-	if value, ok := _u.mutation.PagadoA(); ok {
-		_spec.SetField(gasto.FieldPagadoA, field.TypeString, value)
-	}
-	if _u.mutation.PagadoACleared() {
-		_spec.ClearField(gasto.FieldPagadoA, field.TypeString)
-	}
-	if value, ok := _u.mutation.Estado(); ok {
-		_spec.SetField(gasto.FieldEstado, field.TypeEnum, value)
-	}
-	if value, ok := _u.mutation.Notas(); ok {
-		_spec.SetField(gasto.FieldNotas, field.TypeString, value)
-	}
-	if _u.mutation.NotasCleared() {
-		_spec.ClearField(gasto.FieldNotas, field.TypeString)
 	}
 	if _u.mutation.EmpresaCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1087,57 +627,28 @@ func (_u *GastoUpdateOne) sqlSave(ctx context.Context) (_node *Gasto, err error)
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if _u.mutation.PropiedadCleared() {
+	if _u.mutation.TipoPagoCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   gasto.PropiedadTable,
-			Columns: []string{gasto.PropiedadColumn},
+			Table:   gasto.TipoPagoTable,
+			Columns: []string{gasto.TipoPagoColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(propiedad.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(tipopago.FieldID, field.TypeInt),
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := _u.mutation.PropiedadIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.TipoPagoIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   gasto.PropiedadTable,
-			Columns: []string{gasto.PropiedadColumn},
+			Table:   gasto.TipoPagoTable,
+			Columns: []string{gasto.TipoPagoColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(propiedad.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.UnidadCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   gasto.UnidadTable,
-			Columns: []string{gasto.UnidadColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(unidad.FieldID, field.TypeInt),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.UnidadIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   gasto.UnidadTable,
-			Columns: []string{gasto.UnidadColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(unidad.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(tipopago.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

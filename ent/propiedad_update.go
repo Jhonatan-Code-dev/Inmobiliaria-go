@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"rentals-go/ent/empresa"
-	"rentals-go/ent/gasto"
 	"rentals-go/ent/predicate"
 	"rentals-go/ent/propiedad"
 	"rentals-go/ent/unidad"
@@ -262,21 +261,6 @@ func (_u *PropiedadUpdate) AddUnidades(v ...*Unidad) *PropiedadUpdate {
 	return _u.AddUnidadeIDs(ids...)
 }
 
-// AddGastoIDs adds the "gastos" edge to the Gasto entity by IDs.
-func (_u *PropiedadUpdate) AddGastoIDs(ids ...int) *PropiedadUpdate {
-	_u.mutation.AddGastoIDs(ids...)
-	return _u
-}
-
-// AddGastos adds the "gastos" edges to the Gasto entity.
-func (_u *PropiedadUpdate) AddGastos(v ...*Gasto) *PropiedadUpdate {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddGastoIDs(ids...)
-}
-
 // Mutation returns the PropiedadMutation object of the builder.
 func (_u *PropiedadUpdate) Mutation() *PropiedadMutation {
 	return _u.mutation
@@ -307,27 +291,6 @@ func (_u *PropiedadUpdate) RemoveUnidades(v ...*Unidad) *PropiedadUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveUnidadeIDs(ids...)
-}
-
-// ClearGastos clears all "gastos" edges to the Gasto entity.
-func (_u *PropiedadUpdate) ClearGastos() *PropiedadUpdate {
-	_u.mutation.ClearGastos()
-	return _u
-}
-
-// RemoveGastoIDs removes the "gastos" edge to Gasto entities by IDs.
-func (_u *PropiedadUpdate) RemoveGastoIDs(ids ...int) *PropiedadUpdate {
-	_u.mutation.RemoveGastoIDs(ids...)
-	return _u
-}
-
-// RemoveGastos removes "gastos" edges to Gasto entities.
-func (_u *PropiedadUpdate) RemoveGastos(v ...*Gasto) *PropiedadUpdate {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveGastoIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -553,51 +516,6 @@ func (_u *PropiedadUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(unidad.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.GastosCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   propiedad.GastosTable,
-			Columns: []string{propiedad.GastosColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(gasto.FieldID, field.TypeInt),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedGastosIDs(); len(nodes) > 0 && !_u.mutation.GastosCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   propiedad.GastosTable,
-			Columns: []string{propiedad.GastosColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(gasto.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.GastosIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   propiedad.GastosTable,
-			Columns: []string{propiedad.GastosColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(gasto.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -857,21 +775,6 @@ func (_u *PropiedadUpdateOne) AddUnidades(v ...*Unidad) *PropiedadUpdateOne {
 	return _u.AddUnidadeIDs(ids...)
 }
 
-// AddGastoIDs adds the "gastos" edge to the Gasto entity by IDs.
-func (_u *PropiedadUpdateOne) AddGastoIDs(ids ...int) *PropiedadUpdateOne {
-	_u.mutation.AddGastoIDs(ids...)
-	return _u
-}
-
-// AddGastos adds the "gastos" edges to the Gasto entity.
-func (_u *PropiedadUpdateOne) AddGastos(v ...*Gasto) *PropiedadUpdateOne {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddGastoIDs(ids...)
-}
-
 // Mutation returns the PropiedadMutation object of the builder.
 func (_u *PropiedadUpdateOne) Mutation() *PropiedadMutation {
 	return _u.mutation
@@ -902,27 +805,6 @@ func (_u *PropiedadUpdateOne) RemoveUnidades(v ...*Unidad) *PropiedadUpdateOne {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveUnidadeIDs(ids...)
-}
-
-// ClearGastos clears all "gastos" edges to the Gasto entity.
-func (_u *PropiedadUpdateOne) ClearGastos() *PropiedadUpdateOne {
-	_u.mutation.ClearGastos()
-	return _u
-}
-
-// RemoveGastoIDs removes the "gastos" edge to Gasto entities by IDs.
-func (_u *PropiedadUpdateOne) RemoveGastoIDs(ids ...int) *PropiedadUpdateOne {
-	_u.mutation.RemoveGastoIDs(ids...)
-	return _u
-}
-
-// RemoveGastos removes "gastos" edges to Gasto entities.
-func (_u *PropiedadUpdateOne) RemoveGastos(v ...*Gasto) *PropiedadUpdateOne {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveGastoIDs(ids...)
 }
 
 // Where appends a list predicates to the PropiedadUpdate builder.
@@ -1178,51 +1060,6 @@ func (_u *PropiedadUpdateOne) sqlSave(ctx context.Context) (_node *Propiedad, er
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(unidad.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.GastosCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   propiedad.GastosTable,
-			Columns: []string{propiedad.GastosColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(gasto.FieldID, field.TypeInt),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedGastosIDs(); len(nodes) > 0 && !_u.mutation.GastosCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   propiedad.GastosTable,
-			Columns: []string{propiedad.GastosColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(gasto.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.GastosIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   propiedad.GastosTable,
-			Columns: []string{propiedad.GastosColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(gasto.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

@@ -9,8 +9,7 @@ import (
 	"rentals-go/ent/empresa"
 	"rentals-go/ent/gasto"
 	"rentals-go/ent/movimientocaja"
-	"rentals-go/ent/propiedad"
-	"rentals-go/ent/unidad"
+	"rentals-go/ent/tipopago"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -24,65 +23,27 @@ type GastoCreate struct {
 	hooks    []Hook
 }
 
-// SetCreadoEn sets the "creado_en" field.
-func (_c *GastoCreate) SetCreadoEn(v time.Time) *GastoCreate {
-	_c.mutation.SetCreadoEn(v)
-	return _c
-}
-
-// SetNillableCreadoEn sets the "creado_en" field if the given value is not nil.
-func (_c *GastoCreate) SetNillableCreadoEn(v *time.Time) *GastoCreate {
-	if v != nil {
-		_c.SetCreadoEn(*v)
-	}
-	return _c
-}
-
 // SetEmpresaID sets the "empresa_id" field.
 func (_c *GastoCreate) SetEmpresaID(v int) *GastoCreate {
 	_c.mutation.SetEmpresaID(v)
 	return _c
 }
 
-// SetPropiedadID sets the "propiedad_id" field.
-func (_c *GastoCreate) SetPropiedadID(v int) *GastoCreate {
-	_c.mutation.SetPropiedadID(v)
+// SetMonto sets the "monto" field.
+func (_c *GastoCreate) SetMonto(v float64) *GastoCreate {
+	_c.mutation.SetMonto(v)
 	return _c
 }
 
-// SetNillablePropiedadID sets the "propiedad_id" field if the given value is not nil.
-func (_c *GastoCreate) SetNillablePropiedadID(v *int) *GastoCreate {
-	if v != nil {
-		_c.SetPropiedadID(*v)
-	}
+// SetFecha sets the "fecha" field.
+func (_c *GastoCreate) SetFecha(v time.Time) *GastoCreate {
+	_c.mutation.SetFecha(v)
 	return _c
 }
 
-// SetUnidadID sets the "unidad_id" field.
-func (_c *GastoCreate) SetUnidadID(v int) *GastoCreate {
-	_c.mutation.SetUnidadID(v)
-	return _c
-}
-
-// SetNillableUnidadID sets the "unidad_id" field if the given value is not nil.
-func (_c *GastoCreate) SetNillableUnidadID(v *int) *GastoCreate {
-	if v != nil {
-		_c.SetUnidadID(*v)
-	}
-	return _c
-}
-
-// SetCategoria sets the "categoria" field.
-func (_c *GastoCreate) SetCategoria(v gasto.Categoria) *GastoCreate {
-	_c.mutation.SetCategoria(v)
-	return _c
-}
-
-// SetNillableCategoria sets the "categoria" field if the given value is not nil.
-func (_c *GastoCreate) SetNillableCategoria(v *gasto.Categoria) *GastoCreate {
-	if v != nil {
-		_c.SetCategoria(*v)
-	}
+// SetTipoPagoID sets the "tipo_pago_id" field.
+func (_c *GastoCreate) SetTipoPagoID(v int) *GastoCreate {
+	_c.mutation.SetTipoPagoID(v)
 	return _c
 }
 
@@ -92,123 +53,14 @@ func (_c *GastoCreate) SetDescripcion(v string) *GastoCreate {
 	return _c
 }
 
-// SetFechaGasto sets the "fecha_gasto" field.
-func (_c *GastoCreate) SetFechaGasto(v time.Time) *GastoCreate {
-	_c.mutation.SetFechaGasto(v)
-	return _c
-}
-
-// SetMoneda sets the "moneda" field.
-func (_c *GastoCreate) SetMoneda(v string) *GastoCreate {
-	_c.mutation.SetMoneda(v)
-	return _c
-}
-
-// SetNillableMoneda sets the "moneda" field if the given value is not nil.
-func (_c *GastoCreate) SetNillableMoneda(v *string) *GastoCreate {
-	if v != nil {
-		_c.SetMoneda(*v)
-	}
-	return _c
-}
-
-// SetMonto sets the "monto" field.
-func (_c *GastoCreate) SetMonto(v int64) *GastoCreate {
-	_c.mutation.SetMonto(v)
-	return _c
-}
-
-// SetNillableMonto sets the "monto" field if the given value is not nil.
-func (_c *GastoCreate) SetNillableMonto(v *int64) *GastoCreate {
-	if v != nil {
-		_c.SetMonto(*v)
-	}
-	return _c
-}
-
-// SetMetodoPago sets the "metodo_pago" field.
-func (_c *GastoCreate) SetMetodoPago(v gasto.MetodoPago) *GastoCreate {
-	_c.mutation.SetMetodoPago(v)
-	return _c
-}
-
-// SetNillableMetodoPago sets the "metodo_pago" field if the given value is not nil.
-func (_c *GastoCreate) SetNillableMetodoPago(v *gasto.MetodoPago) *GastoCreate {
-	if v != nil {
-		_c.SetMetodoPago(*v)
-	}
-	return _c
-}
-
-// SetReferencia sets the "referencia" field.
-func (_c *GastoCreate) SetReferencia(v string) *GastoCreate {
-	_c.mutation.SetReferencia(v)
-	return _c
-}
-
-// SetNillableReferencia sets the "referencia" field if the given value is not nil.
-func (_c *GastoCreate) SetNillableReferencia(v *string) *GastoCreate {
-	if v != nil {
-		_c.SetReferencia(*v)
-	}
-	return _c
-}
-
-// SetPagadoA sets the "pagado_a" field.
-func (_c *GastoCreate) SetPagadoA(v string) *GastoCreate {
-	_c.mutation.SetPagadoA(v)
-	return _c
-}
-
-// SetNillablePagadoA sets the "pagado_a" field if the given value is not nil.
-func (_c *GastoCreate) SetNillablePagadoA(v *string) *GastoCreate {
-	if v != nil {
-		_c.SetPagadoA(*v)
-	}
-	return _c
-}
-
-// SetEstado sets the "estado" field.
-func (_c *GastoCreate) SetEstado(v gasto.Estado) *GastoCreate {
-	_c.mutation.SetEstado(v)
-	return _c
-}
-
-// SetNillableEstado sets the "estado" field if the given value is not nil.
-func (_c *GastoCreate) SetNillableEstado(v *gasto.Estado) *GastoCreate {
-	if v != nil {
-		_c.SetEstado(*v)
-	}
-	return _c
-}
-
-// SetNotas sets the "notas" field.
-func (_c *GastoCreate) SetNotas(v string) *GastoCreate {
-	_c.mutation.SetNotas(v)
-	return _c
-}
-
-// SetNillableNotas sets the "notas" field if the given value is not nil.
-func (_c *GastoCreate) SetNillableNotas(v *string) *GastoCreate {
-	if v != nil {
-		_c.SetNotas(*v)
-	}
-	return _c
-}
-
 // SetEmpresa sets the "empresa" edge to the Empresa entity.
 func (_c *GastoCreate) SetEmpresa(v *Empresa) *GastoCreate {
 	return _c.SetEmpresaID(v.ID)
 }
 
-// SetPropiedad sets the "propiedad" edge to the Propiedad entity.
-func (_c *GastoCreate) SetPropiedad(v *Propiedad) *GastoCreate {
-	return _c.SetPropiedadID(v.ID)
-}
-
-// SetUnidad sets the "unidad" edge to the Unidad entity.
-func (_c *GastoCreate) SetUnidad(v *Unidad) *GastoCreate {
-	return _c.SetUnidadID(v.ID)
+// SetTipoPago sets the "tipo_pago" edge to the TipoPago entity.
+func (_c *GastoCreate) SetTipoPago(v *TipoPago) *GastoCreate {
+	return _c.SetTipoPagoID(v.ID)
 }
 
 // AddMovimientosCajaIDs adds the "movimientos_caja" edge to the MovimientoCaja entity by IDs.
@@ -233,7 +85,6 @@ func (_c *GastoCreate) Mutation() *GastoMutation {
 
 // Save creates the Gasto in the database.
 func (_c *GastoCreate) Save(ctx context.Context) (*Gasto, error) {
-	_c.defaults()
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -259,49 +110,19 @@ func (_c *GastoCreate) ExecX(ctx context.Context) {
 	}
 }
 
-// defaults sets the default values of the builder before save.
-func (_c *GastoCreate) defaults() {
-	if _, ok := _c.mutation.CreadoEn(); !ok {
-		v := gasto.DefaultCreadoEn()
-		_c.mutation.SetCreadoEn(v)
-	}
-	if _, ok := _c.mutation.Categoria(); !ok {
-		v := gasto.DefaultCategoria
-		_c.mutation.SetCategoria(v)
-	}
-	if _, ok := _c.mutation.Moneda(); !ok {
-		v := gasto.DefaultMoneda
-		_c.mutation.SetMoneda(v)
-	}
-	if _, ok := _c.mutation.Monto(); !ok {
-		v := gasto.DefaultMonto
-		_c.mutation.SetMonto(v)
-	}
-	if _, ok := _c.mutation.MetodoPago(); !ok {
-		v := gasto.DefaultMetodoPago
-		_c.mutation.SetMetodoPago(v)
-	}
-	if _, ok := _c.mutation.Estado(); !ok {
-		v := gasto.DefaultEstado
-		_c.mutation.SetEstado(v)
-	}
-}
-
 // check runs all checks and user-defined validators on the builder.
 func (_c *GastoCreate) check() error {
-	if _, ok := _c.mutation.CreadoEn(); !ok {
-		return &ValidationError{Name: "creado_en", err: errors.New(`ent: missing required field "Gasto.creado_en"`)}
-	}
 	if _, ok := _c.mutation.EmpresaID(); !ok {
 		return &ValidationError{Name: "empresa_id", err: errors.New(`ent: missing required field "Gasto.empresa_id"`)}
 	}
-	if _, ok := _c.mutation.Categoria(); !ok {
-		return &ValidationError{Name: "categoria", err: errors.New(`ent: missing required field "Gasto.categoria"`)}
+	if _, ok := _c.mutation.Monto(); !ok {
+		return &ValidationError{Name: "monto", err: errors.New(`ent: missing required field "Gasto.monto"`)}
 	}
-	if v, ok := _c.mutation.Categoria(); ok {
-		if err := gasto.CategoriaValidator(v); err != nil {
-			return &ValidationError{Name: "categoria", err: fmt.Errorf(`ent: validator failed for field "Gasto.categoria": %w`, err)}
-		}
+	if _, ok := _c.mutation.Fecha(); !ok {
+		return &ValidationError{Name: "fecha", err: errors.New(`ent: missing required field "Gasto.fecha"`)}
+	}
+	if _, ok := _c.mutation.TipoPagoID(); !ok {
+		return &ValidationError{Name: "tipo_pago_id", err: errors.New(`ent: missing required field "Gasto.tipo_pago_id"`)}
 	}
 	if _, ok := _c.mutation.Descripcion(); !ok {
 		return &ValidationError{Name: "descripcion", err: errors.New(`ent: missing required field "Gasto.descripcion"`)}
@@ -311,53 +132,11 @@ func (_c *GastoCreate) check() error {
 			return &ValidationError{Name: "descripcion", err: fmt.Errorf(`ent: validator failed for field "Gasto.descripcion": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.FechaGasto(); !ok {
-		return &ValidationError{Name: "fecha_gasto", err: errors.New(`ent: missing required field "Gasto.fecha_gasto"`)}
-	}
-	if _, ok := _c.mutation.Moneda(); !ok {
-		return &ValidationError{Name: "moneda", err: errors.New(`ent: missing required field "Gasto.moneda"`)}
-	}
-	if v, ok := _c.mutation.Moneda(); ok {
-		if err := gasto.MonedaValidator(v); err != nil {
-			return &ValidationError{Name: "moneda", err: fmt.Errorf(`ent: validator failed for field "Gasto.moneda": %w`, err)}
-		}
-	}
-	if _, ok := _c.mutation.Monto(); !ok {
-		return &ValidationError{Name: "monto", err: errors.New(`ent: missing required field "Gasto.monto"`)}
-	}
-	if _, ok := _c.mutation.MetodoPago(); !ok {
-		return &ValidationError{Name: "metodo_pago", err: errors.New(`ent: missing required field "Gasto.metodo_pago"`)}
-	}
-	if v, ok := _c.mutation.MetodoPago(); ok {
-		if err := gasto.MetodoPagoValidator(v); err != nil {
-			return &ValidationError{Name: "metodo_pago", err: fmt.Errorf(`ent: validator failed for field "Gasto.metodo_pago": %w`, err)}
-		}
-	}
-	if v, ok := _c.mutation.Referencia(); ok {
-		if err := gasto.ReferenciaValidator(v); err != nil {
-			return &ValidationError{Name: "referencia", err: fmt.Errorf(`ent: validator failed for field "Gasto.referencia": %w`, err)}
-		}
-	}
-	if v, ok := _c.mutation.PagadoA(); ok {
-		if err := gasto.PagadoAValidator(v); err != nil {
-			return &ValidationError{Name: "pagado_a", err: fmt.Errorf(`ent: validator failed for field "Gasto.pagado_a": %w`, err)}
-		}
-	}
-	if _, ok := _c.mutation.Estado(); !ok {
-		return &ValidationError{Name: "estado", err: errors.New(`ent: missing required field "Gasto.estado"`)}
-	}
-	if v, ok := _c.mutation.Estado(); ok {
-		if err := gasto.EstadoValidator(v); err != nil {
-			return &ValidationError{Name: "estado", err: fmt.Errorf(`ent: validator failed for field "Gasto.estado": %w`, err)}
-		}
-	}
-	if v, ok := _c.mutation.Notas(); ok {
-		if err := gasto.NotasValidator(v); err != nil {
-			return &ValidationError{Name: "notas", err: fmt.Errorf(`ent: validator failed for field "Gasto.notas": %w`, err)}
-		}
-	}
 	if len(_c.mutation.EmpresaIDs()) == 0 {
 		return &ValidationError{Name: "empresa", err: errors.New(`ent: missing required edge "Gasto.empresa"`)}
+	}
+	if len(_c.mutation.TipoPagoIDs()) == 0 {
+		return &ValidationError{Name: "tipo_pago", err: errors.New(`ent: missing required edge "Gasto.tipo_pago"`)}
 	}
 	return nil
 }
@@ -385,49 +164,17 @@ func (_c *GastoCreate) createSpec() (*Gasto, *sqlgraph.CreateSpec) {
 		_node = &Gasto{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(gasto.Table, sqlgraph.NewFieldSpec(gasto.FieldID, field.TypeInt))
 	)
-	if value, ok := _c.mutation.CreadoEn(); ok {
-		_spec.SetField(gasto.FieldCreadoEn, field.TypeTime, value)
-		_node.CreadoEn = value
+	if value, ok := _c.mutation.Monto(); ok {
+		_spec.SetField(gasto.FieldMonto, field.TypeFloat64, value)
+		_node.Monto = value
 	}
-	if value, ok := _c.mutation.Categoria(); ok {
-		_spec.SetField(gasto.FieldCategoria, field.TypeEnum, value)
-		_node.Categoria = value
+	if value, ok := _c.mutation.Fecha(); ok {
+		_spec.SetField(gasto.FieldFecha, field.TypeTime, value)
+		_node.Fecha = value
 	}
 	if value, ok := _c.mutation.Descripcion(); ok {
 		_spec.SetField(gasto.FieldDescripcion, field.TypeString, value)
 		_node.Descripcion = value
-	}
-	if value, ok := _c.mutation.FechaGasto(); ok {
-		_spec.SetField(gasto.FieldFechaGasto, field.TypeTime, value)
-		_node.FechaGasto = value
-	}
-	if value, ok := _c.mutation.Moneda(); ok {
-		_spec.SetField(gasto.FieldMoneda, field.TypeString, value)
-		_node.Moneda = value
-	}
-	if value, ok := _c.mutation.Monto(); ok {
-		_spec.SetField(gasto.FieldMonto, field.TypeInt64, value)
-		_node.Monto = value
-	}
-	if value, ok := _c.mutation.MetodoPago(); ok {
-		_spec.SetField(gasto.FieldMetodoPago, field.TypeEnum, value)
-		_node.MetodoPago = value
-	}
-	if value, ok := _c.mutation.Referencia(); ok {
-		_spec.SetField(gasto.FieldReferencia, field.TypeString, value)
-		_node.Referencia = &value
-	}
-	if value, ok := _c.mutation.PagadoA(); ok {
-		_spec.SetField(gasto.FieldPagadoA, field.TypeString, value)
-		_node.PagadoA = &value
-	}
-	if value, ok := _c.mutation.Estado(); ok {
-		_spec.SetField(gasto.FieldEstado, field.TypeEnum, value)
-		_node.Estado = value
-	}
-	if value, ok := _c.mutation.Notas(); ok {
-		_spec.SetField(gasto.FieldNotas, field.TypeString, value)
-		_node.Notas = &value
 	}
 	if nodes := _c.mutation.EmpresaIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -446,38 +193,21 @@ func (_c *GastoCreate) createSpec() (*Gasto, *sqlgraph.CreateSpec) {
 		_node.EmpresaID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := _c.mutation.PropiedadIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.TipoPagoIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   gasto.PropiedadTable,
-			Columns: []string{gasto.PropiedadColumn},
+			Table:   gasto.TipoPagoTable,
+			Columns: []string{gasto.TipoPagoColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(propiedad.FieldID, field.TypeInt),
+				IDSpec: sqlgraph.NewFieldSpec(tipopago.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.PropiedadID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := _c.mutation.UnidadIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   gasto.UnidadTable,
-			Columns: []string{gasto.UnidadColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(unidad.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.UnidadID = &nodes[0]
+		_node.TipoPagoID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := _c.mutation.MovimientosCajaIDs(); len(nodes) > 0 {
@@ -517,7 +247,6 @@ func (_c *GastoCreateBulk) Save(ctx context.Context) ([]*Gasto, error) {
 	for i := range _c.builders {
 		func(i int, root context.Context) {
 			builder := _c.builders[i]
-			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*GastoMutation)
 				if !ok {

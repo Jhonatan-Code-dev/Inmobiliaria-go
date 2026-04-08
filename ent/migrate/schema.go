@@ -254,20 +254,11 @@ var (
 	// GastosColumns holds the columns for the "gastos" table.
 	GastosColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "creado_en", Type: field.TypeTime},
-		{Name: "categoria", Type: field.TypeEnum, Enums: []string{"agua", "luz", "internet", "mantenimiento", "limpieza", "impuestos", "reparacion", "otro"}, Default: "otro"},
+		{Name: "monto", Type: field.TypeFloat64, SchemaType: map[string]string{"mysql": "decimal(12,2)"}},
+		{Name: "fecha", Type: field.TypeTime},
 		{Name: "descripcion", Type: field.TypeString, Size: 255},
-		{Name: "fecha_gasto", Type: field.TypeTime},
-		{Name: "moneda", Type: field.TypeString, Size: 3, Default: "PEN"},
-		{Name: "monto", Type: field.TypeInt64, Default: 0},
-		{Name: "metodo_pago", Type: field.TypeEnum, Enums: []string{"efectivo", "transferencia", "yape", "plin", "tarjeta", "deposito", "otro"}, Default: "efectivo"},
-		{Name: "referencia", Type: field.TypeString, Nullable: true, Size: 120},
-		{Name: "pagado_a", Type: field.TypeString, Nullable: true, Size: 150},
-		{Name: "estado", Type: field.TypeEnum, Enums: []string{"pendiente", "pagado", "anulado"}, Default: "pagado"},
-		{Name: "notas", Type: field.TypeString, Nullable: true, Size: 1000},
 		{Name: "empresa_id", Type: field.TypeInt},
-		{Name: "propiedad_id", Type: field.TypeInt, Nullable: true},
-		{Name: "unidad_id", Type: field.TypeInt, Nullable: true},
+		{Name: "tipo_pago_id", Type: field.TypeInt},
 	}
 	// GastosTable holds the schema information for the "gastos" table.
 	GastosTable = &schema.Table{
@@ -277,21 +268,15 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "gastos_empresas_gastos",
-				Columns:    []*schema.Column{GastosColumns[12]},
+				Columns:    []*schema.Column{GastosColumns[4]},
 				RefColumns: []*schema.Column{EmpresasColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "gastos_propiedades_gastos",
-				Columns:    []*schema.Column{GastosColumns[13]},
-				RefColumns: []*schema.Column{PropiedadesColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "gastos_unidades_gastos",
-				Columns:    []*schema.Column{GastosColumns[14]},
-				RefColumns: []*schema.Column{UnidadesColumns[0]},
-				OnDelete:   schema.SetNull,
+				Symbol:     "gastos_tipos_pago_gastos",
+				Columns:    []*schema.Column{GastosColumns[5]},
+				RefColumns: []*schema.Column{TiposPagoColumns[0]},
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -524,6 +509,17 @@ var (
 			},
 		},
 	}
+	// TiposPagoColumns holds the columns for the "tipos_pago" table.
+	TiposPagoColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "nombre", Type: field.TypeString, Unique: true, Size: 50},
+	}
+	// TiposPagoTable holds the schema information for the "tipos_pago" table.
+	TiposPagoTable = &schema.Table{
+		Name:       "tipos_pago",
+		Columns:    TiposPagoColumns,
+		PrimaryKey: []*schema.Column{TiposPagoColumns[0]},
+	}
 	// UnidadesColumns holds the columns for the "unidades" table.
 	UnidadesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -598,6 +594,7 @@ var (
 		RolesTable,
 		ServicioMedicionesTable,
 		TiposIdentificacionTable,
+		TiposPagoTable,
 		UnidadesTable,
 		UsuariosTable,
 	}
@@ -638,8 +635,7 @@ func init() {
 		Table: "empresa_usuarios",
 	}
 	GastosTable.ForeignKeys[0].RefTable = EmpresasTable
-	GastosTable.ForeignKeys[1].RefTable = PropiedadesTable
-	GastosTable.ForeignKeys[2].RefTable = UnidadesTable
+	GastosTable.ForeignKeys[1].RefTable = TiposPagoTable
 	GastosTable.Annotation = &entsql.Annotation{
 		Table: "gastos",
 	}
@@ -675,6 +671,9 @@ func init() {
 	}
 	TiposIdentificacionTable.Annotation = &entsql.Annotation{
 		Table: "tipos_identificacion",
+	}
+	TiposPagoTable.Annotation = &entsql.Annotation{
+		Table: "tipos_pago",
 	}
 	UnidadesTable.ForeignKeys[0].RefTable = PropiedadesTable
 	UnidadesTable.Annotation = &entsql.Annotation{

@@ -19,6 +19,7 @@ import (
 	"rentals-go/ent/schema"
 	"rentals-go/ent/serviciomedicion"
 	"rentals-go/ent/tipoidentificacion"
+	"rentals-go/ent/tipopago"
 	"rentals-go/ent/unidad"
 	"rentals-go/ent/usuario"
 	"time"
@@ -383,15 +384,8 @@ func init() {
 	empresausuarioDescPrincipal := empresausuarioFields[3].Descriptor()
 	// empresausuario.DefaultPrincipal holds the default value on creation for the principal field.
 	empresausuario.DefaultPrincipal = empresausuarioDescPrincipal.Default.(bool)
-	gastoMixin := schema.Gasto{}.Mixin()
-	gastoMixinFields0 := gastoMixin[0].Fields()
-	_ = gastoMixinFields0
 	gastoFields := schema.Gasto{}.Fields()
 	_ = gastoFields
-	// gastoDescCreadoEn is the schema descriptor for creado_en field.
-	gastoDescCreadoEn := gastoMixinFields0[0].Descriptor()
-	// gasto.DefaultCreadoEn holds the default value on creation for the creado_en field.
-	gasto.DefaultCreadoEn = gastoDescCreadoEn.Default.(func() time.Time)
 	// gastoDescDescripcion is the schema descriptor for descripcion field.
 	gastoDescDescripcion := gastoFields[4].Descriptor()
 	// gasto.DescripcionValidator is a validator for the "descripcion" field. It is called by the builders before save.
@@ -410,42 +404,6 @@ func init() {
 			return nil
 		}
 	}()
-	// gastoDescMoneda is the schema descriptor for moneda field.
-	gastoDescMoneda := gastoFields[6].Descriptor()
-	// gasto.DefaultMoneda holds the default value on creation for the moneda field.
-	gasto.DefaultMoneda = gastoDescMoneda.Default.(string)
-	// gasto.MonedaValidator is a validator for the "moneda" field. It is called by the builders before save.
-	gasto.MonedaValidator = func() func(string) error {
-		validators := gastoDescMoneda.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(moneda string) error {
-			for _, fn := range fns {
-				if err := fn(moneda); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
-	// gastoDescMonto is the schema descriptor for monto field.
-	gastoDescMonto := gastoFields[7].Descriptor()
-	// gasto.DefaultMonto holds the default value on creation for the monto field.
-	gasto.DefaultMonto = gastoDescMonto.Default.(int64)
-	// gastoDescReferencia is the schema descriptor for referencia field.
-	gastoDescReferencia := gastoFields[9].Descriptor()
-	// gasto.ReferenciaValidator is a validator for the "referencia" field. It is called by the builders before save.
-	gasto.ReferenciaValidator = gastoDescReferencia.Validators[0].(func(string) error)
-	// gastoDescPagadoA is the schema descriptor for pagado_a field.
-	gastoDescPagadoA := gastoFields[10].Descriptor()
-	// gasto.PagadoAValidator is a validator for the "pagado_a" field. It is called by the builders before save.
-	gasto.PagadoAValidator = gastoDescPagadoA.Validators[0].(func(string) error)
-	// gastoDescNotas is the schema descriptor for notas field.
-	gastoDescNotas := gastoFields[12].Descriptor()
-	// gasto.NotasValidator is a validator for the "notas" field. It is called by the builders before save.
-	gasto.NotasValidator = gastoDescNotas.Validators[0].(func(string) error)
 	movimientocajaMixin := schema.MovimientoCaja{}.Mixin()
 	movimientocajaMixinFields0 := movimientocajaMixin[0].Fields()
 	_ = movimientocajaMixinFields0
@@ -804,6 +762,26 @@ func init() {
 	tipoidentificacionDescActivo := tipoidentificacionFields[3].Descriptor()
 	// tipoidentificacion.DefaultActivo holds the default value on creation for the activo field.
 	tipoidentificacion.DefaultActivo = tipoidentificacionDescActivo.Default.(bool)
+	tipopagoFields := schema.TipoPago{}.Fields()
+	_ = tipopagoFields
+	// tipopagoDescNombre is the schema descriptor for nombre field.
+	tipopagoDescNombre := tipopagoFields[0].Descriptor()
+	// tipopago.NombreValidator is a validator for the "nombre" field. It is called by the builders before save.
+	tipopago.NombreValidator = func() func(string) error {
+		validators := tipopagoDescNombre.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(nombre string) error {
+			for _, fn := range fns {
+				if err := fn(nombre); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	unidadMixin := schema.Unidad{}.Mixin()
 	unidadMixinFields0 := unidadMixin[0].Fields()
 	_ = unidadMixinFields0

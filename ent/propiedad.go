@@ -56,11 +56,9 @@ type PropiedadEdges struct {
 	Empresa *Empresa `json:"empresa,omitempty"`
 	// Unidades holds the value of the unidades edge.
 	Unidades []*Unidad `json:"unidades,omitempty"`
-	// Gastos holds the value of the gastos edge.
-	Gastos []*Gasto `json:"gastos,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [2]bool
 }
 
 // EmpresaOrErr returns the Empresa value or an error if the edge
@@ -81,15 +79,6 @@ func (e PropiedadEdges) UnidadesOrErr() ([]*Unidad, error) {
 		return e.Unidades, nil
 	}
 	return nil, &NotLoadedError{edge: "unidades"}
-}
-
-// GastosOrErr returns the Gastos value or an error if the edge
-// was not loaded in eager-loading.
-func (e PropiedadEdges) GastosOrErr() ([]*Gasto, error) {
-	if e.loadedTypes[2] {
-		return e.Gastos, nil
-	}
-	return nil, &NotLoadedError{edge: "gastos"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -228,11 +217,6 @@ func (_m *Propiedad) QueryEmpresa() *EmpresaQuery {
 // QueryUnidades queries the "unidades" edge of the Propiedad entity.
 func (_m *Propiedad) QueryUnidades() *UnidadQuery {
 	return NewPropiedadClient(_m.config).QueryUnidades(_m)
-}
-
-// QueryGastos queries the "gastos" edge of the Propiedad entity.
-func (_m *Propiedad) QueryGastos() *GastoQuery {
-	return NewPropiedadClient(_m.config).QueryGastos(_m)
 }
 
 // Update returns a builder for updating this Propiedad.

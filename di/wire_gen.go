@@ -35,12 +35,18 @@ func InitializeApp() (*App, error) {
 	monedaController := controller.NewMonedaController(monedaService)
 	usuarioService := service.NewUsuarioService(usuarioRepoEnt, v)
 	usuarioController := controller.NewUsuarioController(usuarioService)
+	gastoRepoEnt := repository.NewGastoRepo(client)
+	movimientoCajaRepoEnt := repository.NewMovimientoCajaRepo(client)
+	tipoPagoRepoEnt := repository.NewTipoPagoRepo(client)
+	gastoService := service.NewGastoService(gastoRepoEnt, movimientoCajaRepoEnt, tipoPagoRepoEnt)
+	gastoController := controller.NewGastoController(gastoService)
 	app := &App{
 		Config:      config,
 		EntClient:   client,
 		AdminCtrl:   adminController,
 		MonedaCtrl:  monedaController,
 		UsuarioCtrl: usuarioController,
+		GastoCtrl:   gastoController,
 	}
 	return app, nil
 }

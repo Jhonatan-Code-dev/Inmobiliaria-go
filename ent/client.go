@@ -26,6 +26,7 @@ import (
 	"rentals-go/ent/rol"
 	"rentals-go/ent/serviciomedicion"
 	"rentals-go/ent/tipoidentificacion"
+	"rentals-go/ent/tipopago"
 	"rentals-go/ent/unidad"
 	"rentals-go/ent/usuario"
 
@@ -70,6 +71,8 @@ type Client struct {
 	ServicioMedicion *ServicioMedicionClient
 	// TipoIdentificacion is the client for interacting with the TipoIdentificacion builders.
 	TipoIdentificacion *TipoIdentificacionClient
+	// TipoPago is the client for interacting with the TipoPago builders.
+	TipoPago *TipoPagoClient
 	// Unidad is the client for interacting with the Unidad builders.
 	Unidad *UnidadClient
 	// Usuario is the client for interacting with the Usuario builders.
@@ -100,6 +103,7 @@ func (c *Client) init() {
 	c.Rol = NewRolClient(c.config)
 	c.ServicioMedicion = NewServicioMedicionClient(c.config)
 	c.TipoIdentificacion = NewTipoIdentificacionClient(c.config)
+	c.TipoPago = NewTipoPagoClient(c.config)
 	c.Unidad = NewUnidadClient(c.config)
 	c.Usuario = NewUsuarioClient(c.config)
 }
@@ -209,6 +213,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Rol:                NewRolClient(cfg),
 		ServicioMedicion:   NewServicioMedicionClient(cfg),
 		TipoIdentificacion: NewTipoIdentificacionClient(cfg),
+		TipoPago:           NewTipoPagoClient(cfg),
 		Unidad:             NewUnidadClient(cfg),
 		Usuario:            NewUsuarioClient(cfg),
 	}, nil
@@ -245,6 +250,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Rol:                NewRolClient(cfg),
 		ServicioMedicion:   NewServicioMedicionClient(cfg),
 		TipoIdentificacion: NewTipoIdentificacionClient(cfg),
+		TipoPago:           NewTipoPagoClient(cfg),
 		Unidad:             NewUnidadClient(cfg),
 		Usuario:            NewUsuarioClient(cfg),
 	}, nil
@@ -278,8 +284,8 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.Admin, c.Cargo, c.Cliente, c.ClienteTelefono, c.Contrato, c.Empresa,
 		c.EmpresaUsuario, c.Gasto, c.MovimientoCaja, c.Pago, c.PagoAplicacion,
-		c.Propiedad, c.Rol, c.ServicioMedicion, c.TipoIdentificacion, c.Unidad,
-		c.Usuario,
+		c.Propiedad, c.Rol, c.ServicioMedicion, c.TipoIdentificacion, c.TipoPago,
+		c.Unidad, c.Usuario,
 	} {
 		n.Use(hooks...)
 	}
@@ -291,8 +297,8 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.Admin, c.Cargo, c.Cliente, c.ClienteTelefono, c.Contrato, c.Empresa,
 		c.EmpresaUsuario, c.Gasto, c.MovimientoCaja, c.Pago, c.PagoAplicacion,
-		c.Propiedad, c.Rol, c.ServicioMedicion, c.TipoIdentificacion, c.Unidad,
-		c.Usuario,
+		c.Propiedad, c.Rol, c.ServicioMedicion, c.TipoIdentificacion, c.TipoPago,
+		c.Unidad, c.Usuario,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -331,6 +337,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.ServicioMedicion.mutate(ctx, m)
 	case *TipoIdentificacionMutation:
 		return c.TipoIdentificacion.mutate(ctx, m)
+	case *TipoPagoMutation:
+		return c.TipoPago.mutate(ctx, m)
 	case *UnidadMutation:
 		return c.Unidad.mutate(ctx, m)
 	case *UsuarioMutation:
@@ -1763,31 +1771,15 @@ func (c *GastoClient) QueryEmpresa(_m *Gasto) *EmpresaQuery {
 	return query
 }
 
-// QueryPropiedad queries the propiedad edge of a Gasto.
-func (c *GastoClient) QueryPropiedad(_m *Gasto) *PropiedadQuery {
-	query := (&PropiedadClient{config: c.config}).Query()
+// QueryTipoPago queries the tipo_pago edge of a Gasto.
+func (c *GastoClient) QueryTipoPago(_m *Gasto) *TipoPagoQuery {
+	query := (&TipoPagoClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
 		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(gasto.Table, gasto.FieldID, id),
-			sqlgraph.To(propiedad.Table, propiedad.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, gasto.PropiedadTable, gasto.PropiedadColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryUnidad queries the unidad edge of a Gasto.
-func (c *GastoClient) QueryUnidad(_m *Gasto) *UnidadQuery {
-	query := (&UnidadClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(gasto.Table, gasto.FieldID, id),
-			sqlgraph.To(unidad.Table, unidad.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, gasto.UnidadTable, gasto.UnidadColumn),
+			sqlgraph.To(tipopago.Table, tipopago.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, gasto.TipoPagoTable, gasto.TipoPagoColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2535,22 +2527,6 @@ func (c *PropiedadClient) QueryUnidades(_m *Propiedad) *UnidadQuery {
 	return query
 }
 
-// QueryGastos queries the gastos edge of a Propiedad.
-func (c *PropiedadClient) QueryGastos(_m *Propiedad) *GastoQuery {
-	query := (&GastoClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(propiedad.Table, propiedad.FieldID, id),
-			sqlgraph.To(gasto.Table, gasto.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, propiedad.GastosTable, propiedad.GastosColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // Hooks returns the client hooks.
 func (c *PropiedadClient) Hooks() []Hook {
 	return c.hooks.Propiedad
@@ -3023,6 +2999,155 @@ func (c *TipoIdentificacionClient) mutate(ctx context.Context, m *TipoIdentifica
 	}
 }
 
+// TipoPagoClient is a client for the TipoPago schema.
+type TipoPagoClient struct {
+	config
+}
+
+// NewTipoPagoClient returns a client for the TipoPago from the given config.
+func NewTipoPagoClient(c config) *TipoPagoClient {
+	return &TipoPagoClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `tipopago.Hooks(f(g(h())))`.
+func (c *TipoPagoClient) Use(hooks ...Hook) {
+	c.hooks.TipoPago = append(c.hooks.TipoPago, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `tipopago.Intercept(f(g(h())))`.
+func (c *TipoPagoClient) Intercept(interceptors ...Interceptor) {
+	c.inters.TipoPago = append(c.inters.TipoPago, interceptors...)
+}
+
+// Create returns a builder for creating a TipoPago entity.
+func (c *TipoPagoClient) Create() *TipoPagoCreate {
+	mutation := newTipoPagoMutation(c.config, OpCreate)
+	return &TipoPagoCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TipoPago entities.
+func (c *TipoPagoClient) CreateBulk(builders ...*TipoPagoCreate) *TipoPagoCreateBulk {
+	return &TipoPagoCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TipoPagoClient) MapCreateBulk(slice any, setFunc func(*TipoPagoCreate, int)) *TipoPagoCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TipoPagoCreateBulk{err: fmt.Errorf("calling to TipoPagoClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TipoPagoCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TipoPagoCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TipoPago.
+func (c *TipoPagoClient) Update() *TipoPagoUpdate {
+	mutation := newTipoPagoMutation(c.config, OpUpdate)
+	return &TipoPagoUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TipoPagoClient) UpdateOne(_m *TipoPago) *TipoPagoUpdateOne {
+	mutation := newTipoPagoMutation(c.config, OpUpdateOne, withTipoPago(_m))
+	return &TipoPagoUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TipoPagoClient) UpdateOneID(id int) *TipoPagoUpdateOne {
+	mutation := newTipoPagoMutation(c.config, OpUpdateOne, withTipoPagoID(id))
+	return &TipoPagoUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TipoPago.
+func (c *TipoPagoClient) Delete() *TipoPagoDelete {
+	mutation := newTipoPagoMutation(c.config, OpDelete)
+	return &TipoPagoDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TipoPagoClient) DeleteOne(_m *TipoPago) *TipoPagoDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TipoPagoClient) DeleteOneID(id int) *TipoPagoDeleteOne {
+	builder := c.Delete().Where(tipopago.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TipoPagoDeleteOne{builder}
+}
+
+// Query returns a query builder for TipoPago.
+func (c *TipoPagoClient) Query() *TipoPagoQuery {
+	return &TipoPagoQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTipoPago},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a TipoPago entity by its id.
+func (c *TipoPagoClient) Get(ctx context.Context, id int) (*TipoPago, error) {
+	return c.Query().Where(tipopago.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TipoPagoClient) GetX(ctx context.Context, id int) *TipoPago {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryGastos queries the gastos edge of a TipoPago.
+func (c *TipoPagoClient) QueryGastos(_m *TipoPago) *GastoQuery {
+	query := (&GastoClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tipopago.Table, tipopago.FieldID, id),
+			sqlgraph.To(gasto.Table, gasto.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, tipopago.GastosTable, tipopago.GastosColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TipoPagoClient) Hooks() []Hook {
+	return c.hooks.TipoPago
+}
+
+// Interceptors returns the client interceptors.
+func (c *TipoPagoClient) Interceptors() []Interceptor {
+	return c.inters.TipoPago
+}
+
+func (c *TipoPagoClient) mutate(ctx context.Context, m *TipoPagoMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TipoPagoCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TipoPagoUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TipoPagoUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TipoPagoDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown TipoPago mutation op: %q", m.Op())
+	}
+}
+
 // UnidadClient is a client for the Unidad schema.
 type UnidadClient struct {
 	config
@@ -3172,22 +3297,6 @@ func (c *UnidadClient) QueryServicioMediciones(_m *Unidad) *ServicioMedicionQuer
 			sqlgraph.From(unidad.Table, unidad.FieldID, id),
 			sqlgraph.To(serviciomedicion.Table, serviciomedicion.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, unidad.ServicioMedicionesTable, unidad.ServicioMedicionesColumn),
-		)
-		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryGastos queries the gastos edge of a Unidad.
-func (c *UnidadClient) QueryGastos(_m *Unidad) *GastoQuery {
-	query := (&GastoClient{config: c.config}).Query()
-	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := _m.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(unidad.Table, unidad.FieldID, id),
-			sqlgraph.To(gasto.Table, gasto.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, unidad.GastosTable, unidad.GastosColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -3374,11 +3483,11 @@ type (
 	hooks struct {
 		Admin, Cargo, Cliente, ClienteTelefono, Contrato, Empresa, EmpresaUsuario,
 		Gasto, MovimientoCaja, Pago, PagoAplicacion, Propiedad, Rol, ServicioMedicion,
-		TipoIdentificacion, Unidad, Usuario []ent.Hook
+		TipoIdentificacion, TipoPago, Unidad, Usuario []ent.Hook
 	}
 	inters struct {
 		Admin, Cargo, Cliente, ClienteTelefono, Contrato, Empresa, EmpresaUsuario,
 		Gasto, MovimientoCaja, Pago, PagoAplicacion, Propiedad, Rol, ServicioMedicion,
-		TipoIdentificacion, Unidad, Usuario []ent.Interceptor
+		TipoIdentificacion, TipoPago, Unidad, Usuario []ent.Interceptor
 	}
 )

@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"rentals-go/ent/contrato"
-	"rentals-go/ent/gasto"
 	"rentals-go/ent/propiedad"
 	"rentals-go/ent/serviciomedicion"
 	"rentals-go/ent/unidad"
@@ -293,21 +292,6 @@ func (_c *UnidadCreate) AddServicioMediciones(v ...*ServicioMedicion) *UnidadCre
 		ids[i] = v[i].ID
 	}
 	return _c.AddServicioMedicioneIDs(ids...)
-}
-
-// AddGastoIDs adds the "gastos" edge to the Gasto entity by IDs.
-func (_c *UnidadCreate) AddGastoIDs(ids ...int) *UnidadCreate {
-	_c.mutation.AddGastoIDs(ids...)
-	return _c
-}
-
-// AddGastos adds the "gastos" edges to the Gasto entity.
-func (_c *UnidadCreate) AddGastos(v ...*Gasto) *UnidadCreate {
-	ids := make([]int, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _c.AddGastoIDs(ids...)
 }
 
 // Mutation returns the UnidadMutation object of the builder.
@@ -623,22 +607,6 @@ func (_c *UnidadCreate) createSpec() (*Unidad, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(serviciomedicion.FieldID, field.TypeInt),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := _c.mutation.GastosIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   unidad.GastosTable,
-			Columns: []string{unidad.GastosColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(gasto.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

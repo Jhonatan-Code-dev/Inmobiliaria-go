@@ -57,8 +57,6 @@ const (
 	EdgeContratos = "contratos"
 	// EdgeServicioMediciones holds the string denoting the servicio_mediciones edge name in mutations.
 	EdgeServicioMediciones = "servicio_mediciones"
-	// EdgeGastos holds the string denoting the gastos edge name in mutations.
-	EdgeGastos = "gastos"
 	// Table holds the table name of the unidad in the database.
 	Table = "unidades"
 	// PropiedadTable is the table that holds the propiedad relation/edge.
@@ -82,13 +80,6 @@ const (
 	ServicioMedicionesInverseTable = "servicio_mediciones"
 	// ServicioMedicionesColumn is the table column denoting the servicio_mediciones relation/edge.
 	ServicioMedicionesColumn = "unidad_id"
-	// GastosTable is the table that holds the gastos relation/edge.
-	GastosTable = "gastos"
-	// GastosInverseTable is the table name for the Gasto entity.
-	// It exists in this package in order to avoid circular dependency with the "gasto" package.
-	GastosInverseTable = "gastos"
-	// GastosColumn is the table column denoting the gastos relation/edge.
-	GastosColumn = "unidad_id"
 )
 
 // Columns holds all SQL columns for unidad fields.
@@ -352,20 +343,6 @@ func ByServicioMediciones(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOptio
 		sqlgraph.OrderByNeighborTerms(s, newServicioMedicionesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
-
-// ByGastosCount orders the results by gastos count.
-func ByGastosCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newGastosStep(), opts...)
-	}
-}
-
-// ByGastos orders the results by gastos terms.
-func ByGastos(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newGastosStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
 func newPropiedadStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -385,12 +362,5 @@ func newServicioMedicionesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ServicioMedicionesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, ServicioMedicionesTable, ServicioMedicionesColumn),
-	)
-}
-func newGastosStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(GastosInverseTable, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, GastosTable, GastosColumn),
 	)
 }

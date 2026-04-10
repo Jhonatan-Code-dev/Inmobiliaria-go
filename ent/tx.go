@@ -40,6 +40,8 @@ type Tx struct {
 	Rol *RolClient
 	// ServicioMedicion is the client for interacting with the ServicioMedicion builders.
 	ServicioMedicion *ServicioMedicionClient
+	// Ticket is the client for interacting with the Ticket builders.
+	Ticket *TicketClient
 	// TipoIdentificacion is the client for interacting with the TipoIdentificacion builders.
 	TipoIdentificacion *TipoIdentificacionClient
 	// TipoPago is the client for interacting with the TipoPago builders.
@@ -193,6 +195,7 @@ func (tx *Tx) init() {
 	tx.Propiedad = NewPropiedadClient(tx.config)
 	tx.Rol = NewRolClient(tx.config)
 	tx.ServicioMedicion = NewServicioMedicionClient(tx.config)
+	tx.Ticket = NewTicketClient(tx.config)
 	tx.TipoIdentificacion = NewTipoIdentificacionClient(tx.config)
 	tx.TipoPago = NewTipoPagoClient(tx.config)
 	tx.Unidad = NewUnidadClient(tx.config)

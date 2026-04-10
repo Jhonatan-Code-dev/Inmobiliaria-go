@@ -67,6 +67,7 @@ func (Contrato) Edges() []ent.Edge {
 			Unique(),
 		edge.To("cargos", Cargo.Type),
 		edge.To("pagos", Pago.Type),
+		edge.To("servicio_mediciones", ServicioMedicion.Type),
 	}
 }
 

@@ -11,6 +11,7 @@ import (
 	"rentals-go/ent/contrato"
 	"rentals-go/ent/empresa"
 	"rentals-go/ent/pago"
+	"rentals-go/ent/ticket"
 	"rentals-go/ent/tipoidentificacion"
 	"time"
 
@@ -242,6 +243,21 @@ func (_c *ClienteCreate) AddPagos(v ...*Pago) *ClienteCreate {
 		ids[i] = v[i].ID
 	}
 	return _c.AddPagoIDs(ids...)
+}
+
+// AddTicketIDs adds the "tickets" edge to the Ticket entity by IDs.
+func (_c *ClienteCreate) AddTicketIDs(ids ...int) *ClienteCreate {
+	_c.mutation.AddTicketIDs(ids...)
+	return _c
+}
+
+// AddTickets adds the "tickets" edges to the Ticket entity.
+func (_c *ClienteCreate) AddTickets(v ...*Ticket) *ClienteCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddTicketIDs(ids...)
 }
 
 // Mutation returns the ClienteMutation object of the builder.
@@ -514,6 +530,22 @@ func (_c *ClienteCreate) createSpec() (*Cliente, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(pago.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.TicketsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   cliente.TicketsTable,
+			Columns: []string{cliente.TicketsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

@@ -58,6 +58,7 @@ func (Cliente) Edges() []ent.Edge {
 		edge.To("telefonos", ClienteTelefono.Type),
 		edge.To("contratos", Contrato.Type),
 		edge.To("pagos", Pago.Type),
+		edge.To("tickets", Ticket.Type),
 	}
 }
 

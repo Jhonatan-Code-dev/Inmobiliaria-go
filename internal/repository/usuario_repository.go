@@ -83,3 +83,9 @@ func (r *UsuarioRepoEnt) BuscarPerfil(ctx context.Context, id int) (*domain.Usua
 		EmpresaID:      empresaID,
 	}, emp, nil
 }
+
+func (r *UsuarioRepoEnt) ActualizarPassword(ctx context.Context, id int, hashContrasena string) error {
+	return r.client.Usuario.UpdateOneID(id).
+		SetHashContrasena(hashContrasena).
+		Exec(ctx)
+}

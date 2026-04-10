@@ -59,6 +59,8 @@ const (
 	EdgeCargos = "cargos"
 	// EdgePagos holds the string denoting the pagos edge name in mutations.
 	EdgePagos = "pagos"
+	// EdgeServicioMediciones holds the string denoting the servicio_mediciones edge name in mutations.
+	EdgeServicioMediciones = "servicio_mediciones"
 	// Table holds the table name of the contrato in the database.
 	Table = "contratos"
 	// EmpresaTable is the table that holds the empresa relation/edge.
@@ -96,6 +98,13 @@ const (
 	PagosInverseTable = "pagos"
 	// PagosColumn is the table column denoting the pagos relation/edge.
 	PagosColumn = "contrato_id"
+	// ServicioMedicionesTable is the table that holds the servicio_mediciones relation/edge.
+	ServicioMedicionesTable = "servicio_mediciones"
+	// ServicioMedicionesInverseTable is the table name for the ServicioMedicion entity.
+	// It exists in this package in order to avoid circular dependency with the "serviciomedicion" package.
+	ServicioMedicionesInverseTable = "servicio_mediciones"
+	// ServicioMedicionesColumn is the table column denoting the servicio_mediciones relation/edge.
+	ServicioMedicionesColumn = "contrato_id"
 )
 
 // Columns holds all SQL columns for contrato fields.
@@ -351,6 +360,20 @@ func ByPagos(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newPagosStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByServicioMedicionesCount orders the results by servicio_mediciones count.
+func ByServicioMedicionesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newServicioMedicionesStep(), opts...)
+	}
+}
+
+// ByServicioMediciones orders the results by servicio_mediciones terms.
+func ByServicioMediciones(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newServicioMedicionesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newEmpresaStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -384,5 +407,12 @@ func newPagosStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PagosInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, PagosTable, PagosColumn),
+	)
+}
+func newServicioMedicionesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ServicioMedicionesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ServicioMedicionesTable, ServicioMedicionesColumn),
 	)
 }

@@ -157,6 +157,39 @@ func (r *AlquilerRepoEnt) Crear(ctx context.Context, alquiler *domain.Alquiler) 
 	return r.BuscarPorID(ctx, item.ID)
 }
 
+func (r *AlquilerRepoEnt) Actualizar(ctx context.Context, alq *domain.Alquiler) (*domain.Alquiler, error) {
+	item, err := r.client.Contrato.UpdateOneID(alq.ID).
+		SetFechaInicio(alq.FechaInicio).
+		SetNillableFechaFin(alq.FechaFin).
+		SetDiaVencimiento(alq.DiaVencimiento).
+		SetMontoRenta(alq.MontoRentaCents).
+		SetMoraDiaria(alq.MoraDiariaCents).
+		SetServiciosIncluidos(alq.ServiciosIncl).
+		SetActivoParaCobro(alq.ActivoParaCobro).
+		SetEstado(entContrato.Estado(alq.Estado)).
+		SetNillableObservaciones(alq.Observaciones).
+		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return r.BuscarPorID(ctx, item.ID)
+}
+
+func (r *AlquilerRepoEnt) Eliminar(ctx context.Context, id int) error {
+	// Al eliminar un contrato, liberamos la unidad si estaba ocupada.
+	alq, err := r.client.Contrato.Query().Where(entContrato.IDEQ(id)).WithUnidad().Only(ctx)
+	if err != nil {
+		return err
+	}
+	if alq.Edges.Unidad != nil {
+		err = r.client.Unidad.UpdateOneID(alq.UnidadID).SetEstado(entUnidad.EstadoDisponible).Exec(ctx)
+		if err != nil {
+			return err
+		}
+	}
+	return r.client.Contrato.DeleteOneID(id).Exec(ctx)
+}
+
 type PagoAlquilerRepoEnt struct {
 	client *ent.Client
 }
@@ -293,6 +326,115 @@ func (r *PagoAlquilerRepoEnt) Registrar(ctx context.Context, pago *domain.Regist
 		Nota:               pagoItem.Notas,
 		MesCorrespondiente: pago.MesCorrespondiente,
 	}, nil
+}
+
+func (r *PagoAlquilerRepoEnt) Listar(ctx context.Context, empresaID int, pagina, limite int) ([]*domain.PagoAlquiler, int, error) {
+	query := r.client.Pago.Query().Where(entPago.EmpresaIDEQ(empresaID))
+	total, err := query.Count(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	offset := (pagina - 1) * limite
+	list, err := query.Limit(limite).Offset(offset).Order(ent.Desc(entPago.FieldFechaPago)).All(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	out := make([]*domain.PagoAlquiler, 0, len(list))
+	for _, item := range list {
+		out = append(out, &domain.PagoAlquiler{
+			ID:               item.ID,
+			EmpresaID:        item.EmpresaID,
+			ContratoID:       ptrToInt(item.ContratoID),
+			ClienteID:        item.ClienteID,
+			NumeroRecibo:     item.NumeroRecibo,
+			FechaPago:        item.FechaPago,
+			Moneda:           item.Moneda,
+			MontoPagado:      float64(item.MontoTotal) / 100,
+			MontoPagadoCents: item.MontoTotal,
+			MetodoPago:       string(item.Metodo),
+			Nota:             item.Notas,
+		})
+	}
+	return out, total, nil
+}
+
+func (r *PagoAlquilerRepoEnt) BuscarPorID(ctx context.Context, id int, empresaID int) (*domain.PagoAlquiler, error) {
+	item, err := r.client.Pago.Query().
+		Where(entPago.IDEQ(id), entPago.EmpresaIDEQ(empresaID)).
+		Only(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return &domain.PagoAlquiler{
+		ID:               item.ID,
+		EmpresaID:        item.EmpresaID,
+		ContratoID:       ptrToInt(item.ContratoID),
+		ClienteID:        item.ClienteID,
+		NumeroRecibo:     item.NumeroRecibo,
+		FechaPago:        item.FechaPago,
+		Moneda:           item.Moneda,
+		MontoPagado:      float64(item.MontoTotal) / 100,
+		MontoPagadoCents: item.MontoTotal,
+		MetodoPago:       string(item.Metodo),
+		Nota:             item.Notas,
+	}, nil
+}
+
+func (r *PagoAlquilerRepoEnt) Eliminar(ctx context.Context, id int, empresaID int) error {
+	// Anulación es compleja porque implica devolver el saldo al cargo.
+	tx, err := r.client.Tx(ctx)
+	if err != nil {
+		return err
+	}
+	defer rollbackTx(tx)
+
+	pagoItem, err := tx.Pago.Query().
+		Where(entPago.IDEQ(id), entPago.EmpresaIDEQ(empresaID)).
+		WithAplicaciones().
+		Only(ctx)
+	if err != nil {
+		return err
+	}
+
+	// Revertir aplicaciones
+	for _, app := range pagoItem.Edges.Aplicaciones {
+		err = tx.Cargo.UpdateOneID(app.CargoID).
+			AddSaldo(app.MontoAplicado).
+			SetEstado(entCargo.EstadoParcial). // Debería recalcularse, pero por ahora lo ponemos parcial
+			Exec(ctx)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Cambiar estado del pago a anulado si existe ese estado, sino eliminar aplicaciones y el pago.
+	// En este esquema el estado del pago es 'confirmado', 'pendiente', 'anulado'.
+	err = tx.Pago.UpdateOneID(id).SetEstado(entPago.EstadoAnulado).Exec(ctx)
+	if err != nil {
+		return err
+	}
+
+	return tx.Commit()
+}
+
+func (r *PagoAlquilerRepoEnt) Actualizar(ctx context.Context, pago *domain.PagoAlquiler) (*domain.PagoAlquiler, error) {
+	item, err := r.client.Pago.UpdateOneID(pago.ID).
+		SetMetodo(entPago.Metodo(pago.MetodoPago)).
+		SetNillableNotas(pago.Nota).
+		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return r.BuscarPorID(ctx, item.ID, item.EmpresaID)
+}
+
+func ptrToInt(i *int) int {
+	if i == nil {
+		return 0
+	}
+	return *i
 }
 
 func (r *PagoAlquilerRepoEnt) ListarPendientesMesActual(ctx context.Context, empresaID int, now time.Time) ([]*domain.PagoPendiente, error) {

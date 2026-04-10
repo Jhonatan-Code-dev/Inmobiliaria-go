@@ -36,6 +36,14 @@ var RepositorySet = wire.NewSet(
 	wire.Bind(new(domain.TipoPagoRepository), new(*repository.TipoPagoRepoEnt)),
 	repository.NewTipoIdentificacionRepo,
 	wire.Bind(new(domain.TipoIdentificacionRepository), new(*repository.TipoIdentificacionRepoEnt)),
+	repository.NewStaffRepo,
+	wire.Bind(new(domain.StaffRepository), new(*repository.StaffRepoEnt)),
+	repository.NewCargoRepo,
+	wire.Bind(new(domain.CargoRepository), new(*repository.CargoRepoEnt)),
+	repository.NewServicioMedicionRepo,
+	wire.Bind(new(domain.ServicioMedicionRepository), new(*repository.ServicioMedicionRepoEnt)),
+	repository.NewTicketRepo,
+	wire.Bind(new(domain.TicketRepository), new(*repository.TicketRepoEnt)),
 )
 
 var ServiceSet = wire.NewSet(
@@ -47,11 +55,19 @@ var ServiceSet = wire.NewSet(
 	service.NewInmuebleService,
 	service.NewAlquilerService,
 	service.NewPagoAlquilerService,
+	service.NewStaffService,
+	service.NewCargoService,
+	service.NewServicioMedicionService,
+	service.NewTicketService,
 	wire.Bind(new(domain.GastoService), new(*service.GastoService)),
 	wire.Bind(new(domain.ClienteService), new(*service.ClienteService)),
 	wire.Bind(new(domain.InmuebleService), new(*service.InmuebleService)),
 	wire.Bind(new(domain.AlquilerService), new(*service.AlquilerService)),
 	wire.Bind(new(domain.PagoAlquilerService), new(*service.PagoAlquilerService)),
+	wire.Bind(new(domain.StaffService), new(*service.StaffService)),
+	wire.Bind(new(domain.CargoService), new(*service.CargoService)),
+	wire.Bind(new(domain.ServicioMedicionService), new(*service.ServicioMedicionService)),
+	wire.Bind(new(domain.TicketService), new(*service.TicketService)),
 	ProvideJWTSecret,
 )
 
@@ -63,4 +79,8 @@ var ControllerSet = wire.NewSet(
 	controller.NewClienteController,
 	controller.NewInmuebleController,
 	controller.NewAlquilerController,
+	controller.NewStaffController,
+	controller.NewCargoController,
+	controller.NewServicioMedicionController,
+	controller.NewTicketController,
 )

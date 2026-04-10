@@ -914,6 +914,29 @@ func HasServicioMedicionesWith(preds ...predicate.ServicioMedicion) predicate.Un
 	})
 }
 
+// HasTickets applies the HasEdge predicate on the "tickets" edge.
+func HasTickets() predicate.Unidad {
+	return predicate.Unidad(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TicketsTable, TicketsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTicketsWith applies the HasEdge predicate on the "tickets" edge with a given conditions (other predicates).
+func HasTicketsWith(preds ...predicate.Ticket) predicate.Unidad {
+	return predicate.Unidad(func(s *sql.Selector) {
+		step := newTicketsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Unidad) predicate.Unidad {
 	return predicate.Unidad(sql.AndPredicates(predicates...))

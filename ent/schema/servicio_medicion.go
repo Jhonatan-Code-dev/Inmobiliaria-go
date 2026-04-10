@@ -26,18 +26,16 @@ func (ServicioMedicion) Annotations() []schema.Annotation {
 func (ServicioMedicion) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int("unidad_id"),
+		field.Int("contrato_id").Optional().Nillable(),
 		field.Enum("tipo_servicio").
 			Values("agua", "luz", "gas", "internet", "otro").
 			Default("agua"),
-		fechaSolo("periodo_inicio"),
-		fechaSolo("periodo_fin"),
+		fechaSolo("fecha_lectura"),
 		field.Float("lectura_anterior").Default(0),
 		field.Float("lectura_actual").Default(0),
 		field.Float("consumo").Default(0),
-		codigoMoneda("moneda", "PEN"),
-		montoExacto("tarifa_unitaria"),
-		montoExacto("monto_total"),
-		field.String("observaciones").Optional().Nillable().MaxLen(1000),
+		montoExacto("monto"),
+		field.Bool("procesado").Default(false),
 	}
 }
 
@@ -48,11 +46,17 @@ func (ServicioMedicion) Edges() []ent.Edge {
 			Field("unidad_id").
 			Required().
 			Unique(),
+		edge.From("contrato", Contrato.Type).
+			Ref("servicio_mediciones").
+			Field("contrato_id").
+			Unique(),
+		edge.To("cargo", Cargo.Type).
+			Unique(),
 	}
 }
 
 func (ServicioMedicion) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("unidad_id", "tipo_servicio", "periodo_inicio", "periodo_fin").Unique(),
+		index.Fields("unidad_id", "tipo_servicio", "fecha_lectura").Unique(),
 	}
 }

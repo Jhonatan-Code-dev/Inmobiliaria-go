@@ -72,9 +72,11 @@ type ContratoEdges struct {
 	Cargos []*Cargo `json:"cargos,omitempty"`
 	// Pagos holds the value of the pagos edge.
 	Pagos []*Pago `json:"pagos,omitempty"`
+	// ServicioMediciones holds the value of the servicio_mediciones edge.
+	ServicioMediciones []*ServicioMedicion `json:"servicio_mediciones,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 }
 
 // EmpresaOrErr returns the Empresa value or an error if the edge
@@ -126,6 +128,15 @@ func (e ContratoEdges) PagosOrErr() ([]*Pago, error) {
 		return e.Pagos, nil
 	}
 	return nil, &NotLoadedError{edge: "pagos"}
+}
+
+// ServicioMedicionesOrErr returns the ServicioMediciones value or an error if the edge
+// was not loaded in eager-loading.
+func (e ContratoEdges) ServicioMedicionesOrErr() ([]*ServicioMedicion, error) {
+	if e.loadedTypes[5] {
+		return e.ServicioMediciones, nil
+	}
+	return nil, &NotLoadedError{edge: "servicio_mediciones"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -302,6 +313,11 @@ func (_m *Contrato) QueryCargos() *CargoQuery {
 // QueryPagos queries the "pagos" edge of the Contrato entity.
 func (_m *Contrato) QueryPagos() *PagoQuery {
 	return NewContratoClient(_m.config).QueryPagos(_m)
+}
+
+// QueryServicioMediciones queries the "servicio_mediciones" edge of the Contrato entity.
+func (_m *Contrato) QueryServicioMediciones() *ServicioMedicionQuery {
+	return NewContratoClient(_m.config).QueryServicioMediciones(_m)
 }
 
 // Update returns a builder for updating this Contrato.

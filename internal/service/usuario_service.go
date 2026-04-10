@@ -48,3 +48,12 @@ func (s *UsuarioService) Login(ctx context.Context, username, contrasena string)
 func (s *UsuarioService) Perfil(ctx context.Context, id int) (*domain.Usuario, *domain.Empresa, error) {
 	return s.usuarioRepo.BuscarPerfil(ctx, id)
 }
+
+func (s *UsuarioService) ActualizarPassword(ctx context.Context, id int, password string) error {
+	hasher := security.NewServicioHash()
+	hash, err := hasher.Encriptar(password)
+	if err != nil {
+		return err
+	}
+	return s.usuarioRepo.ActualizarPassword(ctx, id, hash)
+}

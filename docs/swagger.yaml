@@ -98,6 +98,11 @@ definitions:
       unidad_id:
         type: integer
     type: object
+  controller.cambiarPasswordRequest:
+    properties:
+      password:
+        type: string
+    type: object
   controller.clienteRequest:
     properties:
       apellidos:
@@ -947,6 +952,36 @@ paths:
       summary: Perfil del administrador autenticado
       tags:
       - admin
+  /api/me/password:
+    patch:
+      consumes:
+      - application/json
+      description: Permite al usuario autenticado cambiar su propia contraseña.
+      parameters:
+      - description: Nueva contraseña
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controller.cambiarPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "401":
+          description: No autorizado
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Cambiar contraseña del usuario actual
+      tags:
+      - Usuarios
   /api/user/alquileres:
     get:
       description: Lista contratos de alquiler con filtros y paginación.
@@ -1028,6 +1063,17 @@ paths:
       tags:
       - Alquileres
   /api/user/alquileres/{id}:
+    delete:
+      parameters:
+      - description: ID del alquiler
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses: {}
+      summary: Eliminar contrato de alquiler
+      tags:
+      - Alquileres
     get:
       description: Devuelve el detalle de un contrato de alquiler.
       parameters:
@@ -1065,6 +1111,62 @@ paths:
       summary: Obtener alquiler por ID
       tags:
       - Alquileres
+    put:
+      parameters:
+      - description: ID del alquiler
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Datos a actualizar
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controller.alquilerRequest'
+      responses: {}
+      summary: Editar contrato de alquiler
+      tags:
+      - Alquileres
+  /api/user/alquileres/{id}/terminar:
+    post:
+      parameters:
+      - description: ID del alquiler
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses: {}
+      summary: Finalizar contrato formalmente
+      tags:
+      - Alquileres
+  /api/user/cargos:
+    get:
+      responses: {}
+      summary: Listar cargos de la empresa
+      tags:
+      - Cargos
+    post:
+      responses: {}
+      summary: Registrar nuevo cargo manual
+      tags:
+      - Cargos
+  /api/user/cargos/{id}:
+    delete:
+      responses: {}
+      summary: Eliminar cargo
+      tags:
+      - Cargos
+    get:
+      responses: {}
+      summary: Obtener detalle de un cargo
+      tags:
+      - Cargos
+    put:
+      responses: {}
+      summary: Editar cargo
+      tags:
+      - Cargos
   /api/user/clientes:
     get:
       description: 'Obtiene una lista paginada de clientes (máx 10). Filtros opcionales:
@@ -1829,6 +1931,11 @@ paths:
       tags:
       - Inmuebles
   /api/user/pagos:
+    get:
+      responses: {}
+      summary: Historial de pagos
+      tags:
+      - Pagos
     post:
       consumes:
       - application/json
@@ -1858,6 +1965,35 @@ paths:
       security:
       - BearerAuth: []
       summary: Registrar pago de alquiler
+      tags:
+      - Pagos
+  /api/user/pagos/{id}:
+    delete:
+      responses: {}
+      summary: Anular un pago
+      tags:
+      - Pagos
+    get:
+      responses: {}
+      summary: Detalle de un pago
+      tags:
+      - Pagos
+    put:
+      parameters:
+      - description: ID del pago
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Notas o metodo_pago
+        in: body
+        name: request
+        required: true
+        schema:
+          additionalProperties: true
+          type: object
+      responses: {}
+      summary: Editar notas o método de pago
       tags:
       - Pagos
   /api/user/pagos/pendientes:
@@ -1891,6 +2027,120 @@ paths:
       summary: Listar pagos pendientes del mes actual
       tags:
       - Pagos
+  /api/user/servicios:
+    get:
+      responses: {}
+      summary: Listar mediciones de servicios
+      tags:
+      - Servicios
+    post:
+      responses: {}
+      summary: Registrar lectura de servicio
+      tags:
+      - Servicios
+  /api/user/servicios/{id}:
+    delete:
+      responses: {}
+      summary: Eliminar medición
+      tags:
+      - Servicios
+    get:
+      responses: {}
+      summary: Obtener detalle de medición
+      tags:
+      - Servicios
+    put:
+      parameters:
+      - description: ID de la medición
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Nueva lectura_actual
+        in: body
+        name: request
+        required: true
+        schema:
+          additionalProperties:
+            format: float64
+            type: number
+          type: object
+      responses: {}
+      summary: Editar lectura errónea
+      tags:
+      - Servicios
+  /api/user/staff:
+    get:
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      - description: Página
+        in: query
+        name: pag
+        type: integer
+      - description: Items por página
+        in: query
+        name: por_pagina
+        type: integer
+      - description: Buscar por nombre de usuario
+        in: query
+        name: buscar
+        type: string
+      responses: {}
+      summary: Listar staff de la empresa
+      tags:
+      - Staff
+    post:
+      responses: {}
+      summary: Registrar nuevo empleado
+      tags:
+      - Staff
+  /api/user/staff/{id}:
+    delete:
+      responses: {}
+      summary: Eliminar/Dar de baja empleado
+      tags:
+      - Staff
+    get:
+      responses: {}
+      summary: Obtener detalle de un empleado
+      tags:
+      - Staff
+    put:
+      responses: {}
+      summary: Editar empleado
+      tags:
+      - Staff
+  /api/user/tickets:
+    get:
+      responses: {}
+      summary: Listar tickets de mantenimiento
+      tags:
+      - Tickets
+    post:
+      responses: {}
+      summary: Crear ticket de mantenimiento
+      tags:
+      - Tickets
+  /api/user/tickets/{id}:
+    delete:
+      responses: {}
+      summary: Eliminar ticket
+      tags:
+      - Tickets
+    get:
+      responses: {}
+      summary: Obtener detalle de ticket
+      tags:
+      - Tickets
+    put:
+      responses: {}
+      summary: Actualizar ticket
+      tags:
+      - Tickets
   /auth/login:
     post:
       consumes:

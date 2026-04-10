@@ -48,6 +48,9 @@ type Rol func(*sql.Selector)
 // ServicioMedicion is the predicate function for serviciomedicion builders.
 type ServicioMedicion func(*sql.Selector)
 
+// Ticket is the predicate function for ticket builders.
+type Ticket func(*sql.Selector)
+
 // TipoIdentificacion is the predicate function for tipoidentificacion builders.
 type TipoIdentificacion func(*sql.Selector)
 

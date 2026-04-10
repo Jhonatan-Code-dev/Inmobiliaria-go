@@ -12,6 +12,7 @@ import (
 	"rentals-go/ent/empresa"
 	"rentals-go/ent/pago"
 	"rentals-go/ent/predicate"
+	"rentals-go/ent/serviciomedicion"
 	"rentals-go/ent/unidad"
 	"time"
 
@@ -342,6 +343,21 @@ func (_u *ContratoUpdate) AddPagos(v ...*Pago) *ContratoUpdate {
 	return _u.AddPagoIDs(ids...)
 }
 
+// AddServicioMedicioneIDs adds the "servicio_mediciones" edge to the ServicioMedicion entity by IDs.
+func (_u *ContratoUpdate) AddServicioMedicioneIDs(ids ...int) *ContratoUpdate {
+	_u.mutation.AddServicioMedicioneIDs(ids...)
+	return _u
+}
+
+// AddServicioMediciones adds the "servicio_mediciones" edges to the ServicioMedicion entity.
+func (_u *ContratoUpdate) AddServicioMediciones(v ...*ServicioMedicion) *ContratoUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddServicioMedicioneIDs(ids...)
+}
+
 // Mutation returns the ContratoMutation object of the builder.
 func (_u *ContratoUpdate) Mutation() *ContratoMutation {
 	return _u.mutation
@@ -405,6 +421,27 @@ func (_u *ContratoUpdate) RemovePagos(v ...*Pago) *ContratoUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.RemovePagoIDs(ids...)
+}
+
+// ClearServicioMediciones clears all "servicio_mediciones" edges to the ServicioMedicion entity.
+func (_u *ContratoUpdate) ClearServicioMediciones() *ContratoUpdate {
+	_u.mutation.ClearServicioMediciones()
+	return _u
+}
+
+// RemoveServicioMedicioneIDs removes the "servicio_mediciones" edge to ServicioMedicion entities by IDs.
+func (_u *ContratoUpdate) RemoveServicioMedicioneIDs(ids ...int) *ContratoUpdate {
+	_u.mutation.RemoveServicioMedicioneIDs(ids...)
+	return _u
+}
+
+// RemoveServicioMediciones removes "servicio_mediciones" edges to ServicioMedicion entities.
+func (_u *ContratoUpdate) RemoveServicioMediciones(v ...*ServicioMedicion) *ContratoUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveServicioMedicioneIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -717,6 +754,51 @@ func (_u *ContratoUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(pago.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ServicioMedicionesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   contrato.ServicioMedicionesTable,
+			Columns: []string{contrato.ServicioMedicionesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(serviciomedicion.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedServicioMedicionesIDs(); len(nodes) > 0 && !_u.mutation.ServicioMedicionesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   contrato.ServicioMedicionesTable,
+			Columns: []string{contrato.ServicioMedicionesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(serviciomedicion.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ServicioMedicionesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   contrato.ServicioMedicionesTable,
+			Columns: []string{contrato.ServicioMedicionesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(serviciomedicion.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -1053,6 +1135,21 @@ func (_u *ContratoUpdateOne) AddPagos(v ...*Pago) *ContratoUpdateOne {
 	return _u.AddPagoIDs(ids...)
 }
 
+// AddServicioMedicioneIDs adds the "servicio_mediciones" edge to the ServicioMedicion entity by IDs.
+func (_u *ContratoUpdateOne) AddServicioMedicioneIDs(ids ...int) *ContratoUpdateOne {
+	_u.mutation.AddServicioMedicioneIDs(ids...)
+	return _u
+}
+
+// AddServicioMediciones adds the "servicio_mediciones" edges to the ServicioMedicion entity.
+func (_u *ContratoUpdateOne) AddServicioMediciones(v ...*ServicioMedicion) *ContratoUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddServicioMedicioneIDs(ids...)
+}
+
 // Mutation returns the ContratoMutation object of the builder.
 func (_u *ContratoUpdateOne) Mutation() *ContratoMutation {
 	return _u.mutation
@@ -1116,6 +1213,27 @@ func (_u *ContratoUpdateOne) RemovePagos(v ...*Pago) *ContratoUpdateOne {
 		ids[i] = v[i].ID
 	}
 	return _u.RemovePagoIDs(ids...)
+}
+
+// ClearServicioMediciones clears all "servicio_mediciones" edges to the ServicioMedicion entity.
+func (_u *ContratoUpdateOne) ClearServicioMediciones() *ContratoUpdateOne {
+	_u.mutation.ClearServicioMediciones()
+	return _u
+}
+
+// RemoveServicioMedicioneIDs removes the "servicio_mediciones" edge to ServicioMedicion entities by IDs.
+func (_u *ContratoUpdateOne) RemoveServicioMedicioneIDs(ids ...int) *ContratoUpdateOne {
+	_u.mutation.RemoveServicioMedicioneIDs(ids...)
+	return _u
+}
+
+// RemoveServicioMediciones removes "servicio_mediciones" edges to ServicioMedicion entities.
+func (_u *ContratoUpdateOne) RemoveServicioMediciones(v ...*ServicioMedicion) *ContratoUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveServicioMedicioneIDs(ids...)
 }
 
 // Where appends a list predicates to the ContratoUpdate builder.
@@ -1458,6 +1576,51 @@ func (_u *ContratoUpdateOne) sqlSave(ctx context.Context) (_node *Contrato, err 
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(pago.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ServicioMedicionesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   contrato.ServicioMedicionesTable,
+			Columns: []string{contrato.ServicioMedicionesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(serviciomedicion.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedServicioMedicionesIDs(); len(nodes) > 0 && !_u.mutation.ServicioMedicionesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   contrato.ServicioMedicionesTable,
+			Columns: []string{contrato.ServicioMedicionesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(serviciomedicion.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ServicioMedicionesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   contrato.ServicioMedicionesTable,
+			Columns: []string{contrato.ServicioMedicionesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(serviciomedicion.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

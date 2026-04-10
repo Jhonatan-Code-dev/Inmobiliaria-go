@@ -646,6 +646,29 @@ func HasAplicacionesPagoWith(preds ...predicate.PagoAplicacion) predicate.Cargo 
 	})
 }
 
+// HasServicioMedicion applies the HasEdge predicate on the "servicio_medicion" edge.
+func HasServicioMedicion() predicate.Cargo {
+	return predicate.Cargo(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, ServicioMedicionTable, ServicioMedicionColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasServicioMedicionWith applies the HasEdge predicate on the "servicio_medicion" edge with a given conditions (other predicates).
+func HasServicioMedicionWith(preds ...predicate.ServicioMedicion) predicate.Cargo {
+	return predicate.Cargo(func(s *sql.Selector) {
+		step := newServicioMedicionStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Cargo) predicate.Cargo {
 	return predicate.Cargo(sql.AndPredicates(predicates...))

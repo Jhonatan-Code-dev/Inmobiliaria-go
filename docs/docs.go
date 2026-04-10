@@ -504,6 +504,54 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/me/password": {
+            "patch": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Permite al usuario autenticado cambiar su propia contraseña.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Usuarios"
+                ],
+                "summary": "Cambiar contraseña del usuario actual",
+                "parameters": [
+                    {
+                        "description": "Nueva contraseña",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.cambiarPasswordRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "No autorizado",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/user/alquileres": {
             "get": {
                 "security": [
@@ -686,6 +734,104 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "put": {
+                "tags": [
+                    "Alquileres"
+                ],
+                "summary": "Editar contrato de alquiler",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del alquiler",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Datos a actualizar",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.alquilerRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            },
+            "delete": {
+                "tags": [
+                    "Alquileres"
+                ],
+                "summary": "Eliminar contrato de alquiler",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del alquiler",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/user/alquileres/{id}/terminar": {
+            "post": {
+                "tags": [
+                    "Alquileres"
+                ],
+                "summary": "Finalizar contrato formalmente",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del alquiler",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/user/cargos": {
+            "get": {
+                "tags": [
+                    "Cargos"
+                ],
+                "summary": "Listar cargos de la empresa",
+                "responses": {}
+            },
+            "post": {
+                "tags": [
+                    "Cargos"
+                ],
+                "summary": "Registrar nuevo cargo manual",
+                "responses": {}
+            }
+        },
+        "/api/user/cargos/{id}": {
+            "get": {
+                "tags": [
+                    "Cargos"
+                ],
+                "summary": "Obtener detalle de un cargo",
+                "responses": {}
+            },
+            "put": {
+                "tags": [
+                    "Cargos"
+                ],
+                "summary": "Editar cargo",
+                "responses": {}
+            },
+            "delete": {
+                "tags": [
+                    "Cargos"
+                ],
+                "summary": "Eliminar cargo",
+                "responses": {}
             }
         },
         "/api/user/clientes": {
@@ -1857,6 +2003,13 @@ const docTemplate = `{
             }
         },
         "/api/user/pagos": {
+            "get": {
+                "tags": [
+                    "Pagos"
+                ],
+                "summary": "Historial de pagos",
+                "responses": {}
+            },
             "post": {
                 "security": [
                     {
@@ -1954,6 +2107,214 @@ const docTemplate = `{
                         }
                     }
                 }
+            }
+        },
+        "/api/user/pagos/{id}": {
+            "get": {
+                "tags": [
+                    "Pagos"
+                ],
+                "summary": "Detalle de un pago",
+                "responses": {}
+            },
+            "put": {
+                "tags": [
+                    "Pagos"
+                ],
+                "summary": "Editar notas o método de pago",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del pago",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Notas o metodo_pago",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                ],
+                "responses": {}
+            },
+            "delete": {
+                "tags": [
+                    "Pagos"
+                ],
+                "summary": "Anular un pago",
+                "responses": {}
+            }
+        },
+        "/api/user/servicios": {
+            "get": {
+                "tags": [
+                    "Servicios"
+                ],
+                "summary": "Listar mediciones de servicios",
+                "responses": {}
+            },
+            "post": {
+                "tags": [
+                    "Servicios"
+                ],
+                "summary": "Registrar lectura de servicio",
+                "responses": {}
+            }
+        },
+        "/api/user/servicios/{id}": {
+            "get": {
+                "tags": [
+                    "Servicios"
+                ],
+                "summary": "Obtener detalle de medición",
+                "responses": {}
+            },
+            "put": {
+                "tags": [
+                    "Servicios"
+                ],
+                "summary": "Editar lectura errónea",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la medición",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Nueva lectura_actual",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "number",
+                                "format": "float64"
+                            }
+                        }
+                    }
+                ],
+                "responses": {}
+            },
+            "delete": {
+                "tags": [
+                    "Servicios"
+                ],
+                "summary": "Eliminar medición",
+                "responses": {}
+            }
+        },
+        "/api/user/staff": {
+            "get": {
+                "tags": [
+                    "Staff"
+                ],
+                "summary": "Listar staff de la empresa",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Página",
+                        "name": "pag",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Items por página",
+                        "name": "por_pagina",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Buscar por nombre de usuario",
+                        "name": "buscar",
+                        "in": "query"
+                    }
+                ],
+                "responses": {}
+            },
+            "post": {
+                "tags": [
+                    "Staff"
+                ],
+                "summary": "Registrar nuevo empleado",
+                "responses": {}
+            }
+        },
+        "/api/user/staff/{id}": {
+            "get": {
+                "tags": [
+                    "Staff"
+                ],
+                "summary": "Obtener detalle de un empleado",
+                "responses": {}
+            },
+            "put": {
+                "tags": [
+                    "Staff"
+                ],
+                "summary": "Editar empleado",
+                "responses": {}
+            },
+            "delete": {
+                "tags": [
+                    "Staff"
+                ],
+                "summary": "Eliminar/Dar de baja empleado",
+                "responses": {}
+            }
+        },
+        "/api/user/tickets": {
+            "get": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Listar tickets de mantenimiento",
+                "responses": {}
+            },
+            "post": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Crear ticket de mantenimiento",
+                "responses": {}
+            }
+        },
+        "/api/user/tickets/{id}": {
+            "get": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Obtener detalle de ticket",
+                "responses": {}
+            },
+            "put": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Actualizar ticket",
+                "responses": {}
+            },
+            "delete": {
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Eliminar ticket",
+                "responses": {}
             }
         },
         "/auth/login": {
@@ -2263,6 +2624,14 @@ const docTemplate = `{
                 },
                 "unidad_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "controller.cambiarPasswordRequest": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
                 }
             }
         },

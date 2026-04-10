@@ -106,3 +106,37 @@ func (h *UsuarioController) Perfil(c *fiber.Ctx) error {
 		Emp: mapEmpresaResponse(emp),
 	})
 }
+
+type cambiarPasswordRequest struct {
+	Password string `json:"password"`
+}
+
+// CambiarPassword godoc
+// @Summary Cambiar contraseña del usuario actual
+// @Description Permite al usuario autenticado cambiar su propia contraseña.
+// @Tags Usuarios
+// @Security ApiKeyAuth
+// @Accept json
+// @Produce json
+// @Param request body cambiarPasswordRequest true "Nueva contraseña"
+// @Success 200 {object} map[string]string
+// @Failure 401 {object} errorResponse "No autorizado"
+// @Router /api/me/password [patch]
+func (h *UsuarioController) CambiarPassword(c *fiber.Ctx) error {
+	idVal := c.Locals("usuario_id")
+	if idVal == nil {
+		return fiber.ErrUnauthorized
+	}
+	id := idVal.(int)
+	var req cambiarPasswordRequest
+	if err := c.BodyParser(&req); err != nil {
+		return fiber.ErrBadRequest
+	}
+	if req.Password == "" {
+		return c.Status(http.StatusUnprocessableEntity).JSON(errorResponse{Message: "contraseña no puede estar vacía"})
+	}
+	if err := h.svc.ActualizarPassword(c.Context(), id, req.Password); err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(errorResponse{Message: "error al actualizar contraseña"})
+	}
+	return c.JSON(fiber.Map{"message": "contraseña actualizada correctamente"})
+}

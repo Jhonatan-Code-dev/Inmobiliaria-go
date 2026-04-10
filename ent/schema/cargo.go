@@ -52,6 +52,9 @@ func (Cargo) Edges() []ent.Edge {
 			Required().
 			Unique(),
 		edge.To("aplicaciones_pago", PagoAplicacion.Type),
+		edge.From("servicio_medicion", ServicioMedicion.Type).
+			Ref("cargo").
+			Unique(),
 	}
 }
 

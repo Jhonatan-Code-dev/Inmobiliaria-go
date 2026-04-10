@@ -53,9 +53,11 @@ type EmpresaEdges struct {
 	Gastos []*Gasto `json:"gastos,omitempty"`
 	// MovimientosCaja holds the value of the movimientos_caja edge.
 	MovimientosCaja []*MovimientoCaja `json:"movimientos_caja,omitempty"`
+	// Tickets holds the value of the tickets edge.
+	Tickets []*Ticket `json:"tickets,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [7]bool
+	loadedTypes [8]bool
 }
 
 // UsuariosEmpresaOrErr returns the UsuariosEmpresa value or an error if the edge
@@ -119,6 +121,15 @@ func (e EmpresaEdges) MovimientosCajaOrErr() ([]*MovimientoCaja, error) {
 		return e.MovimientosCaja, nil
 	}
 	return nil, &NotLoadedError{edge: "movimientos_caja"}
+}
+
+// TicketsOrErr returns the Tickets value or an error if the edge
+// was not loaded in eager-loading.
+func (e EmpresaEdges) TicketsOrErr() ([]*Ticket, error) {
+	if e.loadedTypes[7] {
+		return e.Tickets, nil
+	}
+	return nil, &NotLoadedError{edge: "tickets"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -245,6 +256,11 @@ func (_m *Empresa) QueryGastos() *GastoQuery {
 // QueryMovimientosCaja queries the "movimientos_caja" edge of the Empresa entity.
 func (_m *Empresa) QueryMovimientosCaja() *MovimientoCajaQuery {
 	return NewEmpresaClient(_m.config).QueryMovimientosCaja(_m)
+}
+
+// QueryTickets queries the "tickets" edge of the Empresa entity.
+func (_m *Empresa) QueryTickets() *TicketQuery {
+	return NewEmpresaClient(_m.config).QueryTickets(_m)
 }
 
 // Update returns a builder for updating this Empresa.

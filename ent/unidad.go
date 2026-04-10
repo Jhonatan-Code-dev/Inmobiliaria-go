@@ -68,9 +68,11 @@ type UnidadEdges struct {
 	Contratos []*Contrato `json:"contratos,omitempty"`
 	// ServicioMediciones holds the value of the servicio_mediciones edge.
 	ServicioMediciones []*ServicioMedicion `json:"servicio_mediciones,omitempty"`
+	// Tickets holds the value of the tickets edge.
+	Tickets []*Ticket `json:"tickets,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // PropiedadOrErr returns the Propiedad value or an error if the edge
@@ -100,6 +102,15 @@ func (e UnidadEdges) ServicioMedicionesOrErr() ([]*ServicioMedicion, error) {
 		return e.ServicioMediciones, nil
 	}
 	return nil, &NotLoadedError{edge: "servicio_mediciones"}
+}
+
+// TicketsOrErr returns the Tickets value or an error if the edge
+// was not loaded in eager-loading.
+func (e UnidadEdges) TicketsOrErr() ([]*Ticket, error) {
+	if e.loadedTypes[3] {
+		return e.Tickets, nil
+	}
+	return nil, &NotLoadedError{edge: "tickets"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -276,6 +287,11 @@ func (_m *Unidad) QueryContratos() *ContratoQuery {
 // QueryServicioMediciones queries the "servicio_mediciones" edge of the Unidad entity.
 func (_m *Unidad) QueryServicioMediciones() *ServicioMedicionQuery {
 	return NewUnidadClient(_m.config).QueryServicioMediciones(_m)
+}
+
+// QueryTickets queries the "tickets" edge of the Unidad entity.
+func (_m *Unidad) QueryTickets() *TicketQuery {
+	return NewUnidadClient(_m.config).QueryTickets(_m)
 }
 
 // Update returns a builder for updating this Unidad.

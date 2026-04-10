@@ -6,6 +6,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"rentals-go/ent/cargo"
+	"rentals-go/ent/contrato"
 	"rentals-go/ent/predicate"
 	"rentals-go/ent/serviciomedicion"
 	"rentals-go/ent/unidad"
@@ -43,6 +45,26 @@ func (_u *ServicioMedicionUpdate) SetNillableUnidadID(v *int) *ServicioMedicionU
 	return _u
 }
 
+// SetContratoID sets the "contrato_id" field.
+func (_u *ServicioMedicionUpdate) SetContratoID(v int) *ServicioMedicionUpdate {
+	_u.mutation.SetContratoID(v)
+	return _u
+}
+
+// SetNillableContratoID sets the "contrato_id" field if the given value is not nil.
+func (_u *ServicioMedicionUpdate) SetNillableContratoID(v *int) *ServicioMedicionUpdate {
+	if v != nil {
+		_u.SetContratoID(*v)
+	}
+	return _u
+}
+
+// ClearContratoID clears the value of the "contrato_id" field.
+func (_u *ServicioMedicionUpdate) ClearContratoID() *ServicioMedicionUpdate {
+	_u.mutation.ClearContratoID()
+	return _u
+}
+
 // SetTipoServicio sets the "tipo_servicio" field.
 func (_u *ServicioMedicionUpdate) SetTipoServicio(v serviciomedicion.TipoServicio) *ServicioMedicionUpdate {
 	_u.mutation.SetTipoServicio(v)
@@ -57,30 +79,16 @@ func (_u *ServicioMedicionUpdate) SetNillableTipoServicio(v *serviciomedicion.Ti
 	return _u
 }
 
-// SetPeriodoInicio sets the "periodo_inicio" field.
-func (_u *ServicioMedicionUpdate) SetPeriodoInicio(v time.Time) *ServicioMedicionUpdate {
-	_u.mutation.SetPeriodoInicio(v)
+// SetFechaLectura sets the "fecha_lectura" field.
+func (_u *ServicioMedicionUpdate) SetFechaLectura(v time.Time) *ServicioMedicionUpdate {
+	_u.mutation.SetFechaLectura(v)
 	return _u
 }
 
-// SetNillablePeriodoInicio sets the "periodo_inicio" field if the given value is not nil.
-func (_u *ServicioMedicionUpdate) SetNillablePeriodoInicio(v *time.Time) *ServicioMedicionUpdate {
+// SetNillableFechaLectura sets the "fecha_lectura" field if the given value is not nil.
+func (_u *ServicioMedicionUpdate) SetNillableFechaLectura(v *time.Time) *ServicioMedicionUpdate {
 	if v != nil {
-		_u.SetPeriodoInicio(*v)
-	}
-	return _u
-}
-
-// SetPeriodoFin sets the "periodo_fin" field.
-func (_u *ServicioMedicionUpdate) SetPeriodoFin(v time.Time) *ServicioMedicionUpdate {
-	_u.mutation.SetPeriodoFin(v)
-	return _u
-}
-
-// SetNillablePeriodoFin sets the "periodo_fin" field if the given value is not nil.
-func (_u *ServicioMedicionUpdate) SetNillablePeriodoFin(v *time.Time) *ServicioMedicionUpdate {
-	if v != nil {
-		_u.SetPeriodoFin(*v)
+		_u.SetFechaLectura(*v)
 	}
 	return _u
 }
@@ -148,85 +156,68 @@ func (_u *ServicioMedicionUpdate) AddConsumo(v float64) *ServicioMedicionUpdate 
 	return _u
 }
 
-// SetMoneda sets the "moneda" field.
-func (_u *ServicioMedicionUpdate) SetMoneda(v string) *ServicioMedicionUpdate {
-	_u.mutation.SetMoneda(v)
+// SetMonto sets the "monto" field.
+func (_u *ServicioMedicionUpdate) SetMonto(v int64) *ServicioMedicionUpdate {
+	_u.mutation.ResetMonto()
+	_u.mutation.SetMonto(v)
 	return _u
 }
 
-// SetNillableMoneda sets the "moneda" field if the given value is not nil.
-func (_u *ServicioMedicionUpdate) SetNillableMoneda(v *string) *ServicioMedicionUpdate {
+// SetNillableMonto sets the "monto" field if the given value is not nil.
+func (_u *ServicioMedicionUpdate) SetNillableMonto(v *int64) *ServicioMedicionUpdate {
 	if v != nil {
-		_u.SetMoneda(*v)
+		_u.SetMonto(*v)
 	}
 	return _u
 }
 
-// SetTarifaUnitaria sets the "tarifa_unitaria" field.
-func (_u *ServicioMedicionUpdate) SetTarifaUnitaria(v int64) *ServicioMedicionUpdate {
-	_u.mutation.ResetTarifaUnitaria()
-	_u.mutation.SetTarifaUnitaria(v)
+// AddMonto adds value to the "monto" field.
+func (_u *ServicioMedicionUpdate) AddMonto(v int64) *ServicioMedicionUpdate {
+	_u.mutation.AddMonto(v)
 	return _u
 }
 
-// SetNillableTarifaUnitaria sets the "tarifa_unitaria" field if the given value is not nil.
-func (_u *ServicioMedicionUpdate) SetNillableTarifaUnitaria(v *int64) *ServicioMedicionUpdate {
+// SetProcesado sets the "procesado" field.
+func (_u *ServicioMedicionUpdate) SetProcesado(v bool) *ServicioMedicionUpdate {
+	_u.mutation.SetProcesado(v)
+	return _u
+}
+
+// SetNillableProcesado sets the "procesado" field if the given value is not nil.
+func (_u *ServicioMedicionUpdate) SetNillableProcesado(v *bool) *ServicioMedicionUpdate {
 	if v != nil {
-		_u.SetTarifaUnitaria(*v)
+		_u.SetProcesado(*v)
 	}
-	return _u
-}
-
-// AddTarifaUnitaria adds value to the "tarifa_unitaria" field.
-func (_u *ServicioMedicionUpdate) AddTarifaUnitaria(v int64) *ServicioMedicionUpdate {
-	_u.mutation.AddTarifaUnitaria(v)
-	return _u
-}
-
-// SetMontoTotal sets the "monto_total" field.
-func (_u *ServicioMedicionUpdate) SetMontoTotal(v int64) *ServicioMedicionUpdate {
-	_u.mutation.ResetMontoTotal()
-	_u.mutation.SetMontoTotal(v)
-	return _u
-}
-
-// SetNillableMontoTotal sets the "monto_total" field if the given value is not nil.
-func (_u *ServicioMedicionUpdate) SetNillableMontoTotal(v *int64) *ServicioMedicionUpdate {
-	if v != nil {
-		_u.SetMontoTotal(*v)
-	}
-	return _u
-}
-
-// AddMontoTotal adds value to the "monto_total" field.
-func (_u *ServicioMedicionUpdate) AddMontoTotal(v int64) *ServicioMedicionUpdate {
-	_u.mutation.AddMontoTotal(v)
-	return _u
-}
-
-// SetObservaciones sets the "observaciones" field.
-func (_u *ServicioMedicionUpdate) SetObservaciones(v string) *ServicioMedicionUpdate {
-	_u.mutation.SetObservaciones(v)
-	return _u
-}
-
-// SetNillableObservaciones sets the "observaciones" field if the given value is not nil.
-func (_u *ServicioMedicionUpdate) SetNillableObservaciones(v *string) *ServicioMedicionUpdate {
-	if v != nil {
-		_u.SetObservaciones(*v)
-	}
-	return _u
-}
-
-// ClearObservaciones clears the value of the "observaciones" field.
-func (_u *ServicioMedicionUpdate) ClearObservaciones() *ServicioMedicionUpdate {
-	_u.mutation.ClearObservaciones()
 	return _u
 }
 
 // SetUnidad sets the "unidad" edge to the Unidad entity.
 func (_u *ServicioMedicionUpdate) SetUnidad(v *Unidad) *ServicioMedicionUpdate {
 	return _u.SetUnidadID(v.ID)
+}
+
+// SetContrato sets the "contrato" edge to the Contrato entity.
+func (_u *ServicioMedicionUpdate) SetContrato(v *Contrato) *ServicioMedicionUpdate {
+	return _u.SetContratoID(v.ID)
+}
+
+// SetCargoID sets the "cargo" edge to the Cargo entity by ID.
+func (_u *ServicioMedicionUpdate) SetCargoID(id int) *ServicioMedicionUpdate {
+	_u.mutation.SetCargoID(id)
+	return _u
+}
+
+// SetNillableCargoID sets the "cargo" edge to the Cargo entity by ID if the given value is not nil.
+func (_u *ServicioMedicionUpdate) SetNillableCargoID(id *int) *ServicioMedicionUpdate {
+	if id != nil {
+		_u = _u.SetCargoID(*id)
+	}
+	return _u
+}
+
+// SetCargo sets the "cargo" edge to the Cargo entity.
+func (_u *ServicioMedicionUpdate) SetCargo(v *Cargo) *ServicioMedicionUpdate {
+	return _u.SetCargoID(v.ID)
 }
 
 // Mutation returns the ServicioMedicionMutation object of the builder.
@@ -237,6 +228,18 @@ func (_u *ServicioMedicionUpdate) Mutation() *ServicioMedicionMutation {
 // ClearUnidad clears the "unidad" edge to the Unidad entity.
 func (_u *ServicioMedicionUpdate) ClearUnidad() *ServicioMedicionUpdate {
 	_u.mutation.ClearUnidad()
+	return _u
+}
+
+// ClearContrato clears the "contrato" edge to the Contrato entity.
+func (_u *ServicioMedicionUpdate) ClearContrato() *ServicioMedicionUpdate {
+	_u.mutation.ClearContrato()
+	return _u
+}
+
+// ClearCargo clears the "cargo" edge to the Cargo entity.
+func (_u *ServicioMedicionUpdate) ClearCargo() *ServicioMedicionUpdate {
+	_u.mutation.ClearCargo()
 	return _u
 }
 
@@ -274,16 +277,6 @@ func (_u *ServicioMedicionUpdate) check() error {
 			return &ValidationError{Name: "tipo_servicio", err: fmt.Errorf(`ent: validator failed for field "ServicioMedicion.tipo_servicio": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Moneda(); ok {
-		if err := serviciomedicion.MonedaValidator(v); err != nil {
-			return &ValidationError{Name: "moneda", err: fmt.Errorf(`ent: validator failed for field "ServicioMedicion.moneda": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Observaciones(); ok {
-		if err := serviciomedicion.ObservacionesValidator(v); err != nil {
-			return &ValidationError{Name: "observaciones", err: fmt.Errorf(`ent: validator failed for field "ServicioMedicion.observaciones": %w`, err)}
-		}
-	}
 	if _u.mutation.UnidadCleared() && len(_u.mutation.UnidadIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "ServicioMedicion.unidad"`)
 	}
@@ -305,11 +298,8 @@ func (_u *ServicioMedicionUpdate) sqlSave(ctx context.Context) (_node int, err e
 	if value, ok := _u.mutation.TipoServicio(); ok {
 		_spec.SetField(serviciomedicion.FieldTipoServicio, field.TypeEnum, value)
 	}
-	if value, ok := _u.mutation.PeriodoInicio(); ok {
-		_spec.SetField(serviciomedicion.FieldPeriodoInicio, field.TypeTime, value)
-	}
-	if value, ok := _u.mutation.PeriodoFin(); ok {
-		_spec.SetField(serviciomedicion.FieldPeriodoFin, field.TypeTime, value)
+	if value, ok := _u.mutation.FechaLectura(); ok {
+		_spec.SetField(serviciomedicion.FieldFechaLectura, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.LecturaAnterior(); ok {
 		_spec.SetField(serviciomedicion.FieldLecturaAnterior, field.TypeFloat64, value)
@@ -329,26 +319,14 @@ func (_u *ServicioMedicionUpdate) sqlSave(ctx context.Context) (_node int, err e
 	if value, ok := _u.mutation.AddedConsumo(); ok {
 		_spec.AddField(serviciomedicion.FieldConsumo, field.TypeFloat64, value)
 	}
-	if value, ok := _u.mutation.Moneda(); ok {
-		_spec.SetField(serviciomedicion.FieldMoneda, field.TypeString, value)
+	if value, ok := _u.mutation.Monto(); ok {
+		_spec.SetField(serviciomedicion.FieldMonto, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.TarifaUnitaria(); ok {
-		_spec.SetField(serviciomedicion.FieldTarifaUnitaria, field.TypeInt64, value)
+	if value, ok := _u.mutation.AddedMonto(); ok {
+		_spec.AddField(serviciomedicion.FieldMonto, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedTarifaUnitaria(); ok {
-		_spec.AddField(serviciomedicion.FieldTarifaUnitaria, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.MontoTotal(); ok {
-		_spec.SetField(serviciomedicion.FieldMontoTotal, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.AddedMontoTotal(); ok {
-		_spec.AddField(serviciomedicion.FieldMontoTotal, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.Observaciones(); ok {
-		_spec.SetField(serviciomedicion.FieldObservaciones, field.TypeString, value)
-	}
-	if _u.mutation.ObservacionesCleared() {
-		_spec.ClearField(serviciomedicion.FieldObservaciones, field.TypeString)
+	if value, ok := _u.mutation.Procesado(); ok {
+		_spec.SetField(serviciomedicion.FieldProcesado, field.TypeBool, value)
 	}
 	if _u.mutation.UnidadCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -372,6 +350,64 @@ func (_u *ServicioMedicionUpdate) sqlSave(ctx context.Context) (_node int, err e
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(unidad.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ContratoCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   serviciomedicion.ContratoTable,
+			Columns: []string{serviciomedicion.ContratoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(contrato.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ContratoIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   serviciomedicion.ContratoTable,
+			Columns: []string{serviciomedicion.ContratoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(contrato.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.CargoCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   serviciomedicion.CargoTable,
+			Columns: []string{serviciomedicion.CargoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cargo.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CargoIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   serviciomedicion.CargoTable,
+			Columns: []string{serviciomedicion.CargoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cargo.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -413,6 +449,26 @@ func (_u *ServicioMedicionUpdateOne) SetNillableUnidadID(v *int) *ServicioMedici
 	return _u
 }
 
+// SetContratoID sets the "contrato_id" field.
+func (_u *ServicioMedicionUpdateOne) SetContratoID(v int) *ServicioMedicionUpdateOne {
+	_u.mutation.SetContratoID(v)
+	return _u
+}
+
+// SetNillableContratoID sets the "contrato_id" field if the given value is not nil.
+func (_u *ServicioMedicionUpdateOne) SetNillableContratoID(v *int) *ServicioMedicionUpdateOne {
+	if v != nil {
+		_u.SetContratoID(*v)
+	}
+	return _u
+}
+
+// ClearContratoID clears the value of the "contrato_id" field.
+func (_u *ServicioMedicionUpdateOne) ClearContratoID() *ServicioMedicionUpdateOne {
+	_u.mutation.ClearContratoID()
+	return _u
+}
+
 // SetTipoServicio sets the "tipo_servicio" field.
 func (_u *ServicioMedicionUpdateOne) SetTipoServicio(v serviciomedicion.TipoServicio) *ServicioMedicionUpdateOne {
 	_u.mutation.SetTipoServicio(v)
@@ -427,30 +483,16 @@ func (_u *ServicioMedicionUpdateOne) SetNillableTipoServicio(v *serviciomedicion
 	return _u
 }
 
-// SetPeriodoInicio sets the "periodo_inicio" field.
-func (_u *ServicioMedicionUpdateOne) SetPeriodoInicio(v time.Time) *ServicioMedicionUpdateOne {
-	_u.mutation.SetPeriodoInicio(v)
+// SetFechaLectura sets the "fecha_lectura" field.
+func (_u *ServicioMedicionUpdateOne) SetFechaLectura(v time.Time) *ServicioMedicionUpdateOne {
+	_u.mutation.SetFechaLectura(v)
 	return _u
 }
 
-// SetNillablePeriodoInicio sets the "periodo_inicio" field if the given value is not nil.
-func (_u *ServicioMedicionUpdateOne) SetNillablePeriodoInicio(v *time.Time) *ServicioMedicionUpdateOne {
+// SetNillableFechaLectura sets the "fecha_lectura" field if the given value is not nil.
+func (_u *ServicioMedicionUpdateOne) SetNillableFechaLectura(v *time.Time) *ServicioMedicionUpdateOne {
 	if v != nil {
-		_u.SetPeriodoInicio(*v)
-	}
-	return _u
-}
-
-// SetPeriodoFin sets the "periodo_fin" field.
-func (_u *ServicioMedicionUpdateOne) SetPeriodoFin(v time.Time) *ServicioMedicionUpdateOne {
-	_u.mutation.SetPeriodoFin(v)
-	return _u
-}
-
-// SetNillablePeriodoFin sets the "periodo_fin" field if the given value is not nil.
-func (_u *ServicioMedicionUpdateOne) SetNillablePeriodoFin(v *time.Time) *ServicioMedicionUpdateOne {
-	if v != nil {
-		_u.SetPeriodoFin(*v)
+		_u.SetFechaLectura(*v)
 	}
 	return _u
 }
@@ -518,85 +560,68 @@ func (_u *ServicioMedicionUpdateOne) AddConsumo(v float64) *ServicioMedicionUpda
 	return _u
 }
 
-// SetMoneda sets the "moneda" field.
-func (_u *ServicioMedicionUpdateOne) SetMoneda(v string) *ServicioMedicionUpdateOne {
-	_u.mutation.SetMoneda(v)
+// SetMonto sets the "monto" field.
+func (_u *ServicioMedicionUpdateOne) SetMonto(v int64) *ServicioMedicionUpdateOne {
+	_u.mutation.ResetMonto()
+	_u.mutation.SetMonto(v)
 	return _u
 }
 
-// SetNillableMoneda sets the "moneda" field if the given value is not nil.
-func (_u *ServicioMedicionUpdateOne) SetNillableMoneda(v *string) *ServicioMedicionUpdateOne {
+// SetNillableMonto sets the "monto" field if the given value is not nil.
+func (_u *ServicioMedicionUpdateOne) SetNillableMonto(v *int64) *ServicioMedicionUpdateOne {
 	if v != nil {
-		_u.SetMoneda(*v)
+		_u.SetMonto(*v)
 	}
 	return _u
 }
 
-// SetTarifaUnitaria sets the "tarifa_unitaria" field.
-func (_u *ServicioMedicionUpdateOne) SetTarifaUnitaria(v int64) *ServicioMedicionUpdateOne {
-	_u.mutation.ResetTarifaUnitaria()
-	_u.mutation.SetTarifaUnitaria(v)
+// AddMonto adds value to the "monto" field.
+func (_u *ServicioMedicionUpdateOne) AddMonto(v int64) *ServicioMedicionUpdateOne {
+	_u.mutation.AddMonto(v)
 	return _u
 }
 
-// SetNillableTarifaUnitaria sets the "tarifa_unitaria" field if the given value is not nil.
-func (_u *ServicioMedicionUpdateOne) SetNillableTarifaUnitaria(v *int64) *ServicioMedicionUpdateOne {
+// SetProcesado sets the "procesado" field.
+func (_u *ServicioMedicionUpdateOne) SetProcesado(v bool) *ServicioMedicionUpdateOne {
+	_u.mutation.SetProcesado(v)
+	return _u
+}
+
+// SetNillableProcesado sets the "procesado" field if the given value is not nil.
+func (_u *ServicioMedicionUpdateOne) SetNillableProcesado(v *bool) *ServicioMedicionUpdateOne {
 	if v != nil {
-		_u.SetTarifaUnitaria(*v)
+		_u.SetProcesado(*v)
 	}
-	return _u
-}
-
-// AddTarifaUnitaria adds value to the "tarifa_unitaria" field.
-func (_u *ServicioMedicionUpdateOne) AddTarifaUnitaria(v int64) *ServicioMedicionUpdateOne {
-	_u.mutation.AddTarifaUnitaria(v)
-	return _u
-}
-
-// SetMontoTotal sets the "monto_total" field.
-func (_u *ServicioMedicionUpdateOne) SetMontoTotal(v int64) *ServicioMedicionUpdateOne {
-	_u.mutation.ResetMontoTotal()
-	_u.mutation.SetMontoTotal(v)
-	return _u
-}
-
-// SetNillableMontoTotal sets the "monto_total" field if the given value is not nil.
-func (_u *ServicioMedicionUpdateOne) SetNillableMontoTotal(v *int64) *ServicioMedicionUpdateOne {
-	if v != nil {
-		_u.SetMontoTotal(*v)
-	}
-	return _u
-}
-
-// AddMontoTotal adds value to the "monto_total" field.
-func (_u *ServicioMedicionUpdateOne) AddMontoTotal(v int64) *ServicioMedicionUpdateOne {
-	_u.mutation.AddMontoTotal(v)
-	return _u
-}
-
-// SetObservaciones sets the "observaciones" field.
-func (_u *ServicioMedicionUpdateOne) SetObservaciones(v string) *ServicioMedicionUpdateOne {
-	_u.mutation.SetObservaciones(v)
-	return _u
-}
-
-// SetNillableObservaciones sets the "observaciones" field if the given value is not nil.
-func (_u *ServicioMedicionUpdateOne) SetNillableObservaciones(v *string) *ServicioMedicionUpdateOne {
-	if v != nil {
-		_u.SetObservaciones(*v)
-	}
-	return _u
-}
-
-// ClearObservaciones clears the value of the "observaciones" field.
-func (_u *ServicioMedicionUpdateOne) ClearObservaciones() *ServicioMedicionUpdateOne {
-	_u.mutation.ClearObservaciones()
 	return _u
 }
 
 // SetUnidad sets the "unidad" edge to the Unidad entity.
 func (_u *ServicioMedicionUpdateOne) SetUnidad(v *Unidad) *ServicioMedicionUpdateOne {
 	return _u.SetUnidadID(v.ID)
+}
+
+// SetContrato sets the "contrato" edge to the Contrato entity.
+func (_u *ServicioMedicionUpdateOne) SetContrato(v *Contrato) *ServicioMedicionUpdateOne {
+	return _u.SetContratoID(v.ID)
+}
+
+// SetCargoID sets the "cargo" edge to the Cargo entity by ID.
+func (_u *ServicioMedicionUpdateOne) SetCargoID(id int) *ServicioMedicionUpdateOne {
+	_u.mutation.SetCargoID(id)
+	return _u
+}
+
+// SetNillableCargoID sets the "cargo" edge to the Cargo entity by ID if the given value is not nil.
+func (_u *ServicioMedicionUpdateOne) SetNillableCargoID(id *int) *ServicioMedicionUpdateOne {
+	if id != nil {
+		_u = _u.SetCargoID(*id)
+	}
+	return _u
+}
+
+// SetCargo sets the "cargo" edge to the Cargo entity.
+func (_u *ServicioMedicionUpdateOne) SetCargo(v *Cargo) *ServicioMedicionUpdateOne {
+	return _u.SetCargoID(v.ID)
 }
 
 // Mutation returns the ServicioMedicionMutation object of the builder.
@@ -607,6 +632,18 @@ func (_u *ServicioMedicionUpdateOne) Mutation() *ServicioMedicionMutation {
 // ClearUnidad clears the "unidad" edge to the Unidad entity.
 func (_u *ServicioMedicionUpdateOne) ClearUnidad() *ServicioMedicionUpdateOne {
 	_u.mutation.ClearUnidad()
+	return _u
+}
+
+// ClearContrato clears the "contrato" edge to the Contrato entity.
+func (_u *ServicioMedicionUpdateOne) ClearContrato() *ServicioMedicionUpdateOne {
+	_u.mutation.ClearContrato()
+	return _u
+}
+
+// ClearCargo clears the "cargo" edge to the Cargo entity.
+func (_u *ServicioMedicionUpdateOne) ClearCargo() *ServicioMedicionUpdateOne {
+	_u.mutation.ClearCargo()
 	return _u
 }
 
@@ -657,16 +694,6 @@ func (_u *ServicioMedicionUpdateOne) check() error {
 			return &ValidationError{Name: "tipo_servicio", err: fmt.Errorf(`ent: validator failed for field "ServicioMedicion.tipo_servicio": %w`, err)}
 		}
 	}
-	if v, ok := _u.mutation.Moneda(); ok {
-		if err := serviciomedicion.MonedaValidator(v); err != nil {
-			return &ValidationError{Name: "moneda", err: fmt.Errorf(`ent: validator failed for field "ServicioMedicion.moneda": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Observaciones(); ok {
-		if err := serviciomedicion.ObservacionesValidator(v); err != nil {
-			return &ValidationError{Name: "observaciones", err: fmt.Errorf(`ent: validator failed for field "ServicioMedicion.observaciones": %w`, err)}
-		}
-	}
 	if _u.mutation.UnidadCleared() && len(_u.mutation.UnidadIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "ServicioMedicion.unidad"`)
 	}
@@ -705,11 +732,8 @@ func (_u *ServicioMedicionUpdateOne) sqlSave(ctx context.Context) (_node *Servic
 	if value, ok := _u.mutation.TipoServicio(); ok {
 		_spec.SetField(serviciomedicion.FieldTipoServicio, field.TypeEnum, value)
 	}
-	if value, ok := _u.mutation.PeriodoInicio(); ok {
-		_spec.SetField(serviciomedicion.FieldPeriodoInicio, field.TypeTime, value)
-	}
-	if value, ok := _u.mutation.PeriodoFin(); ok {
-		_spec.SetField(serviciomedicion.FieldPeriodoFin, field.TypeTime, value)
+	if value, ok := _u.mutation.FechaLectura(); ok {
+		_spec.SetField(serviciomedicion.FieldFechaLectura, field.TypeTime, value)
 	}
 	if value, ok := _u.mutation.LecturaAnterior(); ok {
 		_spec.SetField(serviciomedicion.FieldLecturaAnterior, field.TypeFloat64, value)
@@ -729,26 +753,14 @@ func (_u *ServicioMedicionUpdateOne) sqlSave(ctx context.Context) (_node *Servic
 	if value, ok := _u.mutation.AddedConsumo(); ok {
 		_spec.AddField(serviciomedicion.FieldConsumo, field.TypeFloat64, value)
 	}
-	if value, ok := _u.mutation.Moneda(); ok {
-		_spec.SetField(serviciomedicion.FieldMoneda, field.TypeString, value)
+	if value, ok := _u.mutation.Monto(); ok {
+		_spec.SetField(serviciomedicion.FieldMonto, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.TarifaUnitaria(); ok {
-		_spec.SetField(serviciomedicion.FieldTarifaUnitaria, field.TypeInt64, value)
+	if value, ok := _u.mutation.AddedMonto(); ok {
+		_spec.AddField(serviciomedicion.FieldMonto, field.TypeInt64, value)
 	}
-	if value, ok := _u.mutation.AddedTarifaUnitaria(); ok {
-		_spec.AddField(serviciomedicion.FieldTarifaUnitaria, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.MontoTotal(); ok {
-		_spec.SetField(serviciomedicion.FieldMontoTotal, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.AddedMontoTotal(); ok {
-		_spec.AddField(serviciomedicion.FieldMontoTotal, field.TypeInt64, value)
-	}
-	if value, ok := _u.mutation.Observaciones(); ok {
-		_spec.SetField(serviciomedicion.FieldObservaciones, field.TypeString, value)
-	}
-	if _u.mutation.ObservacionesCleared() {
-		_spec.ClearField(serviciomedicion.FieldObservaciones, field.TypeString)
+	if value, ok := _u.mutation.Procesado(); ok {
+		_spec.SetField(serviciomedicion.FieldProcesado, field.TypeBool, value)
 	}
 	if _u.mutation.UnidadCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -772,6 +784,64 @@ func (_u *ServicioMedicionUpdateOne) sqlSave(ctx context.Context) (_node *Servic
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(unidad.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ContratoCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   serviciomedicion.ContratoTable,
+			Columns: []string{serviciomedicion.ContratoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(contrato.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ContratoIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   serviciomedicion.ContratoTable,
+			Columns: []string{serviciomedicion.ContratoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(contrato.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.CargoCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   serviciomedicion.CargoTable,
+			Columns: []string{serviciomedicion.CargoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cargo.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CargoIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   serviciomedicion.CargoTable,
+			Columns: []string{serviciomedicion.CargoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cargo.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

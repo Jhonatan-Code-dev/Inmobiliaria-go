@@ -15,6 +15,7 @@ import (
 	"rentals-go/ent/pago"
 	"rentals-go/ent/predicate"
 	"rentals-go/ent/propiedad"
+	"rentals-go/ent/ticket"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -243,6 +244,21 @@ func (_u *EmpresaUpdate) AddMovimientosCaja(v ...*MovimientoCaja) *EmpresaUpdate
 	return _u.AddMovimientosCajaIDs(ids...)
 }
 
+// AddTicketIDs adds the "tickets" edge to the Ticket entity by IDs.
+func (_u *EmpresaUpdate) AddTicketIDs(ids ...int) *EmpresaUpdate {
+	_u.mutation.AddTicketIDs(ids...)
+	return _u
+}
+
+// AddTickets adds the "tickets" edges to the Ticket entity.
+func (_u *EmpresaUpdate) AddTickets(v ...*Ticket) *EmpresaUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddTicketIDs(ids...)
+}
+
 // Mutation returns the EmpresaMutation object of the builder.
 func (_u *EmpresaUpdate) Mutation() *EmpresaMutation {
 	return _u.mutation
@@ -393,6 +409,27 @@ func (_u *EmpresaUpdate) RemoveMovimientosCaja(v ...*MovimientoCaja) *EmpresaUpd
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveMovimientosCajaIDs(ids...)
+}
+
+// ClearTickets clears all "tickets" edges to the Ticket entity.
+func (_u *EmpresaUpdate) ClearTickets() *EmpresaUpdate {
+	_u.mutation.ClearTickets()
+	return _u
+}
+
+// RemoveTicketIDs removes the "tickets" edge to Ticket entities by IDs.
+func (_u *EmpresaUpdate) RemoveTicketIDs(ids ...int) *EmpresaUpdate {
+	_u.mutation.RemoveTicketIDs(ids...)
+	return _u
+}
+
+// RemoveTickets removes "tickets" edges to Ticket entities.
+func (_u *EmpresaUpdate) RemoveTickets(v ...*Ticket) *EmpresaUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveTicketIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -801,6 +838,51 @@ func (_u *EmpresaUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.TicketsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.TicketsTable,
+			Columns: []string{empresa.TicketsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedTicketsIDs(); len(nodes) > 0 && !_u.mutation.TicketsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.TicketsTable,
+			Columns: []string{empresa.TicketsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.TicketsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.TicketsTable,
+			Columns: []string{empresa.TicketsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{empresa.Label}
@@ -1029,6 +1111,21 @@ func (_u *EmpresaUpdateOne) AddMovimientosCaja(v ...*MovimientoCaja) *EmpresaUpd
 	return _u.AddMovimientosCajaIDs(ids...)
 }
 
+// AddTicketIDs adds the "tickets" edge to the Ticket entity by IDs.
+func (_u *EmpresaUpdateOne) AddTicketIDs(ids ...int) *EmpresaUpdateOne {
+	_u.mutation.AddTicketIDs(ids...)
+	return _u
+}
+
+// AddTickets adds the "tickets" edges to the Ticket entity.
+func (_u *EmpresaUpdateOne) AddTickets(v ...*Ticket) *EmpresaUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddTicketIDs(ids...)
+}
+
 // Mutation returns the EmpresaMutation object of the builder.
 func (_u *EmpresaUpdateOne) Mutation() *EmpresaMutation {
 	return _u.mutation
@@ -1179,6 +1276,27 @@ func (_u *EmpresaUpdateOne) RemoveMovimientosCaja(v ...*MovimientoCaja) *Empresa
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveMovimientosCajaIDs(ids...)
+}
+
+// ClearTickets clears all "tickets" edges to the Ticket entity.
+func (_u *EmpresaUpdateOne) ClearTickets() *EmpresaUpdateOne {
+	_u.mutation.ClearTickets()
+	return _u
+}
+
+// RemoveTicketIDs removes the "tickets" edge to Ticket entities by IDs.
+func (_u *EmpresaUpdateOne) RemoveTicketIDs(ids ...int) *EmpresaUpdateOne {
+	_u.mutation.RemoveTicketIDs(ids...)
+	return _u
+}
+
+// RemoveTickets removes "tickets" edges to Ticket entities.
+func (_u *EmpresaUpdateOne) RemoveTickets(v ...*Ticket) *EmpresaUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveTicketIDs(ids...)
 }
 
 // Where appends a list predicates to the EmpresaUpdate builder.
@@ -1610,6 +1728,51 @@ func (_u *EmpresaUpdateOne) sqlSave(ctx context.Context) (_node *Empresa, err er
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(movimientocaja.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.TicketsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.TicketsTable,
+			Columns: []string{empresa.TicketsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedTicketsIDs(); len(nodes) > 0 && !_u.mutation.TicketsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.TicketsTable,
+			Columns: []string{empresa.TicketsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.TicketsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.TicketsTable,
+			Columns: []string{empresa.TicketsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

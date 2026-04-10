@@ -6,6 +6,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"rentals-go/ent/cargo"
+	"rentals-go/ent/contrato"
 	"rentals-go/ent/serviciomedicion"
 	"rentals-go/ent/unidad"
 	"time"
@@ -41,6 +43,20 @@ func (_c *ServicioMedicionCreate) SetUnidadID(v int) *ServicioMedicionCreate {
 	return _c
 }
 
+// SetContratoID sets the "contrato_id" field.
+func (_c *ServicioMedicionCreate) SetContratoID(v int) *ServicioMedicionCreate {
+	_c.mutation.SetContratoID(v)
+	return _c
+}
+
+// SetNillableContratoID sets the "contrato_id" field if the given value is not nil.
+func (_c *ServicioMedicionCreate) SetNillableContratoID(v *int) *ServicioMedicionCreate {
+	if v != nil {
+		_c.SetContratoID(*v)
+	}
+	return _c
+}
+
 // SetTipoServicio sets the "tipo_servicio" field.
 func (_c *ServicioMedicionCreate) SetTipoServicio(v serviciomedicion.TipoServicio) *ServicioMedicionCreate {
 	_c.mutation.SetTipoServicio(v)
@@ -55,15 +71,9 @@ func (_c *ServicioMedicionCreate) SetNillableTipoServicio(v *serviciomedicion.Ti
 	return _c
 }
 
-// SetPeriodoInicio sets the "periodo_inicio" field.
-func (_c *ServicioMedicionCreate) SetPeriodoInicio(v time.Time) *ServicioMedicionCreate {
-	_c.mutation.SetPeriodoInicio(v)
-	return _c
-}
-
-// SetPeriodoFin sets the "periodo_fin" field.
-func (_c *ServicioMedicionCreate) SetPeriodoFin(v time.Time) *ServicioMedicionCreate {
-	_c.mutation.SetPeriodoFin(v)
+// SetFechaLectura sets the "fecha_lectura" field.
+func (_c *ServicioMedicionCreate) SetFechaLectura(v time.Time) *ServicioMedicionCreate {
+	_c.mutation.SetFechaLectura(v)
 	return _c
 }
 
@@ -109,58 +119,30 @@ func (_c *ServicioMedicionCreate) SetNillableConsumo(v *float64) *ServicioMedici
 	return _c
 }
 
-// SetMoneda sets the "moneda" field.
-func (_c *ServicioMedicionCreate) SetMoneda(v string) *ServicioMedicionCreate {
-	_c.mutation.SetMoneda(v)
+// SetMonto sets the "monto" field.
+func (_c *ServicioMedicionCreate) SetMonto(v int64) *ServicioMedicionCreate {
+	_c.mutation.SetMonto(v)
 	return _c
 }
 
-// SetNillableMoneda sets the "moneda" field if the given value is not nil.
-func (_c *ServicioMedicionCreate) SetNillableMoneda(v *string) *ServicioMedicionCreate {
+// SetNillableMonto sets the "monto" field if the given value is not nil.
+func (_c *ServicioMedicionCreate) SetNillableMonto(v *int64) *ServicioMedicionCreate {
 	if v != nil {
-		_c.SetMoneda(*v)
+		_c.SetMonto(*v)
 	}
 	return _c
 }
 
-// SetTarifaUnitaria sets the "tarifa_unitaria" field.
-func (_c *ServicioMedicionCreate) SetTarifaUnitaria(v int64) *ServicioMedicionCreate {
-	_c.mutation.SetTarifaUnitaria(v)
+// SetProcesado sets the "procesado" field.
+func (_c *ServicioMedicionCreate) SetProcesado(v bool) *ServicioMedicionCreate {
+	_c.mutation.SetProcesado(v)
 	return _c
 }
 
-// SetNillableTarifaUnitaria sets the "tarifa_unitaria" field if the given value is not nil.
-func (_c *ServicioMedicionCreate) SetNillableTarifaUnitaria(v *int64) *ServicioMedicionCreate {
+// SetNillableProcesado sets the "procesado" field if the given value is not nil.
+func (_c *ServicioMedicionCreate) SetNillableProcesado(v *bool) *ServicioMedicionCreate {
 	if v != nil {
-		_c.SetTarifaUnitaria(*v)
-	}
-	return _c
-}
-
-// SetMontoTotal sets the "monto_total" field.
-func (_c *ServicioMedicionCreate) SetMontoTotal(v int64) *ServicioMedicionCreate {
-	_c.mutation.SetMontoTotal(v)
-	return _c
-}
-
-// SetNillableMontoTotal sets the "monto_total" field if the given value is not nil.
-func (_c *ServicioMedicionCreate) SetNillableMontoTotal(v *int64) *ServicioMedicionCreate {
-	if v != nil {
-		_c.SetMontoTotal(*v)
-	}
-	return _c
-}
-
-// SetObservaciones sets the "observaciones" field.
-func (_c *ServicioMedicionCreate) SetObservaciones(v string) *ServicioMedicionCreate {
-	_c.mutation.SetObservaciones(v)
-	return _c
-}
-
-// SetNillableObservaciones sets the "observaciones" field if the given value is not nil.
-func (_c *ServicioMedicionCreate) SetNillableObservaciones(v *string) *ServicioMedicionCreate {
-	if v != nil {
-		_c.SetObservaciones(*v)
+		_c.SetProcesado(*v)
 	}
 	return _c
 }
@@ -168,6 +150,30 @@ func (_c *ServicioMedicionCreate) SetNillableObservaciones(v *string) *ServicioM
 // SetUnidad sets the "unidad" edge to the Unidad entity.
 func (_c *ServicioMedicionCreate) SetUnidad(v *Unidad) *ServicioMedicionCreate {
 	return _c.SetUnidadID(v.ID)
+}
+
+// SetContrato sets the "contrato" edge to the Contrato entity.
+func (_c *ServicioMedicionCreate) SetContrato(v *Contrato) *ServicioMedicionCreate {
+	return _c.SetContratoID(v.ID)
+}
+
+// SetCargoID sets the "cargo" edge to the Cargo entity by ID.
+func (_c *ServicioMedicionCreate) SetCargoID(id int) *ServicioMedicionCreate {
+	_c.mutation.SetCargoID(id)
+	return _c
+}
+
+// SetNillableCargoID sets the "cargo" edge to the Cargo entity by ID if the given value is not nil.
+func (_c *ServicioMedicionCreate) SetNillableCargoID(id *int) *ServicioMedicionCreate {
+	if id != nil {
+		_c = _c.SetCargoID(*id)
+	}
+	return _c
+}
+
+// SetCargo sets the "cargo" edge to the Cargo entity.
+func (_c *ServicioMedicionCreate) SetCargo(v *Cargo) *ServicioMedicionCreate {
+	return _c.SetCargoID(v.ID)
 }
 
 // Mutation returns the ServicioMedicionMutation object of the builder.
@@ -225,17 +231,13 @@ func (_c *ServicioMedicionCreate) defaults() {
 		v := serviciomedicion.DefaultConsumo
 		_c.mutation.SetConsumo(v)
 	}
-	if _, ok := _c.mutation.Moneda(); !ok {
-		v := serviciomedicion.DefaultMoneda
-		_c.mutation.SetMoneda(v)
+	if _, ok := _c.mutation.Monto(); !ok {
+		v := serviciomedicion.DefaultMonto
+		_c.mutation.SetMonto(v)
 	}
-	if _, ok := _c.mutation.TarifaUnitaria(); !ok {
-		v := serviciomedicion.DefaultTarifaUnitaria
-		_c.mutation.SetTarifaUnitaria(v)
-	}
-	if _, ok := _c.mutation.MontoTotal(); !ok {
-		v := serviciomedicion.DefaultMontoTotal
-		_c.mutation.SetMontoTotal(v)
+	if _, ok := _c.mutation.Procesado(); !ok {
+		v := serviciomedicion.DefaultProcesado
+		_c.mutation.SetProcesado(v)
 	}
 }
 
@@ -255,11 +257,8 @@ func (_c *ServicioMedicionCreate) check() error {
 			return &ValidationError{Name: "tipo_servicio", err: fmt.Errorf(`ent: validator failed for field "ServicioMedicion.tipo_servicio": %w`, err)}
 		}
 	}
-	if _, ok := _c.mutation.PeriodoInicio(); !ok {
-		return &ValidationError{Name: "periodo_inicio", err: errors.New(`ent: missing required field "ServicioMedicion.periodo_inicio"`)}
-	}
-	if _, ok := _c.mutation.PeriodoFin(); !ok {
-		return &ValidationError{Name: "periodo_fin", err: errors.New(`ent: missing required field "ServicioMedicion.periodo_fin"`)}
+	if _, ok := _c.mutation.FechaLectura(); !ok {
+		return &ValidationError{Name: "fecha_lectura", err: errors.New(`ent: missing required field "ServicioMedicion.fecha_lectura"`)}
 	}
 	if _, ok := _c.mutation.LecturaAnterior(); !ok {
 		return &ValidationError{Name: "lectura_anterior", err: errors.New(`ent: missing required field "ServicioMedicion.lectura_anterior"`)}
@@ -270,24 +269,11 @@ func (_c *ServicioMedicionCreate) check() error {
 	if _, ok := _c.mutation.Consumo(); !ok {
 		return &ValidationError{Name: "consumo", err: errors.New(`ent: missing required field "ServicioMedicion.consumo"`)}
 	}
-	if _, ok := _c.mutation.Moneda(); !ok {
-		return &ValidationError{Name: "moneda", err: errors.New(`ent: missing required field "ServicioMedicion.moneda"`)}
+	if _, ok := _c.mutation.Monto(); !ok {
+		return &ValidationError{Name: "monto", err: errors.New(`ent: missing required field "ServicioMedicion.monto"`)}
 	}
-	if v, ok := _c.mutation.Moneda(); ok {
-		if err := serviciomedicion.MonedaValidator(v); err != nil {
-			return &ValidationError{Name: "moneda", err: fmt.Errorf(`ent: validator failed for field "ServicioMedicion.moneda": %w`, err)}
-		}
-	}
-	if _, ok := _c.mutation.TarifaUnitaria(); !ok {
-		return &ValidationError{Name: "tarifa_unitaria", err: errors.New(`ent: missing required field "ServicioMedicion.tarifa_unitaria"`)}
-	}
-	if _, ok := _c.mutation.MontoTotal(); !ok {
-		return &ValidationError{Name: "monto_total", err: errors.New(`ent: missing required field "ServicioMedicion.monto_total"`)}
-	}
-	if v, ok := _c.mutation.Observaciones(); ok {
-		if err := serviciomedicion.ObservacionesValidator(v); err != nil {
-			return &ValidationError{Name: "observaciones", err: fmt.Errorf(`ent: validator failed for field "ServicioMedicion.observaciones": %w`, err)}
-		}
+	if _, ok := _c.mutation.Procesado(); !ok {
+		return &ValidationError{Name: "procesado", err: errors.New(`ent: missing required field "ServicioMedicion.procesado"`)}
 	}
 	if len(_c.mutation.UnidadIDs()) == 0 {
 		return &ValidationError{Name: "unidad", err: errors.New(`ent: missing required edge "ServicioMedicion.unidad"`)}
@@ -326,13 +312,9 @@ func (_c *ServicioMedicionCreate) createSpec() (*ServicioMedicion, *sqlgraph.Cre
 		_spec.SetField(serviciomedicion.FieldTipoServicio, field.TypeEnum, value)
 		_node.TipoServicio = value
 	}
-	if value, ok := _c.mutation.PeriodoInicio(); ok {
-		_spec.SetField(serviciomedicion.FieldPeriodoInicio, field.TypeTime, value)
-		_node.PeriodoInicio = value
-	}
-	if value, ok := _c.mutation.PeriodoFin(); ok {
-		_spec.SetField(serviciomedicion.FieldPeriodoFin, field.TypeTime, value)
-		_node.PeriodoFin = value
+	if value, ok := _c.mutation.FechaLectura(); ok {
+		_spec.SetField(serviciomedicion.FieldFechaLectura, field.TypeTime, value)
+		_node.FechaLectura = value
 	}
 	if value, ok := _c.mutation.LecturaAnterior(); ok {
 		_spec.SetField(serviciomedicion.FieldLecturaAnterior, field.TypeFloat64, value)
@@ -346,21 +328,13 @@ func (_c *ServicioMedicionCreate) createSpec() (*ServicioMedicion, *sqlgraph.Cre
 		_spec.SetField(serviciomedicion.FieldConsumo, field.TypeFloat64, value)
 		_node.Consumo = value
 	}
-	if value, ok := _c.mutation.Moneda(); ok {
-		_spec.SetField(serviciomedicion.FieldMoneda, field.TypeString, value)
-		_node.Moneda = value
+	if value, ok := _c.mutation.Monto(); ok {
+		_spec.SetField(serviciomedicion.FieldMonto, field.TypeInt64, value)
+		_node.Monto = value
 	}
-	if value, ok := _c.mutation.TarifaUnitaria(); ok {
-		_spec.SetField(serviciomedicion.FieldTarifaUnitaria, field.TypeInt64, value)
-		_node.TarifaUnitaria = value
-	}
-	if value, ok := _c.mutation.MontoTotal(); ok {
-		_spec.SetField(serviciomedicion.FieldMontoTotal, field.TypeInt64, value)
-		_node.MontoTotal = value
-	}
-	if value, ok := _c.mutation.Observaciones(); ok {
-		_spec.SetField(serviciomedicion.FieldObservaciones, field.TypeString, value)
-		_node.Observaciones = &value
+	if value, ok := _c.mutation.Procesado(); ok {
+		_spec.SetField(serviciomedicion.FieldProcesado, field.TypeBool, value)
+		_node.Procesado = value
 	}
 	if nodes := _c.mutation.UnidadIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
@@ -377,6 +351,39 @@ func (_c *ServicioMedicionCreate) createSpec() (*ServicioMedicion, *sqlgraph.Cre
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.UnidadID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.ContratoIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   serviciomedicion.ContratoTable,
+			Columns: []string{serviciomedicion.ContratoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(contrato.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.ContratoID = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.CargoIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   serviciomedicion.CargoTable,
+			Columns: []string{serviciomedicion.CargoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cargo.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

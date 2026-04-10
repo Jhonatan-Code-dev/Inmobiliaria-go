@@ -4,6 +4,8 @@ package ent
 
 import (
 	"fmt"
+	"rentals-go/ent/cargo"
+	"rentals-go/ent/contrato"
 	"rentals-go/ent/serviciomedicion"
 	"rentals-go/ent/unidad"
 	"strings"
@@ -22,26 +24,22 @@ type ServicioMedicion struct {
 	CreadoEn time.Time `json:"creado_en,omitempty"`
 	// UnidadID holds the value of the "unidad_id" field.
 	UnidadID int `json:"unidad_id,omitempty"`
+	// ContratoID holds the value of the "contrato_id" field.
+	ContratoID *int `json:"contrato_id,omitempty"`
 	// TipoServicio holds the value of the "tipo_servicio" field.
 	TipoServicio serviciomedicion.TipoServicio `json:"tipo_servicio,omitempty"`
-	// PeriodoInicio holds the value of the "periodo_inicio" field.
-	PeriodoInicio time.Time `json:"periodo_inicio,omitempty"`
-	// PeriodoFin holds the value of the "periodo_fin" field.
-	PeriodoFin time.Time `json:"periodo_fin,omitempty"`
+	// FechaLectura holds the value of the "fecha_lectura" field.
+	FechaLectura time.Time `json:"fecha_lectura,omitempty"`
 	// LecturaAnterior holds the value of the "lectura_anterior" field.
 	LecturaAnterior float64 `json:"lectura_anterior,omitempty"`
 	// LecturaActual holds the value of the "lectura_actual" field.
 	LecturaActual float64 `json:"lectura_actual,omitempty"`
 	// Consumo holds the value of the "consumo" field.
 	Consumo float64 `json:"consumo,omitempty"`
-	// Moneda holds the value of the "moneda" field.
-	Moneda string `json:"moneda,omitempty"`
-	// TarifaUnitaria holds the value of the "tarifa_unitaria" field.
-	TarifaUnitaria int64 `json:"tarifa_unitaria,omitempty"`
-	// MontoTotal holds the value of the "monto_total" field.
-	MontoTotal int64 `json:"monto_total,omitempty"`
-	// Observaciones holds the value of the "observaciones" field.
-	Observaciones *string `json:"observaciones,omitempty"`
+	// Monto holds the value of the "monto" field.
+	Monto int64 `json:"monto,omitempty"`
+	// Procesado holds the value of the "procesado" field.
+	Procesado bool `json:"procesado,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the ServicioMedicionQuery when eager-loading is set.
 	Edges        ServicioMedicionEdges `json:"edges"`
@@ -52,9 +50,13 @@ type ServicioMedicion struct {
 type ServicioMedicionEdges struct {
 	// Unidad holds the value of the unidad edge.
 	Unidad *Unidad `json:"unidad,omitempty"`
+	// Contrato holds the value of the contrato edge.
+	Contrato *Contrato `json:"contrato,omitempty"`
+	// Cargo holds the value of the cargo edge.
+	Cargo *Cargo `json:"cargo,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [3]bool
 }
 
 // UnidadOrErr returns the Unidad value or an error if the edge
@@ -68,18 +70,42 @@ func (e ServicioMedicionEdges) UnidadOrErr() (*Unidad, error) {
 	return nil, &NotLoadedError{edge: "unidad"}
 }
 
+// ContratoOrErr returns the Contrato value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ServicioMedicionEdges) ContratoOrErr() (*Contrato, error) {
+	if e.Contrato != nil {
+		return e.Contrato, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: contrato.Label}
+	}
+	return nil, &NotLoadedError{edge: "contrato"}
+}
+
+// CargoOrErr returns the Cargo value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ServicioMedicionEdges) CargoOrErr() (*Cargo, error) {
+	if e.Cargo != nil {
+		return e.Cargo, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: cargo.Label}
+	}
+	return nil, &NotLoadedError{edge: "cargo"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*ServicioMedicion) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case serviciomedicion.FieldProcesado:
+			values[i] = new(sql.NullBool)
 		case serviciomedicion.FieldLecturaAnterior, serviciomedicion.FieldLecturaActual, serviciomedicion.FieldConsumo:
 			values[i] = new(sql.NullFloat64)
-		case serviciomedicion.FieldID, serviciomedicion.FieldUnidadID, serviciomedicion.FieldTarifaUnitaria, serviciomedicion.FieldMontoTotal:
+		case serviciomedicion.FieldID, serviciomedicion.FieldUnidadID, serviciomedicion.FieldContratoID, serviciomedicion.FieldMonto:
 			values[i] = new(sql.NullInt64)
-		case serviciomedicion.FieldTipoServicio, serviciomedicion.FieldMoneda, serviciomedicion.FieldObservaciones:
+		case serviciomedicion.FieldTipoServicio:
 			values[i] = new(sql.NullString)
-		case serviciomedicion.FieldCreadoEn, serviciomedicion.FieldPeriodoInicio, serviciomedicion.FieldPeriodoFin:
+		case serviciomedicion.FieldCreadoEn, serviciomedicion.FieldFechaLectura:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -114,23 +140,24 @@ func (_m *ServicioMedicion) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.UnidadID = int(value.Int64)
 			}
+		case serviciomedicion.FieldContratoID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field contrato_id", values[i])
+			} else if value.Valid {
+				_m.ContratoID = new(int)
+				*_m.ContratoID = int(value.Int64)
+			}
 		case serviciomedicion.FieldTipoServicio:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field tipo_servicio", values[i])
 			} else if value.Valid {
 				_m.TipoServicio = serviciomedicion.TipoServicio(value.String)
 			}
-		case serviciomedicion.FieldPeriodoInicio:
+		case serviciomedicion.FieldFechaLectura:
 			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field periodo_inicio", values[i])
+				return fmt.Errorf("unexpected type %T for field fecha_lectura", values[i])
 			} else if value.Valid {
-				_m.PeriodoInicio = value.Time
-			}
-		case serviciomedicion.FieldPeriodoFin:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field periodo_fin", values[i])
-			} else if value.Valid {
-				_m.PeriodoFin = value.Time
+				_m.FechaLectura = value.Time
 			}
 		case serviciomedicion.FieldLecturaAnterior:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
@@ -150,30 +177,17 @@ func (_m *ServicioMedicion) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Consumo = value.Float64
 			}
-		case serviciomedicion.FieldMoneda:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field moneda", values[i])
-			} else if value.Valid {
-				_m.Moneda = value.String
-			}
-		case serviciomedicion.FieldTarifaUnitaria:
+		case serviciomedicion.FieldMonto:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field tarifa_unitaria", values[i])
+				return fmt.Errorf("unexpected type %T for field monto", values[i])
 			} else if value.Valid {
-				_m.TarifaUnitaria = value.Int64
+				_m.Monto = value.Int64
 			}
-		case serviciomedicion.FieldMontoTotal:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field monto_total", values[i])
+		case serviciomedicion.FieldProcesado:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field procesado", values[i])
 			} else if value.Valid {
-				_m.MontoTotal = value.Int64
-			}
-		case serviciomedicion.FieldObservaciones:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field observaciones", values[i])
-			} else if value.Valid {
-				_m.Observaciones = new(string)
-				*_m.Observaciones = value.String
+				_m.Procesado = value.Bool
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -191,6 +205,16 @@ func (_m *ServicioMedicion) Value(name string) (ent.Value, error) {
 // QueryUnidad queries the "unidad" edge of the ServicioMedicion entity.
 func (_m *ServicioMedicion) QueryUnidad() *UnidadQuery {
 	return NewServicioMedicionClient(_m.config).QueryUnidad(_m)
+}
+
+// QueryContrato queries the "contrato" edge of the ServicioMedicion entity.
+func (_m *ServicioMedicion) QueryContrato() *ContratoQuery {
+	return NewServicioMedicionClient(_m.config).QueryContrato(_m)
+}
+
+// QueryCargo queries the "cargo" edge of the ServicioMedicion entity.
+func (_m *ServicioMedicion) QueryCargo() *CargoQuery {
+	return NewServicioMedicionClient(_m.config).QueryCargo(_m)
 }
 
 // Update returns a builder for updating this ServicioMedicion.
@@ -222,14 +246,16 @@ func (_m *ServicioMedicion) String() string {
 	builder.WriteString("unidad_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.UnidadID))
 	builder.WriteString(", ")
+	if v := _m.ContratoID; v != nil {
+		builder.WriteString("contrato_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
 	builder.WriteString("tipo_servicio=")
 	builder.WriteString(fmt.Sprintf("%v", _m.TipoServicio))
 	builder.WriteString(", ")
-	builder.WriteString("periodo_inicio=")
-	builder.WriteString(_m.PeriodoInicio.Format(time.ANSIC))
-	builder.WriteString(", ")
-	builder.WriteString("periodo_fin=")
-	builder.WriteString(_m.PeriodoFin.Format(time.ANSIC))
+	builder.WriteString("fecha_lectura=")
+	builder.WriteString(_m.FechaLectura.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("lectura_anterior=")
 	builder.WriteString(fmt.Sprintf("%v", _m.LecturaAnterior))
@@ -240,19 +266,11 @@ func (_m *ServicioMedicion) String() string {
 	builder.WriteString("consumo=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Consumo))
 	builder.WriteString(", ")
-	builder.WriteString("moneda=")
-	builder.WriteString(_m.Moneda)
+	builder.WriteString("monto=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Monto))
 	builder.WriteString(", ")
-	builder.WriteString("tarifa_unitaria=")
-	builder.WriteString(fmt.Sprintf("%v", _m.TarifaUnitaria))
-	builder.WriteString(", ")
-	builder.WriteString("monto_total=")
-	builder.WriteString(fmt.Sprintf("%v", _m.MontoTotal))
-	builder.WriteString(", ")
-	if v := _m.Observaciones; v != nil {
-		builder.WriteString("observaciones=")
-		builder.WriteString(*v)
-	}
+	builder.WriteString("procesado=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Procesado))
 	builder.WriteByte(')')
 	return builder.String()
 }

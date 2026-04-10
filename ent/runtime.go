@@ -18,6 +18,7 @@ import (
 	"rentals-go/ent/rol"
 	"rentals-go/ent/schema"
 	"rentals-go/ent/serviciomedicion"
+	"rentals-go/ent/ticket"
 	"rentals-go/ent/tipoidentificacion"
 	"rentals-go/ent/tipopago"
 	"rentals-go/ent/unidad"
@@ -677,38 +678,31 @@ func init() {
 	serviciomedicionDescConsumo := serviciomedicionFields[6].Descriptor()
 	// serviciomedicion.DefaultConsumo holds the default value on creation for the consumo field.
 	serviciomedicion.DefaultConsumo = serviciomedicionDescConsumo.Default.(float64)
-	// serviciomedicionDescMoneda is the schema descriptor for moneda field.
-	serviciomedicionDescMoneda := serviciomedicionFields[7].Descriptor()
-	// serviciomedicion.DefaultMoneda holds the default value on creation for the moneda field.
-	serviciomedicion.DefaultMoneda = serviciomedicionDescMoneda.Default.(string)
-	// serviciomedicion.MonedaValidator is a validator for the "moneda" field. It is called by the builders before save.
-	serviciomedicion.MonedaValidator = func() func(string) error {
-		validators := serviciomedicionDescMoneda.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(moneda string) error {
-			for _, fn := range fns {
-				if err := fn(moneda); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
-	// serviciomedicionDescTarifaUnitaria is the schema descriptor for tarifa_unitaria field.
-	serviciomedicionDescTarifaUnitaria := serviciomedicionFields[8].Descriptor()
-	// serviciomedicion.DefaultTarifaUnitaria holds the default value on creation for the tarifa_unitaria field.
-	serviciomedicion.DefaultTarifaUnitaria = serviciomedicionDescTarifaUnitaria.Default.(int64)
-	// serviciomedicionDescMontoTotal is the schema descriptor for monto_total field.
-	serviciomedicionDescMontoTotal := serviciomedicionFields[9].Descriptor()
-	// serviciomedicion.DefaultMontoTotal holds the default value on creation for the monto_total field.
-	serviciomedicion.DefaultMontoTotal = serviciomedicionDescMontoTotal.Default.(int64)
-	// serviciomedicionDescObservaciones is the schema descriptor for observaciones field.
-	serviciomedicionDescObservaciones := serviciomedicionFields[10].Descriptor()
-	// serviciomedicion.ObservacionesValidator is a validator for the "observaciones" field. It is called by the builders before save.
-	serviciomedicion.ObservacionesValidator = serviciomedicionDescObservaciones.Validators[0].(func(string) error)
+	// serviciomedicionDescMonto is the schema descriptor for monto field.
+	serviciomedicionDescMonto := serviciomedicionFields[7].Descriptor()
+	// serviciomedicion.DefaultMonto holds the default value on creation for the monto field.
+	serviciomedicion.DefaultMonto = serviciomedicionDescMonto.Default.(int64)
+	// serviciomedicionDescProcesado is the schema descriptor for procesado field.
+	serviciomedicionDescProcesado := serviciomedicionFields[8].Descriptor()
+	// serviciomedicion.DefaultProcesado holds the default value on creation for the procesado field.
+	serviciomedicion.DefaultProcesado = serviciomedicionDescProcesado.Default.(bool)
+	ticketMixin := schema.Ticket{}.Mixin()
+	ticketMixinFields0 := ticketMixin[0].Fields()
+	_ = ticketMixinFields0
+	ticketFields := schema.Ticket{}.Fields()
+	_ = ticketFields
+	// ticketDescCreadoEn is the schema descriptor for creado_en field.
+	ticketDescCreadoEn := ticketMixinFields0[0].Descriptor()
+	// ticket.DefaultCreadoEn holds the default value on creation for the creado_en field.
+	ticket.DefaultCreadoEn = ticketDescCreadoEn.Default.(func() time.Time)
+	// ticketDescAsunto is the schema descriptor for asunto field.
+	ticketDescAsunto := ticketFields[3].Descriptor()
+	// ticket.AsuntoValidator is a validator for the "asunto" field. It is called by the builders before save.
+	ticket.AsuntoValidator = ticketDescAsunto.Validators[0].(func(string) error)
+	// ticketDescDescripcion is the schema descriptor for descripcion field.
+	ticketDescDescripcion := ticketFields[4].Descriptor()
+	// ticket.DescripcionValidator is a validator for the "descripcion" field. It is called by the builders before save.
+	ticket.DescripcionValidator = ticketDescDescripcion.Validators[0].(func(string) error)
 	tipoidentificacionMixin := schema.TipoIdentificacion{}.Mixin()
 	tipoidentificacionMixinFields0 := tipoidentificacionMixin[0].Fields()
 	_ = tipoidentificacionMixinFields0

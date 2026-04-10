@@ -9,6 +9,7 @@ import (
 	"rentals-go/ent/cargo"
 	"rentals-go/ent/contrato"
 	"rentals-go/ent/pagoaplicacion"
+	"rentals-go/ent/serviciomedicion"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -182,6 +183,25 @@ func (_c *CargoCreate) AddAplicacionesPago(v ...*PagoAplicacion) *CargoCreate {
 		ids[i] = v[i].ID
 	}
 	return _c.AddAplicacionesPagoIDs(ids...)
+}
+
+// SetServicioMedicionID sets the "servicio_medicion" edge to the ServicioMedicion entity by ID.
+func (_c *CargoCreate) SetServicioMedicionID(id int) *CargoCreate {
+	_c.mutation.SetServicioMedicionID(id)
+	return _c
+}
+
+// SetNillableServicioMedicionID sets the "servicio_medicion" edge to the ServicioMedicion entity by ID if the given value is not nil.
+func (_c *CargoCreate) SetNillableServicioMedicionID(id *int) *CargoCreate {
+	if id != nil {
+		_c = _c.SetServicioMedicionID(*id)
+	}
+	return _c
+}
+
+// SetServicioMedicion sets the "servicio_medicion" edge to the ServicioMedicion entity.
+func (_c *CargoCreate) SetServicioMedicion(v *ServicioMedicion) *CargoCreate {
+	return _c.SetServicioMedicionID(v.ID)
 }
 
 // Mutation returns the CargoMutation object of the builder.
@@ -415,6 +435,23 @@ func (_c *CargoCreate) createSpec() (*Cargo, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.ServicioMedicionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   cargo.ServicioMedicionTable,
+			Columns: []string{cargo.ServicioMedicionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(serviciomedicion.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.servicio_medicion_cargo = &nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

@@ -30,6 +30,7 @@ type (
 		Crear(ctx context.Context, u *Usuario) (*Usuario, error)
 		BuscarPorUsuario(ctx context.Context, usuario string) (*Usuario, error)
 		BuscarPerfil(ctx context.Context, id int) (*Usuario, *Empresa, error)
+		ActualizarPassword(ctx context.Context, id int, hashContrasena string) error
 	}
 
 	MembresiaRepository interface {
@@ -82,11 +83,17 @@ type (
 		ListarPaginado(ctx context.Context, filtros AlquilerFiltros) ([]*Alquiler, int, error)
 		BuscarPorID(ctx context.Context, id int) (*Alquiler, error)
 		Crear(ctx context.Context, alquiler *Alquiler) (*Alquiler, error)
+		Actualizar(ctx context.Context, alquiler *Alquiler) (*Alquiler, error)
+		Eliminar(ctx context.Context, id int) error
 	}
 
 	PagoAlquilerRepository interface {
 		Registrar(ctx context.Context, pago *RegistroPagoAlquiler) (*PagoAlquiler, error)
 		ListarPendientesMesActual(ctx context.Context, empresaID int, now time.Time) ([]*PagoPendiente, error)
+		Listar(ctx context.Context, empresaID int, pagina, limite int) ([]*PagoAlquiler, int, error)
+		BuscarPorID(ctx context.Context, id int, empresaID int) (*PagoAlquiler, error)
+		Actualizar(ctx context.Context, pago *PagoAlquiler) (*PagoAlquiler, error)
+		Eliminar(ctx context.Context, id int, empresaID int) error
 	}
 
 	GastoService interface {
@@ -124,10 +131,82 @@ type (
 		Listar(ctx context.Context, filtros AlquilerFiltros) ([]*Alquiler, int, error)
 		Obtener(ctx context.Context, id int, empresaID int) (*Alquiler, error)
 		Crear(ctx context.Context, alquiler *Alquiler) (*Alquiler, error)
+		Actualizar(ctx context.Context, id int, empresaID int, alq *Alquiler) (*Alquiler, error)
+		Eliminar(ctx context.Context, id int, empresaID int) error
+		Terminar(ctx context.Context, id int, empresaID int) error
 	}
 
 	PagoAlquilerService interface {
 		Registrar(ctx context.Context, pago *RegistroPagoAlquiler) (*PagoAlquiler, error)
 		ListarPendientesMesActual(ctx context.Context, empresaID int) ([]*PagoPendiente, error)
+		ListarHistorial(ctx context.Context, empresaID int, pagina, limite int) ([]*PagoAlquiler, int, error)
+		Obtener(ctx context.Context, id int, empresaID int) (*PagoAlquiler, error)
+		Actualizar(ctx context.Context, id int, empresaID int, notas *string, metodoPago string) (*PagoAlquiler, error)
+		Anular(ctx context.Context, id int, empresaID int) error
+	}
+
+	StaffRepository interface {
+		Listar(ctx context.Context, filtros StaffFiltros) ([]*Staff, int, error)
+		BuscarPorID(ctx context.Context, id int, empresaID int) (*Staff, error)
+		Crear(ctx context.Context, s *RegistroStaff, hash string) (*Staff, error)
+		Actualizar(ctx context.Context, id int, empresaID int, rolID int, estado string) (*Staff, error)
+		Eliminar(ctx context.Context, id int, empresaID int) error
+	}
+
+	StaffService interface {
+		Listar(ctx context.Context, filtros StaffFiltros) ([]*Staff, int, error)
+		Obtener(ctx context.Context, id int, empresaID int) (*Staff, error)
+		Registrar(ctx context.Context, s *RegistroStaff) (*Staff, error)
+		Actualizar(ctx context.Context, id int, empresaID int, rolID int, estado string) (*Staff, error)
+		Eliminar(ctx context.Context, id int, empresaID int) error
+	}
+
+	CargoRepository interface {
+		Listar(ctx context.Context, filtros CargoFiltros) ([]*Cargo, int, error)
+		BuscarPorID(ctx context.Context, id int, empresaID int) (*Cargo, error)
+		Crear(ctx context.Context, c *Cargo) (*Cargo, error)
+		Actualizar(ctx context.Context, c *Cargo) (*Cargo, error)
+		Eliminar(ctx context.Context, id int, empresaID int) error
+	}
+
+	CargoService interface {
+		Listar(ctx context.Context, filtros CargoFiltros) ([]*Cargo, int, error)
+		Obtener(ctx context.Context, id int, empresaID int) (*Cargo, error)
+		Crear(ctx context.Context, c *RegistroCargo, empresaID int) (*Cargo, error)
+		Actualizar(ctx context.Context, id int, empresaID int, c *RegistroCargo) (*Cargo, error)
+		Eliminar(ctx context.Context, id int, empresaID int) error
+	}
+
+	ServicioMedicionRepository interface {
+		Listar(ctx context.Context, filtros ServicioMedicionFiltros) ([]*ServicioMedicion, int, error)
+		BuscarPorID(ctx context.Context, id int, empresaID int) (*ServicioMedicion, error)
+		Crear(ctx context.Context, s *ServicioMedicion) (*ServicioMedicion, error)
+		Actualizar(ctx context.Context, s *ServicioMedicion) (*ServicioMedicion, error)
+		Eliminar(ctx context.Context, id int, empresaID int) error
+		ObtenerUltimaLectura(ctx context.Context, contratoID int, tipo string) (*ServicioMedicion, error)
+	}
+
+	ServicioMedicionService interface {
+		Listar(ctx context.Context, filtros ServicioMedicionFiltros) ([]*ServicioMedicion, int, error)
+		Obtener(ctx context.Context, id int, empresaID int) (*ServicioMedicion, error)
+		Registrar(ctx context.Context, r *RegistroLectura, empresaID int) (*ServicioMedicion, error)
+		Actualizar(ctx context.Context, id int, empresaID int, lecturaActual float64) (*ServicioMedicion, error)
+		Eliminar(ctx context.Context, id int, empresaID int) error
+	}
+
+	TicketRepository interface {
+		Listar(ctx context.Context, filtros TicketFiltros) ([]*Ticket, int, error)
+		BuscarPorID(ctx context.Context, id int, empresaID int) (*Ticket, error)
+		Crear(ctx context.Context, t *Ticket) (*Ticket, error)
+		Actualizar(ctx context.Context, t *Ticket) (*Ticket, error)
+		Eliminar(ctx context.Context, id int, empresaID int) error
+	}
+
+	TicketService interface {
+		Listar(ctx context.Context, filtros TicketFiltros) ([]*Ticket, int, error)
+		Obtener(ctx context.Context, id int, empresaID int) (*Ticket, error)
+		Crear(ctx context.Context, r *RegistroTicket, empresaID int) (*Ticket, error)
+		Actualizar(ctx context.Context, id int, empresaID int, r *RegistroTicket, estado string) (*Ticket, error)
+		Eliminar(ctx context.Context, id int, empresaID int) error
 	}
 )

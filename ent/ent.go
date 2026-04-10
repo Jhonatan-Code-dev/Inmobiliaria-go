@@ -21,6 +21,7 @@ import (
 	"rentals-go/ent/propiedad"
 	"rentals-go/ent/rol"
 	"rentals-go/ent/serviciomedicion"
+	"rentals-go/ent/ticket"
 	"rentals-go/ent/tipoidentificacion"
 	"rentals-go/ent/tipopago"
 	"rentals-go/ent/unidad"
@@ -104,6 +105,7 @@ func checkColumn(t, c string) error {
 			propiedad.Table:          propiedad.ValidColumn,
 			rol.Table:                rol.ValidColumn,
 			serviciomedicion.Table:   serviciomedicion.ValidColumn,
+			ticket.Table:             ticket.ValidColumn,
 			tipoidentificacion.Table: tipoidentificacion.ValidColumn,
 			tipopago.Table:           tipopago.ValidColumn,
 			unidad.Table:             unidad.ValidColumn,

@@ -16,6 +16,7 @@ import (
 	"rentals-go/ent/pago"
 	"rentals-go/ent/predicate"
 	"rentals-go/ent/propiedad"
+	"rentals-go/ent/ticket"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -37,6 +38,7 @@ type EmpresaQuery struct {
 	withPagos           *PagoQuery
 	withGastos          *GastoQuery
 	withMovimientosCaja *MovimientoCajaQuery
+	withTickets         *TicketQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -220,6 +222,28 @@ func (_q *EmpresaQuery) QueryMovimientosCaja() *MovimientoCajaQuery {
 			sqlgraph.From(empresa.Table, empresa.FieldID, selector),
 			sqlgraph.To(movimientocaja.Table, movimientocaja.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, empresa.MovimientosCajaTable, empresa.MovimientosCajaColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTickets chains the current query on the "tickets" edge.
+func (_q *EmpresaQuery) QueryTickets() *TicketQuery {
+	query := (&TicketClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(empresa.Table, empresa.FieldID, selector),
+			sqlgraph.To(ticket.Table, ticket.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, empresa.TicketsTable, empresa.TicketsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -426,6 +450,7 @@ func (_q *EmpresaQuery) Clone() *EmpresaQuery {
 		withPagos:           _q.withPagos.Clone(),
 		withGastos:          _q.withGastos.Clone(),
 		withMovimientosCaja: _q.withMovimientosCaja.Clone(),
+		withTickets:         _q.withTickets.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -509,6 +534,17 @@ func (_q *EmpresaQuery) WithMovimientosCaja(opts ...func(*MovimientoCajaQuery)) 
 	return _q
 }
 
+// WithTickets tells the query-builder to eager-load the nodes that are connected to
+// the "tickets" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *EmpresaQuery) WithTickets(opts ...func(*TicketQuery)) *EmpresaQuery {
+	query := (&TicketClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withTickets = query
+	return _q
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -587,7 +623,7 @@ func (_q *EmpresaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Empr
 	var (
 		nodes       = []*Empresa{}
 		_spec       = _q.querySpec()
-		loadedTypes = [7]bool{
+		loadedTypes = [8]bool{
 			_q.withUsuariosEmpresa != nil,
 			_q.withClientes != nil,
 			_q.withPropiedades != nil,
@@ -595,6 +631,7 @@ func (_q *EmpresaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Empr
 			_q.withPagos != nil,
 			_q.withGastos != nil,
 			_q.withMovimientosCaja != nil,
+			_q.withTickets != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -661,6 +698,13 @@ func (_q *EmpresaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Empr
 		if err := _q.loadMovimientosCaja(ctx, query, nodes,
 			func(n *Empresa) { n.Edges.MovimientosCaja = []*MovimientoCaja{} },
 			func(n *Empresa, e *MovimientoCaja) { n.Edges.MovimientosCaja = append(n.Edges.MovimientosCaja, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withTickets; query != nil {
+		if err := _q.loadTickets(ctx, query, nodes,
+			func(n *Empresa) { n.Edges.Tickets = []*Ticket{} },
+			func(n *Empresa, e *Ticket) { n.Edges.Tickets = append(n.Edges.Tickets, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -862,6 +906,36 @@ func (_q *EmpresaQuery) loadMovimientosCaja(ctx context.Context, query *Movimien
 	}
 	query.Where(predicate.MovimientoCaja(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(empresa.MovimientosCajaColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.EmpresaID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "empresa_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *EmpresaQuery) loadTickets(ctx context.Context, query *TicketQuery, nodes []*Empresa, init func(*Empresa), assign func(*Empresa, *Ticket)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Empresa)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(ticket.FieldEmpresaID)
+	}
+	query.Where(predicate.Ticket(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(empresa.TicketsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

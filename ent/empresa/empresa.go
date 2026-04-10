@@ -42,6 +42,8 @@ const (
 	EdgeGastos = "gastos"
 	// EdgeMovimientosCaja holds the string denoting the movimientos_caja edge name in mutations.
 	EdgeMovimientosCaja = "movimientos_caja"
+	// EdgeTickets holds the string denoting the tickets edge name in mutations.
+	EdgeTickets = "tickets"
 	// Table holds the table name of the empresa in the database.
 	Table = "empresas"
 	// UsuariosEmpresaTable is the table that holds the usuarios_empresa relation/edge.
@@ -93,6 +95,13 @@ const (
 	MovimientosCajaInverseTable = "movimientos_caja"
 	// MovimientosCajaColumn is the table column denoting the movimientos_caja relation/edge.
 	MovimientosCajaColumn = "empresa_id"
+	// TicketsTable is the table that holds the tickets relation/edge.
+	TicketsTable = "tickets"
+	// TicketsInverseTable is the table name for the Ticket entity.
+	// It exists in this package in order to avoid circular dependency with the "ticket" package.
+	TicketsInverseTable = "tickets"
+	// TicketsColumn is the table column denoting the tickets relation/edge.
+	TicketsColumn = "empresa_id"
 )
 
 // Columns holds all SQL columns for empresa fields.
@@ -276,6 +285,20 @@ func ByMovimientosCaja(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newMovimientosCajaStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByTicketsCount orders the results by tickets count.
+func ByTicketsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newTicketsStep(), opts...)
+	}
+}
+
+// ByTickets orders the results by tickets terms.
+func ByTickets(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTicketsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUsuariosEmpresaStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -323,5 +346,12 @@ func newMovimientosCajaStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(MovimientosCajaInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, MovimientosCajaTable, MovimientosCajaColumn),
+	)
+}
+func newTicketsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TicketsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, TicketsTable, TicketsColumn),
 	)
 }

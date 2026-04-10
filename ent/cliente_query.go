@@ -13,6 +13,7 @@ import (
 	"rentals-go/ent/empresa"
 	"rentals-go/ent/pago"
 	"rentals-go/ent/predicate"
+	"rentals-go/ent/ticket"
 	"rentals-go/ent/tipoidentificacion"
 
 	"entgo.io/ent"
@@ -33,6 +34,7 @@ type ClienteQuery struct {
 	withTelefonos          *ClienteTelefonoQuery
 	withContratos          *ContratoQuery
 	withPagos              *PagoQuery
+	withTickets            *TicketQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -172,6 +174,28 @@ func (_q *ClienteQuery) QueryPagos() *PagoQuery {
 			sqlgraph.From(cliente.Table, cliente.FieldID, selector),
 			sqlgraph.To(pago.Table, pago.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, cliente.PagosTable, cliente.PagosColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTickets chains the current query on the "tickets" edge.
+func (_q *ClienteQuery) QueryTickets() *TicketQuery {
+	query := (&TicketClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cliente.Table, cliente.FieldID, selector),
+			sqlgraph.To(ticket.Table, ticket.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, cliente.TicketsTable, cliente.TicketsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -376,6 +400,7 @@ func (_q *ClienteQuery) Clone() *ClienteQuery {
 		withTelefonos:          _q.withTelefonos.Clone(),
 		withContratos:          _q.withContratos.Clone(),
 		withPagos:              _q.withPagos.Clone(),
+		withTickets:            _q.withTickets.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -434,6 +459,17 @@ func (_q *ClienteQuery) WithPagos(opts ...func(*PagoQuery)) *ClienteQuery {
 		opt(query)
 	}
 	_q.withPagos = query
+	return _q
+}
+
+// WithTickets tells the query-builder to eager-load the nodes that are connected to
+// the "tickets" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *ClienteQuery) WithTickets(opts ...func(*TicketQuery)) *ClienteQuery {
+	query := (&TicketClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withTickets = query
 	return _q
 }
 
@@ -515,12 +551,13 @@ func (_q *ClienteQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Clie
 	var (
 		nodes       = []*Cliente{}
 		_spec       = _q.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			_q.withEmpresa != nil,
 			_q.withTipoIdentificacion != nil,
 			_q.withTelefonos != nil,
 			_q.withContratos != nil,
 			_q.withPagos != nil,
+			_q.withTickets != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -571,6 +608,13 @@ func (_q *ClienteQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Clie
 		if err := _q.loadPagos(ctx, query, nodes,
 			func(n *Cliente) { n.Edges.Pagos = []*Pago{} },
 			func(n *Cliente, e *Pago) { n.Edges.Pagos = append(n.Edges.Pagos, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withTickets; query != nil {
+		if err := _q.loadTickets(ctx, query, nodes,
+			func(n *Cliente) { n.Edges.Tickets = []*Ticket{} },
+			func(n *Cliente, e *Ticket) { n.Edges.Tickets = append(n.Edges.Tickets, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -710,6 +754,39 @@ func (_q *ClienteQuery) loadPagos(ctx context.Context, query *PagoQuery, nodes [
 	}
 	query.Where(predicate.Pago(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(cliente.PagosColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.ClienteID
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "cliente_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "cliente_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *ClienteQuery) loadTickets(ctx context.Context, query *TicketQuery, nodes []*Cliente, init func(*Cliente), assign func(*Cliente, *Ticket)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Cliente)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(ticket.FieldClienteID)
+	}
+	query.Where(predicate.Ticket(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(cliente.TicketsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

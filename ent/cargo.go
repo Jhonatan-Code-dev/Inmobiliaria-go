@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"rentals-go/ent/cargo"
 	"rentals-go/ent/contrato"
+	"rentals-go/ent/serviciomedicion"
 	"strings"
 	"time"
 
@@ -46,8 +47,9 @@ type Cargo struct {
 	GeneradoAutomaticamente bool `json:"generado_automaticamente,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the CargoQuery when eager-loading is set.
-	Edges        CargoEdges `json:"edges"`
-	selectValues sql.SelectValues
+	Edges                   CargoEdges `json:"edges"`
+	servicio_medicion_cargo *int
+	selectValues            sql.SelectValues
 }
 
 // CargoEdges holds the relations/edges for other nodes in the graph.
@@ -56,9 +58,11 @@ type CargoEdges struct {
 	Contrato *Contrato `json:"contrato,omitempty"`
 	// AplicacionesPago holds the value of the aplicaciones_pago edge.
 	AplicacionesPago []*PagoAplicacion `json:"aplicaciones_pago,omitempty"`
+	// ServicioMedicion holds the value of the servicio_medicion edge.
+	ServicioMedicion *ServicioMedicion `json:"servicio_medicion,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // ContratoOrErr returns the Contrato value or an error if the edge
@@ -81,6 +85,17 @@ func (e CargoEdges) AplicacionesPagoOrErr() ([]*PagoAplicacion, error) {
 	return nil, &NotLoadedError{edge: "aplicaciones_pago"}
 }
 
+// ServicioMedicionOrErr returns the ServicioMedicion value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e CargoEdges) ServicioMedicionOrErr() (*ServicioMedicion, error) {
+	if e.ServicioMedicion != nil {
+		return e.ServicioMedicion, nil
+	} else if e.loadedTypes[2] {
+		return nil, &NotFoundError{label: serviciomedicion.Label}
+	}
+	return nil, &NotLoadedError{edge: "servicio_medicion"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Cargo) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
@@ -94,6 +109,8 @@ func (*Cargo) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullString)
 		case cargo.FieldCreadoEn, cargo.FieldPeriodoInicio, cargo.FieldPeriodoFin, cargo.FieldFechaEmision, cargo.FieldFechaVencimiento:
 			values[i] = new(sql.NullTime)
+		case cargo.ForeignKeys[0]: // servicio_medicion_cargo
+			values[i] = new(sql.NullInt64)
 		default:
 			values[i] = new(sql.UnknownType)
 		}
@@ -194,6 +211,13 @@ func (_m *Cargo) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.GeneradoAutomaticamente = value.Bool
 			}
+		case cargo.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field servicio_medicion_cargo", value)
+			} else if value.Valid {
+				_m.servicio_medicion_cargo = new(int)
+				*_m.servicio_medicion_cargo = int(value.Int64)
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -215,6 +239,11 @@ func (_m *Cargo) QueryContrato() *ContratoQuery {
 // QueryAplicacionesPago queries the "aplicaciones_pago" edge of the Cargo entity.
 func (_m *Cargo) QueryAplicacionesPago() *PagoAplicacionQuery {
 	return NewCargoClient(_m.config).QueryAplicacionesPago(_m)
+}
+
+// QueryServicioMedicion queries the "servicio_medicion" edge of the Cargo entity.
+func (_m *Cargo) QueryServicioMedicion() *ServicioMedicionQuery {
+	return NewCargoClient(_m.config).QueryServicioMedicion(_m)
 }
 
 // Update returns a builder for updating this Cargo.

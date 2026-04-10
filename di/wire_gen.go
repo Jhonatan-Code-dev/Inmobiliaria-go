@@ -52,6 +52,18 @@ func InitializeApp() (*App, error) {
 	pagoAlquilerRepoEnt := repository.NewPagoAlquilerRepo(client)
 	pagoAlquilerService := service.NewPagoAlquilerService(pagoAlquilerRepoEnt)
 	alquilerController := controller.NewAlquilerController(alquilerService, pagoAlquilerService)
+	staffRepoEnt := repository.NewStaffRepo(client)
+	staffService := service.NewStaffService(staffRepoEnt)
+	staffController := controller.NewStaffController(staffService)
+	cargoRepoEnt := repository.NewCargoRepo(client)
+	cargoService := service.NewCargoService(cargoRepoEnt, alquilerRepoEnt)
+	cargoController := controller.NewCargoController(cargoService)
+	servicioMedicionRepoEnt := repository.NewServicioMedicionRepo(client)
+	servicioMedicionService := service.NewServicioMedicionService(servicioMedicionRepoEnt, cargoRepoEnt, alquilerRepoEnt)
+	servicioMedicionController := controller.NewServicioMedicionController(servicioMedicionService)
+	ticketRepoEnt := repository.NewTicketRepo(client)
+	ticketService := service.NewTicketService(ticketRepoEnt)
+	ticketController := controller.NewTicketController(ticketService)
 	app := &App{
 		Config:       config,
 		EntClient:    client,
@@ -62,6 +74,10 @@ func InitializeApp() (*App, error) {
 		ClienteCtrl:  clienteController,
 		InmuebleCtrl: inmuebleController,
 		AlquilerCtrl: alquilerController,
+		StaffCtrl:    staffController,
+		CargoCtrl:    cargoController,
+		ServicioCtrl: servicioMedicionController,
+		TicketCtrl:   ticketController,
 	}
 	return app, nil
 }

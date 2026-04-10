@@ -11,6 +11,7 @@ import (
 	"rentals-go/ent/predicate"
 	"rentals-go/ent/propiedad"
 	"rentals-go/ent/serviciomedicion"
+	"rentals-go/ent/ticket"
 	"rentals-go/ent/unidad"
 
 	"entgo.io/ent"
@@ -29,6 +30,7 @@ type UnidadQuery struct {
 	withPropiedad          *PropiedadQuery
 	withContratos          *ContratoQuery
 	withServicioMediciones *ServicioMedicionQuery
+	withTickets            *TicketQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -124,6 +126,28 @@ func (_q *UnidadQuery) QueryServicioMediciones() *ServicioMedicionQuery {
 			sqlgraph.From(unidad.Table, unidad.FieldID, selector),
 			sqlgraph.To(serviciomedicion.Table, serviciomedicion.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, unidad.ServicioMedicionesTable, unidad.ServicioMedicionesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTickets chains the current query on the "tickets" edge.
+func (_q *UnidadQuery) QueryTickets() *TicketQuery {
+	query := (&TicketClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(unidad.Table, unidad.FieldID, selector),
+			sqlgraph.To(ticket.Table, ticket.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, unidad.TicketsTable, unidad.TicketsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -326,6 +350,7 @@ func (_q *UnidadQuery) Clone() *UnidadQuery {
 		withPropiedad:          _q.withPropiedad.Clone(),
 		withContratos:          _q.withContratos.Clone(),
 		withServicioMediciones: _q.withServicioMediciones.Clone(),
+		withTickets:            _q.withTickets.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -362,6 +387,17 @@ func (_q *UnidadQuery) WithServicioMediciones(opts ...func(*ServicioMedicionQuer
 		opt(query)
 	}
 	_q.withServicioMediciones = query
+	return _q
+}
+
+// WithTickets tells the query-builder to eager-load the nodes that are connected to
+// the "tickets" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UnidadQuery) WithTickets(opts ...func(*TicketQuery)) *UnidadQuery {
+	query := (&TicketClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withTickets = query
 	return _q
 }
 
@@ -443,10 +479,11 @@ func (_q *UnidadQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Unida
 	var (
 		nodes       = []*Unidad{}
 		_spec       = _q.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			_q.withPropiedad != nil,
 			_q.withContratos != nil,
 			_q.withServicioMediciones != nil,
+			_q.withTickets != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -486,6 +523,13 @@ func (_q *UnidadQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Unida
 			func(n *Unidad, e *ServicioMedicion) {
 				n.Edges.ServicioMediciones = append(n.Edges.ServicioMediciones, e)
 			}); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withTickets; query != nil {
+		if err := _q.loadTickets(ctx, query, nodes,
+			func(n *Unidad) { n.Edges.Tickets = []*Ticket{} },
+			func(n *Unidad, e *Ticket) { n.Edges.Tickets = append(n.Edges.Tickets, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -566,6 +610,36 @@ func (_q *UnidadQuery) loadServicioMediciones(ctx context.Context, query *Servic
 	}
 	query.Where(predicate.ServicioMedicion(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(unidad.ServicioMedicionesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.UnidadID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "unidad_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *UnidadQuery) loadTickets(ctx context.Context, query *TicketQuery, nodes []*Unidad, init func(*Unidad), assign func(*Unidad, *Ticket)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Unidad)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(ticket.FieldUnidadID)
+	}
+	query.Where(predicate.Ticket(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(unidad.TicketsColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

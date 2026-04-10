@@ -53,6 +53,8 @@ const (
 	EdgeContratos = "contratos"
 	// EdgePagos holds the string denoting the pagos edge name in mutations.
 	EdgePagos = "pagos"
+	// EdgeTickets holds the string denoting the tickets edge name in mutations.
+	EdgeTickets = "tickets"
 	// Table holds the table name of the cliente in the database.
 	Table = "clientes"
 	// EmpresaTable is the table that holds the empresa relation/edge.
@@ -90,6 +92,13 @@ const (
 	PagosInverseTable = "pagos"
 	// PagosColumn is the table column denoting the pagos relation/edge.
 	PagosColumn = "cliente_id"
+	// TicketsTable is the table that holds the tickets relation/edge.
+	TicketsTable = "tickets"
+	// TicketsInverseTable is the table name for the Ticket entity.
+	// It exists in this package in order to avoid circular dependency with the "ticket" package.
+	TicketsInverseTable = "tickets"
+	// TicketsColumn is the table column denoting the tickets relation/edge.
+	TicketsColumn = "cliente_id"
 )
 
 // Columns holds all SQL columns for cliente fields.
@@ -304,6 +313,20 @@ func ByPagos(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newPagosStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByTicketsCount orders the results by tickets count.
+func ByTicketsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newTicketsStep(), opts...)
+	}
+}
+
+// ByTickets orders the results by tickets terms.
+func ByTickets(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTicketsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newEmpresaStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -337,5 +360,12 @@ func newPagosStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PagosInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, PagosTable, PagosColumn),
+	)
+}
+func newTicketsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TicketsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, TicketsTable, TicketsColumn),
 	)
 }

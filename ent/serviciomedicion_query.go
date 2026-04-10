@@ -4,8 +4,11 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
+	"rentals-go/ent/cargo"
+	"rentals-go/ent/contrato"
 	"rentals-go/ent/predicate"
 	"rentals-go/ent/serviciomedicion"
 	"rentals-go/ent/unidad"
@@ -19,11 +22,13 @@ import (
 // ServicioMedicionQuery is the builder for querying ServicioMedicion entities.
 type ServicioMedicionQuery struct {
 	config
-	ctx        *QueryContext
-	order      []serviciomedicion.OrderOption
-	inters     []Interceptor
-	predicates []predicate.ServicioMedicion
-	withUnidad *UnidadQuery
+	ctx          *QueryContext
+	order        []serviciomedicion.OrderOption
+	inters       []Interceptor
+	predicates   []predicate.ServicioMedicion
+	withUnidad   *UnidadQuery
+	withContrato *ContratoQuery
+	withCargo    *CargoQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -75,6 +80,50 @@ func (_q *ServicioMedicionQuery) QueryUnidad() *UnidadQuery {
 			sqlgraph.From(serviciomedicion.Table, serviciomedicion.FieldID, selector),
 			sqlgraph.To(unidad.Table, unidad.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, serviciomedicion.UnidadTable, serviciomedicion.UnidadColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryContrato chains the current query on the "contrato" edge.
+func (_q *ServicioMedicionQuery) QueryContrato() *ContratoQuery {
+	query := (&ContratoClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(serviciomedicion.Table, serviciomedicion.FieldID, selector),
+			sqlgraph.To(contrato.Table, contrato.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, serviciomedicion.ContratoTable, serviciomedicion.ContratoColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCargo chains the current query on the "cargo" edge.
+func (_q *ServicioMedicionQuery) QueryCargo() *CargoQuery {
+	query := (&CargoClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(serviciomedicion.Table, serviciomedicion.FieldID, selector),
+			sqlgraph.To(cargo.Table, cargo.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, serviciomedicion.CargoTable, serviciomedicion.CargoColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -269,12 +318,14 @@ func (_q *ServicioMedicionQuery) Clone() *ServicioMedicionQuery {
 		return nil
 	}
 	return &ServicioMedicionQuery{
-		config:     _q.config,
-		ctx:        _q.ctx.Clone(),
-		order:      append([]serviciomedicion.OrderOption{}, _q.order...),
-		inters:     append([]Interceptor{}, _q.inters...),
-		predicates: append([]predicate.ServicioMedicion{}, _q.predicates...),
-		withUnidad: _q.withUnidad.Clone(),
+		config:       _q.config,
+		ctx:          _q.ctx.Clone(),
+		order:        append([]serviciomedicion.OrderOption{}, _q.order...),
+		inters:       append([]Interceptor{}, _q.inters...),
+		predicates:   append([]predicate.ServicioMedicion{}, _q.predicates...),
+		withUnidad:   _q.withUnidad.Clone(),
+		withContrato: _q.withContrato.Clone(),
+		withCargo:    _q.withCargo.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -289,6 +340,28 @@ func (_q *ServicioMedicionQuery) WithUnidad(opts ...func(*UnidadQuery)) *Servici
 		opt(query)
 	}
 	_q.withUnidad = query
+	return _q
+}
+
+// WithContrato tells the query-builder to eager-load the nodes that are connected to
+// the "contrato" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *ServicioMedicionQuery) WithContrato(opts ...func(*ContratoQuery)) *ServicioMedicionQuery {
+	query := (&ContratoClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withContrato = query
+	return _q
+}
+
+// WithCargo tells the query-builder to eager-load the nodes that are connected to
+// the "cargo" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *ServicioMedicionQuery) WithCargo(opts ...func(*CargoQuery)) *ServicioMedicionQuery {
+	query := (&CargoClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withCargo = query
 	return _q
 }
 
@@ -370,8 +443,10 @@ func (_q *ServicioMedicionQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 	var (
 		nodes       = []*ServicioMedicion{}
 		_spec       = _q.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [3]bool{
 			_q.withUnidad != nil,
+			_q.withContrato != nil,
+			_q.withCargo != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -395,6 +470,18 @@ func (_q *ServicioMedicionQuery) sqlAll(ctx context.Context, hooks ...queryHook)
 	if query := _q.withUnidad; query != nil {
 		if err := _q.loadUnidad(ctx, query, nodes, nil,
 			func(n *ServicioMedicion, e *Unidad) { n.Edges.Unidad = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withContrato; query != nil {
+		if err := _q.loadContrato(ctx, query, nodes, nil,
+			func(n *ServicioMedicion, e *Contrato) { n.Edges.Contrato = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withCargo; query != nil {
+		if err := _q.loadCargo(ctx, query, nodes, nil,
+			func(n *ServicioMedicion, e *Cargo) { n.Edges.Cargo = e }); err != nil {
 			return nil, err
 		}
 	}
@@ -430,6 +517,66 @@ func (_q *ServicioMedicionQuery) loadUnidad(ctx context.Context, query *UnidadQu
 	}
 	return nil
 }
+func (_q *ServicioMedicionQuery) loadContrato(ctx context.Context, query *ContratoQuery, nodes []*ServicioMedicion, init func(*ServicioMedicion), assign func(*ServicioMedicion, *Contrato)) error {
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*ServicioMedicion)
+	for i := range nodes {
+		if nodes[i].ContratoID == nil {
+			continue
+		}
+		fk := *nodes[i].ContratoID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(contrato.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "contrato_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (_q *ServicioMedicionQuery) loadCargo(ctx context.Context, query *CargoQuery, nodes []*ServicioMedicion, init func(*ServicioMedicion), assign func(*ServicioMedicion, *Cargo)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*ServicioMedicion)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+	}
+	query.withFKs = true
+	query.Where(predicate.Cargo(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(serviciomedicion.CargoColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.servicio_medicion_cargo
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "servicio_medicion_cargo" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "servicio_medicion_cargo" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
 
 func (_q *ServicioMedicionQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := _q.querySpec()
@@ -458,6 +605,9 @@ func (_q *ServicioMedicionQuery) querySpec() *sqlgraph.QuerySpec {
 		}
 		if _q.withUnidad != nil {
 			_spec.Node.AddColumnOnce(serviciomedicion.FieldUnidadID)
+		}
+		if _q.withContrato != nil {
+			_spec.Node.AddColumnOnce(serviciomedicion.FieldContratoID)
 		}
 	}
 	if ps := _q.predicates; len(ps) > 0 {

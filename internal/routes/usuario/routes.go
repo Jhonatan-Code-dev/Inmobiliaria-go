@@ -53,12 +53,55 @@ func Register(app *fiber.App, appDI *di.App) {
 	alquileres.Get("/", appDI.AlquilerCtrl.Listar)
 	alquileres.Get("/:id", appDI.AlquilerCtrl.Obtener)
 	alquileres.Post("/", appDI.AlquilerCtrl.Crear)
+	alquileres.Put("/:id", appDI.AlquilerCtrl.Actualizar)
+	alquileres.Delete("/:id", appDI.AlquilerCtrl.Eliminar)
+	alquileres.Post("/:id/terminar", appDI.AlquilerCtrl.TerminarContrato)
 
 	// Módulo de Pagos de alquiler
 	pagos := app.Group("/api/user/pagos")
 	pagos.Use(middlewares.TenantAuth(appDI.Config))
+	pagos.Get("/", appDI.AlquilerCtrl.ListarPagos)
 	pagos.Post("/", appDI.AlquilerCtrl.RegistrarPago)
 	pagos.Get("/pendientes", appDI.AlquilerCtrl.PendientesPago)
+	pagos.Get("/:id", appDI.AlquilerCtrl.ObtenerPago)
+	pagos.Put("/:id", appDI.AlquilerCtrl.ActualizarPago)
+	pagos.Delete("/:id", appDI.AlquilerCtrl.AnularPago)
+
+	// Módulo de Staff
+	staff := app.Group("/api/user/staff")
+	staff.Use(middlewares.TenantAuth(appDI.Config))
+	staff.Get("/", appDI.StaffCtrl.Listar)
+	staff.Get("/:id", appDI.StaffCtrl.Obtener)
+	staff.Post("/", appDI.StaffCtrl.Crear)
+	staff.Put("/:id", appDI.StaffCtrl.Actualizar)
+	staff.Delete("/:id", appDI.StaffCtrl.Eliminar)
+
+	// Módulo de Cargos
+	cargos := app.Group("/api/user/cargos")
+	cargos.Use(middlewares.TenantAuth(appDI.Config))
+	cargos.Get("/", appDI.CargoCtrl.Listar)
+	cargos.Get("/:id", appDI.CargoCtrl.Obtener)
+	cargos.Post("/", appDI.CargoCtrl.Crear)
+	cargos.Put("/:id", appDI.CargoCtrl.Actualizar)
+	cargos.Delete("/:id", appDI.CargoCtrl.Eliminar)
+
+	// Módulo de Servicios (Mediciones)
+	servicios := app.Group("/api/user/servicios")
+	servicios.Use(middlewares.TenantAuth(appDI.Config))
+	servicios.Get("/", appDI.ServicioCtrl.Listar)
+	servicios.Post("/", appDI.ServicioCtrl.Crear)
+	servicios.Get("/:id", appDI.ServicioCtrl.Obtener)
+	servicios.Put("/:id", appDI.ServicioCtrl.Actualizar)
+	servicios.Delete("/:id", appDI.ServicioCtrl.Eliminar)
+
+	// Módulo de Tickets (Mantenimiento)
+	tickets := app.Group("/api/user/tickets")
+	tickets.Use(middlewares.TenantAuth(appDI.Config))
+	tickets.Get("/", appDI.TicketCtrl.Listar)
+	tickets.Post("/", appDI.TicketCtrl.Crear)
+	tickets.Get("/:id", appDI.TicketCtrl.Obtener)
+	tickets.Put("/:id", appDI.TicketCtrl.Actualizar)
+	tickets.Delete("/:id", appDI.TicketCtrl.Eliminar)
 }
 
 func registrarRutasAuth(group fiber.Router, appDI *di.App) {
@@ -69,4 +112,5 @@ func registrarRutasAuth(group fiber.Router, appDI *di.App) {
 func registrarRutaPerfil(group fiber.Router, appDI *di.App) {
 	group.Use(middlewares.TenantAuth(appDI.Config))
 	group.Get("/", appDI.UsuarioCtrl.Perfil)
+	group.Patch("/password", appDI.UsuarioCtrl.CambiarPassword)
 }

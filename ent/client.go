@@ -25,6 +25,7 @@ import (
 	"rentals-go/ent/propiedad"
 	"rentals-go/ent/rol"
 	"rentals-go/ent/serviciomedicion"
+	"rentals-go/ent/ticket"
 	"rentals-go/ent/tipoidentificacion"
 	"rentals-go/ent/tipopago"
 	"rentals-go/ent/unidad"
@@ -69,6 +70,8 @@ type Client struct {
 	Rol *RolClient
 	// ServicioMedicion is the client for interacting with the ServicioMedicion builders.
 	ServicioMedicion *ServicioMedicionClient
+	// Ticket is the client for interacting with the Ticket builders.
+	Ticket *TicketClient
 	// TipoIdentificacion is the client for interacting with the TipoIdentificacion builders.
 	TipoIdentificacion *TipoIdentificacionClient
 	// TipoPago is the client for interacting with the TipoPago builders.
@@ -102,6 +105,7 @@ func (c *Client) init() {
 	c.Propiedad = NewPropiedadClient(c.config)
 	c.Rol = NewRolClient(c.config)
 	c.ServicioMedicion = NewServicioMedicionClient(c.config)
+	c.Ticket = NewTicketClient(c.config)
 	c.TipoIdentificacion = NewTipoIdentificacionClient(c.config)
 	c.TipoPago = NewTipoPagoClient(c.config)
 	c.Unidad = NewUnidadClient(c.config)
@@ -212,6 +216,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Propiedad:          NewPropiedadClient(cfg),
 		Rol:                NewRolClient(cfg),
 		ServicioMedicion:   NewServicioMedicionClient(cfg),
+		Ticket:             NewTicketClient(cfg),
 		TipoIdentificacion: NewTipoIdentificacionClient(cfg),
 		TipoPago:           NewTipoPagoClient(cfg),
 		Unidad:             NewUnidadClient(cfg),
@@ -249,6 +254,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Propiedad:          NewPropiedadClient(cfg),
 		Rol:                NewRolClient(cfg),
 		ServicioMedicion:   NewServicioMedicionClient(cfg),
+		Ticket:             NewTicketClient(cfg),
 		TipoIdentificacion: NewTipoIdentificacionClient(cfg),
 		TipoPago:           NewTipoPagoClient(cfg),
 		Unidad:             NewUnidadClient(cfg),
@@ -284,8 +290,8 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.Admin, c.Cargo, c.Cliente, c.ClienteTelefono, c.Contrato, c.Empresa,
 		c.EmpresaUsuario, c.Gasto, c.MovimientoCaja, c.Pago, c.PagoAplicacion,
-		c.Propiedad, c.Rol, c.ServicioMedicion, c.TipoIdentificacion, c.TipoPago,
-		c.Unidad, c.Usuario,
+		c.Propiedad, c.Rol, c.ServicioMedicion, c.Ticket, c.TipoIdentificacion,
+		c.TipoPago, c.Unidad, c.Usuario,
 	} {
 		n.Use(hooks...)
 	}
@@ -297,8 +303,8 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.Admin, c.Cargo, c.Cliente, c.ClienteTelefono, c.Contrato, c.Empresa,
 		c.EmpresaUsuario, c.Gasto, c.MovimientoCaja, c.Pago, c.PagoAplicacion,
-		c.Propiedad, c.Rol, c.ServicioMedicion, c.TipoIdentificacion, c.TipoPago,
-		c.Unidad, c.Usuario,
+		c.Propiedad, c.Rol, c.ServicioMedicion, c.Ticket, c.TipoIdentificacion,
+		c.TipoPago, c.Unidad, c.Usuario,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -335,6 +341,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Rol.mutate(ctx, m)
 	case *ServicioMedicionMutation:
 		return c.ServicioMedicion.mutate(ctx, m)
+	case *TicketMutation:
+		return c.Ticket.mutate(ctx, m)
 	case *TipoIdentificacionMutation:
 		return c.TipoIdentificacion.mutate(ctx, m)
 	case *TipoPagoMutation:
@@ -621,6 +629,22 @@ func (c *CargoClient) QueryAplicacionesPago(_m *Cargo) *PagoAplicacionQuery {
 	return query
 }
 
+// QueryServicioMedicion queries the servicio_medicion edge of a Cargo.
+func (c *CargoClient) QueryServicioMedicion(_m *Cargo) *ServicioMedicionQuery {
+	query := (&ServicioMedicionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cargo.Table, cargo.FieldID, id),
+			sqlgraph.To(serviciomedicion.Table, serviciomedicion.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, cargo.ServicioMedicionTable, cargo.ServicioMedicionColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *CargoClient) Hooks() []Hook {
 	return c.hooks.Cargo
@@ -827,6 +851,22 @@ func (c *ClienteClient) QueryPagos(_m *Cliente) *PagoQuery {
 			sqlgraph.From(cliente.Table, cliente.FieldID, id),
 			sqlgraph.To(pago.Table, pago.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, cliente.PagosTable, cliente.PagosColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTickets queries the tickets edge of a Cliente.
+func (c *ClienteClient) QueryTickets(_m *Cliente) *TicketQuery {
+	query := (&TicketClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cliente.Table, cliente.FieldID, id),
+			sqlgraph.To(ticket.Table, ticket.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, cliente.TicketsTable, cliente.TicketsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1196,6 +1236,22 @@ func (c *ContratoClient) QueryPagos(_m *Contrato) *PagoQuery {
 	return query
 }
 
+// QueryServicioMediciones queries the servicio_mediciones edge of a Contrato.
+func (c *ContratoClient) QueryServicioMediciones(_m *Contrato) *ServicioMedicionQuery {
+	query := (&ServicioMedicionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(contrato.Table, contrato.FieldID, id),
+			sqlgraph.To(serviciomedicion.Table, serviciomedicion.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, contrato.ServicioMedicionesTable, contrato.ServicioMedicionesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *ContratoClient) Hooks() []Hook {
 	return c.hooks.Contrato
@@ -1434,6 +1490,22 @@ func (c *EmpresaClient) QueryMovimientosCaja(_m *Empresa) *MovimientoCajaQuery {
 			sqlgraph.From(empresa.Table, empresa.FieldID, id),
 			sqlgraph.To(movimientocaja.Table, movimientocaja.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, empresa.MovimientosCajaTable, empresa.MovimientosCajaColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTickets queries the tickets edge of a Empresa.
+func (c *EmpresaClient) QueryTickets(_m *Empresa) *TicketQuery {
+	query := (&TicketClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(empresa.Table, empresa.FieldID, id),
+			sqlgraph.To(ticket.Table, ticket.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, empresa.TicketsTable, empresa.TicketsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -2825,6 +2897,38 @@ func (c *ServicioMedicionClient) QueryUnidad(_m *ServicioMedicion) *UnidadQuery 
 	return query
 }
 
+// QueryContrato queries the contrato edge of a ServicioMedicion.
+func (c *ServicioMedicionClient) QueryContrato(_m *ServicioMedicion) *ContratoQuery {
+	query := (&ContratoClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(serviciomedicion.Table, serviciomedicion.FieldID, id),
+			sqlgraph.To(contrato.Table, contrato.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, serviciomedicion.ContratoTable, serviciomedicion.ContratoColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCargo queries the cargo edge of a ServicioMedicion.
+func (c *ServicioMedicionClient) QueryCargo(_m *ServicioMedicion) *CargoQuery {
+	query := (&CargoClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(serviciomedicion.Table, serviciomedicion.FieldID, id),
+			sqlgraph.To(cargo.Table, cargo.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, serviciomedicion.CargoTable, serviciomedicion.CargoColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *ServicioMedicionClient) Hooks() []Hook {
 	return c.hooks.ServicioMedicion
@@ -2847,6 +2951,187 @@ func (c *ServicioMedicionClient) mutate(ctx context.Context, m *ServicioMedicion
 		return (&ServicioMedicionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown ServicioMedicion mutation op: %q", m.Op())
+	}
+}
+
+// TicketClient is a client for the Ticket schema.
+type TicketClient struct {
+	config
+}
+
+// NewTicketClient returns a client for the Ticket from the given config.
+func NewTicketClient(c config) *TicketClient {
+	return &TicketClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `ticket.Hooks(f(g(h())))`.
+func (c *TicketClient) Use(hooks ...Hook) {
+	c.hooks.Ticket = append(c.hooks.Ticket, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `ticket.Intercept(f(g(h())))`.
+func (c *TicketClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Ticket = append(c.inters.Ticket, interceptors...)
+}
+
+// Create returns a builder for creating a Ticket entity.
+func (c *TicketClient) Create() *TicketCreate {
+	mutation := newTicketMutation(c.config, OpCreate)
+	return &TicketCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Ticket entities.
+func (c *TicketClient) CreateBulk(builders ...*TicketCreate) *TicketCreateBulk {
+	return &TicketCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *TicketClient) MapCreateBulk(slice any, setFunc func(*TicketCreate, int)) *TicketCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &TicketCreateBulk{err: fmt.Errorf("calling to TicketClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*TicketCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &TicketCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Ticket.
+func (c *TicketClient) Update() *TicketUpdate {
+	mutation := newTicketMutation(c.config, OpUpdate)
+	return &TicketUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TicketClient) UpdateOne(_m *Ticket) *TicketUpdateOne {
+	mutation := newTicketMutation(c.config, OpUpdateOne, withTicket(_m))
+	return &TicketUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TicketClient) UpdateOneID(id int) *TicketUpdateOne {
+	mutation := newTicketMutation(c.config, OpUpdateOne, withTicketID(id))
+	return &TicketUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Ticket.
+func (c *TicketClient) Delete() *TicketDelete {
+	mutation := newTicketMutation(c.config, OpDelete)
+	return &TicketDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *TicketClient) DeleteOne(_m *Ticket) *TicketDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *TicketClient) DeleteOneID(id int) *TicketDeleteOne {
+	builder := c.Delete().Where(ticket.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TicketDeleteOne{builder}
+}
+
+// Query returns a query builder for Ticket.
+func (c *TicketClient) Query() *TicketQuery {
+	return &TicketQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeTicket},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Ticket entity by its id.
+func (c *TicketClient) Get(ctx context.Context, id int) (*Ticket, error) {
+	return c.Query().Where(ticket.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TicketClient) GetX(ctx context.Context, id int) *Ticket {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEmpresa queries the empresa edge of a Ticket.
+func (c *TicketClient) QueryEmpresa(_m *Ticket) *EmpresaQuery {
+	query := (&EmpresaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ticket.Table, ticket.FieldID, id),
+			sqlgraph.To(empresa.Table, empresa.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ticket.EmpresaTable, ticket.EmpresaColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryUnidad queries the unidad edge of a Ticket.
+func (c *TicketClient) QueryUnidad(_m *Ticket) *UnidadQuery {
+	query := (&UnidadClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ticket.Table, ticket.FieldID, id),
+			sqlgraph.To(unidad.Table, unidad.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ticket.UnidadTable, ticket.UnidadColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCliente queries the cliente edge of a Ticket.
+func (c *TicketClient) QueryCliente(_m *Ticket) *ClienteQuery {
+	query := (&ClienteClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(ticket.Table, ticket.FieldID, id),
+			sqlgraph.To(cliente.Table, cliente.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ticket.ClienteTable, ticket.ClienteColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TicketClient) Hooks() []Hook {
+	return c.hooks.Ticket
+}
+
+// Interceptors returns the client interceptors.
+func (c *TicketClient) Interceptors() []Interceptor {
+	return c.inters.Ticket
+}
+
+func (c *TicketClient) mutate(ctx context.Context, m *TicketMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&TicketCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&TicketUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&TicketUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&TicketDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Ticket mutation op: %q", m.Op())
 	}
 }
 
@@ -3304,6 +3589,22 @@ func (c *UnidadClient) QueryServicioMediciones(_m *Unidad) *ServicioMedicionQuer
 	return query
 }
 
+// QueryTickets queries the tickets edge of a Unidad.
+func (c *UnidadClient) QueryTickets(_m *Unidad) *TicketQuery {
+	query := (&TicketClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(unidad.Table, unidad.FieldID, id),
+			sqlgraph.To(ticket.Table, ticket.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, unidad.TicketsTable, unidad.TicketsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UnidadClient) Hooks() []Hook {
 	return c.hooks.Unidad
@@ -3483,11 +3784,11 @@ type (
 	hooks struct {
 		Admin, Cargo, Cliente, ClienteTelefono, Contrato, Empresa, EmpresaUsuario,
 		Gasto, MovimientoCaja, Pago, PagoAplicacion, Propiedad, Rol, ServicioMedicion,
-		TipoIdentificacion, TipoPago, Unidad, Usuario []ent.Hook
+		Ticket, TipoIdentificacion, TipoPago, Unidad, Usuario []ent.Hook
 	}
 	inters struct {
 		Admin, Cargo, Cliente, ClienteTelefono, Contrato, Empresa, EmpresaUsuario,
 		Gasto, MovimientoCaja, Pago, PagoAplicacion, Propiedad, Rol, ServicioMedicion,
-		TipoIdentificacion, TipoPago, Unidad, Usuario []ent.Interceptor
+		Ticket, TipoIdentificacion, TipoPago, Unidad, Usuario []ent.Interceptor
 	}
 )

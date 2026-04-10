@@ -52,6 +52,40 @@ func (s *AlquilerService) Crear(ctx context.Context, alquiler *domain.Alquiler) 
 	return s.repo.Crear(ctx, alquiler)
 }
 
+func (s *AlquilerService) Actualizar(ctx context.Context, id int, empresaID int, alq *domain.Alquiler) (*domain.Alquiler, error) {
+	old, err := s.Obtener(ctx, id, empresaID)
+	if err != nil {
+		return nil, err
+	}
+	alq.ID = id
+	alq.EmpresaID = empresaID
+	// Mantener el código original
+	alq.Codigo = old.Codigo
+	return s.repo.Actualizar(ctx, alq)
+}
+
+func (s *AlquilerService) Eliminar(ctx context.Context, id int, empresaID int) error {
+	_, err := s.Obtener(ctx, id, empresaID)
+	if err != nil {
+		return err
+	}
+	return s.repo.Eliminar(ctx, id)
+}
+
+func (s *AlquilerService) Terminar(ctx context.Context, id int, empresaID int) error {
+	alq, err := s.Obtener(ctx, id, empresaID)
+	if err != nil {
+		return err
+	}
+	alq.Estado = "finalizado"
+	alq.ActivoParaCobro = false
+	// Al actualizar a finalizado, el repo también debería liberar la unidad o podemos hacerlo explícito.
+	// En mi implementación de repo.Eliminar lo hace, pero aquí es una actualización de estado.
+	// Ajustaré el repo.Actualizar o lo haré aquí.
+	_, err = s.repo.Actualizar(ctx, alq)
+	return err
+}
+
 type PagoAlquilerService struct {
 	repo domain.PagoAlquilerRepository
 }
@@ -72,4 +106,36 @@ func (s *PagoAlquilerService) Registrar(ctx context.Context, pago *domain.Regist
 
 func (s *PagoAlquilerService) ListarPendientesMesActual(ctx context.Context, empresaID int) ([]*domain.PagoPendiente, error) {
 	return s.repo.ListarPendientesMesActual(ctx, empresaID, time.Now().UTC())
+}
+
+func (s *PagoAlquilerService) ListarHistorial(ctx context.Context, empresaID int, pagina, limite int) ([]*domain.PagoAlquiler, int, error) {
+	if pagina <= 0 {
+		pagina = 1
+	}
+	if limite <= 0 {
+		limite = 10
+	}
+	return s.repo.Listar(ctx, empresaID, pagina, limite)
+}
+
+func (s *PagoAlquilerService) Obtener(ctx context.Context, id int, empresaID int) (*domain.PagoAlquiler, error) {
+	return s.repo.BuscarPorID(ctx, id, empresaID)
+}
+
+func (s *PagoAlquilerService) Anular(ctx context.Context, id int, empresaID int) error {
+	return s.repo.Eliminar(ctx, id, empresaID)
+}
+
+func (s *PagoAlquilerService) Actualizar(ctx context.Context, id int, empresaID int, notas *string, metodoPago string) (*domain.PagoAlquiler, error) {
+	pago, err := s.Obtener(ctx, id, empresaID)
+	if err != nil {
+		return nil, err
+	}
+	if notas != nil {
+		pago.Nota = notas
+	}
+	if metodoPago != "" {
+		pago.MetodoPago = metodoPago
+	}
+	return s.repo.Actualizar(ctx, pago)
 }

@@ -13,6 +13,7 @@ import (
 	"rentals-go/ent/empresa"
 	"rentals-go/ent/pago"
 	"rentals-go/ent/predicate"
+	"rentals-go/ent/serviciomedicion"
 	"rentals-go/ent/unidad"
 
 	"entgo.io/ent"
@@ -24,15 +25,16 @@ import (
 // ContratoQuery is the builder for querying Contrato entities.
 type ContratoQuery struct {
 	config
-	ctx         *QueryContext
-	order       []contrato.OrderOption
-	inters      []Interceptor
-	predicates  []predicate.Contrato
-	withEmpresa *EmpresaQuery
-	withCliente *ClienteQuery
-	withUnidad  *UnidadQuery
-	withCargos  *CargoQuery
-	withPagos   *PagoQuery
+	ctx                    *QueryContext
+	order                  []contrato.OrderOption
+	inters                 []Interceptor
+	predicates             []predicate.Contrato
+	withEmpresa            *EmpresaQuery
+	withCliente            *ClienteQuery
+	withUnidad             *UnidadQuery
+	withCargos             *CargoQuery
+	withPagos              *PagoQuery
+	withServicioMediciones *ServicioMedicionQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -172,6 +174,28 @@ func (_q *ContratoQuery) QueryPagos() *PagoQuery {
 			sqlgraph.From(contrato.Table, contrato.FieldID, selector),
 			sqlgraph.To(pago.Table, pago.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, contrato.PagosTable, contrato.PagosColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryServicioMediciones chains the current query on the "servicio_mediciones" edge.
+func (_q *ContratoQuery) QueryServicioMediciones() *ServicioMedicionQuery {
+	query := (&ServicioMedicionClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(contrato.Table, contrato.FieldID, selector),
+			sqlgraph.To(serviciomedicion.Table, serviciomedicion.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, contrato.ServicioMedicionesTable, contrato.ServicioMedicionesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -366,16 +390,17 @@ func (_q *ContratoQuery) Clone() *ContratoQuery {
 		return nil
 	}
 	return &ContratoQuery{
-		config:      _q.config,
-		ctx:         _q.ctx.Clone(),
-		order:       append([]contrato.OrderOption{}, _q.order...),
-		inters:      append([]Interceptor{}, _q.inters...),
-		predicates:  append([]predicate.Contrato{}, _q.predicates...),
-		withEmpresa: _q.withEmpresa.Clone(),
-		withCliente: _q.withCliente.Clone(),
-		withUnidad:  _q.withUnidad.Clone(),
-		withCargos:  _q.withCargos.Clone(),
-		withPagos:   _q.withPagos.Clone(),
+		config:                 _q.config,
+		ctx:                    _q.ctx.Clone(),
+		order:                  append([]contrato.OrderOption{}, _q.order...),
+		inters:                 append([]Interceptor{}, _q.inters...),
+		predicates:             append([]predicate.Contrato{}, _q.predicates...),
+		withEmpresa:            _q.withEmpresa.Clone(),
+		withCliente:            _q.withCliente.Clone(),
+		withUnidad:             _q.withUnidad.Clone(),
+		withCargos:             _q.withCargos.Clone(),
+		withPagos:              _q.withPagos.Clone(),
+		withServicioMediciones: _q.withServicioMediciones.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -434,6 +459,17 @@ func (_q *ContratoQuery) WithPagos(opts ...func(*PagoQuery)) *ContratoQuery {
 		opt(query)
 	}
 	_q.withPagos = query
+	return _q
+}
+
+// WithServicioMediciones tells the query-builder to eager-load the nodes that are connected to
+// the "servicio_mediciones" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *ContratoQuery) WithServicioMediciones(opts ...func(*ServicioMedicionQuery)) *ContratoQuery {
+	query := (&ServicioMedicionClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withServicioMediciones = query
 	return _q
 }
 
@@ -515,12 +551,13 @@ func (_q *ContratoQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Con
 	var (
 		nodes       = []*Contrato{}
 		_spec       = _q.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			_q.withEmpresa != nil,
 			_q.withCliente != nil,
 			_q.withUnidad != nil,
 			_q.withCargos != nil,
 			_q.withPagos != nil,
+			_q.withServicioMediciones != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -570,6 +607,15 @@ func (_q *ContratoQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Con
 		if err := _q.loadPagos(ctx, query, nodes,
 			func(n *Contrato) { n.Edges.Pagos = []*Pago{} },
 			func(n *Contrato, e *Pago) { n.Edges.Pagos = append(n.Edges.Pagos, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withServicioMediciones; query != nil {
+		if err := _q.loadServicioMediciones(ctx, query, nodes,
+			func(n *Contrato) { n.Edges.ServicioMediciones = []*ServicioMedicion{} },
+			func(n *Contrato, e *ServicioMedicion) {
+				n.Edges.ServicioMediciones = append(n.Edges.ServicioMediciones, e)
+			}); err != nil {
 			return nil, err
 		}
 	}
@@ -673,6 +719,7 @@ func (_q *ContratoQuery) loadCargos(ctx context.Context, query *CargoQuery, node
 			init(nodes[i])
 		}
 	}
+	query.withFKs = true
 	if len(query.ctx.Fields) > 0 {
 		query.ctx.AppendFieldOnce(cargo.FieldContratoID)
 	}
@@ -708,6 +755,39 @@ func (_q *ContratoQuery) loadPagos(ctx context.Context, query *PagoQuery, nodes 
 	}
 	query.Where(predicate.Pago(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(contrato.PagosColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.ContratoID
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "contrato_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "contrato_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *ContratoQuery) loadServicioMediciones(ctx context.Context, query *ServicioMedicionQuery, nodes []*Contrato, init func(*Contrato), assign func(*Contrato, *ServicioMedicion)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Contrato)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(serviciomedicion.FieldContratoID)
+	}
+	query.Where(predicate.ServicioMedicion(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(contrato.ServicioMedicionesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

@@ -860,6 +860,29 @@ func HasPagosWith(preds ...predicate.Pago) predicate.Contrato {
 	})
 }
 
+// HasServicioMediciones applies the HasEdge predicate on the "servicio_mediciones" edge.
+func HasServicioMediciones() predicate.Contrato {
+	return predicate.Contrato(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ServicioMedicionesTable, ServicioMedicionesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasServicioMedicionesWith applies the HasEdge predicate on the "servicio_mediciones" edge with a given conditions (other predicates).
+func HasServicioMedicionesWith(preds ...predicate.ServicioMedicion) predicate.Contrato {
+	return predicate.Contrato(func(s *sql.Selector) {
+		step := newServicioMedicionesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Contrato) predicate.Contrato {
 	return predicate.Contrato(sql.AndPredicates(predicates...))

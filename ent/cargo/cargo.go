@@ -45,6 +45,8 @@ const (
 	EdgeContrato = "contrato"
 	// EdgeAplicacionesPago holds the string denoting the aplicaciones_pago edge name in mutations.
 	EdgeAplicacionesPago = "aplicaciones_pago"
+	// EdgeServicioMedicion holds the string denoting the servicio_medicion edge name in mutations.
+	EdgeServicioMedicion = "servicio_medicion"
 	// Table holds the table name of the cargo in the database.
 	Table = "cargos"
 	// ContratoTable is the table that holds the contrato relation/edge.
@@ -61,6 +63,13 @@ const (
 	AplicacionesPagoInverseTable = "pago_aplicaciones"
 	// AplicacionesPagoColumn is the table column denoting the aplicaciones_pago relation/edge.
 	AplicacionesPagoColumn = "cargo_id"
+	// ServicioMedicionTable is the table that holds the servicio_medicion relation/edge.
+	ServicioMedicionTable = "cargos"
+	// ServicioMedicionInverseTable is the table name for the ServicioMedicion entity.
+	// It exists in this package in order to avoid circular dependency with the "serviciomedicion" package.
+	ServicioMedicionInverseTable = "servicio_mediciones"
+	// ServicioMedicionColumn is the table column denoting the servicio_medicion relation/edge.
+	ServicioMedicionColumn = "servicio_medicion_cargo"
 )
 
 // Columns holds all SQL columns for cargo fields.
@@ -81,10 +90,21 @@ var Columns = []string{
 	FieldGeneradoAutomaticamente,
 }
 
+// ForeignKeys holds the SQL foreign-keys that are owned by the "cargos"
+// table and are not defined as standalone fields in the schema.
+var ForeignKeys = []string{
+	"servicio_medicion_cargo",
+}
+
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
+			return true
+		}
+	}
+	for i := range ForeignKeys {
+		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -262,6 +282,13 @@ func ByAplicacionesPago(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption 
 		sqlgraph.OrderByNeighborTerms(s, newAplicacionesPagoStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByServicioMedicionField orders the results by servicio_medicion field.
+func ByServicioMedicionField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newServicioMedicionStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newContratoStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -274,5 +301,12 @@ func newAplicacionesPagoStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(AplicacionesPagoInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, AplicacionesPagoTable, AplicacionesPagoColumn),
+	)
+}
+func newServicioMedicionStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ServicioMedicionInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2O, true, ServicioMedicionTable, ServicioMedicionColumn),
 	)
 }

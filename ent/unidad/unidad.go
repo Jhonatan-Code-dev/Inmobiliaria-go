@@ -57,6 +57,8 @@ const (
 	EdgeContratos = "contratos"
 	// EdgeServicioMediciones holds the string denoting the servicio_mediciones edge name in mutations.
 	EdgeServicioMediciones = "servicio_mediciones"
+	// EdgeTickets holds the string denoting the tickets edge name in mutations.
+	EdgeTickets = "tickets"
 	// Table holds the table name of the unidad in the database.
 	Table = "unidades"
 	// PropiedadTable is the table that holds the propiedad relation/edge.
@@ -80,6 +82,13 @@ const (
 	ServicioMedicionesInverseTable = "servicio_mediciones"
 	// ServicioMedicionesColumn is the table column denoting the servicio_mediciones relation/edge.
 	ServicioMedicionesColumn = "unidad_id"
+	// TicketsTable is the table that holds the tickets relation/edge.
+	TicketsTable = "tickets"
+	// TicketsInverseTable is the table name for the Ticket entity.
+	// It exists in this package in order to avoid circular dependency with the "ticket" package.
+	TicketsInverseTable = "tickets"
+	// TicketsColumn is the table column denoting the tickets relation/edge.
+	TicketsColumn = "unidad_id"
 )
 
 // Columns holds all SQL columns for unidad fields.
@@ -343,6 +352,20 @@ func ByServicioMediciones(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOptio
 		sqlgraph.OrderByNeighborTerms(s, newServicioMedicionesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByTicketsCount orders the results by tickets count.
+func ByTicketsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newTicketsStep(), opts...)
+	}
+}
+
+// ByTickets orders the results by tickets terms.
+func ByTickets(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newTicketsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newPropiedadStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -362,5 +385,12 @@ func newServicioMedicionesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(ServicioMedicionesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, ServicioMedicionesTable, ServicioMedicionesColumn),
+	)
+}
+func newTicketsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(TicketsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, TicketsTable, TicketsColumn),
 	)
 }

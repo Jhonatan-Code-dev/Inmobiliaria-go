@@ -10,6 +10,7 @@ import (
 	"rentals-go/ent/contrato"
 	"rentals-go/ent/pagoaplicacion"
 	"rentals-go/ent/predicate"
+	"rentals-go/ent/serviciomedicion"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -238,6 +239,25 @@ func (_u *CargoUpdate) AddAplicacionesPago(v ...*PagoAplicacion) *CargoUpdate {
 	return _u.AddAplicacionesPagoIDs(ids...)
 }
 
+// SetServicioMedicionID sets the "servicio_medicion" edge to the ServicioMedicion entity by ID.
+func (_u *CargoUpdate) SetServicioMedicionID(id int) *CargoUpdate {
+	_u.mutation.SetServicioMedicionID(id)
+	return _u
+}
+
+// SetNillableServicioMedicionID sets the "servicio_medicion" edge to the ServicioMedicion entity by ID if the given value is not nil.
+func (_u *CargoUpdate) SetNillableServicioMedicionID(id *int) *CargoUpdate {
+	if id != nil {
+		_u = _u.SetServicioMedicionID(*id)
+	}
+	return _u
+}
+
+// SetServicioMedicion sets the "servicio_medicion" edge to the ServicioMedicion entity.
+func (_u *CargoUpdate) SetServicioMedicion(v *ServicioMedicion) *CargoUpdate {
+	return _u.SetServicioMedicionID(v.ID)
+}
+
 // Mutation returns the CargoMutation object of the builder.
 func (_u *CargoUpdate) Mutation() *CargoMutation {
 	return _u.mutation
@@ -268,6 +288,12 @@ func (_u *CargoUpdate) RemoveAplicacionesPago(v ...*PagoAplicacion) *CargoUpdate
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveAplicacionesPagoIDs(ids...)
+}
+
+// ClearServicioMedicion clears the "servicio_medicion" edge to the ServicioMedicion entity.
+func (_u *CargoUpdate) ClearServicioMedicion() *CargoUpdate {
+	_u.mutation.ClearServicioMedicion()
+	return _u
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -446,6 +472,35 @@ func (_u *CargoUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(pagoaplicacion.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ServicioMedicionCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   cargo.ServicioMedicionTable,
+			Columns: []string{cargo.ServicioMedicionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(serviciomedicion.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ServicioMedicionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   cargo.ServicioMedicionTable,
+			Columns: []string{cargo.ServicioMedicionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(serviciomedicion.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -681,6 +736,25 @@ func (_u *CargoUpdateOne) AddAplicacionesPago(v ...*PagoAplicacion) *CargoUpdate
 	return _u.AddAplicacionesPagoIDs(ids...)
 }
 
+// SetServicioMedicionID sets the "servicio_medicion" edge to the ServicioMedicion entity by ID.
+func (_u *CargoUpdateOne) SetServicioMedicionID(id int) *CargoUpdateOne {
+	_u.mutation.SetServicioMedicionID(id)
+	return _u
+}
+
+// SetNillableServicioMedicionID sets the "servicio_medicion" edge to the ServicioMedicion entity by ID if the given value is not nil.
+func (_u *CargoUpdateOne) SetNillableServicioMedicionID(id *int) *CargoUpdateOne {
+	if id != nil {
+		_u = _u.SetServicioMedicionID(*id)
+	}
+	return _u
+}
+
+// SetServicioMedicion sets the "servicio_medicion" edge to the ServicioMedicion entity.
+func (_u *CargoUpdateOne) SetServicioMedicion(v *ServicioMedicion) *CargoUpdateOne {
+	return _u.SetServicioMedicionID(v.ID)
+}
+
 // Mutation returns the CargoMutation object of the builder.
 func (_u *CargoUpdateOne) Mutation() *CargoMutation {
 	return _u.mutation
@@ -711,6 +785,12 @@ func (_u *CargoUpdateOne) RemoveAplicacionesPago(v ...*PagoAplicacion) *CargoUpd
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveAplicacionesPagoIDs(ids...)
+}
+
+// ClearServicioMedicion clears the "servicio_medicion" edge to the ServicioMedicion entity.
+func (_u *CargoUpdateOne) ClearServicioMedicion() *CargoUpdateOne {
+	_u.mutation.ClearServicioMedicion()
+	return _u
 }
 
 // Where appends a list predicates to the CargoUpdate builder.
@@ -919,6 +999,35 @@ func (_u *CargoUpdateOne) sqlSave(ctx context.Context) (_node *Cargo, err error)
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(pagoaplicacion.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ServicioMedicionCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   cargo.ServicioMedicionTable,
+			Columns: []string{cargo.ServicioMedicionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(serviciomedicion.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ServicioMedicionIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: true,
+			Table:   cargo.ServicioMedicionTable,
+			Columns: []string{cargo.ServicioMedicionColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(serviciomedicion.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

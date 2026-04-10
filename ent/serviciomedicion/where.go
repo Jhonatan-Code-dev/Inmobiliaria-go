@@ -65,14 +65,14 @@ func UnidadID(v int) predicate.ServicioMedicion {
 	return predicate.ServicioMedicion(sql.FieldEQ(FieldUnidadID, v))
 }
 
-// PeriodoInicio applies equality check predicate on the "periodo_inicio" field. It's identical to PeriodoInicioEQ.
-func PeriodoInicio(v time.Time) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldEQ(FieldPeriodoInicio, v))
+// ContratoID applies equality check predicate on the "contrato_id" field. It's identical to ContratoIDEQ.
+func ContratoID(v int) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldEQ(FieldContratoID, v))
 }
 
-// PeriodoFin applies equality check predicate on the "periodo_fin" field. It's identical to PeriodoFinEQ.
-func PeriodoFin(v time.Time) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldEQ(FieldPeriodoFin, v))
+// FechaLectura applies equality check predicate on the "fecha_lectura" field. It's identical to FechaLecturaEQ.
+func FechaLectura(v time.Time) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldEQ(FieldFechaLectura, v))
 }
 
 // LecturaAnterior applies equality check predicate on the "lectura_anterior" field. It's identical to LecturaAnteriorEQ.
@@ -90,24 +90,14 @@ func Consumo(v float64) predicate.ServicioMedicion {
 	return predicate.ServicioMedicion(sql.FieldEQ(FieldConsumo, v))
 }
 
-// Moneda applies equality check predicate on the "moneda" field. It's identical to MonedaEQ.
-func Moneda(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldEQ(FieldMoneda, v))
+// Monto applies equality check predicate on the "monto" field. It's identical to MontoEQ.
+func Monto(v int64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldEQ(FieldMonto, v))
 }
 
-// TarifaUnitaria applies equality check predicate on the "tarifa_unitaria" field. It's identical to TarifaUnitariaEQ.
-func TarifaUnitaria(v int64) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldEQ(FieldTarifaUnitaria, v))
-}
-
-// MontoTotal applies equality check predicate on the "monto_total" field. It's identical to MontoTotalEQ.
-func MontoTotal(v int64) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldEQ(FieldMontoTotal, v))
-}
-
-// Observaciones applies equality check predicate on the "observaciones" field. It's identical to ObservacionesEQ.
-func Observaciones(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldEQ(FieldObservaciones, v))
+// Procesado applies equality check predicate on the "procesado" field. It's identical to ProcesadoEQ.
+func Procesado(v bool) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldEQ(FieldProcesado, v))
 }
 
 // CreadoEnEQ applies the EQ predicate on the "creado_en" field.
@@ -170,6 +160,36 @@ func UnidadIDNotIn(vs ...int) predicate.ServicioMedicion {
 	return predicate.ServicioMedicion(sql.FieldNotIn(FieldUnidadID, vs...))
 }
 
+// ContratoIDEQ applies the EQ predicate on the "contrato_id" field.
+func ContratoIDEQ(v int) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldEQ(FieldContratoID, v))
+}
+
+// ContratoIDNEQ applies the NEQ predicate on the "contrato_id" field.
+func ContratoIDNEQ(v int) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldNEQ(FieldContratoID, v))
+}
+
+// ContratoIDIn applies the In predicate on the "contrato_id" field.
+func ContratoIDIn(vs ...int) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldIn(FieldContratoID, vs...))
+}
+
+// ContratoIDNotIn applies the NotIn predicate on the "contrato_id" field.
+func ContratoIDNotIn(vs ...int) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldNotIn(FieldContratoID, vs...))
+}
+
+// ContratoIDIsNil applies the IsNil predicate on the "contrato_id" field.
+func ContratoIDIsNil() predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldIsNull(FieldContratoID))
+}
+
+// ContratoIDNotNil applies the NotNil predicate on the "contrato_id" field.
+func ContratoIDNotNil() predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldNotNull(FieldContratoID))
+}
+
 // TipoServicioEQ applies the EQ predicate on the "tipo_servicio" field.
 func TipoServicioEQ(v TipoServicio) predicate.ServicioMedicion {
 	return predicate.ServicioMedicion(sql.FieldEQ(FieldTipoServicio, v))
@@ -190,84 +210,44 @@ func TipoServicioNotIn(vs ...TipoServicio) predicate.ServicioMedicion {
 	return predicate.ServicioMedicion(sql.FieldNotIn(FieldTipoServicio, vs...))
 }
 
-// PeriodoInicioEQ applies the EQ predicate on the "periodo_inicio" field.
-func PeriodoInicioEQ(v time.Time) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldEQ(FieldPeriodoInicio, v))
+// FechaLecturaEQ applies the EQ predicate on the "fecha_lectura" field.
+func FechaLecturaEQ(v time.Time) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldEQ(FieldFechaLectura, v))
 }
 
-// PeriodoInicioNEQ applies the NEQ predicate on the "periodo_inicio" field.
-func PeriodoInicioNEQ(v time.Time) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldNEQ(FieldPeriodoInicio, v))
+// FechaLecturaNEQ applies the NEQ predicate on the "fecha_lectura" field.
+func FechaLecturaNEQ(v time.Time) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldNEQ(FieldFechaLectura, v))
 }
 
-// PeriodoInicioIn applies the In predicate on the "periodo_inicio" field.
-func PeriodoInicioIn(vs ...time.Time) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldIn(FieldPeriodoInicio, vs...))
+// FechaLecturaIn applies the In predicate on the "fecha_lectura" field.
+func FechaLecturaIn(vs ...time.Time) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldIn(FieldFechaLectura, vs...))
 }
 
-// PeriodoInicioNotIn applies the NotIn predicate on the "periodo_inicio" field.
-func PeriodoInicioNotIn(vs ...time.Time) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldNotIn(FieldPeriodoInicio, vs...))
+// FechaLecturaNotIn applies the NotIn predicate on the "fecha_lectura" field.
+func FechaLecturaNotIn(vs ...time.Time) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldNotIn(FieldFechaLectura, vs...))
 }
 
-// PeriodoInicioGT applies the GT predicate on the "periodo_inicio" field.
-func PeriodoInicioGT(v time.Time) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldGT(FieldPeriodoInicio, v))
+// FechaLecturaGT applies the GT predicate on the "fecha_lectura" field.
+func FechaLecturaGT(v time.Time) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldGT(FieldFechaLectura, v))
 }
 
-// PeriodoInicioGTE applies the GTE predicate on the "periodo_inicio" field.
-func PeriodoInicioGTE(v time.Time) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldGTE(FieldPeriodoInicio, v))
+// FechaLecturaGTE applies the GTE predicate on the "fecha_lectura" field.
+func FechaLecturaGTE(v time.Time) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldGTE(FieldFechaLectura, v))
 }
 
-// PeriodoInicioLT applies the LT predicate on the "periodo_inicio" field.
-func PeriodoInicioLT(v time.Time) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldLT(FieldPeriodoInicio, v))
+// FechaLecturaLT applies the LT predicate on the "fecha_lectura" field.
+func FechaLecturaLT(v time.Time) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldLT(FieldFechaLectura, v))
 }
 
-// PeriodoInicioLTE applies the LTE predicate on the "periodo_inicio" field.
-func PeriodoInicioLTE(v time.Time) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldLTE(FieldPeriodoInicio, v))
-}
-
-// PeriodoFinEQ applies the EQ predicate on the "periodo_fin" field.
-func PeriodoFinEQ(v time.Time) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldEQ(FieldPeriodoFin, v))
-}
-
-// PeriodoFinNEQ applies the NEQ predicate on the "periodo_fin" field.
-func PeriodoFinNEQ(v time.Time) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldNEQ(FieldPeriodoFin, v))
-}
-
-// PeriodoFinIn applies the In predicate on the "periodo_fin" field.
-func PeriodoFinIn(vs ...time.Time) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldIn(FieldPeriodoFin, vs...))
-}
-
-// PeriodoFinNotIn applies the NotIn predicate on the "periodo_fin" field.
-func PeriodoFinNotIn(vs ...time.Time) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldNotIn(FieldPeriodoFin, vs...))
-}
-
-// PeriodoFinGT applies the GT predicate on the "periodo_fin" field.
-func PeriodoFinGT(v time.Time) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldGT(FieldPeriodoFin, v))
-}
-
-// PeriodoFinGTE applies the GTE predicate on the "periodo_fin" field.
-func PeriodoFinGTE(v time.Time) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldGTE(FieldPeriodoFin, v))
-}
-
-// PeriodoFinLT applies the LT predicate on the "periodo_fin" field.
-func PeriodoFinLT(v time.Time) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldLT(FieldPeriodoFin, v))
-}
-
-// PeriodoFinLTE applies the LTE predicate on the "periodo_fin" field.
-func PeriodoFinLTE(v time.Time) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldLTE(FieldPeriodoFin, v))
+// FechaLecturaLTE applies the LTE predicate on the "fecha_lectura" field.
+func FechaLecturaLTE(v time.Time) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldLTE(FieldFechaLectura, v))
 }
 
 // LecturaAnteriorEQ applies the EQ predicate on the "lectura_anterior" field.
@@ -390,224 +370,54 @@ func ConsumoLTE(v float64) predicate.ServicioMedicion {
 	return predicate.ServicioMedicion(sql.FieldLTE(FieldConsumo, v))
 }
 
-// MonedaEQ applies the EQ predicate on the "moneda" field.
-func MonedaEQ(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldEQ(FieldMoneda, v))
+// MontoEQ applies the EQ predicate on the "monto" field.
+func MontoEQ(v int64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldEQ(FieldMonto, v))
 }
 
-// MonedaNEQ applies the NEQ predicate on the "moneda" field.
-func MonedaNEQ(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldNEQ(FieldMoneda, v))
+// MontoNEQ applies the NEQ predicate on the "monto" field.
+func MontoNEQ(v int64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldNEQ(FieldMonto, v))
 }
 
-// MonedaIn applies the In predicate on the "moneda" field.
-func MonedaIn(vs ...string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldIn(FieldMoneda, vs...))
+// MontoIn applies the In predicate on the "monto" field.
+func MontoIn(vs ...int64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldIn(FieldMonto, vs...))
 }
 
-// MonedaNotIn applies the NotIn predicate on the "moneda" field.
-func MonedaNotIn(vs ...string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldNotIn(FieldMoneda, vs...))
+// MontoNotIn applies the NotIn predicate on the "monto" field.
+func MontoNotIn(vs ...int64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldNotIn(FieldMonto, vs...))
 }
 
-// MonedaGT applies the GT predicate on the "moneda" field.
-func MonedaGT(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldGT(FieldMoneda, v))
+// MontoGT applies the GT predicate on the "monto" field.
+func MontoGT(v int64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldGT(FieldMonto, v))
 }
 
-// MonedaGTE applies the GTE predicate on the "moneda" field.
-func MonedaGTE(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldGTE(FieldMoneda, v))
+// MontoGTE applies the GTE predicate on the "monto" field.
+func MontoGTE(v int64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldGTE(FieldMonto, v))
 }
 
-// MonedaLT applies the LT predicate on the "moneda" field.
-func MonedaLT(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldLT(FieldMoneda, v))
+// MontoLT applies the LT predicate on the "monto" field.
+func MontoLT(v int64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldLT(FieldMonto, v))
 }
 
-// MonedaLTE applies the LTE predicate on the "moneda" field.
-func MonedaLTE(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldLTE(FieldMoneda, v))
+// MontoLTE applies the LTE predicate on the "monto" field.
+func MontoLTE(v int64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldLTE(FieldMonto, v))
 }
 
-// MonedaContains applies the Contains predicate on the "moneda" field.
-func MonedaContains(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldContains(FieldMoneda, v))
+// ProcesadoEQ applies the EQ predicate on the "procesado" field.
+func ProcesadoEQ(v bool) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldEQ(FieldProcesado, v))
 }
 
-// MonedaHasPrefix applies the HasPrefix predicate on the "moneda" field.
-func MonedaHasPrefix(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldHasPrefix(FieldMoneda, v))
-}
-
-// MonedaHasSuffix applies the HasSuffix predicate on the "moneda" field.
-func MonedaHasSuffix(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldHasSuffix(FieldMoneda, v))
-}
-
-// MonedaEqualFold applies the EqualFold predicate on the "moneda" field.
-func MonedaEqualFold(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldEqualFold(FieldMoneda, v))
-}
-
-// MonedaContainsFold applies the ContainsFold predicate on the "moneda" field.
-func MonedaContainsFold(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldContainsFold(FieldMoneda, v))
-}
-
-// TarifaUnitariaEQ applies the EQ predicate on the "tarifa_unitaria" field.
-func TarifaUnitariaEQ(v int64) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldEQ(FieldTarifaUnitaria, v))
-}
-
-// TarifaUnitariaNEQ applies the NEQ predicate on the "tarifa_unitaria" field.
-func TarifaUnitariaNEQ(v int64) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldNEQ(FieldTarifaUnitaria, v))
-}
-
-// TarifaUnitariaIn applies the In predicate on the "tarifa_unitaria" field.
-func TarifaUnitariaIn(vs ...int64) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldIn(FieldTarifaUnitaria, vs...))
-}
-
-// TarifaUnitariaNotIn applies the NotIn predicate on the "tarifa_unitaria" field.
-func TarifaUnitariaNotIn(vs ...int64) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldNotIn(FieldTarifaUnitaria, vs...))
-}
-
-// TarifaUnitariaGT applies the GT predicate on the "tarifa_unitaria" field.
-func TarifaUnitariaGT(v int64) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldGT(FieldTarifaUnitaria, v))
-}
-
-// TarifaUnitariaGTE applies the GTE predicate on the "tarifa_unitaria" field.
-func TarifaUnitariaGTE(v int64) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldGTE(FieldTarifaUnitaria, v))
-}
-
-// TarifaUnitariaLT applies the LT predicate on the "tarifa_unitaria" field.
-func TarifaUnitariaLT(v int64) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldLT(FieldTarifaUnitaria, v))
-}
-
-// TarifaUnitariaLTE applies the LTE predicate on the "tarifa_unitaria" field.
-func TarifaUnitariaLTE(v int64) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldLTE(FieldTarifaUnitaria, v))
-}
-
-// MontoTotalEQ applies the EQ predicate on the "monto_total" field.
-func MontoTotalEQ(v int64) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldEQ(FieldMontoTotal, v))
-}
-
-// MontoTotalNEQ applies the NEQ predicate on the "monto_total" field.
-func MontoTotalNEQ(v int64) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldNEQ(FieldMontoTotal, v))
-}
-
-// MontoTotalIn applies the In predicate on the "monto_total" field.
-func MontoTotalIn(vs ...int64) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldIn(FieldMontoTotal, vs...))
-}
-
-// MontoTotalNotIn applies the NotIn predicate on the "monto_total" field.
-func MontoTotalNotIn(vs ...int64) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldNotIn(FieldMontoTotal, vs...))
-}
-
-// MontoTotalGT applies the GT predicate on the "monto_total" field.
-func MontoTotalGT(v int64) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldGT(FieldMontoTotal, v))
-}
-
-// MontoTotalGTE applies the GTE predicate on the "monto_total" field.
-func MontoTotalGTE(v int64) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldGTE(FieldMontoTotal, v))
-}
-
-// MontoTotalLT applies the LT predicate on the "monto_total" field.
-func MontoTotalLT(v int64) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldLT(FieldMontoTotal, v))
-}
-
-// MontoTotalLTE applies the LTE predicate on the "monto_total" field.
-func MontoTotalLTE(v int64) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldLTE(FieldMontoTotal, v))
-}
-
-// ObservacionesEQ applies the EQ predicate on the "observaciones" field.
-func ObservacionesEQ(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldEQ(FieldObservaciones, v))
-}
-
-// ObservacionesNEQ applies the NEQ predicate on the "observaciones" field.
-func ObservacionesNEQ(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldNEQ(FieldObservaciones, v))
-}
-
-// ObservacionesIn applies the In predicate on the "observaciones" field.
-func ObservacionesIn(vs ...string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldIn(FieldObservaciones, vs...))
-}
-
-// ObservacionesNotIn applies the NotIn predicate on the "observaciones" field.
-func ObservacionesNotIn(vs ...string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldNotIn(FieldObservaciones, vs...))
-}
-
-// ObservacionesGT applies the GT predicate on the "observaciones" field.
-func ObservacionesGT(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldGT(FieldObservaciones, v))
-}
-
-// ObservacionesGTE applies the GTE predicate on the "observaciones" field.
-func ObservacionesGTE(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldGTE(FieldObservaciones, v))
-}
-
-// ObservacionesLT applies the LT predicate on the "observaciones" field.
-func ObservacionesLT(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldLT(FieldObservaciones, v))
-}
-
-// ObservacionesLTE applies the LTE predicate on the "observaciones" field.
-func ObservacionesLTE(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldLTE(FieldObservaciones, v))
-}
-
-// ObservacionesContains applies the Contains predicate on the "observaciones" field.
-func ObservacionesContains(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldContains(FieldObservaciones, v))
-}
-
-// ObservacionesHasPrefix applies the HasPrefix predicate on the "observaciones" field.
-func ObservacionesHasPrefix(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldHasPrefix(FieldObservaciones, v))
-}
-
-// ObservacionesHasSuffix applies the HasSuffix predicate on the "observaciones" field.
-func ObservacionesHasSuffix(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldHasSuffix(FieldObservaciones, v))
-}
-
-// ObservacionesIsNil applies the IsNil predicate on the "observaciones" field.
-func ObservacionesIsNil() predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldIsNull(FieldObservaciones))
-}
-
-// ObservacionesNotNil applies the NotNil predicate on the "observaciones" field.
-func ObservacionesNotNil() predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldNotNull(FieldObservaciones))
-}
-
-// ObservacionesEqualFold applies the EqualFold predicate on the "observaciones" field.
-func ObservacionesEqualFold(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldEqualFold(FieldObservaciones, v))
-}
-
-// ObservacionesContainsFold applies the ContainsFold predicate on the "observaciones" field.
-func ObservacionesContainsFold(v string) predicate.ServicioMedicion {
-	return predicate.ServicioMedicion(sql.FieldContainsFold(FieldObservaciones, v))
+// ProcesadoNEQ applies the NEQ predicate on the "procesado" field.
+func ProcesadoNEQ(v bool) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldNEQ(FieldProcesado, v))
 }
 
 // HasUnidad applies the HasEdge predicate on the "unidad" edge.
@@ -625,6 +435,52 @@ func HasUnidad() predicate.ServicioMedicion {
 func HasUnidadWith(preds ...predicate.Unidad) predicate.ServicioMedicion {
 	return predicate.ServicioMedicion(func(s *sql.Selector) {
 		step := newUnidadStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasContrato applies the HasEdge predicate on the "contrato" edge.
+func HasContrato() predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ContratoTable, ContratoColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasContratoWith applies the HasEdge predicate on the "contrato" edge with a given conditions (other predicates).
+func HasContratoWith(preds ...predicate.Contrato) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(func(s *sql.Selector) {
+		step := newContratoStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasCargo applies the HasEdge predicate on the "cargo" edge.
+func HasCargo() predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, CargoTable, CargoColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCargoWith applies the HasEdge predicate on the "cargo" edge with a given conditions (other predicates).
+func HasCargoWith(preds ...predicate.Cargo) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(func(s *sql.Selector) {
+		step := newCargoStep()
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
 				p(s)

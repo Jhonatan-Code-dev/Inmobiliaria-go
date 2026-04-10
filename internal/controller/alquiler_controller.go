@@ -222,6 +222,72 @@ func (h *AlquilerController) Crear(c *fiber.Ctx) error {
 	return c.Status(201).JSON(mapAlquilerResponse(created))
 }
 
+// ActualizarAlquiler godoc
+// @Summary Editar contrato de alquiler
+// @Tags Alquileres
+// @Param id path int true "ID del alquiler"
+// @Param request body alquilerRequest true "Datos a actualizar"
+// @Router /api/user/alquileres/{id} [put]
+func (h *AlquilerController) Actualizar(c *fiber.Ctx) error {
+	empresaID := c.Locals("empresa_id").(int)
+	id, _ := c.ParamsInt("id")
+	var req alquilerRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(400).JSON(errorResponse{Message: "formato inválido"})
+	}
+	
+	fechaInicio, _ := time.Parse("2006-01-02", req.FechaInicio)
+	var fechaFin *time.Time
+	if req.FechaFin != nil && *req.FechaFin != "" {
+		t, _ := time.Parse("2006-01-02", *req.FechaFin)
+		fechaFin = &t
+	}
+
+	item := &domain.Alquiler{
+		FechaInicio:      fechaInicio,
+		FechaFin:         fechaFin,
+		DiaVencimiento:   req.VencimientoDiaPago,
+		Moneda:           req.Moneda,
+		MontoRentaCents:  req.MontoRenta.Cents(),
+		MontoDepositoCts: req.DepositoGarantia.Cents(),
+		Observaciones:    req.Observaciones,
+	}
+
+	updated, err := h.svc.Actualizar(c.Context(), id, empresaID, item)
+	if err != nil {
+		return c.Status(500).JSON(errorResponse{Message: err.Error()})
+	}
+	return c.JSON(mapAlquilerResponse(updated))
+}
+
+// EliminarAlquiler godoc
+// @Summary Eliminar contrato de alquiler
+// @Tags Alquileres
+// @Param id path int true "ID del alquiler"
+// @Router /api/user/alquileres/{id} [delete]
+func (h *AlquilerController) Eliminar(c *fiber.Ctx) error {
+	empresaID := c.Locals("empresa_id").(int)
+	id, _ := c.ParamsInt("id")
+	if err := h.svc.Eliminar(c.Context(), id, empresaID); err != nil {
+		return c.Status(400).JSON(errorResponse{Message: err.Error()})
+	}
+	return c.JSON(fiber.Map{"message": "contrato eliminado correctamente"})
+}
+
+// TerminarContrato godoc
+// @Summary Finalizar contrato formalmente
+// @Tags Alquileres
+// @Param id path int true "ID del alquiler"
+// @Router /api/user/alquileres/{id}/terminar [post]
+func (h *AlquilerController) TerminarContrato(c *fiber.Ctx) error {
+	empresaID := c.Locals("empresa_id").(int)
+	id, _ := c.ParamsInt("id")
+	if err := h.svc.Terminar(c.Context(), id, empresaID); err != nil {
+		return c.Status(400).JSON(errorResponse{Message: err.Error()})
+	}
+	return c.JSON(fiber.Map{"message": "contrato finalizado correctamente"})
+}
+
 // RegistrarPago godoc
 // @Summary Registrar pago de alquiler
 // @Description Registra un cobro para un alquiler.
@@ -293,6 +359,93 @@ func (h *AlquilerController) PendientesPago(c *fiber.Ctx) error {
 		})
 	}
 	return c.JSON(out)
+}
+
+// ListarPagos godoc
+// @Summary Historial de pagos
+// @Tags Pagos
+// @Router /api/user/pagos [get]
+func (h *AlquilerController) ListarPagos(c *fiber.Ctx) error {
+	empresaID := c.Locals("empresa_id").(int)
+	pag := c.QueryInt("pag", 1)
+	limite := c.QueryInt("por_pagina", 10)
+
+	list, total, err := h.pagoSvc.ListarHistorial(c.Context(), empresaID, pag, limite)
+	if err != nil {
+		return c.Status(500).JSON(errorResponse{Message: err.Error()})
+	}
+
+	out := make([]pagoAlquilerResponse, 0, len(list))
+	for _, item := range list {
+		out = append(out, mapPagoAlquilerResponse(item))
+	}
+
+	return c.JSON(paginatedResponse{
+		Datos: out,
+		Paginacion: paginadorResponse{
+			Total:        total,
+			PaginaActual: pag,
+			PorPagina:    limite,
+			Paginas:      (total + limite - 1) / limite,
+		},
+	})
+}
+
+// ObtenerPago godoc
+// @Summary Detalle de un pago
+// @Tags Pagos
+// @Router /api/user/pagos/{id} [get]
+func (h *AlquilerController) ObtenerPago(c *fiber.Ctx) error {
+	empresaID := c.Locals("empresa_id").(int)
+	id, _ := c.ParamsInt("id")
+
+	item, err := h.pagoSvc.Obtener(c.Context(), id, empresaID)
+	if err != nil {
+		return c.Status(404).JSON(errorResponse{Message: "pago no encontrado"})
+	}
+
+	return c.JSON(mapPagoAlquilerResponse(item))
+}
+
+// ActualizarPago godoc
+// @Summary Editar notas o método de pago
+// @Tags Pagos
+// @Param id path int true "ID del pago"
+// @Param request body map[string]interface{} true "Notas o metodo_pago"
+// @Router /api/user/pagos/{id} [put]
+func (h *AlquilerController) ActualizarPago(c *fiber.Ctx) error {
+	empresaID := c.Locals("empresa_id").(int)
+	id, _ := c.ParamsInt("id")
+	
+	type updateReq struct {
+		MetodoPago string  `json:"metodo_pago"`
+		Nota       *string `json:"nota"`
+	}
+	var req updateReq
+	if err := c.BodyParser(&req); err != nil {
+		return fiber.ErrBadRequest
+	}
+
+	updated, err := h.pagoSvc.Actualizar(c.Context(), id, empresaID, req.Nota, req.MetodoPago)
+	if err != nil {
+		return c.Status(500).JSON(errorResponse{Message: err.Error()})
+	}
+	return c.JSON(mapPagoAlquilerResponse(updated))
+}
+
+// AnularPago godoc
+// @Summary Anular un pago
+// @Tags Pagos
+// @Router /api/user/pagos/{id} [delete]
+func (h *AlquilerController) AnularPago(c *fiber.Ctx) error {
+	empresaID := c.Locals("empresa_id").(int)
+	id, _ := c.ParamsInt("id")
+
+	if err := h.pagoSvc.Anular(c.Context(), id, empresaID); err != nil {
+		return c.Status(400).JSON(errorResponse{Message: err.Error()})
+	}
+
+	return c.JSON(fiber.Map{"message": "pago anulado correctamente"})
 }
 
 func mapAlquilerResponse(item *domain.Alquiler) alquilerResponse {

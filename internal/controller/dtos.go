@@ -37,6 +37,11 @@ type paginadorResponse struct {
 	PorPagina    int `json:"por_pagina"`
 }
 
+type paginatedResponse struct {
+	Datos      interface{}       `json:"datos"`
+	Paginacion paginadorResponse `json:"paginacion"`
+}
+
 type listadoEmpresasResponse struct {
 	Datos      []empresaListItemResponse `json:"datos"`
 	Paginacion paginadorResponse         `json:"paginacion"`

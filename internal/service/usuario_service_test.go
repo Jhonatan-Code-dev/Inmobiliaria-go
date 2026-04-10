@@ -38,6 +38,10 @@ func (s *usuarioRepoLoginStub) BuscarPerfil(ctx context.Context, id int) (*domai
 		}, nil
 }
 
+func (s *usuarioRepoLoginStub) ActualizarPassword(ctx context.Context, id int, hashContrasena string) error {
+	return nil
+}
+
 func TestLoginUsaEmpresaIDDelPerfilEnElToken(t *testing.T) {
 	t.Parallel()
 

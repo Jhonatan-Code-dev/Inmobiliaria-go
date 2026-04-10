@@ -19,28 +19,28 @@ const (
 	FieldCreadoEn = "creado_en"
 	// FieldUnidadID holds the string denoting the unidad_id field in the database.
 	FieldUnidadID = "unidad_id"
+	// FieldContratoID holds the string denoting the contrato_id field in the database.
+	FieldContratoID = "contrato_id"
 	// FieldTipoServicio holds the string denoting the tipo_servicio field in the database.
 	FieldTipoServicio = "tipo_servicio"
-	// FieldPeriodoInicio holds the string denoting the periodo_inicio field in the database.
-	FieldPeriodoInicio = "periodo_inicio"
-	// FieldPeriodoFin holds the string denoting the periodo_fin field in the database.
-	FieldPeriodoFin = "periodo_fin"
+	// FieldFechaLectura holds the string denoting the fecha_lectura field in the database.
+	FieldFechaLectura = "fecha_lectura"
 	// FieldLecturaAnterior holds the string denoting the lectura_anterior field in the database.
 	FieldLecturaAnterior = "lectura_anterior"
 	// FieldLecturaActual holds the string denoting the lectura_actual field in the database.
 	FieldLecturaActual = "lectura_actual"
 	// FieldConsumo holds the string denoting the consumo field in the database.
 	FieldConsumo = "consumo"
-	// FieldMoneda holds the string denoting the moneda field in the database.
-	FieldMoneda = "moneda"
-	// FieldTarifaUnitaria holds the string denoting the tarifa_unitaria field in the database.
-	FieldTarifaUnitaria = "tarifa_unitaria"
-	// FieldMontoTotal holds the string denoting the monto_total field in the database.
-	FieldMontoTotal = "monto_total"
-	// FieldObservaciones holds the string denoting the observaciones field in the database.
-	FieldObservaciones = "observaciones"
+	// FieldMonto holds the string denoting the monto field in the database.
+	FieldMonto = "monto"
+	// FieldProcesado holds the string denoting the procesado field in the database.
+	FieldProcesado = "procesado"
 	// EdgeUnidad holds the string denoting the unidad edge name in mutations.
 	EdgeUnidad = "unidad"
+	// EdgeContrato holds the string denoting the contrato edge name in mutations.
+	EdgeContrato = "contrato"
+	// EdgeCargo holds the string denoting the cargo edge name in mutations.
+	EdgeCargo = "cargo"
 	// Table holds the table name of the serviciomedicion in the database.
 	Table = "servicio_mediciones"
 	// UnidadTable is the table that holds the unidad relation/edge.
@@ -50,6 +50,20 @@ const (
 	UnidadInverseTable = "unidades"
 	// UnidadColumn is the table column denoting the unidad relation/edge.
 	UnidadColumn = "unidad_id"
+	// ContratoTable is the table that holds the contrato relation/edge.
+	ContratoTable = "servicio_mediciones"
+	// ContratoInverseTable is the table name for the Contrato entity.
+	// It exists in this package in order to avoid circular dependency with the "contrato" package.
+	ContratoInverseTable = "contratos"
+	// ContratoColumn is the table column denoting the contrato relation/edge.
+	ContratoColumn = "contrato_id"
+	// CargoTable is the table that holds the cargo relation/edge.
+	CargoTable = "cargos"
+	// CargoInverseTable is the table name for the Cargo entity.
+	// It exists in this package in order to avoid circular dependency with the "cargo" package.
+	CargoInverseTable = "cargos"
+	// CargoColumn is the table column denoting the cargo relation/edge.
+	CargoColumn = "servicio_medicion_cargo"
 )
 
 // Columns holds all SQL columns for serviciomedicion fields.
@@ -57,16 +71,14 @@ var Columns = []string{
 	FieldID,
 	FieldCreadoEn,
 	FieldUnidadID,
+	FieldContratoID,
 	FieldTipoServicio,
-	FieldPeriodoInicio,
-	FieldPeriodoFin,
+	FieldFechaLectura,
 	FieldLecturaAnterior,
 	FieldLecturaActual,
 	FieldConsumo,
-	FieldMoneda,
-	FieldTarifaUnitaria,
-	FieldMontoTotal,
-	FieldObservaciones,
+	FieldMonto,
+	FieldProcesado,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -88,16 +100,10 @@ var (
 	DefaultLecturaActual float64
 	// DefaultConsumo holds the default value on creation for the "consumo" field.
 	DefaultConsumo float64
-	// DefaultMoneda holds the default value on creation for the "moneda" field.
-	DefaultMoneda string
-	// MonedaValidator is a validator for the "moneda" field. It is called by the builders before save.
-	MonedaValidator func(string) error
-	// DefaultTarifaUnitaria holds the default value on creation for the "tarifa_unitaria" field.
-	DefaultTarifaUnitaria int64
-	// DefaultMontoTotal holds the default value on creation for the "monto_total" field.
-	DefaultMontoTotal int64
-	// ObservacionesValidator is a validator for the "observaciones" field. It is called by the builders before save.
-	ObservacionesValidator func(string) error
+	// DefaultMonto holds the default value on creation for the "monto" field.
+	DefaultMonto int64
+	// DefaultProcesado holds the default value on creation for the "procesado" field.
+	DefaultProcesado bool
 )
 
 // TipoServicio defines the type for the "tipo_servicio" enum field.
@@ -147,19 +153,19 @@ func ByUnidadID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUnidadID, opts...).ToFunc()
 }
 
+// ByContratoID orders the results by the contrato_id field.
+func ByContratoID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldContratoID, opts...).ToFunc()
+}
+
 // ByTipoServicio orders the results by the tipo_servicio field.
 func ByTipoServicio(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTipoServicio, opts...).ToFunc()
 }
 
-// ByPeriodoInicio orders the results by the periodo_inicio field.
-func ByPeriodoInicio(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPeriodoInicio, opts...).ToFunc()
-}
-
-// ByPeriodoFin orders the results by the periodo_fin field.
-func ByPeriodoFin(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPeriodoFin, opts...).ToFunc()
+// ByFechaLectura orders the results by the fecha_lectura field.
+func ByFechaLectura(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFechaLectura, opts...).ToFunc()
 }
 
 // ByLecturaAnterior orders the results by the lectura_anterior field.
@@ -177,24 +183,14 @@ func ByConsumo(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldConsumo, opts...).ToFunc()
 }
 
-// ByMoneda orders the results by the moneda field.
-func ByMoneda(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldMoneda, opts...).ToFunc()
+// ByMonto orders the results by the monto field.
+func ByMonto(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMonto, opts...).ToFunc()
 }
 
-// ByTarifaUnitaria orders the results by the tarifa_unitaria field.
-func ByTarifaUnitaria(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldTarifaUnitaria, opts...).ToFunc()
-}
-
-// ByMontoTotal orders the results by the monto_total field.
-func ByMontoTotal(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldMontoTotal, opts...).ToFunc()
-}
-
-// ByObservaciones orders the results by the observaciones field.
-func ByObservaciones(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldObservaciones, opts...).ToFunc()
+// ByProcesado orders the results by the procesado field.
+func ByProcesado(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldProcesado, opts...).ToFunc()
 }
 
 // ByUnidadField orders the results by unidad field.
@@ -203,10 +199,38 @@ func ByUnidadField(field string, opts ...sql.OrderTermOption) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newUnidadStep(), sql.OrderByField(field, opts...))
 	}
 }
+
+// ByContratoField orders the results by contrato field.
+func ByContratoField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newContratoStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByCargoField orders the results by cargo field.
+func ByCargoField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCargoStep(), sql.OrderByField(field, opts...))
+	}
+}
 func newUnidadStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(UnidadInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.M2O, true, UnidadTable, UnidadColumn),
+	)
+}
+func newContratoStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ContratoInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, ContratoTable, ContratoColumn),
+	)
+}
+func newCargoStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CargoInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2O, false, CargoTable, CargoColumn),
 	)
 }

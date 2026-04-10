@@ -39,6 +39,7 @@ var (
 		{Name: "estado", Type: field.TypeEnum, Enums: []string{"pendiente", "parcial", "pagado", "vencido", "anulado"}, Default: "pendiente"},
 		{Name: "generado_automaticamente", Type: field.TypeBool, Default: false},
 		{Name: "contrato_id", Type: field.TypeInt},
+		{Name: "servicio_medicion_cargo", Type: field.TypeInt, Unique: true, Nullable: true},
 	}
 	// CargosTable holds the schema information for the "cargos" table.
 	CargosTable = &schema.Table{
@@ -51,6 +52,12 @@ var (
 				Columns:    []*schema.Column{CargosColumns[13]},
 				RefColumns: []*schema.Column{ContratosColumns[0]},
 				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "cargos_servicio_mediciones_cargo",
+				Columns:    []*schema.Column{CargosColumns[14]},
+				RefColumns: []*schema.Column{ServicioMedicionesColumns[0]},
+				OnDelete:   schema.SetNull,
 			},
 		},
 		Indexes: []*schema.Index{
@@ -455,15 +462,13 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "creado_en", Type: field.TypeTime},
 		{Name: "tipo_servicio", Type: field.TypeEnum, Enums: []string{"agua", "luz", "gas", "internet", "otro"}, Default: "agua"},
-		{Name: "periodo_inicio", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "date", "postgres": "date"}},
-		{Name: "periodo_fin", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "date", "postgres": "date"}},
+		{Name: "fecha_lectura", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "date", "postgres": "date"}},
 		{Name: "lectura_anterior", Type: field.TypeFloat64, Default: 0},
 		{Name: "lectura_actual", Type: field.TypeFloat64, Default: 0},
 		{Name: "consumo", Type: field.TypeFloat64, Default: 0},
-		{Name: "moneda", Type: field.TypeString, Size: 3, Default: "PEN"},
-		{Name: "tarifa_unitaria", Type: field.TypeInt64, Default: 0},
-		{Name: "monto_total", Type: field.TypeInt64, Default: 0},
-		{Name: "observaciones", Type: field.TypeString, Nullable: true, Size: 1000},
+		{Name: "monto", Type: field.TypeInt64, Default: 0},
+		{Name: "procesado", Type: field.TypeBool, Default: false},
+		{Name: "contrato_id", Type: field.TypeInt, Nullable: true},
 		{Name: "unidad_id", Type: field.TypeInt},
 	}
 	// ServicioMedicionesTable holds the schema information for the "servicio_mediciones" table.
@@ -473,17 +478,78 @@ var (
 		PrimaryKey: []*schema.Column{ServicioMedicionesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
+				Symbol:     "servicio_mediciones_contratos_servicio_mediciones",
+				Columns:    []*schema.Column{ServicioMedicionesColumns[9]},
+				RefColumns: []*schema.Column{ContratosColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
 				Symbol:     "servicio_mediciones_unidades_servicio_mediciones",
-				Columns:    []*schema.Column{ServicioMedicionesColumns[12]},
+				Columns:    []*schema.Column{ServicioMedicionesColumns[10]},
 				RefColumns: []*schema.Column{UnidadesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "serviciomedicion_unidad_id_tipo_servicio_periodo_inicio_periodo_fin",
+				Name:    "serviciomedicion_unidad_id_tipo_servicio_fecha_lectura",
 				Unique:  true,
-				Columns: []*schema.Column{ServicioMedicionesColumns[12], ServicioMedicionesColumns[2], ServicioMedicionesColumns[3], ServicioMedicionesColumns[4]},
+				Columns: []*schema.Column{ServicioMedicionesColumns[10], ServicioMedicionesColumns[2], ServicioMedicionesColumns[3]},
+			},
+		},
+	}
+	// TicketsColumns holds the columns for the "tickets" table.
+	TicketsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "creado_en", Type: field.TypeTime},
+		{Name: "asunto", Type: field.TypeString, Size: 120},
+		{Name: "descripcion", Type: field.TypeString, Size: 1000},
+		{Name: "prioridad", Type: field.TypeEnum, Enums: []string{"baja", "media", "alta"}, Default: "media"},
+		{Name: "estado", Type: field.TypeEnum, Enums: []string{"abierto", "en_progreso", "resuelto", "cerrado"}, Default: "abierto"},
+		{Name: "cliente_id", Type: field.TypeInt, Nullable: true},
+		{Name: "empresa_id", Type: field.TypeInt},
+		{Name: "unidad_id", Type: field.TypeInt},
+	}
+	// TicketsTable holds the schema information for the "tickets" table.
+	TicketsTable = &schema.Table{
+		Name:       "tickets",
+		Columns:    TicketsColumns,
+		PrimaryKey: []*schema.Column{TicketsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "tickets_clientes_tickets",
+				Columns:    []*schema.Column{TicketsColumns[6]},
+				RefColumns: []*schema.Column{ClientesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "tickets_empresas_tickets",
+				Columns:    []*schema.Column{TicketsColumns[7]},
+				RefColumns: []*schema.Column{EmpresasColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "tickets_unidades_tickets",
+				Columns:    []*schema.Column{TicketsColumns[8]},
+				RefColumns: []*schema.Column{UnidadesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "ticket_empresa_id",
+				Unique:  false,
+				Columns: []*schema.Column{TicketsColumns[7]},
+			},
+			{
+				Name:    "ticket_unidad_id",
+				Unique:  false,
+				Columns: []*schema.Column{TicketsColumns[8]},
+			},
+			{
+				Name:    "ticket_estado",
+				Unique:  false,
+				Columns: []*schema.Column{TicketsColumns[5]},
 			},
 		},
 	}
@@ -593,6 +659,7 @@ var (
 		PropiedadesTable,
 		RolesTable,
 		ServicioMedicionesTable,
+		TicketsTable,
 		TiposIdentificacionTable,
 		TiposPagoTable,
 		UnidadesTable,
@@ -605,6 +672,7 @@ func init() {
 		Table: "admins",
 	}
 	CargosTable.ForeignKeys[0].RefTable = ContratosTable
+	CargosTable.ForeignKeys[1].RefTable = ServicioMedicionesTable
 	CargosTable.Annotation = &entsql.Annotation{
 		Table: "cargos",
 	}
@@ -665,9 +733,16 @@ func init() {
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}
-	ServicioMedicionesTable.ForeignKeys[0].RefTable = UnidadesTable
+	ServicioMedicionesTable.ForeignKeys[0].RefTable = ContratosTable
+	ServicioMedicionesTable.ForeignKeys[1].RefTable = UnidadesTable
 	ServicioMedicionesTable.Annotation = &entsql.Annotation{
 		Table: "servicio_mediciones",
+	}
+	TicketsTable.ForeignKeys[0].RefTable = ClientesTable
+	TicketsTable.ForeignKeys[1].RefTable = EmpresasTable
+	TicketsTable.ForeignKeys[2].RefTable = UnidadesTable
+	TicketsTable.Annotation = &entsql.Annotation{
+		Table: "tickets",
 	}
 	TiposIdentificacionTable.Annotation = &entsql.Annotation{
 		Table: "tipos_identificacion",

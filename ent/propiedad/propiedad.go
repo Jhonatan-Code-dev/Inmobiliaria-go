@@ -156,8 +156,10 @@ const DefaultEstado = EstadoActiva
 // Estado values.
 const (
 	EstadoActiva        Estado = "activa"
+	EstadoActivo        Estado = "activo"
 	EstadoMantenimiento Estado = "mantenimiento"
 	EstadoInactiva      Estado = "inactiva"
+	EstadoInactivo      Estado = "inactivo"
 )
 
 func (e Estado) String() string {
@@ -167,7 +169,7 @@ func (e Estado) String() string {
 // EstadoValidator is a validator for the "estado" field enum values. It is called by the builders before save.
 func EstadoValidator(e Estado) error {
 	switch e {
-	case EstadoActiva, EstadoMantenimiento, EstadoInactiva:
+	case EstadoActiva, EstadoActivo, EstadoMantenimiento, EstadoInactiva, EstadoInactivo:
 		return nil
 	default:
 		return fmt.Errorf("propiedad: invalid enum value for estado field: %q", e)

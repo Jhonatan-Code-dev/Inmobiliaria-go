@@ -194,7 +194,7 @@ func (h *InmuebleController) Obtener(c *fiber.Ctx) error {
 // @Failure 403 {object} errorResponse
 // @Router /api/user/inmuebles [post]
 func (h *InmuebleController) Crear(c *fiber.Ctx) error {
-	empresaID := c.Locals("empresa_id").(int)
+	empresaID, _ := c.Locals("empresa_id").(int)
 	var req inmuebleRequest
 	if err := c.BodyParser(&req); err != nil {
 		return c.Status(400).JSON(errorResponse{Message: "formato inválido"})

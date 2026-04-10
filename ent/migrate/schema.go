@@ -424,11 +424,11 @@ var (
 		{Name: "direccion", Type: field.TypeString, Size: 255},
 		{Name: "ciudad", Type: field.TypeString, Nullable: true, Size: 120},
 		{Name: "region", Type: field.TypeString, Nullable: true, Size: 120},
-		{Name: "pais", Type: field.TypeString, Nullable: true, Size: 2},
+		{Name: "pais", Type: field.TypeString, Nullable: true, Size: 100},
 		{Name: "codigo_postal", Type: field.TypeString, Nullable: true, Size: 20},
 		{Name: "total_pisos", Type: field.TypeInt, Default: 1},
 		{Name: "total_unidades", Type: field.TypeInt, Default: 1},
-		{Name: "estado", Type: field.TypeEnum, Enums: []string{"activa", "mantenimiento", "inactiva"}, Default: "activa"},
+		{Name: "estado", Type: field.TypeEnum, Enums: []string{"activa", "activo", "mantenimiento", "inactiva", "inactivo"}, Default: "activa"},
 		{Name: "empresa_id", Type: field.TypeInt},
 	}
 	// PropiedadesTable holds the schema information for the "propiedades" table.

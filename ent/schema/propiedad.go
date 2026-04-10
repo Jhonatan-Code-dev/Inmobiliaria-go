@@ -33,12 +33,12 @@ func (Propiedad) Fields() []ent.Field {
 		field.String("direccion").NotEmpty().MaxLen(255),
 		field.String("ciudad").Optional().Nillable().MaxLen(120),
 		field.String("region").Optional().Nillable().MaxLen(120),
-		field.String("pais").Optional().Nillable().MaxLen(2),
+		field.String("pais").Optional().Nillable().MaxLen(100),
 		field.String("codigo_postal").Optional().Nillable().MaxLen(20),
 		field.Int("total_pisos").Default(1).NonNegative(),
 		field.Int("total_unidades").Default(1).NonNegative(),
 		field.Enum("estado").
-			Values("activa", "mantenimiento", "inactiva").
+			Values("activa", "activo", "mantenimiento", "inactiva", "inactivo").
 			Default("activa"),
 	}
 }

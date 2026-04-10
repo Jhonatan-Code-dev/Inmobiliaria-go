@@ -10,6 +10,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 )
 
 // @title Rentals Go API
@@ -66,6 +67,9 @@ func main() {
 	}
 
 	app.Use(cors.New(corsConfig))
+	app.Use(logger.New(logger.Config{
+		Format: "[${time}] ${status} - ${latency} ${method} ${path}\n",
+	}))
 	routes.Register(app, appDI)
 	log.Printf("API corriendo en http://localhost:%s\n", appDI.Config.Port)
 	log.Fatal(app.Listen(":" + appDI.Config.Port))

@@ -30,16 +30,19 @@ func (s *UsuarioService) Login(ctx context.Context, username, contrasena string)
 	if !hasher.Comparar(u.HashContrasena, contrasena) {
 		return "", nil, nil, ErrCredenciales
 	}
-	_, emp, _ := s.usuarioRepo.BuscarPerfil(ctx, u.ID)
+	perfilUser, emp, err := s.usuarioRepo.BuscarPerfil(ctx, u.ID)
+	if err != nil {
+		return "", nil, nil, err
+	}
 	token, err := auth.GenerarToken(s.jwtSecret, 24*time.Hour, auth.Claims{
-		UsuarioID: u.ID,
-		EmpresaID: u.EmpresaID,
+		UsuarioID: perfilUser.ID,
+		EmpresaID: perfilUser.EmpresaID,
 		Rol:       "usuario",
 	})
 	if err != nil {
 		return "", nil, nil, err
 	}
-	return token, u, emp, nil
+	return token, perfilUser, emp, nil
 }
 
 func (s *UsuarioService) Perfil(ctx context.Context, id int) (*domain.Usuario, *domain.Empresa, error) {

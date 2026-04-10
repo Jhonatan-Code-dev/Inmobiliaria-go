@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net/http"
 	"strings"
 
 	"rentals-go/di"
@@ -31,7 +32,23 @@ func main() {
 		}
 	}()
 
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		ErrorHandler: func(c *fiber.Ctx, err error) error {
+			code := http.StatusInternalServerError
+			message := "internal server error"
+
+			if e, ok := err.(*fiber.Error); ok {
+				code = e.Code
+				message = e.Message
+			} else if err != nil {
+				message = err.Error()
+			}
+
+			return c.Status(code).JSON(fiber.Map{
+				"message": message,
+			})
+		},
+	})
 	origins := normalizarAllowedOrigins(appDI.Config.AllowedOrigins)
 
 	corsConfig := cors.Config{

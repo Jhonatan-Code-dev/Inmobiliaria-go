@@ -288,7 +288,7 @@ var (
 		{Name: "concepto", Type: field.TypeString, Size: 150},
 		{Name: "fecha_movimiento", Type: field.TypeTime},
 		{Name: "moneda", Type: field.TypeString, Size: 3, Default: "PEN"},
-		{Name: "monto", Type: field.TypeInt64, Default: 0},
+		{Name: "monto", Type: field.TypeFloat64, Default: 0, SchemaType: map[string]string{"mysql": "decimal(12,2)"}},
 		{Name: "metodo", Type: field.TypeEnum, Enums: []string{"efectivo", "transferencia", "yape", "plin", "tarjeta", "deposito", "otro"}, Default: "efectivo"},
 		{Name: "referencia", Type: field.TypeString, Nullable: true, Size: 120},
 		{Name: "observaciones", Type: field.TypeString, Nullable: true, Size: 1000},

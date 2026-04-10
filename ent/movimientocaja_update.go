@@ -142,14 +142,14 @@ func (_u *MovimientoCajaUpdate) SetNillableMoneda(v *string) *MovimientoCajaUpda
 }
 
 // SetMonto sets the "monto" field.
-func (_u *MovimientoCajaUpdate) SetMonto(v int64) *MovimientoCajaUpdate {
+func (_u *MovimientoCajaUpdate) SetMonto(v float64) *MovimientoCajaUpdate {
 	_u.mutation.ResetMonto()
 	_u.mutation.SetMonto(v)
 	return _u
 }
 
 // SetNillableMonto sets the "monto" field if the given value is not nil.
-func (_u *MovimientoCajaUpdate) SetNillableMonto(v *int64) *MovimientoCajaUpdate {
+func (_u *MovimientoCajaUpdate) SetNillableMonto(v *float64) *MovimientoCajaUpdate {
 	if v != nil {
 		_u.SetMonto(*v)
 	}
@@ -157,7 +157,7 @@ func (_u *MovimientoCajaUpdate) SetNillableMonto(v *int64) *MovimientoCajaUpdate
 }
 
 // AddMonto adds value to the "monto" field.
-func (_u *MovimientoCajaUpdate) AddMonto(v int64) *MovimientoCajaUpdate {
+func (_u *MovimientoCajaUpdate) AddMonto(v float64) *MovimientoCajaUpdate {
 	_u.mutation.AddMonto(v)
 	return _u
 }
@@ -344,10 +344,10 @@ func (_u *MovimientoCajaUpdate) sqlSave(ctx context.Context) (_node int, err err
 		_spec.SetField(movimientocaja.FieldMoneda, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Monto(); ok {
-		_spec.SetField(movimientocaja.FieldMonto, field.TypeInt64, value)
+		_spec.SetField(movimientocaja.FieldMonto, field.TypeFloat64, value)
 	}
 	if value, ok := _u.mutation.AddedMonto(); ok {
-		_spec.AddField(movimientocaja.FieldMonto, field.TypeInt64, value)
+		_spec.AddField(movimientocaja.FieldMonto, field.TypeFloat64, value)
 	}
 	if value, ok := _u.mutation.Metodo(); ok {
 		_spec.SetField(movimientocaja.FieldMetodo, field.TypeEnum, value)
@@ -582,14 +582,14 @@ func (_u *MovimientoCajaUpdateOne) SetNillableMoneda(v *string) *MovimientoCajaU
 }
 
 // SetMonto sets the "monto" field.
-func (_u *MovimientoCajaUpdateOne) SetMonto(v int64) *MovimientoCajaUpdateOne {
+func (_u *MovimientoCajaUpdateOne) SetMonto(v float64) *MovimientoCajaUpdateOne {
 	_u.mutation.ResetMonto()
 	_u.mutation.SetMonto(v)
 	return _u
 }
 
 // SetNillableMonto sets the "monto" field if the given value is not nil.
-func (_u *MovimientoCajaUpdateOne) SetNillableMonto(v *int64) *MovimientoCajaUpdateOne {
+func (_u *MovimientoCajaUpdateOne) SetNillableMonto(v *float64) *MovimientoCajaUpdateOne {
 	if v != nil {
 		_u.SetMonto(*v)
 	}
@@ -597,7 +597,7 @@ func (_u *MovimientoCajaUpdateOne) SetNillableMonto(v *int64) *MovimientoCajaUpd
 }
 
 // AddMonto adds value to the "monto" field.
-func (_u *MovimientoCajaUpdateOne) AddMonto(v int64) *MovimientoCajaUpdateOne {
+func (_u *MovimientoCajaUpdateOne) AddMonto(v float64) *MovimientoCajaUpdateOne {
 	_u.mutation.AddMonto(v)
 	return _u
 }
@@ -814,10 +814,10 @@ func (_u *MovimientoCajaUpdateOne) sqlSave(ctx context.Context) (_node *Movimien
 		_spec.SetField(movimientocaja.FieldMoneda, field.TypeString, value)
 	}
 	if value, ok := _u.mutation.Monto(); ok {
-		_spec.SetField(movimientocaja.FieldMonto, field.TypeInt64, value)
+		_spec.SetField(movimientocaja.FieldMonto, field.TypeFloat64, value)
 	}
 	if value, ok := _u.mutation.AddedMonto(); ok {
-		_spec.AddField(movimientocaja.FieldMonto, field.TypeInt64, value)
+		_spec.AddField(movimientocaja.FieldMonto, field.TypeFloat64, value)
 	}
 	if value, ok := _u.mutation.Metodo(); ok {
 		_spec.SetField(movimientocaja.FieldMetodo, field.TypeEnum, value)

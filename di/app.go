@@ -14,4 +14,7 @@ type App struct {
 	MonedaCtrl  *controller.MonedaController
 	UsuarioCtrl *controller.UsuarioController
 	GastoCtrl   *controller.GastoController
+	ClienteCtrl *controller.ClienteController
+	InmuebleCtrl *controller.InmuebleController
+	AlquilerCtrl *controller.AlquilerController
 }

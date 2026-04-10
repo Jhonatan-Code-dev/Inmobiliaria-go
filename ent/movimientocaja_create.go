@@ -112,13 +112,13 @@ func (_c *MovimientoCajaCreate) SetNillableMoneda(v *string) *MovimientoCajaCrea
 }
 
 // SetMonto sets the "monto" field.
-func (_c *MovimientoCajaCreate) SetMonto(v int64) *MovimientoCajaCreate {
+func (_c *MovimientoCajaCreate) SetMonto(v float64) *MovimientoCajaCreate {
 	_c.mutation.SetMonto(v)
 	return _c
 }
 
 // SetNillableMonto sets the "monto" field if the given value is not nil.
-func (_c *MovimientoCajaCreate) SetNillableMonto(v *int64) *MovimientoCajaCreate {
+func (_c *MovimientoCajaCreate) SetNillableMonto(v *float64) *MovimientoCajaCreate {
 	if v != nil {
 		_c.SetMonto(*v)
 	}
@@ -345,7 +345,7 @@ func (_c *MovimientoCajaCreate) createSpec() (*MovimientoCaja, *sqlgraph.CreateS
 		_node.Moneda = value
 	}
 	if value, ok := _c.mutation.Monto(); ok {
-		_spec.SetField(movimientocaja.FieldMonto, field.TypeInt64, value)
+		_spec.SetField(movimientocaja.FieldMonto, field.TypeFloat64, value)
 		_node.Monto = value
 	}
 	if value, ok := _c.mutation.Metodo(); ok {

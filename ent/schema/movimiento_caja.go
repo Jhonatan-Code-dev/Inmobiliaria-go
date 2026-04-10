@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
@@ -33,7 +34,11 @@ func (MovimientoCaja) Fields() []ent.Field {
 		field.String("concepto").NotEmpty().MaxLen(150),
 		field.Time("fecha_movimiento"),
 		codigoMoneda("moneda", "PEN"),
-		montoExacto("monto"),
+		field.Float("monto").
+			SchemaType(map[string]string{
+				dialect.MySQL: "decimal(12,2)",
+			}).
+			Default(0),
 		field.Enum("metodo").
 			Values("efectivo", "transferencia", "yape", "plin", "tarjeta", "deposito", "otro").
 			Default("efectivo"),

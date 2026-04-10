@@ -1,6 +1,9 @@
 package domain
 
-import "context"
+import (
+	"context"
+	"time"
+)
 
 // Repositorios (puertos) sin dependencias externas.
 type (
@@ -49,6 +52,43 @@ type (
 		Listar(ctx context.Context) ([]*TipoPago, error)
 	}
 
+	TipoIdentificacionRepository interface {
+		ListarActivos(ctx context.Context) ([]*TipoIdentificacion, error)
+		ExisteActivo(ctx context.Context, id int) (bool, error)
+	}
+
+	ClienteRepository interface {
+		ListarPaginado(ctx context.Context, filtros ClienteFiltros) ([]*Cliente, int, error)
+		BuscarPorID(ctx context.Context, id int) (*Cliente, error)
+		Crear(ctx context.Context, c *Cliente) (*Cliente, error)
+		Actualizar(ctx context.Context, c *Cliente) (*Cliente, error)
+		Eliminar(ctx context.Context, id int) error
+	}
+
+	InmuebleRepository interface {
+		ListarPaginado(ctx context.Context, filtros InmuebleFiltros) ([]*Inmueble, int, error)
+		BuscarPorID(ctx context.Context, id int) (*Inmueble, error)
+		Crear(ctx context.Context, inmueble *Inmueble) (*Inmueble, error)
+		Actualizar(ctx context.Context, inmueble *Inmueble) (*Inmueble, error)
+		Eliminar(ctx context.Context, id int) error
+		ListarUnidades(ctx context.Context, propiedadID int) ([]*Unidad, error)
+		BuscarUnidadPorID(ctx context.Context, id int) (*Unidad, error)
+		CrearUnidad(ctx context.Context, unidad *Unidad) (*Unidad, error)
+		ActualizarUnidad(ctx context.Context, unidad *Unidad) (*Unidad, error)
+		EliminarUnidad(ctx context.Context, id int) error
+	}
+
+	AlquilerRepository interface {
+		ListarPaginado(ctx context.Context, filtros AlquilerFiltros) ([]*Alquiler, int, error)
+		BuscarPorID(ctx context.Context, id int) (*Alquiler, error)
+		Crear(ctx context.Context, alquiler *Alquiler) (*Alquiler, error)
+	}
+
+	PagoAlquilerRepository interface {
+		Registrar(ctx context.Context, pago *RegistroPagoAlquiler) (*PagoAlquiler, error)
+		ListarPendientesMesActual(ctx context.Context, empresaID int, now time.Time) ([]*PagoPendiente, error)
+	}
+
 	GastoService interface {
 		Listar(ctx context.Context, filtros GastoFiltros) ([]*Gasto, int, error)
 		ObtenerGasto(ctx context.Context, id int, empresaID int) (*Gasto, error)
@@ -56,5 +96,38 @@ type (
 		RegistrarGasto(ctx context.Context, gasto *Gasto) (*Gasto, error)
 		ActualizarGasto(ctx context.Context, gasto *Gasto) (*Gasto, error)
 		EliminarGasto(ctx context.Context, id int, empresaID int) error
+	}
+
+	ClienteService interface {
+		Listar(ctx context.Context, filtros ClienteFiltros) ([]*Cliente, int, error)
+		ObtenerCliente(ctx context.Context, id int, empresaID int) (*Cliente, error)
+		ListarTiposIdentificacion(ctx context.Context) ([]*TipoIdentificacion, error)
+		RegistrarCliente(ctx context.Context, c *Cliente) (*Cliente, error)
+		ActualizarCliente(ctx context.Context, c *Cliente) (*Cliente, error)
+		EliminarCliente(ctx context.Context, id int, empresaID int) error
+	}
+
+	InmuebleService interface {
+		Listar(ctx context.Context, filtros InmuebleFiltros) ([]*Inmueble, int, error)
+		Obtener(ctx context.Context, id int, empresaID int) (*Inmueble, error)
+		Crear(ctx context.Context, inmueble *Inmueble) (*Inmueble, error)
+		Actualizar(ctx context.Context, inmueble *Inmueble) (*Inmueble, error)
+		Eliminar(ctx context.Context, id int, empresaID int) error
+		ListarUnidades(ctx context.Context, propiedadID int, empresaID int) ([]*Unidad, error)
+		ObtenerUnidad(ctx context.Context, propiedadID int, unidadID int, empresaID int) (*Unidad, error)
+		CrearUnidad(ctx context.Context, propiedadID int, empresaID int, unidad *Unidad) (*Unidad, error)
+		ActualizarUnidad(ctx context.Context, propiedadID int, empresaID int, unidad *Unidad) (*Unidad, error)
+		EliminarUnidad(ctx context.Context, propiedadID int, unidadID int, empresaID int) error
+	}
+
+	AlquilerService interface {
+		Listar(ctx context.Context, filtros AlquilerFiltros) ([]*Alquiler, int, error)
+		Obtener(ctx context.Context, id int, empresaID int) (*Alquiler, error)
+		Crear(ctx context.Context, alquiler *Alquiler) (*Alquiler, error)
+	}
+
+	PagoAlquilerService interface {
+		Registrar(ctx context.Context, pago *RegistroPagoAlquiler) (*PagoAlquiler, error)
+		ListarPendientesMesActual(ctx context.Context, empresaID int) ([]*PagoPendiente, error)
 	}
 )

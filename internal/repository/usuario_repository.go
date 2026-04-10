@@ -60,8 +60,10 @@ func (r *UsuarioRepoEnt) BuscarPerfil(ctx context.Context, id int) (*domain.Usua
 		return nil, nil, err
 	}
 	emp := &domain.Empresa{}
+	empresaID := 0
 	if len(u.Edges.EmpresasUsuario) > 0 && u.Edges.EmpresasUsuario[0].Edges.Empresa != nil {
 		e := u.Edges.EmpresasUsuario[0].Edges.Empresa
+		empresaID = e.ID
 		emp = &domain.Empresa{
 			ID:             e.ID,
 			Nombre:         e.Nombre,
@@ -78,5 +80,6 @@ func (r *UsuarioRepoEnt) BuscarPerfil(ctx context.Context, id int) (*domain.Usua
 		Usuario:        u.Usuario,
 		HashContrasena: u.HashContrasena,
 		Estado:         u.Estado,
+		EmpresaID:      empresaID,
 	}, emp, nil
 }

@@ -8,6 +8,7 @@ type Gasto struct {
 	ID          int
 	EmpresaID   int
 	Monto       float64
+	MontoCents  int64
 	Fecha       time.Time
 	TipoPagoID  int
 	Descripcion string
@@ -38,7 +39,7 @@ type MovimientoCaja struct {
 	Concepto        string
 	FechaMovimiento time.Time
 	Moneda          string
-	Monto           int64
+	Monto           float64
 	Metodo          string
 	Referencia      *string
 	Observaciones   *string

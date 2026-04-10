@@ -107,7 +107,7 @@ var (
 	// MonedaValidator is a validator for the "moneda" field. It is called by the builders before save.
 	MonedaValidator func(string) error
 	// DefaultMonto holds the default value on creation for the "monto" field.
-	DefaultMonto int64
+	DefaultMonto float64
 	// ReferenciaValidator is a validator for the "referencia" field. It is called by the builders before save.
 	ReferenciaValidator func(string) error
 	// ObservacionesValidator is a validator for the "observaciones" field. It is called by the builders before save.

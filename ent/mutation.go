@@ -8482,8 +8482,8 @@ type MovimientoCajaMutation struct {
 	concepto         *string
 	fecha_movimiento *time.Time
 	moneda           *string
-	monto            *int64
-	addmonto         *int64
+	monto            *float64
+	addmonto         *float64
 	metodo           *movimientocaja.Metodo
 	referencia       *string
 	observaciones    *string
@@ -8912,13 +8912,13 @@ func (m *MovimientoCajaMutation) ResetMoneda() {
 }
 
 // SetMonto sets the "monto" field.
-func (m *MovimientoCajaMutation) SetMonto(i int64) {
-	m.monto = &i
+func (m *MovimientoCajaMutation) SetMonto(f float64) {
+	m.monto = &f
 	m.addmonto = nil
 }
 
 // Monto returns the value of the "monto" field in the mutation.
-func (m *MovimientoCajaMutation) Monto() (r int64, exists bool) {
+func (m *MovimientoCajaMutation) Monto() (r float64, exists bool) {
 	v := m.monto
 	if v == nil {
 		return
@@ -8929,7 +8929,7 @@ func (m *MovimientoCajaMutation) Monto() (r int64, exists bool) {
 // OldMonto returns the old "monto" field's value of the MovimientoCaja entity.
 // If the MovimientoCaja object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MovimientoCajaMutation) OldMonto(ctx context.Context) (v int64, err error) {
+func (m *MovimientoCajaMutation) OldMonto(ctx context.Context) (v float64, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldMonto is only allowed on UpdateOne operations")
 	}
@@ -8943,17 +8943,17 @@ func (m *MovimientoCajaMutation) OldMonto(ctx context.Context) (v int64, err err
 	return oldValue.Monto, nil
 }
 
-// AddMonto adds i to the "monto" field.
-func (m *MovimientoCajaMutation) AddMonto(i int64) {
+// AddMonto adds f to the "monto" field.
+func (m *MovimientoCajaMutation) AddMonto(f float64) {
 	if m.addmonto != nil {
-		*m.addmonto += i
+		*m.addmonto += f
 	} else {
-		m.addmonto = &i
+		m.addmonto = &f
 	}
 }
 
 // AddedMonto returns the value that was added to the "monto" field in this mutation.
-func (m *MovimientoCajaMutation) AddedMonto() (r int64, exists bool) {
+func (m *MovimientoCajaMutation) AddedMonto() (r float64, exists bool) {
 	v := m.addmonto
 	if v == nil {
 		return
@@ -9384,7 +9384,7 @@ func (m *MovimientoCajaMutation) SetField(name string, value ent.Value) error {
 		m.SetMoneda(v)
 		return nil
 	case movimientocaja.FieldMonto:
-		v, ok := value.(int64)
+		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -9442,7 +9442,7 @@ func (m *MovimientoCajaMutation) AddedField(name string) (ent.Value, bool) {
 func (m *MovimientoCajaMutation) AddField(name string, value ent.Value) error {
 	switch name {
 	case movimientocaja.FieldMonto:
-		v, ok := value.(int64)
+		v, ok := value.(float64)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

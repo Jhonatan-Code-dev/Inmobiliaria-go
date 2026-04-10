@@ -454,7 +454,7 @@ func init() {
 	// movimientocajaDescMonto is the schema descriptor for monto field.
 	movimientocajaDescMonto := movimientocajaFields[7].Descriptor()
 	// movimientocaja.DefaultMonto holds the default value on creation for the monto field.
-	movimientocaja.DefaultMonto = movimientocajaDescMonto.Default.(int64)
+	movimientocaja.DefaultMonto = movimientocajaDescMonto.Default.(float64)
 	// movimientocajaDescReferencia is the schema descriptor for referencia field.
 	movimientocajaDescReferencia := movimientocajaFields[9].Descriptor()
 	// movimientocaja.ReferenciaValidator is a validator for the "referencia" field. It is called by the builders before save.

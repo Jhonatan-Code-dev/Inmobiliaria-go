@@ -37,7 +37,7 @@ type MovimientoCaja struct {
 	// Moneda holds the value of the "moneda" field.
 	Moneda string `json:"moneda,omitempty"`
 	// Monto holds the value of the "monto" field.
-	Monto int64 `json:"monto,omitempty"`
+	Monto float64 `json:"monto,omitempty"`
 	// Metodo holds the value of the "metodo" field.
 	Metodo movimientocaja.Metodo `json:"metodo,omitempty"`
 	// Referencia holds the value of the "referencia" field.
@@ -101,7 +101,9 @@ func (*MovimientoCaja) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case movimientocaja.FieldID, movimientocaja.FieldEmpresaID, movimientocaja.FieldPagoID, movimientocaja.FieldGastoID, movimientocaja.FieldMonto:
+		case movimientocaja.FieldMonto:
+			values[i] = new(sql.NullFloat64)
+		case movimientocaja.FieldID, movimientocaja.FieldEmpresaID, movimientocaja.FieldPagoID, movimientocaja.FieldGastoID:
 			values[i] = new(sql.NullInt64)
 		case movimientocaja.FieldTipo, movimientocaja.FieldConcepto, movimientocaja.FieldMoneda, movimientocaja.FieldMetodo, movimientocaja.FieldReferencia, movimientocaja.FieldObservaciones:
 			values[i] = new(sql.NullString)
@@ -179,10 +181,10 @@ func (_m *MovimientoCaja) assignValues(columns []string, values []any) error {
 				_m.Moneda = value.String
 			}
 		case movimientocaja.FieldMonto:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field monto", values[i])
 			} else if value.Valid {
-				_m.Monto = value.Int64
+				_m.Monto = value.Float64
 			}
 		case movimientocaja.FieldMetodo:
 			if value, ok := values[i].(*sql.NullString); !ok {

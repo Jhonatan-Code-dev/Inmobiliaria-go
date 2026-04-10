@@ -40,13 +40,28 @@ func InitializeApp() (*App, error) {
 	tipoPagoRepoEnt := repository.NewTipoPagoRepo(client)
 	gastoService := service.NewGastoService(gastoRepoEnt, movimientoCajaRepoEnt, tipoPagoRepoEnt)
 	gastoController := controller.NewGastoController(gastoService)
+	clienteRepoEnt := repository.NewClienteRepo(client)
+	tipoIdentificacionRepoEnt := repository.NewTipoIdentificacionRepo(client)
+	clienteService := service.NewClienteService(clienteRepoEnt, tipoIdentificacionRepoEnt)
+	clienteController := controller.NewClienteController(clienteService)
+	inmuebleRepoEnt := repository.NewInmuebleRepo(client)
+	inmuebleService := service.NewInmuebleService(inmuebleRepoEnt)
+	inmuebleController := controller.NewInmuebleController(inmuebleService)
+	alquilerRepoEnt := repository.NewAlquilerRepo(client)
+	alquilerService := service.NewAlquilerService(alquilerRepoEnt)
+	pagoAlquilerRepoEnt := repository.NewPagoAlquilerRepo(client)
+	pagoAlquilerService := service.NewPagoAlquilerService(pagoAlquilerRepoEnt)
+	alquilerController := controller.NewAlquilerController(alquilerService, pagoAlquilerService)
 	app := &App{
-		Config:      config,
-		EntClient:   client,
-		AdminCtrl:   adminController,
-		MonedaCtrl:  monedaController,
-		UsuarioCtrl: usuarioController,
-		GastoCtrl:   gastoController,
+		Config:       config,
+		EntClient:    client,
+		AdminCtrl:    adminController,
+		MonedaCtrl:   monedaController,
+		UsuarioCtrl:  usuarioController,
+		GastoCtrl:    gastoController,
+		ClienteCtrl:  clienteController,
+		InmuebleCtrl: inmuebleController,
+		AlquilerCtrl: alquilerController,
 	}
 	return app, nil
 }

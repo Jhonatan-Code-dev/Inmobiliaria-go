@@ -501,6 +501,516 @@
                 }
             }
         },
+        "/api/user/alquileres": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Lista contratos de alquiler con filtros y paginación.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Alquileres"
+                ],
+                "summary": "Listar alquileres",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Buscar por cliente o código de unidad",
+                        "name": "buscar",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Estado del contrato",
+                        "name": "estado",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la unidad",
+                        "name": "unidad_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Página",
+                        "name": "pag",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Tamaño de página",
+                        "name": "por_pagina",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.listadoAlquileresResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Crea un nuevo contrato y ocupa la unidad.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Alquileres"
+                ],
+                "summary": "Registrar un alquiler",
+                "parameters": [
+                    {
+                        "description": "Datos del contrato",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.alquilerRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/controller.alquilerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/alquileres/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Devuelve el detalle de un contrato de alquiler.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Alquileres"
+                ],
+                "summary": "Obtener alquiler por ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del alquiler",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.alquilerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/clientes": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Obtiene una lista paginada de clientes (máx 10). Filtros opcionales: empresa_id, buscar, pag.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Listar clientes con filtros y paginación",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Búsqueda por nombre, apellido o documento",
+                        "name": "buscar",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Número de página",
+                        "name": "pag",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.listadoClientesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Crea un nuevo cliente para la empresa.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Registrar un nuevo cliente",
+                "parameters": [
+                    {
+                        "description": "Datos del cliente",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.clienteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/controller.clienteResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/clientes/tipos-identificacion": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Lista los tipos de identificación activos que el frontend debe usar para enviar tipo_identificacion_id al crear o actualizar clientes.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Catálogo de tipos de identificación",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/controller.tipoIdentificacionResponse"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/clientes/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Devuelve el detalle de un cliente. Requiere enviar empresa_id por query string.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Obtener cliente por ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del cliente",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.clienteResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Actualiza los datos de un cliente existente.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Actualizar un cliente",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del cliente",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Datos a actualizar",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.clienteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.clienteResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Elimina el registro del cliente.",
+                "tags": [
+                    "Clientes"
+                ],
+                "summary": "Eliminar un cliente",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del cliente",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/user/gastos": {
             "get": {
                 "security": [
@@ -508,7 +1018,7 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "Obtiene una lista paginada de gastos (máx 10). Filtros opcionales: anio, mes, desde, hasta, fecha.",
+                "description": "Obtiene una lista paginada de gastos (máx 10) filtrados por empresa. Requiere enviar empresa_id por query. Filtros opcionales: anio, mes, desde, hasta, fecha.",
                 "produces": [
                     "application/json"
                 ],
@@ -517,6 +1027,13 @@
                 ],
                 "summary": "Listar gastos con filtros y paginación",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    },
                     {
                         "type": "integer",
                         "default": 1,
@@ -681,7 +1198,7 @@
                         "BearerAuth": []
                     }
                 ],
-                "description": "Elimina el registro de gasto permanentemente.",
+                "description": "Elimina el registro de gasto permanentemente. Requiere enviar empresa_id por query.",
                 "tags": [
                     "Gastos"
                 ],
@@ -693,6 +1210,13 @@
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -703,6 +1227,727 @@
                             "additionalProperties": {
                                 "type": "string"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/inmuebles": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Obtiene una lista paginada de inmuebles (máx 10) filtrados por empresa. Permite buscar por nombre, dirección o ciudad.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Inmuebles"
+                ],
+                "summary": "Listar inmuebles con filtros y paginación",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Número de página",
+                        "name": "pag",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Búsqueda por nombre, dirección o ciudad",
+                        "name": "buscar",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filtrar por estado",
+                        "name": "estado",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Filtrar por tipo de inmueble",
+                        "name": "tipo",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.listadoInmueblesResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Crea un nuevo inmueble para la empresa.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Inmuebles"
+                ],
+                "summary": "Registrar un nuevo inmueble",
+                "parameters": [
+                    {
+                        "description": "Datos del inmueble",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.inmuebleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/controller.inmuebleResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/inmuebles/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Devuelve el detalle del inmueble con sus unidades. Requiere enviar empresa_id por query string.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Inmuebles"
+                ],
+                "summary": "Obtener inmueble por ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del inmueble",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.inmuebleResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Actualiza los datos del inmueble existente.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Inmuebles"
+                ],
+                "summary": "Actualizar un inmueble",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del inmueble",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Datos del inmueble",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.inmuebleRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.inmuebleResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Elimina el inmueble. Requiere enviar empresa_id por query string.",
+                "tags": [
+                    "Inmuebles"
+                ],
+                "summary": "Eliminar un inmueble",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del inmueble",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/inmuebles/{id}/unidades": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Devuelve todas las unidades del inmueble. Requiere enviar empresa_id por query string.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Inmuebles"
+                ],
+                "summary": "Listar unidades de un inmueble",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del inmueble",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/controller.unidadResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Crea una nueva unidad asociada a un inmueble existente.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Inmuebles"
+                ],
+                "summary": "Registrar unidad en un inmueble",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del inmueble",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Datos de la unidad",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.unidadRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/controller.unidadResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/inmuebles/{id}/unidades/{unidadId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Devuelve el detalle de una unidad del inmueble. Requiere enviar empresa_id por query string.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Inmuebles"
+                ],
+                "summary": "Obtener una unidad",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del inmueble",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la unidad",
+                        "name": "unidadId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.unidadResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Actualiza los datos de una unidad existente.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Inmuebles"
+                ],
+                "summary": "Actualizar una unidad",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del inmueble",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la unidad",
+                        "name": "unidadId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Datos de la unidad",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.unidadRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.unidadResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Elimina una unidad del inmueble. Requiere enviar empresa_id por query string.",
+                "tags": [
+                    "Inmuebles"
+                ],
+                "summary": "Eliminar una unidad",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del inmueble",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la unidad",
+                        "name": "unidadId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/pagos": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Registra un cobro para un alquiler.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pagos"
+                ],
+                "summary": "Registrar pago de alquiler",
+                "parameters": [
+                    {
+                        "description": "Datos del pago",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/controller.registrarPagoRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/controller.pagoAlquilerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/pagos/pendientes": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retorna contratos sin pago completo registrado para el mes actual.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Pagos"
+                ],
+                "summary": "Listar pagos pendientes del mes actual",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/controller.pendientePagoResponse"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
                         }
                     }
                 }
@@ -949,6 +2194,170 @@
                 }
             }
         },
+        "controller.alquilerRequest": {
+            "type": "object",
+            "properties": {
+                "cliente_id": {
+                    "type": "integer"
+                },
+                "deposito_garantia": {
+                    "type": "number",
+                    "example": 1200.5
+                },
+                "fecha_fin": {
+                    "type": "string"
+                },
+                "fecha_inicio": {
+                    "type": "string"
+                },
+                "moneda": {
+                    "type": "string"
+                },
+                "monto_renta": {
+                    "type": "number",
+                    "example": 1200.5
+                },
+                "observaciones": {
+                    "type": "string"
+                },
+                "unidad_id": {
+                    "type": "integer"
+                },
+                "vencimiento_dia_pago": {
+                    "type": "integer"
+                }
+            }
+        },
+        "controller.alquilerResponse": {
+            "type": "object",
+            "properties": {
+                "cliente": {
+                    "type": "string"
+                },
+                "cliente_id": {
+                    "type": "integer"
+                },
+                "estado": {
+                    "type": "string"
+                },
+                "fecha_fin": {
+                    "type": "string"
+                },
+                "fecha_inicio": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "moneda": {
+                    "type": "string"
+                },
+                "monto": {
+                    "$ref": "#/definitions/money.Amount"
+                },
+                "unidad": {
+                    "type": "string"
+                },
+                "unidad_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "controller.clienteRequest": {
+            "type": "object",
+            "properties": {
+                "apellidos": {
+                    "type": "string"
+                },
+                "contacto_emergencia": {
+                    "type": "string"
+                },
+                "correo": {
+                    "type": "string"
+                },
+                "direccion": {
+                    "type": "string"
+                },
+                "documento_numero": {
+                    "type": "string"
+                },
+                "empresa_id": {
+                    "type": "integer"
+                },
+                "estado": {
+                    "type": "string"
+                },
+                "fecha_nacimiento": {
+                    "description": "YYYY-MM-DD",
+                    "type": "string"
+                },
+                "nacionalidad": {
+                    "type": "string"
+                },
+                "nombres": {
+                    "type": "string"
+                },
+                "notas": {
+                    "type": "string"
+                },
+                "telefono_emergencia": {
+                    "type": "string"
+                },
+                "tipo_identificacion_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "controller.clienteResponse": {
+            "type": "object",
+            "properties": {
+                "apellidos": {
+                    "type": "string"
+                },
+                "contacto_emergencia": {
+                    "type": "string"
+                },
+                "correo": {
+                    "type": "string"
+                },
+                "creado_en": {
+                    "type": "string"
+                },
+                "direccion": {
+                    "type": "string"
+                },
+                "documento_numero": {
+                    "type": "string"
+                },
+                "empresa_id": {
+                    "type": "integer"
+                },
+                "estado": {
+                    "type": "string"
+                },
+                "fecha_nacimiento": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nacionalidad": {
+                    "type": "string"
+                },
+                "nombres": {
+                    "type": "string"
+                },
+                "notas": {
+                    "type": "string"
+                },
+                "telefono_emergencia": {
+                    "type": "string"
+                },
+                "tipo_identificacion_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "controller.crearEmpresaRequest": {
             "type": "object",
             "properties": {
@@ -1133,6 +2542,128 @@
                 }
             }
         },
+        "controller.inmuebleRequest": {
+            "type": "object",
+            "properties": {
+                "ciudad": {
+                    "type": "string"
+                },
+                "codigo_postal": {
+                    "type": "string"
+                },
+                "descripcion": {
+                    "type": "string"
+                },
+                "direccion": {
+                    "type": "string"
+                },
+                "empresa_id": {
+                    "type": "integer"
+                },
+                "estado": {
+                    "type": "string"
+                },
+                "nombre": {
+                    "type": "string"
+                },
+                "pais": {
+                    "type": "string"
+                },
+                "region": {
+                    "type": "string"
+                },
+                "tipo": {
+                    "type": "string"
+                },
+                "total_pisos": {
+                    "type": "integer"
+                },
+                "total_unidades": {
+                    "type": "integer"
+                }
+            }
+        },
+        "controller.inmuebleResponse": {
+            "type": "object",
+            "properties": {
+                "ciudad": {
+                    "type": "string"
+                },
+                "codigo_postal": {
+                    "type": "string"
+                },
+                "creado_en": {
+                    "type": "string"
+                },
+                "descripcion": {
+                    "type": "string"
+                },
+                "direccion": {
+                    "type": "string"
+                },
+                "empresa_id": {
+                    "type": "integer"
+                },
+                "estado": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nombre": {
+                    "type": "string"
+                },
+                "pais": {
+                    "type": "string"
+                },
+                "region": {
+                    "type": "string"
+                },
+                "tipo": {
+                    "type": "string"
+                },
+                "total_pisos": {
+                    "type": "integer"
+                },
+                "total_unidades": {
+                    "type": "integer"
+                },
+                "unidades": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/controller.unidadResponse"
+                    }
+                }
+            }
+        },
+        "controller.listadoAlquileresResponse": {
+            "type": "object",
+            "properties": {
+                "datos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/controller.alquilerResponse"
+                    }
+                },
+                "paginacion": {
+                    "$ref": "#/definitions/controller.paginadorResponse"
+                }
+            }
+        },
+        "controller.listadoClientesResponse": {
+            "type": "object",
+            "properties": {
+                "datos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/controller.clienteResponse"
+                    }
+                },
+                "paginacion": {
+                    "$ref": "#/definitions/controller.paginadorResponse"
+                }
+            }
+        },
         "controller.listadoEmpresasResponse": {
             "type": "object",
             "properties": {
@@ -1154,6 +2685,20 @@
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/controller.gastoResponse"
+                    }
+                },
+                "paginacion": {
+                    "$ref": "#/definitions/controller.paginadorResponse"
+                }
+            }
+        },
+        "controller.listadoInmueblesResponse": {
+            "type": "object",
+            "properties": {
+                "datos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/controller.inmuebleResponse"
                     }
                 },
                 "paginacion": {
@@ -1218,6 +2763,9 @@
                 "pagina": {
                     "type": "integer"
                 },
+                "pagina_actual": {
+                    "type": "integer"
+                },
                 "paginas": {
                     "type": "integer"
                 },
@@ -1226,6 +2774,105 @@
                 },
                 "total": {
                     "type": "integer"
+                }
+            }
+        },
+        "controller.pagoAlquilerResponse": {
+            "type": "object",
+            "properties": {
+                "alquiler_id": {
+                    "type": "integer"
+                },
+                "fecha_pago": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "mes_correspondiente": {
+                    "type": "integer"
+                },
+                "metodo_pago": {
+                    "type": "string"
+                },
+                "moneda": {
+                    "type": "string"
+                },
+                "monto_pagado": {
+                    "$ref": "#/definitions/money.Amount"
+                },
+                "nota": {
+                    "type": "string"
+                },
+                "numero_recibo": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.pendientePagoResponse": {
+            "type": "object",
+            "properties": {
+                "alquiler_id": {
+                    "type": "integer"
+                },
+                "cliente": {
+                    "type": "string"
+                },
+                "estado": {
+                    "type": "string"
+                },
+                "fecha_vencimiento": {
+                    "type": "string"
+                },
+                "monto": {
+                    "$ref": "#/definitions/money.Amount"
+                },
+                "unidad": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.registrarPagoRequest": {
+            "type": "object",
+            "properties": {
+                "alquiler_id": {
+                    "type": "integer"
+                },
+                "fecha_pago": {
+                    "type": "string"
+                },
+                "mes_correspondiente": {
+                    "type": "integer"
+                },
+                "metodo_pago": {
+                    "type": "string"
+                },
+                "monto_pagado": {
+                    "type": "number",
+                    "example": 1200.5
+                },
+                "nota": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.tipoIdentificacionResponse": {
+            "type": "object",
+            "properties": {
+                "activo": {
+                    "type": "boolean"
+                },
+                "codigo": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nombre": {
+                    "type": "string"
+                },
+                "pais": {
+                    "type": "string"
                 }
             }
         },
@@ -1239,6 +2886,125 @@
                 "nombre": {
                     "type": "string",
                     "example": "efectivo"
+                }
+            }
+        },
+        "controller.unidadRequest": {
+            "type": "object",
+            "properties": {
+                "area_m2": {
+                    "type": "number"
+                },
+                "banos": {
+                    "type": "integer"
+                },
+                "capacidad": {
+                    "type": "integer"
+                },
+                "codigo": {
+                    "type": "string"
+                },
+                "deposito_requerido": {
+                    "type": "number",
+                    "example": 500
+                },
+                "dormitorios": {
+                    "type": "integer"
+                },
+                "estado": {
+                    "type": "string"
+                },
+                "incluye_agua": {
+                    "type": "boolean"
+                },
+                "incluye_internet": {
+                    "type": "boolean"
+                },
+                "incluye_luz": {
+                    "type": "boolean"
+                },
+                "moneda": {
+                    "type": "string"
+                },
+                "nombre": {
+                    "type": "string"
+                },
+                "notas": {
+                    "type": "string"
+                },
+                "numero_piso": {
+                    "type": "integer"
+                },
+                "precio_base": {
+                    "type": "number",
+                    "example": 850
+                },
+                "tipo": {
+                    "type": "string"
+                }
+            }
+        },
+        "controller.unidadResponse": {
+            "type": "object",
+            "properties": {
+                "area_m2": {
+                    "type": "number"
+                },
+                "banos": {
+                    "type": "integer"
+                },
+                "capacidad": {
+                    "type": "integer"
+                },
+                "codigo": {
+                    "type": "string"
+                },
+                "creado_en": {
+                    "type": "string"
+                },
+                "deposito_requerido": {
+                    "type": "number",
+                    "example": 500
+                },
+                "dormitorios": {
+                    "type": "integer"
+                },
+                "estado": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "incluye_agua": {
+                    "type": "boolean"
+                },
+                "incluye_internet": {
+                    "type": "boolean"
+                },
+                "incluye_luz": {
+                    "type": "boolean"
+                },
+                "moneda": {
+                    "type": "string"
+                },
+                "nombre": {
+                    "type": "string"
+                },
+                "notas": {
+                    "type": "string"
+                },
+                "numero_piso": {
+                    "type": "integer"
+                },
+                "precio_base": {
+                    "type": "number",
+                    "example": 850
+                },
+                "propiedad_id": {
+                    "type": "integer"
+                },
+                "tipo": {
+                    "type": "string"
                 }
             }
         },
@@ -1283,6 +3049,9 @@
                     "type": "string"
                 }
             }
+        },
+        "money.Amount": {
+            "type": "object"
         }
     },
     "securityDefinitions": {

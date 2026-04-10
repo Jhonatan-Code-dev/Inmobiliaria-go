@@ -91,7 +91,7 @@ func Moneda(v string) predicate.MovimientoCaja {
 }
 
 // Monto applies equality check predicate on the "monto" field. It's identical to MontoEQ.
-func Monto(v int64) predicate.MovimientoCaja {
+func Monto(v float64) predicate.MovimientoCaja {
 	return predicate.MovimientoCaja(sql.FieldEQ(FieldMonto, v))
 }
 
@@ -416,42 +416,42 @@ func MonedaContainsFold(v string) predicate.MovimientoCaja {
 }
 
 // MontoEQ applies the EQ predicate on the "monto" field.
-func MontoEQ(v int64) predicate.MovimientoCaja {
+func MontoEQ(v float64) predicate.MovimientoCaja {
 	return predicate.MovimientoCaja(sql.FieldEQ(FieldMonto, v))
 }
 
 // MontoNEQ applies the NEQ predicate on the "monto" field.
-func MontoNEQ(v int64) predicate.MovimientoCaja {
+func MontoNEQ(v float64) predicate.MovimientoCaja {
 	return predicate.MovimientoCaja(sql.FieldNEQ(FieldMonto, v))
 }
 
 // MontoIn applies the In predicate on the "monto" field.
-func MontoIn(vs ...int64) predicate.MovimientoCaja {
+func MontoIn(vs ...float64) predicate.MovimientoCaja {
 	return predicate.MovimientoCaja(sql.FieldIn(FieldMonto, vs...))
 }
 
 // MontoNotIn applies the NotIn predicate on the "monto" field.
-func MontoNotIn(vs ...int64) predicate.MovimientoCaja {
+func MontoNotIn(vs ...float64) predicate.MovimientoCaja {
 	return predicate.MovimientoCaja(sql.FieldNotIn(FieldMonto, vs...))
 }
 
 // MontoGT applies the GT predicate on the "monto" field.
-func MontoGT(v int64) predicate.MovimientoCaja {
+func MontoGT(v float64) predicate.MovimientoCaja {
 	return predicate.MovimientoCaja(sql.FieldGT(FieldMonto, v))
 }
 
 // MontoGTE applies the GTE predicate on the "monto" field.
-func MontoGTE(v int64) predicate.MovimientoCaja {
+func MontoGTE(v float64) predicate.MovimientoCaja {
 	return predicate.MovimientoCaja(sql.FieldGTE(FieldMonto, v))
 }
 
 // MontoLT applies the LT predicate on the "monto" field.
-func MontoLT(v int64) predicate.MovimientoCaja {
+func MontoLT(v float64) predicate.MovimientoCaja {
 	return predicate.MovimientoCaja(sql.FieldLT(FieldMonto, v))
 }
 
 // MontoLTE applies the LTE predicate on the "monto" field.
-func MontoLTE(v int64) predicate.MovimientoCaja {
+func MontoLTE(v float64) predicate.MovimientoCaja {
 	return predicate.MovimientoCaja(sql.FieldLTE(FieldMonto, v))
 }
 

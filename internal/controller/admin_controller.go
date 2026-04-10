@@ -321,10 +321,11 @@ func (h *AdminController) ListarEmpresas(c *fiber.Ctx) error {
 	return c.JSON(listadoEmpresasResponse{
 		Datos: datos,
 		Paginacion: paginadorResponse{
-			Total:     total,
-			Paginas:   paginasTotales,
-			Pagina:    pagina,
-			PorPagina: porPagina,
+			Total:        total,
+			Paginas:      paginasTotales,
+			Pagina:       pagina,
+			PaginaActual: pagina,
+			PorPagina:    porPagina,
 		},
 	})
 }

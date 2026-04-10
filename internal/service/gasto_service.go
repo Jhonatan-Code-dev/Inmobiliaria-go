@@ -72,7 +72,7 @@ func (s *GastoService) RegistrarGasto(ctx context.Context, g *domain.Gasto) (*do
 		Concepto:        fmt.Sprintf("Gasto: %s", nuevoGasto.Descripcion),
 		FechaMovimiento: nuevoGasto.Fecha,
 		Moneda:          "PEN", // Por defecto usaremos PEN para el movimiento simplificado de ser necesario
-		Monto:           int64(nuevoGasto.Monto),
+		Monto:           nuevoGasto.Monto,
 		Metodo:          metodo,
 	}
 	_, err = s.movRepo.Crear(ctx, mov)

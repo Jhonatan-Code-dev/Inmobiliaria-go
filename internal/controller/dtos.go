@@ -30,10 +30,11 @@ type empresaListItemResponse struct {
 }
 
 type paginadorResponse struct {
-	Total     int `json:"total"`
-	Paginas   int `json:"paginas"`
-	Pagina    int `json:"pagina"`
-	PorPagina int `json:"por_pagina"`
+	Total        int `json:"total"`
+	Paginas      int `json:"paginas"`
+	Pagina       int `json:"pagina"`
+	PaginaActual int `json:"pagina_actual"`
+	PorPagina    int `json:"por_pagina"`
 }
 
 type listadoEmpresasResponse struct {
@@ -59,6 +60,14 @@ type monedaRenderResponse struct {
 	Currency              string `json:"currency"`
 	MinimumFractionDigits int    `json:"minimum_fraction_digits"`
 	MaximumFractionDigits int    `json:"maximum_fraction_digits"`
+}
+
+type tipoIdentificacionResponse struct {
+	ID     int     `json:"id"`
+	Codigo string  `json:"codigo"`
+	Nombre string  `json:"nombre"`
+	Pais   *string `json:"pais"`
+	Activo bool    `json:"activo"`
 }
 
 type usuarioResponse struct {

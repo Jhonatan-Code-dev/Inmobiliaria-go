@@ -52,6 +52,115 @@ definitions:
       usuario:
         type: string
     type: object
+  controller.alquilerRequest:
+    properties:
+      cliente_id:
+        type: integer
+      deposito_garantia:
+        example: 1200.5
+        type: number
+      fecha_fin:
+        type: string
+      fecha_inicio:
+        type: string
+      moneda:
+        type: string
+      monto_renta:
+        example: 1200.5
+        type: number
+      observaciones:
+        type: string
+      unidad_id:
+        type: integer
+      vencimiento_dia_pago:
+        type: integer
+    type: object
+  controller.alquilerResponse:
+    properties:
+      cliente:
+        type: string
+      cliente_id:
+        type: integer
+      estado:
+        type: string
+      fecha_fin:
+        type: string
+      fecha_inicio:
+        type: string
+      id:
+        type: integer
+      moneda:
+        type: string
+      monto:
+        $ref: '#/definitions/money.Amount'
+      unidad:
+        type: string
+      unidad_id:
+        type: integer
+    type: object
+  controller.clienteRequest:
+    properties:
+      apellidos:
+        type: string
+      contacto_emergencia:
+        type: string
+      correo:
+        type: string
+      direccion:
+        type: string
+      documento_numero:
+        type: string
+      empresa_id:
+        type: integer
+      estado:
+        type: string
+      fecha_nacimiento:
+        description: YYYY-MM-DD
+        type: string
+      nacionalidad:
+        type: string
+      nombres:
+        type: string
+      notas:
+        type: string
+      telefono_emergencia:
+        type: string
+      tipo_identificacion_id:
+        type: integer
+    type: object
+  controller.clienteResponse:
+    properties:
+      apellidos:
+        type: string
+      contacto_emergencia:
+        type: string
+      correo:
+        type: string
+      creado_en:
+        type: string
+      direccion:
+        type: string
+      documento_numero:
+        type: string
+      empresa_id:
+        type: integer
+      estado:
+        type: string
+      fecha_nacimiento:
+        type: string
+      id:
+        type: integer
+      nacionalidad:
+        type: string
+      nombres:
+        type: string
+      notas:
+        type: string
+      telefono_emergencia:
+        type: string
+      tipo_identificacion_id:
+        type: integer
+    type: object
   controller.crearEmpresaRequest:
     properties:
       empresa:
@@ -175,6 +284,86 @@ definitions:
         example: 3
         type: integer
     type: object
+  controller.inmuebleRequest:
+    properties:
+      ciudad:
+        type: string
+      codigo_postal:
+        type: string
+      descripcion:
+        type: string
+      direccion:
+        type: string
+      empresa_id:
+        type: integer
+      estado:
+        type: string
+      nombre:
+        type: string
+      pais:
+        type: string
+      region:
+        type: string
+      tipo:
+        type: string
+      total_pisos:
+        type: integer
+      total_unidades:
+        type: integer
+    type: object
+  controller.inmuebleResponse:
+    properties:
+      ciudad:
+        type: string
+      codigo_postal:
+        type: string
+      creado_en:
+        type: string
+      descripcion:
+        type: string
+      direccion:
+        type: string
+      empresa_id:
+        type: integer
+      estado:
+        type: string
+      id:
+        type: integer
+      nombre:
+        type: string
+      pais:
+        type: string
+      region:
+        type: string
+      tipo:
+        type: string
+      total_pisos:
+        type: integer
+      total_unidades:
+        type: integer
+      unidades:
+        items:
+          $ref: '#/definitions/controller.unidadResponse'
+        type: array
+    type: object
+  controller.listadoAlquileresResponse:
+    properties:
+      datos:
+        items:
+          $ref: '#/definitions/controller.alquilerResponse'
+        type: array
+      paginacion:
+        $ref: '#/definitions/controller.paginadorResponse'
+    type: object
+  controller.listadoClientesResponse:
+    properties:
+      datos:
+        items:
+          $ref: '#/definitions/controller.clienteResponse'
+        type: array
+      paginacion:
+        $ref: '#/definitions/controller.paginadorResponse'
+    type: object
   controller.listadoEmpresasResponse:
     properties:
       datos:
@@ -189,6 +378,15 @@ definitions:
       datos:
         items:
           $ref: '#/definitions/controller.gastoResponse'
+        type: array
+      paginacion:
+        $ref: '#/definitions/controller.paginadorResponse'
+    type: object
+  controller.listadoInmueblesResponse:
+    properties:
+      datos:
+        items:
+          $ref: '#/definitions/controller.inmuebleResponse'
         type: array
       paginacion:
         $ref: '#/definitions/controller.paginadorResponse'
@@ -230,12 +428,79 @@ definitions:
     properties:
       pagina:
         type: integer
+      pagina_actual:
+        type: integer
       paginas:
         type: integer
       por_pagina:
         type: integer
       total:
         type: integer
+    type: object
+  controller.pagoAlquilerResponse:
+    properties:
+      alquiler_id:
+        type: integer
+      fecha_pago:
+        type: string
+      id:
+        type: integer
+      mes_correspondiente:
+        type: integer
+      metodo_pago:
+        type: string
+      moneda:
+        type: string
+      monto_pagado:
+        $ref: '#/definitions/money.Amount'
+      nota:
+        type: string
+      numero_recibo:
+        type: string
+    type: object
+  controller.pendientePagoResponse:
+    properties:
+      alquiler_id:
+        type: integer
+      cliente:
+        type: string
+      estado:
+        type: string
+      fecha_vencimiento:
+        type: string
+      monto:
+        $ref: '#/definitions/money.Amount'
+      unidad:
+        type: string
+    type: object
+  controller.registrarPagoRequest:
+    properties:
+      alquiler_id:
+        type: integer
+      fecha_pago:
+        type: string
+      mes_correspondiente:
+        type: integer
+      metodo_pago:
+        type: string
+      monto_pagado:
+        example: 1200.5
+        type: number
+      nota:
+        type: string
+    type: object
+  controller.tipoIdentificacionResponse:
+    properties:
+      activo:
+        type: boolean
+      codigo:
+        type: string
+      id:
+        type: integer
+      nombre:
+        type: string
+      pais:
+        type: string
     type: object
   controller.tipoPagoResponse:
     properties:
@@ -244,6 +509,86 @@ definitions:
         type: integer
       nombre:
         example: efectivo
+        type: string
+    type: object
+  controller.unidadRequest:
+    properties:
+      area_m2:
+        type: number
+      banos:
+        type: integer
+      capacidad:
+        type: integer
+      codigo:
+        type: string
+      deposito_requerido:
+        example: 500
+        type: number
+      dormitorios:
+        type: integer
+      estado:
+        type: string
+      incluye_agua:
+        type: boolean
+      incluye_internet:
+        type: boolean
+      incluye_luz:
+        type: boolean
+      moneda:
+        type: string
+      nombre:
+        type: string
+      notas:
+        type: string
+      numero_piso:
+        type: integer
+      precio_base:
+        example: 850
+        type: number
+      tipo:
+        type: string
+    type: object
+  controller.unidadResponse:
+    properties:
+      area_m2:
+        type: number
+      banos:
+        type: integer
+      capacidad:
+        type: integer
+      codigo:
+        type: string
+      creado_en:
+        type: string
+      deposito_requerido:
+        example: 500
+        type: number
+      dormitorios:
+        type: integer
+      estado:
+        type: string
+      id:
+        type: integer
+      incluye_agua:
+        type: boolean
+      incluye_internet:
+        type: boolean
+      incluye_luz:
+        type: boolean
+      moneda:
+        type: string
+      nombre:
+        type: string
+      notas:
+        type: string
+      numero_piso:
+        type: integer
+      precio_base:
+        example: 850
+        type: number
+      propiedad_id:
+        type: integer
+      tipo:
         type: string
     type: object
   controller.usuarioLoginRequest:
@@ -272,6 +617,8 @@ definitions:
         type: integer
       usuario:
         type: string
+    type: object
+  money.Amount:
     type: object
 info:
   contact: {}
@@ -600,11 +947,347 @@ paths:
       summary: Perfil del administrador autenticado
       tags:
       - admin
+  /api/user/alquileres:
+    get:
+      description: Lista contratos de alquiler con filtros y paginación.
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      - description: Buscar por cliente o código de unidad
+        in: query
+        name: buscar
+        type: string
+      - description: Estado del contrato
+        in: query
+        name: estado
+        type: string
+      - description: ID de la unidad
+        in: query
+        name: unidad_id
+        type: integer
+      - description: Página
+        in: query
+        name: pag
+        type: integer
+      - description: Tamaño de página
+        in: query
+        name: por_pagina
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.listadoAlquileresResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar alquileres
+      tags:
+      - Alquileres
+    post:
+      consumes:
+      - application/json
+      description: Crea un nuevo contrato y ocupa la unidad.
+      parameters:
+      - description: Datos del contrato
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controller.alquilerRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controller.alquilerResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Registrar un alquiler
+      tags:
+      - Alquileres
+  /api/user/alquileres/{id}:
+    get:
+      description: Devuelve el detalle de un contrato de alquiler.
+      parameters:
+      - description: ID del alquiler
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.alquilerResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Obtener alquiler por ID
+      tags:
+      - Alquileres
+  /api/user/clientes:
+    get:
+      description: 'Obtiene una lista paginada de clientes (máx 10). Filtros opcionales:
+        empresa_id, buscar, pag.'
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      - description: Búsqueda por nombre, apellido o documento
+        in: query
+        name: buscar
+        type: string
+      - default: 1
+        description: Número de página
+        in: query
+        name: pag
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.listadoClientesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar clientes con filtros y paginación
+      tags:
+      - Clientes
+    post:
+      consumes:
+      - application/json
+      description: Crea un nuevo cliente para la empresa.
+      parameters:
+      - description: Datos del cliente
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controller.clienteRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controller.clienteResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Registrar un nuevo cliente
+      tags:
+      - Clientes
+  /api/user/clientes/{id}:
+    delete:
+      description: Elimina el registro del cliente.
+      parameters:
+      - description: ID del cliente
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Eliminar un cliente
+      tags:
+      - Clientes
+    get:
+      description: Devuelve el detalle de un cliente. Requiere enviar empresa_id por
+        query string.
+      parameters:
+      - description: ID del cliente
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.clienteResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Obtener cliente por ID
+      tags:
+      - Clientes
+    put:
+      consumes:
+      - application/json
+      description: Actualiza los datos de un cliente existente.
+      parameters:
+      - description: ID del cliente
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Datos a actualizar
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controller.clienteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.clienteResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Actualizar un cliente
+      tags:
+      - Clientes
+  /api/user/clientes/tipos-identificacion:
+    get:
+      description: Lista los tipos de identificación activos que el frontend debe
+        usar para enviar tipo_identificacion_id al crear o actualizar clientes.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/controller.tipoIdentificacionResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Catálogo de tipos de identificación
+      tags:
+      - Clientes
   /api/user/gastos:
     get:
-      description: 'Obtiene una lista paginada de gastos (máx 10). Filtros opcionales:
-        anio, mes, desde, hasta, fecha.'
+      description: 'Obtiene una lista paginada de gastos (máx 10) filtrados por empresa.
+        Requiere enviar empresa_id por query. Filtros opcionales: anio, mes, desde,
+        hasta, fecha.'
       parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
       - default: 1
         description: Número de página
         in: query
@@ -667,11 +1350,17 @@ paths:
       - Gastos
   /api/user/gastos/{id}:
     delete:
-      description: Elimina el registro de gasto permanentemente.
+      description: Elimina el registro de gasto permanentemente. Requiere enviar empresa_id
+        por query.
       parameters:
       - description: ID del gasto
         in: path
         name: id
+        required: true
+        type: integer
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
         required: true
         type: integer
       responses:
@@ -732,6 +1421,476 @@ paths:
       summary: Listar los tipos de métodos de pago
       tags:
       - Gastos
+  /api/user/inmuebles:
+    get:
+      description: Obtiene una lista paginada de inmuebles (máx 10) filtrados por
+        empresa. Permite buscar por nombre, dirección o ciudad.
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      - default: 1
+        description: Número de página
+        in: query
+        name: pag
+        type: integer
+      - description: Búsqueda por nombre, dirección o ciudad
+        in: query
+        name: buscar
+        type: string
+      - description: Filtrar por estado
+        in: query
+        name: estado
+        type: string
+      - description: Filtrar por tipo de inmueble
+        in: query
+        name: tipo
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.listadoInmueblesResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar inmuebles con filtros y paginación
+      tags:
+      - Inmuebles
+    post:
+      consumes:
+      - application/json
+      description: Crea un nuevo inmueble para la empresa.
+      parameters:
+      - description: Datos del inmueble
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controller.inmuebleRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controller.inmuebleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Registrar un nuevo inmueble
+      tags:
+      - Inmuebles
+  /api/user/inmuebles/{id}:
+    delete:
+      description: Elimina el inmueble. Requiere enviar empresa_id por query string.
+      parameters:
+      - description: ID del inmueble
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Eliminar un inmueble
+      tags:
+      - Inmuebles
+    get:
+      description: Devuelve el detalle del inmueble con sus unidades. Requiere enviar
+        empresa_id por query string.
+      parameters:
+      - description: ID del inmueble
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.inmuebleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Obtener inmueble por ID
+      tags:
+      - Inmuebles
+    put:
+      consumes:
+      - application/json
+      description: Actualiza los datos del inmueble existente.
+      parameters:
+      - description: ID del inmueble
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Datos del inmueble
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controller.inmuebleRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.inmuebleResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Actualizar un inmueble
+      tags:
+      - Inmuebles
+  /api/user/inmuebles/{id}/unidades:
+    get:
+      description: Devuelve todas las unidades del inmueble. Requiere enviar empresa_id
+        por query string.
+      parameters:
+      - description: ID del inmueble
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/controller.unidadResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar unidades de un inmueble
+      tags:
+      - Inmuebles
+    post:
+      consumes:
+      - application/json
+      description: Crea una nueva unidad asociada a un inmueble existente.
+      parameters:
+      - description: ID del inmueble
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Datos de la unidad
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controller.unidadRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controller.unidadResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Registrar unidad en un inmueble
+      tags:
+      - Inmuebles
+  /api/user/inmuebles/{id}/unidades/{unidadId}:
+    delete:
+      description: Elimina una unidad del inmueble. Requiere enviar empresa_id por
+        query string.
+      parameters:
+      - description: ID del inmueble
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: ID de la unidad
+        in: path
+        name: unidadId
+        required: true
+        type: integer
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Eliminar una unidad
+      tags:
+      - Inmuebles
+    get:
+      description: Devuelve el detalle de una unidad del inmueble. Requiere enviar
+        empresa_id por query string.
+      parameters:
+      - description: ID del inmueble
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: ID de la unidad
+        in: path
+        name: unidadId
+        required: true
+        type: integer
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.unidadResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Obtener una unidad
+      tags:
+      - Inmuebles
+    put:
+      consumes:
+      - application/json
+      description: Actualiza los datos de una unidad existente.
+      parameters:
+      - description: ID del inmueble
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: ID de la unidad
+        in: path
+        name: unidadId
+        required: true
+        type: integer
+      - description: Datos de la unidad
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controller.unidadRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.unidadResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Actualizar una unidad
+      tags:
+      - Inmuebles
+  /api/user/pagos:
+    post:
+      consumes:
+      - application/json
+      description: Registra un cobro para un alquiler.
+      parameters:
+      - description: Datos del pago
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/controller.registrarPagoRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/controller.pagoAlquilerResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Registrar pago de alquiler
+      tags:
+      - Pagos
+  /api/user/pagos/pendientes:
+    get:
+      description: Retorna contratos sin pago completo registrado para el mes actual.
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/controller.pendientePagoResponse'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar pagos pendientes del mes actual
+      tags:
+      - Pagos
   /auth/login:
     post:
       consumes:

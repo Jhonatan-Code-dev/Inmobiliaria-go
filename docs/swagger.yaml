@@ -442,9 +442,19 @@ definitions:
       total:
         type: integer
     type: object
+  controller.paginatedResponse:
+    properties:
+      datos: {}
+      paginacion:
+        $ref: '#/definitions/controller.paginadorResponse'
+    type: object
   controller.pagoAlquilerResponse:
     properties:
       alquiler_id:
+        type: integer
+      cliente:
+        type: string
+      cliente_id:
         type: integer
       fecha_pago:
         type: string
@@ -461,6 +471,8 @@ definitions:
       nota:
         type: string
       numero_recibo:
+        type: string
+      unidad:
         type: string
     type: object
   controller.pendientePagoResponse:
@@ -1932,7 +1944,46 @@ paths:
       - Inmuebles
   /api/user/pagos:
     get:
-      responses: {}
+      description: Lista pagos realizados con filtros y paginación.
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      - description: Búsqueda por cliente o unidad
+        in: query
+        name: buscar
+        type: string
+      - description: Página
+        in: query
+        name: pag
+        type: integer
+      - description: Tamaño de página
+        in: query
+        name: por_pagina
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.paginatedResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
       summary: Historial de pagos
       tags:
       - Pagos

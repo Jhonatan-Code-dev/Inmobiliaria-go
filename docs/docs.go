@@ -2004,11 +2004,72 @@ const docTemplate = `{
         },
         "/api/user/pagos": {
             "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Lista pagos realizados con filtros y paginación.",
+                "produces": [
+                    "application/json"
+                ],
                 "tags": [
                     "Pagos"
                 ],
                 "summary": "Historial de pagos",
-                "responses": {}
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Búsqueda por cliente o unidad",
+                        "name": "buscar",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Página",
+                        "name": "pag",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Tamaño de página",
+                        "name": "por_pagina",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.paginatedResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
             },
             "post": {
                 "security": [
@@ -3149,10 +3210,25 @@ const docTemplate = `{
                 }
             }
         },
+        "controller.paginatedResponse": {
+            "type": "object",
+            "properties": {
+                "datos": {},
+                "paginacion": {
+                    "$ref": "#/definitions/controller.paginadorResponse"
+                }
+            }
+        },
         "controller.pagoAlquilerResponse": {
             "type": "object",
             "properties": {
                 "alquiler_id": {
+                    "type": "integer"
+                },
+                "cliente": {
+                    "type": "string"
+                },
+                "cliente_id": {
                     "type": "integer"
                 },
                 "fecha_pago": {
@@ -3177,6 +3253,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "numero_recibo": {
+                    "type": "string"
+                },
+                "unidad": {
                     "type": "string"
                 }
             }

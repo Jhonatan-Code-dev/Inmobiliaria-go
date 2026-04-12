@@ -54,6 +54,8 @@ type PagoAlquiler struct {
 	EmpresaID          int       `json:"empresa_id"`
 	ContratoID         int       `json:"alquiler_id"`
 	ClienteID          *int      `json:"cliente_id"`
+	ClienteNombre      string    `json:"cliente_nombre,omitempty"`
+	UnidadCodigo       string    `json:"unidad_codigo,omitempty"`
 	NumeroRecibo       string    `json:"numero_recibo"`
 	FechaPago          time.Time `json:"fecha_pago"`
 	Moneda             string    `json:"moneda"`
@@ -62,6 +64,13 @@ type PagoAlquiler struct {
 	MetodoPago         string    `json:"metodo_pago"`
 	Nota               *string   `json:"nota"`
 	MesCorrespondiente int       `json:"mes_correspondiente"`
+}
+
+type PagoFiltros struct {
+	EmpresaID int
+	Busqueda  string
+	Pagina    int
+	Limite    int
 }
 
 type PagoPendiente struct {

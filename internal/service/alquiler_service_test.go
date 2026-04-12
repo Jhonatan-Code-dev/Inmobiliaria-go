@@ -43,7 +43,7 @@ func (s *pagoRepoStub) ListarPendientesMesActual(ctx context.Context, empresaID 
 	return nil, nil
 }
 
-func (s *pagoRepoStub) Listar(ctx context.Context, empresaID int, pagina, limite int) ([]*domain.PagoAlquiler, int, error) {
+func (s *pagoRepoStub) Listar(ctx context.Context, filtros domain.PagoFiltros) ([]*domain.PagoAlquiler, int, error) {
 	return nil, 0, nil
 }
 

@@ -328,33 +328,69 @@ func (r *PagoAlquilerRepoEnt) Registrar(ctx context.Context, pago *domain.Regist
 	}, nil
 }
 
-func (r *PagoAlquilerRepoEnt) Listar(ctx context.Context, empresaID int, pagina, limite int) ([]*domain.PagoAlquiler, int, error) {
-	query := r.client.Pago.Query().Where(entPago.EmpresaIDEQ(empresaID))
+func (r *PagoAlquilerRepoEnt) Listar(ctx context.Context, filtros domain.PagoFiltros) ([]*domain.PagoAlquiler, int, error) {
+	query := r.client.Pago.Query().
+		Where(entPago.EmpresaIDEQ(filtros.EmpresaID), entPago.EstadoNEQ(entPago.EstadoAnulado)).
+		WithCliente().
+		WithContrato(func(q *ent.ContratoQuery) {
+			q.WithUnidad()
+		})
+
+	if filtros.Busqueda != "" {
+		query = query.Where(
+			entPago.Or(
+				entPago.NumeroReciboContainsFold(filtros.Busqueda),
+				entPago.HasClienteWith(
+					entCliente.Or(
+						entCliente.NombresContainsFold(filtros.Busqueda),
+						entCliente.ApellidosContainsFold(filtros.Busqueda),
+						entCliente.DocumentoNumeroContainsFold(filtros.Busqueda),
+					),
+				),
+				entPago.HasContratoWith(
+					entContrato.HasUnidadWith(
+						entUnidad.CodigoContainsFold(filtros.Busqueda),
+					),
+				),
+			),
+		)
+	}
+
 	total, err := query.Count(ctx)
 	if err != nil {
 		return nil, 0, err
 	}
 
-	offset := (pagina - 1) * limite
-	list, err := query.Limit(limite).Offset(offset).Order(ent.Desc(entPago.FieldFechaPago)).All(ctx)
+	offset := (filtros.Pagina - 1) * filtros.Limite
+	list, err := query.Limit(filtros.Limite).Offset(offset).Order(ent.Desc(entPago.FieldFechaPago)).All(ctx)
 	if err != nil {
 		return nil, 0, err
 	}
 
 	out := make([]*domain.PagoAlquiler, 0, len(list))
 	for _, item := range list {
+		var clienteNombre string
+		if item.Edges.Cliente != nil {
+			clienteNombre = nombreClienteContrato(item.Edges.Cliente)
+		}
+		var unidadCodigo string
+		if item.Edges.Contrato != nil && item.Edges.Contrato.Edges.Unidad != nil {
+			unidadCodigo = item.Edges.Contrato.Edges.Unidad.Codigo
+		}
 		out = append(out, &domain.PagoAlquiler{
-			ID:               item.ID,
-			EmpresaID:        item.EmpresaID,
-			ContratoID:       ptrToInt(item.ContratoID),
-			ClienteID:        item.ClienteID,
-			NumeroRecibo:     item.NumeroRecibo,
-			FechaPago:        item.FechaPago,
-			Moneda:           item.Moneda,
-			MontoPagado:      float64(item.MontoTotal) / 100,
-			MontoPagadoCents: item.MontoTotal,
-			MetodoPago:       string(item.Metodo),
-			Nota:             item.Notas,
+			ID:                 item.ID,
+			EmpresaID:          item.EmpresaID,
+			ContratoID:         ptrToInt(item.ContratoID),
+			ClienteID:          item.ClienteID,
+			ClienteNombre:      clienteNombre,
+			UnidadCodigo:       unidadCodigo,
+			NumeroRecibo:       item.NumeroRecibo,
+			FechaPago:          item.FechaPago,
+			Moneda:             item.Moneda,
+			MontoPagado:        float64(item.MontoTotal) / 100,
+			MontoPagadoCents:   item.MontoTotal,
+			MetodoPago:         string(item.Metodo),
+			Nota:               item.Notas,
 		})
 	}
 	return out, total, nil

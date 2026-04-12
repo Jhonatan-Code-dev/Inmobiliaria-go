@@ -1,6 +1,6 @@
 # API de Alquileres y Pagos
 
-Módulo para contratos de alquiler y registro de cobros en Alquilamax.
+Módulo para contratos de alquiler y registro de cobros en Inmobiliaria.
 
 **Base URL Alquileres:** `http://localhost:5000/api/user/alquileres`  
 **Base URL Pagos:** `http://localhost:5000/api/user/pagos`
@@ -156,7 +156,52 @@ Módulo para contratos de alquiler y registro de cobros en Alquilamax.
 }
 ```
 
-## 5. Listar pagos pendientes del mes actual
+## 5. Listar pagos (Historial)
+
+- **Endpoint:** `GET /api/user/pagos?empresa_id=1&pag=1&por_pagina=10&buscar=`
+
+Obtiene la lista de pagos realizados. Soporta paginación y ordenamiento por fecha de pago más reciente de forma automática.
+
+### Query params
+
+| Parámetro | Tipo | Obligatorio | Descripción |
+|---|---|---|---|
+| `empresa_id` | int | Sí | Empresa dueña de los pagos. |
+| `buscar` | string | No | Busca por nombres, apellidos, documento del cliente, o código/nombre de la unidad. |
+| `pag` | int | No | Página actual para paginación. |
+| `por_pagina` | int | No | Tamaño de página. Default `10`. |
+
+### Respuesta `200`
+
+```json
+{
+  "datos": [
+    {
+      "id": 4,
+      "alquiler_id": 9,
+      "cliente_id": 7,
+      "cliente": "Juan Perez",
+      "unidad": "A-101",
+      "numero_recibo": "PAGO-9-1775928644393255354",
+      "fecha_pago": "2026-04-11",
+      "moneda": "PEN",
+      "monto_pagado": 500.00,
+      "metodo_pago": "efectivo",
+      "nota": "Pago alquiler",
+      "mes_correspondiente": 0
+    }
+  ],
+  "paginacion": {
+    "total": 6,
+    "paginas": 1,
+    "pagina": 0,
+    "pagina_actual": 1,
+    "por_pagina": 10
+  }
+}
+```
+
+## 6. Listar pagos pendientes del mes actual
 
 - **Endpoint:** `GET /api/user/pagos/pendientes?empresa_id=1`
 
@@ -175,7 +220,7 @@ Módulo para contratos de alquiler y registro de cobros en Alquilamax.
 ]
 ```
 
-## Errores importantes
+## 7. Errores importantes
 
 ### Cliente de otra empresa
 
@@ -206,6 +251,7 @@ Módulo para contratos de alquiler y registro de cobros en Alquilamax.
 - Para crear contrato, primero cargar clientes e inmuebles/unidades disponibles.
 - No intentar crear contratos sobre unidades ya ocupadas.
 - Usar `buscar` en alquileres para buscar por cliente o código de unidad.
+- Usar `GET /api/user/pagos` para ver el historial y buscar copias de recibos pasados.
 - Usar `GET /api/user/pagos/pendientes` para dashboard de morosidad.
 - En el formulario de pago, enviar `mes_correspondiente` del 1 al 12.
 - Mostrar siempre `response.message` en cualquier error.

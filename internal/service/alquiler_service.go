@@ -108,14 +108,14 @@ func (s *PagoAlquilerService) ListarPendientesMesActual(ctx context.Context, emp
 	return s.repo.ListarPendientesMesActual(ctx, empresaID, time.Now().UTC())
 }
 
-func (s *PagoAlquilerService) ListarHistorial(ctx context.Context, empresaID int, pagina, limite int) ([]*domain.PagoAlquiler, int, error) {
-	if pagina <= 0 {
-		pagina = 1
+func (s *PagoAlquilerService) ListarHistorial(ctx context.Context, filtros domain.PagoFiltros) ([]*domain.PagoAlquiler, int, error) {
+	if filtros.Pagina <= 0 {
+		filtros.Pagina = 1
 	}
-	if limite <= 0 {
-		limite = 10
+	if filtros.Limite <= 0 {
+		filtros.Limite = 10
 	}
-	return s.repo.Listar(ctx, empresaID, pagina, limite)
+	return s.repo.Listar(ctx, filtros)
 }
 
 func (s *PagoAlquilerService) Obtener(ctx context.Context, id int, empresaID int) (*domain.PagoAlquiler, error) {

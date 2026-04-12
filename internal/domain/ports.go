@@ -90,7 +90,7 @@ type (
 	PagoAlquilerRepository interface {
 		Registrar(ctx context.Context, pago *RegistroPagoAlquiler) (*PagoAlquiler, error)
 		ListarPendientesMesActual(ctx context.Context, empresaID int, now time.Time) ([]*PagoPendiente, error)
-		Listar(ctx context.Context, empresaID int, pagina, limite int) ([]*PagoAlquiler, int, error)
+		Listar(ctx context.Context, filtros PagoFiltros) ([]*PagoAlquiler, int, error)
 		BuscarPorID(ctx context.Context, id int, empresaID int) (*PagoAlquiler, error)
 		Actualizar(ctx context.Context, pago *PagoAlquiler) (*PagoAlquiler, error)
 		Eliminar(ctx context.Context, id int, empresaID int) error
@@ -139,7 +139,7 @@ type (
 	PagoAlquilerService interface {
 		Registrar(ctx context.Context, pago *RegistroPagoAlquiler) (*PagoAlquiler, error)
 		ListarPendientesMesActual(ctx context.Context, empresaID int) ([]*PagoPendiente, error)
-		ListarHistorial(ctx context.Context, empresaID int, pagina, limite int) ([]*PagoAlquiler, int, error)
+		ListarHistorial(ctx context.Context, filtros PagoFiltros) ([]*PagoAlquiler, int, error)
 		Obtener(ctx context.Context, id int, empresaID int) (*PagoAlquiler, error)
 		Actualizar(ctx context.Context, id int, empresaID int, notas *string, metodoPago string) (*PagoAlquiler, error)
 		Anular(ctx context.Context, id int, empresaID int) error

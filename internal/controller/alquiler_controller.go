@@ -2,6 +2,7 @@ package controller
 
 import (
 	"strconv"
+	"strings"
 	"time"
 
 	"rentals-go/internal/domain"
@@ -61,6 +62,9 @@ type registrarPagoRequest struct {
 type pagoAlquilerResponse struct {
 	ID                 int          `json:"id"`
 	AlquilerID         int          `json:"alquiler_id"`
+	ClienteID          *int         `json:"cliente_id,omitempty"`
+	Cliente            string       `json:"cliente,omitempty"`
+	Unidad             string       `json:"unidad,omitempty"`
 	NumeroRecibo       string       `json:"numero_recibo"`
 	FechaPago          string       `json:"fecha_pago"`
 	Moneda             string       `json:"moneda"`
@@ -269,6 +273,9 @@ func (h *AlquilerController) Eliminar(c *fiber.Ctx) error {
 	empresaID := c.Locals("empresa_id").(int)
 	id, _ := c.ParamsInt("id")
 	if err := h.svc.Eliminar(c.Context(), id, empresaID); err != nil {
+		if strings.Contains(err.Error(), "foreign key constraint fails") {
+			return c.Status(400).JSON(errorResponse{Message: "No se puede eliminar el alquiler porque tiene pagos o cargos en su historial."})
+		}
 		return c.Status(400).JSON(errorResponse{Message: err.Error()})
 	}
 	return c.JSON(fiber.Map{"message": "contrato eliminado correctamente"})
@@ -363,14 +370,36 @@ func (h *AlquilerController) PendientesPago(c *fiber.Ctx) error {
 
 // ListarPagos godoc
 // @Summary Historial de pagos
+// @Description Lista pagos realizados con filtros y paginación.
 // @Tags Pagos
+// @Security BearerAuth
+// @Produce json
+// @Param empresa_id query int true "ID de la empresa"
+// @Param buscar query string false "Búsqueda por cliente o unidad"
+// @Param pag query int false "Página"
+// @Param por_pagina query int false "Tamaño de página"
+// @Success 200 {object} paginatedResponse
+// @Failure 400 {object} errorResponse
+// @Failure 403 {object} errorResponse
+// @Failure 500 {object} errorResponse
 // @Router /api/user/pagos [get]
 func (h *AlquilerController) ListarPagos(c *fiber.Ctx) error {
-	empresaID := c.Locals("empresa_id").(int)
-	pag := c.QueryInt("pag", 1)
-	limite := c.QueryInt("por_pagina", 10)
+	empresaID, errResp := obtenerEmpresaIDListado(c)
+	if errResp != nil {
+		return c.Status(errResp.Code).JSON(errorResponse{Message: errResp.Message})
+	}
+	porPagina := c.QueryInt("por_pagina", 10)
+	if porPagina <= 0 {
+		porPagina = 10
+	}
+	filtros := domain.PagoFiltros{
+		EmpresaID: empresaID,
+		Busqueda:  c.Query("buscar"),
+		Pagina:    c.QueryInt("pag", 1),
+		Limite:    porPagina,
+	}
 
-	list, total, err := h.pagoSvc.ListarHistorial(c.Context(), empresaID, pag, limite)
+	list, total, err := h.pagoSvc.ListarHistorial(c.Context(), filtros)
 	if err != nil {
 		return c.Status(500).JSON(errorResponse{Message: err.Error()})
 	}
@@ -384,9 +413,9 @@ func (h *AlquilerController) ListarPagos(c *fiber.Ctx) error {
 		Datos: out,
 		Paginacion: paginadorResponse{
 			Total:        total,
-			PaginaActual: pag,
-			PorPagina:    limite,
-			Paginas:      (total + limite - 1) / limite,
+			PaginaActual: filtros.Pagina,
+			PorPagina:    filtros.Limite,
+			Paginas:      (total + filtros.Limite - 1) / filtros.Limite,
 		},
 	})
 }
@@ -471,6 +500,9 @@ func mapPagoAlquilerResponse(item *domain.PagoAlquiler) pagoAlquilerResponse {
 	return pagoAlquilerResponse{
 		ID:                 item.ID,
 		AlquilerID:         item.ContratoID,
+		ClienteID:          item.ClienteID,
+		Cliente:            item.ClienteNombre,
+		Unidad:             item.UnidadCodigo,
 		NumeroRecibo:       item.NumeroRecibo,
 		FechaPago:          item.FechaPago.Format("2006-01-02"),
 		Moneda:             item.Moneda,

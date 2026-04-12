@@ -1,8 +1,5 @@
-# Inmobiliaria: Sistema de Gestión Inmobiliaria
 
-Bienvenido al repositorio principal de Inmobiliaria. Este sistema es una plataforma completa (SaaS) orientada a la **gestión eficiente de propiedades, contratos de alquiler, finanzas (ingresos y egresos) y control de mantenimiento mentalizado para corredores y empresas de bienes raíces**.
 
-El backend está desarrollado en Go con una arquitectura limpia centrada en el dominio, asegurando una gran capacidad de escalabilidad, seguridad en las transacciones e historial auditable.
 
 ---
 

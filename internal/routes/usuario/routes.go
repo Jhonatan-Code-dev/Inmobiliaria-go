@@ -70,6 +70,7 @@ func Register(app *fiber.App, appDI *di.App) {
 	// Módulo de Staff
 	staff := app.Group("/api/user/staff")
 	staff.Use(middlewares.TenantAuth(appDI.Config))
+	staff.Get("/roles", appDI.StaffCtrl.ListarRoles)
 	staff.Get("/", appDI.StaffCtrl.Listar)
 	staff.Get("/:id", appDI.StaffCtrl.Obtener)
 	staff.Post("/", appDI.StaffCtrl.Crear)
@@ -102,6 +103,17 @@ func Register(app *fiber.App, appDI *di.App) {
 	tickets.Get("/:id", appDI.TicketCtrl.Obtener)
 	tickets.Put("/:id", appDI.TicketCtrl.Actualizar)
 	tickets.Delete("/:id", appDI.TicketCtrl.Eliminar)
+
+	// Módulo de Dashboard / KPIs
+	dashboard := app.Group("/api/user/dashboard")
+	dashboard.Use(middlewares.TenantAuth(appDI.Config))
+	dashboard.Get("/", appDI.DashboardCtrl.ResumenGeneral)
+	dashboard.Get("/ocupacion", appDI.DashboardCtrl.Ocupacion)
+	dashboard.Get("/morosidad", appDI.DashboardCtrl.Morosidad)
+	dashboard.Get("/financiero", appDI.DashboardCtrl.ReporteFinanciero)
+	dashboard.Get("/contratos-por-vencer", appDI.DashboardCtrl.ContratosProximosVencer)
+	dashboard.Get("/estado-cuenta/:clienteId", appDI.DashboardCtrl.EstadoCuentaCliente)
+	dashboard.Get("/top-unidades", appDI.DashboardCtrl.TopUnidades)
 }
 
 func registrarRutasAuth(group fiber.Router, appDI *di.App) {

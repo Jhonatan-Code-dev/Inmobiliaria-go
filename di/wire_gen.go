@@ -53,7 +53,7 @@ func InitializeApp() (*App, error) {
 	pagoAlquilerService := service.NewPagoAlquilerService(pagoAlquilerRepoEnt)
 	alquilerController := controller.NewAlquilerController(alquilerService, pagoAlquilerService)
 	staffRepoEnt := repository.NewStaffRepo(client)
-	staffService := service.NewStaffService(staffRepoEnt)
+	staffService := service.NewStaffService(staffRepoEnt, rolRepoEnt)
 	staffController := controller.NewStaffController(staffService)
 	cargoRepoEnt := repository.NewCargoRepo(client)
 	cargoService := service.NewCargoService(cargoRepoEnt, alquilerRepoEnt)
@@ -64,6 +64,9 @@ func InitializeApp() (*App, error) {
 	ticketRepoEnt := repository.NewTicketRepo(client)
 	ticketService := service.NewTicketService(ticketRepoEnt)
 	ticketController := controller.NewTicketController(ticketService)
+	dashboardRepoEnt := repository.NewDashboardRepo(client)
+	dashboardService := service.NewDashboardService(dashboardRepoEnt)
+	dashboardController := controller.NewDashboardController(dashboardService)
 	app := &App{
 		Config:       config,
 		EntClient:    client,
@@ -78,6 +81,7 @@ func InitializeApp() (*App, error) {
 		CargoCtrl:    cargoController,
 		ServicioCtrl: servicioMedicionController,
 		TicketCtrl:   ticketController,
+		DashboardCtrl: dashboardController,
 	}
 	return app, nil
 }

@@ -24,6 +24,7 @@ type (
 	RolRepository interface {
 		BuscarPorNombre(ctx context.Context, nombre string) (*Rol, error)
 		Crear(ctx context.Context, rol *Rol) (*Rol, error)
+		Listar(ctx context.Context) ([]*Rol, error)
 	}
 
 	UsuarioRepository interface {
@@ -159,6 +160,7 @@ type (
 		Registrar(ctx context.Context, s *RegistroStaff) (*Staff, error)
 		Actualizar(ctx context.Context, id int, empresaID int, rolID int, estado string) (*Staff, error)
 		Eliminar(ctx context.Context, id int, empresaID int) error
+		ListarRoles(ctx context.Context) ([]*Rol, error)
 	}
 
 	CargoRepository interface {

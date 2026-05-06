@@ -335,6 +335,8 @@ func manejarErrorCliente(err error, entidad string) error {
 		return fiber.NewError(fiber.StatusNotFound, entidad+" no encontrado")
 	case errors.Is(err, domain.ErrForbidden):
 		return fiber.NewError(fiber.StatusForbidden, limpiarPrefijoError(err.Error(), "forbidden: "))
+	case errors.Is(err, domain.ErrClienteConDatos):
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	default:
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}

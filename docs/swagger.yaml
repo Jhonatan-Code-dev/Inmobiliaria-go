@@ -635,6 +635,214 @@ definitions:
       usuario:
         type: string
     type: object
+  domain.CargoResumen:
+    properties:
+      cargo_id:
+        type: integer
+      concepto:
+        type: string
+      estado:
+        type: string
+      fecha_vencimiento:
+        type: string
+      monto:
+        type: number
+      saldo:
+        type: number
+    type: object
+  domain.ClienteMoroso:
+    properties:
+      cliente_id:
+        type: integer
+      contrato_id:
+        type: integer
+      dias_vencido:
+        type: integer
+      fecha_vencimiento:
+        type: string
+      monto_pendiente:
+        type: number
+      nombre_completo:
+        type: string
+      propiedad_nombre:
+        type: string
+      unidad_codigo:
+        type: string
+    type: object
+  domain.ContratoProximoVencer:
+    properties:
+      cliente_nombre:
+        type: string
+      codigo:
+        type: string
+      contrato_id:
+        type: integer
+      dias_restantes:
+        type: integer
+      fecha_fin:
+        type: string
+      monto_renta:
+        type: number
+      propiedad_nombre:
+        type: string
+      unidad_codigo:
+        type: string
+    type: object
+  domain.EstadoCuentaCliente:
+    properties:
+      cargos:
+        description: Desglose de cargos
+        items:
+          $ref: '#/definitions/domain.CargoResumen'
+        type: array
+      cliente_id:
+        type: integer
+      correo:
+        type: string
+      documento:
+        type: string
+      nombre_completo:
+        type: string
+      saldo_pendiente:
+        type: number
+      total_cargado:
+        description: Saldos
+        type: number
+      total_pagado:
+        type: number
+    type: object
+  domain.OcupacionPropiedad:
+    properties:
+      direccion:
+        type: string
+      libres:
+        type: integer
+      nombre:
+        type: string
+      ocupadas:
+        type: integer
+      propiedad_id:
+        type: integer
+      tasa_ocupacion_pct:
+        type: number
+      total_unidades:
+        type: integer
+    type: object
+  domain.PuntoFinanciero:
+    properties:
+      balance:
+        type: number
+      gastos:
+        type: number
+      ingresos:
+        type: number
+      periodo:
+        description: '"2025-01", "2025-02" ...'
+        type: string
+    type: object
+  domain.ReporteFinanciero:
+    properties:
+      balance_neto:
+        type: number
+      desde:
+        type: string
+      hasta:
+        type: string
+      serie_mensual:
+        items:
+          $ref: '#/definitions/domain.PuntoFinanciero'
+        type: array
+      total_gastos:
+        type: number
+      total_ingresos:
+        type: number
+    type: object
+  domain.ResumenGeneral:
+    properties:
+      anio:
+        type: integer
+      balance_neto_mes:
+        type: number
+      contratos_activos:
+        description: Contratos
+        type: integer
+      contratos_borrador:
+        type: integer
+      contratos_vencidos:
+        type: integer
+      gastos_mes_actual:
+        type: number
+      ingresos_mes_actual:
+        description: Finanzas del mes actual
+        type: number
+      mes:
+        description: Periodo
+        type: integer
+      monto_pendiente_cobro:
+        type: number
+      tasa_ocupacion_pct:
+        description: 0-100
+        type: number
+      tickets_abiertos:
+        description: Tickets
+        type: integer
+      tickets_en_progreso:
+        type: integer
+      total_clientes:
+        description: Clientes
+        type: integer
+      total_morosos:
+        description: Morosidad
+        type: integer
+      total_propiedades:
+        description: Inmuebles
+        type: integer
+      total_unidades:
+        type: integer
+      unidades_libres:
+        type: integer
+      unidades_ocupadas:
+        type: integer
+    type: object
+  domain.ResumenMorosidad:
+    properties:
+      monto_total_pendiente:
+        type: number
+      morosos:
+        items:
+          $ref: '#/definitions/domain.ClienteMoroso'
+        type: array
+      total_morosos:
+        type: integer
+    type: object
+  domain.ResumenOcupacion:
+    properties:
+      por_propiedad:
+        items:
+          $ref: '#/definitions/domain.OcupacionPropiedad'
+        type: array
+      tasa_global_pct:
+        type: number
+      total_libres:
+        type: integer
+      total_ocupadas:
+        type: integer
+      total_unidades:
+        type: integer
+    type: object
+  domain.TopUnidad:
+    properties:
+      codigo:
+        type: string
+      propiedad_nombre:
+        type: string
+      total_ingresos:
+        type: number
+      total_pagos:
+        type: integer
+      unidad_id:
+        type: integer
+    type: object
   money.Amount:
     type: object
 info:
@@ -1391,6 +1599,283 @@ paths:
       summary: Catálogo de tipos de identificación
       tags:
       - Clientes
+  /api/user/dashboard:
+    get:
+      description: 'Retorna los indicadores clave del mes actual: ocupación, ingresos,
+        gastos, morosidad y contratos activos. Es el endpoint principal para el panel
+        de control (dashboard).'
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.ResumenGeneral'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: KPIs generales del negocio
+      tags:
+      - Dashboard
+  /api/user/dashboard/contratos-por-vencer:
+    get:
+      description: Lista los contratos activos cuya fecha_fin es menor o igual a los
+        próximos N días. Por defecto 30 días.
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      - description: 'Días de anticipación (default: 30)'
+        in: query
+        name: dias
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.ContratoProximoVencer'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Contratos próximos a vencer
+      tags:
+      - Dashboard
+  /api/user/dashboard/estado-cuenta/{clienteId}:
+    get:
+      description: 'Devuelve el resumen financiero completo del cliente: cargos emitidos,
+        monto pagado y saldo pendiente, con el desglose cargo por cargo.'
+      parameters:
+      - description: ID del cliente (inquilino)
+        in: path
+        name: clienteId
+        required: true
+        type: integer
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.EstadoCuentaCliente'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Estado de cuenta de un inquilino
+      tags:
+      - Dashboard
+  /api/user/dashboard/financiero:
+    get:
+      description: Devuelve el total de ingresos, gastos y balance neto en el rango
+        indicado, además de la serie mensual desglosada. Si no se envían fechas, usa
+        los últimos 6 meses.
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      - description: Fecha inicio (YYYY-MM-DD)
+        in: query
+        name: desde
+        type: string
+      - description: Fecha fin (YYYY-MM-DD)
+        in: query
+        name: hasta
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.ReporteFinanciero'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Reporte financiero por rango de fechas
+      tags:
+      - Dashboard
+  /api/user/dashboard/morosidad:
+    get:
+      description: Lista todos los inquilinos con cargos vencidos sin pagar, con el
+        monto adeudado y los días de atraso.
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.ResumenMorosidad'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Reporte de inquilinos morosos
+      tags:
+      - Dashboard
+  /api/user/dashboard/ocupacion:
+    get:
+      description: 'Devuelve la tasa de ocupación global y el desglose por cada propiedad:
+        unidades totales, ocupadas y libres.'
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.ResumenOcupacion'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Tasa de ocupación por propiedad
+      tags:
+      - Dashboard
+  /api/user/dashboard/top-unidades:
+    get:
+      description: Devuelve las unidades con mayor recaudación en el rango de fechas
+        indicado. Por defecto usa el mes actual y muestra las 10 primeras.
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      - description: Fecha inicio (YYYY-MM-DD)
+        in: query
+        name: desde
+        type: string
+      - description: Fecha fin (YYYY-MM-DD)
+        in: query
+        name: hasta
+        type: string
+      - description: 'Número de resultados (default: 10)'
+        in: query
+        name: limite
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.TopUnidad'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Top unidades por ingresos generados
+      tags:
+      - Dashboard
   /api/user/gastos:
     get:
       description: 'Obtiene una lista paginada de gastos (máx 10) filtrados por empresa.
@@ -2163,6 +2648,12 @@ paths:
     put:
       responses: {}
       summary: Editar empleado
+      tags:
+      - Staff
+  /api/user/staff/roles:
+    get:
+      responses: {}
+      summary: Listar roles disponibles
       tags:
       - Staff
   /api/user/tickets:

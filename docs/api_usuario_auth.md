@@ -1,167 +1,291 @@
-# Documentación de API: Autenticación de Usuarios (Tenant)
+# Documentación de API: Usuarios, Roles y Accesos (RBAC)
 
-Esta API permite el acceso y gestión de perfil para los usuarios pertenecientes a una empresa (Business Users). El sistema utiliza autenticación basada en JWT, que puede ser manejado mediante una **cookie HTTP-only** o el encabezado **Authorization**.
+Esta documentación detalla los endpoints necesarios para la gestión de usuarios, autenticación modular y control de acceso basado en roles (RBAC) para el sistema de gestión inmobiliaria.
 
-## Resumen de Endpoints
+## 🔑 Autenticación y Seguridad
 
-| Método | Endpoint | Descripción | Acceso |
-| :--- | :--- | :--- | :--- |
-| `POST` | `/auth/login` | Iniciar sesión y obtener token/cookie. | Público |
-| `POST` | `/auth/logout` | Cerrar sesión y limpiar cookie. | Autenticado |
-| `GET` | `/me` | Obtener datos del usuario y de su empresa. | Autenticado |
+El sistema utiliza un esquema híbrido de autenticación para máxima flexibilidad:
+- **Cookies HttpOnly:** Recomendado para aplicaciones Web (manejo automático por el navegador).
+- **JWT (Bearer Token):** Recomendado para aplicaciones Mobile o integraciones externas.
 
 ---
 
-## 1. Inicio de Sesión (Login)
+## 👥 Roles del Sistema (RBAC)
 
-Autentica a un usuario y establece una sesión.
+El acceso está restringido a **4 roles predefinidos**, cada uno con responsabilidades específicas:
 
-- **URL:** `/auth/login`
-- **Método:** `POST`
-- **Headers:** `Content-Type: application/json`
+| ID | Rol | Descripción |
+| :-- | :--- | :--- |
+| **1** | **Administrador** | Acceso total al sistema, configuración de la empresa y gestión de staff. |
+| **2** | **Supervisor** | Supervisión operativa, acceso a reportes críticos y métricas de desempeño. |
+| **3** | **Vendedor** | Gestión de clientes, registro de inmuebles y creación de contratos. |
+| **4** | **Inventario** | Control de activos, equipamiento de unidades y estados físicos. |
 
-### Body (JSON)
+---
 
-| Campo | Tipo | Requerido | Descripción |
+## 🛠️ Resumen de Endpoints
+
+### Autenticación
+| Método | Endpoint | Descripción | Acceso |
 | :--- | :--- | :--- | :--- |
-| `usuario` | string | Sí | Nombre de usuario (login). |
-| `contrasena` | string | Sí | Contraseña de acceso. |
+| `POST` | `/auth/login` | Iniciar sesión y obtener token/cookie. | Público |
+| `POST` | `/auth/logout` | Finalizar sesión y limpiar cookies. | Autenticado |
+| `GET` | `/me` | Obtener perfil del usuario actual. | Autenticado |
+| `PATCH` | `/me/password` | Cambiar contraseña del usuario actual. | Autenticado |
 
-**Ejemplo de Request:**
+### Gestión de Staff (Personal)
+| Método | Endpoint | Descripción | Acceso |
+| :--- | :--- | :--- | :--- |
+| `GET` | `/api/user/staff/roles` | Obtener catálogo de roles disponibles. | Público / Autenticado |
+| `GET` | `/api/user/staff` | Listar todo el personal de la empresa. | Admin / Super |
+| `GET` | `/api/user/staff/:id` | Ver detalle de un empleado. | Admin / Super |
+| `POST` | `/api/user/staff` | Registrar un nuevo usuario de staff. | Admin |
+| `PUT` | `/api/user/staff/:id` | Editar rol o estado de un empleado. | Admin |
+| `DELETE` | `/api/user/staff/:id`| Eliminar o dar de baja a un empleado. | Admin |
+
+---
+
+## 1. Autenticación
+
+### 1.1 Login
+`POST /auth/login`
+
+**Request Body:**
 ```json
 {
-  "usuario": "yona_admin",
+  "usuario": "admin_demo",
   "contrasena": "Password123!"
 }
 ```
 
-### Respuestas
-
-#### Success (200 OK)
-Devuelve el token JWT y los datos básicos del usuario y su empresa. Se establece la cookie `token_usuario` automáticamente.
-
+**Respuesta Exitosa (200 OK):**
+Establece la cookie `token_usuario` (HttpOnly, Secure).
 ```json
 {
   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "user": {
-    "id": 12,
-    "usuario": "yona_admin",
-    "empresa_id": 5
+    "id": 1,
+    "usuario": "admin_demo",
+    "empresa_id": 10
   },
   "empresa": {
-    "id": 5,
-    "nombre": "Mi Empresa S.A.C.",
+    "id": 10,
+    "nombre": "Inmobiliaria El Sol",
     "pais": "PE",
     "moneda": "PEN",
-    "maximo_usuarios": 10,
-    "estado": true,
-    "vencimiento": "2027-04-05T15:00:00Z",
-    "creado_en": "2026-04-01T10:00:00Z"
+    "estado": true
   }
 }
 ```
 
-#### Unauthorized (401 Unauthorized)
-Credenciales incorrectas o usuario inexistente.
-
-```json
-{
-  "message": "credenciales inválidas"
-}
-```
-
 ---
 
-## 2. Cerrar Sesión (Logout)
+### 1.2 Obtener Perfil (Me)
+`GET /me`
 
-Invalida la sesión del usuario eliminando la cookie del navegador.
+Retorna los datos del usuario en sesión. Sirve para validar si el token sigue vigente.
 
-- **URL:** `/auth/logout`
-- **Método:** `POST`
-- **Acceso:** Se recomienda estar autenticado.
-
-### Respuestas
-
-#### Success (200 OK)
+**Respuesta Exitosa (200 OK):**
 ```json
 {
-  "message": "sesión cerrada"
-}
-```
-
----
-
-## 3. Obtener Perfil (Me)
-
-Retorna la información del usuario actualmente autenticado y los datos de su empresa.
-
-- **URL:** `/me`
-- **Método:** `GET`
-- **Headers:** `Authorization: Bearer <token>` (opcional si se usa cookie)
-
-### Respuestas
-
-#### Success (200 OK)
-```json
-{
-  "token": "",
   "user": {
-    "id": 12,
-    "usuario": "yona_admin",
-    "empresa_id": 5
+    "id": 1,
+    "usuario": "admin_demo",
+    "rol_id": 1,
+    "rol_nombre": "administrador",
+    "empresa_id": 10
   },
   "empresa": {
-    "id": 5,
-    "nombre": "Mi Empresa S.A.C.",
-    "pais": "PE",
-    "moneda": "PEN",
-    "maximo_usuarios": 10,
-    "estado": true,
-    "vencimiento": "2027-04-05T15:00:00Z",
-    "creado_en": "2026-04-01T10:00:00Z"
+    "id": 10,
+    "nombre": "Inmobiliaria El Sol"
   }
 }
 ```
-*Nota: El campo `token` se devuelve vacío en este endpoint.*
 
-#### Unauthorized (401 Unauthorized)
-Token inválido, expirado o falta de sesión.
+---
 
+## 2. Gestión de Staff (Usuarios de Empresa)
+
+### 2.1 Listar Roles Disponibles
+`GET /api/user/staff/roles`
+
+Obtiene el catálogo de roles definidos en el sistema para ser usados en el registro o edición de staff.
+
+**Respuesta Exitosa (200 OK):**
+```json
+[
+  {
+    "id": 1,
+    "nombre": "administrador",
+    "descripcion": "Rol con acceso administrativo total a la empresa"
+  },
+  {
+    "id": 2,
+    "nombre": "supervisor",
+    "descripcion": "Rol para supervisión operativa y reportes"
+  },
+  {
+    "id": 3,
+    "nombre": "vendedor",
+    "descripcion": "Rol para gestión comercial, clientes y contratos"
+  },
+  {
+    "id": 4,
+    "nombre": "inventario",
+    "descripcion": "Rol para control de activos y estado de unidades"
+  }
+]
+```
+
+---
+
+### 2.2 Listar Staff
+`GET /api/user/staff`
+
+**Parámetros de Query:**
+- `pag`: (int) Número de página (defecto: 1).
+- `por_pagina`: (int) Cantidad de registros (defecto: 10).
+- `buscar`: (string) Filtrar por nombre de usuario.
+
+**Respuesta Exitosa (200 OK):**
 ```json
 {
-  "message": "Unauthorized"
+  "datos": [
+    {
+      "id": 1,
+      "usuario_id": 5,
+      "usuario": "juan.perez",
+      "rol_id": 3,
+      "rol_nombre": "vendedor",
+      "principal": false,
+      "estado": "activo"
+    }
+  ],
+  "paginacion": {
+    "total": 1,
+    "pagina_actual": 1,
+    "por_pagina": 10,
+    "paginas": 1
+  }
 }
 ```
 
 ---
 
-## Detalles de Estructuras
+### 2.2 Crear Nuevo Usuario
+`POST /api/user/staff`
 
-### Objeto `user`
-| Campo | Tipo | Descripción |
-| :--- | :--- | :--- |
-| `id` | number | ID único del usuario. |
-| `usuario` | string | Nombre de usuario. |
-| `empresa_id` | number | ID de la empresa vinculada. |
-
-### Objeto `empresa`
-| Campo | Tipo | Descripción |
-| :--- | :--- | :--- |
-| `id` | number | ID único de la empresa. |
-| `nombre` | string | Nombre de la empresa. |
-| `pais` | string | Código ISO de país (ej. PE). |
-| `moneda` | string | Código ISO de la moneda principal (ej. PEN). |
-| `maximo_usuarios` | number | Límite de usuarios permitidos para esta empresa. |
-| `estado` | boolean | `true` si la empresa está activa. |
-| `vencimiento` | string | Fecha de expiración de la suscripción (ISO 8601). |
-| `creado_en` | string | Fecha de registro de la empresa. |
+**Request Body:**
+```json
+{
+  "usuario": "nuevo.vendedor",
+  "contrasena": "Temporal2024",
+  "rol_id": 3
+}
+```
+*Nota: El `empresa_id` se toma automáticamente del token de quien crea.*
 
 ---
 
-## Notas de Implementación (Frontend)
+### 2.3 Actualizar Usuario
+`PUT /api/user/staff/:id`
 
-1. **Manejo de Autenticación:** 
-   - El sistema soporta **Cookies** (recomendado para Web) y **Bearer Token** (recomendado para Mobile).
-   - Si usas cookies, asegúrate de configurar `withCredentials: true` en tus peticiones de Axios o Fetch.
-2. **Timezones:** Todas las fechas se entregan en formato UTC (Z). Se recomienda convertirlas a la zona horaria local del dispositivo para visualización.
-3. **CORS:** Las peticiones deben provenir de orígenes permitidos configurados en el servidor.
+Permite cambiar el rol o el estado (activo/inactivo) de un usuario.
+
+**Request Body:**
+```json
+{
+  "rol_id": 2,
+  "estado": "inactivo"
+}
+```
+
+---
+
+### 2.4 Eliminar Usuario
+`DELETE /api/user/staff/:id`
+
+**Restricción:** No se puede eliminar al usuario marcado como `principal: true` (dueño de la cuenta).
+
+---
+
+---
+
+## 🚀 Ejemplos de Consumo (JavaScript/Frontend)
+
+### A. Obtener Roles para un Selector (Select)
+Útil para cargar las opciones en el formulario de creación de staff.
+
+```javascript
+async function cargarRoles() {
+  const response = await fetch('/api/user/staff/roles', {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json'
+    }
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    console.error('Error al cargar roles:', error.message);
+    return [];
+  }
+
+  const roles = await response.json();
+  // El resultado es un array: [{id: 1, nombre: 'administrador'}, ...]
+  return roles;
+}
+```
+
+### B. Listar Staff de la Empresa
+Consumo recomendado para la tabla de administración de personal.
+
+```javascript
+async function listarPersonal(pagina = 1, busqueda = '') {
+  const url = `/api/user/staff?pag=${pagina}&buscar=${busqueda}`;
+  
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Accept': 'application/json'
+    }
+  });
+
+  const staffData = await response.json();
+  /* 
+    Respuesta: 
+    { 
+       datos: [...], 
+       paginacion: { total: 10, paginas: 1, pagina_actual: 1 } 
+    } 
+  */
+  return staffData;
+}
+```
+
+### C. Crear un Nuevo Empleado
+Ejemplo de envío de datos del formulario.
+
+```javascript
+async function registrarEmpleado(datos) {
+  // datos = { usuario: 'pedro.perez', contrasena: 'Pass123', rol_id: 3 }
+  const response = await fetch('/api/user/staff', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify(datos)
+  });
+
+  if (response.status === 201) {
+    alert('Empleado registrado con éxito');
+  } else {
+    const error = await response.json();
+    alert('Error: ' + error.message);
+  }
+}
+```
+
+---
+*Documentación generada para el equipo de desarrollo de Rentals Go.*

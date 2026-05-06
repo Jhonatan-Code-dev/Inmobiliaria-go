@@ -128,3 +128,16 @@ func (h *StaffController) Eliminar(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{"message": "empleado eliminado"})
 }
+
+// ListarRoles godoc
+// @Summary Listar roles disponibles
+// @Tags Staff
+// @Router /api/user/staff/roles [get]
+func (h *StaffController) ListarRoles(c *fiber.Ctx) error {
+	roles, err := h.svc.ListarRoles(c.Context())
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(errorResponse{Message: err.Error()})
+	}
+
+	return c.JSON(roles)
+}

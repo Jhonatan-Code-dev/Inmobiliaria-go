@@ -50,30 +50,38 @@ func seedAdmin(client *ent.Client) error {
 // seedRoles inicializa los roles obligatorios del sistema.
 func seedRoles(client *ent.Client) error {
 	ctx := context.Background()
-	const (
-		rolAdmin       = "administrador"
-		rolAdminDesc   = "Rol con acceso administrativo a la empresa"
-	)
 
-	exists, err := client.Rol.
-		Query().
-		Where(rol.NombreEQ(rolAdmin)).
-		Exist(ctx)
-	if err != nil {
-		return err
-	}
-	if exists {
-		return nil
+	roles := []struct {
+		nombre      string
+		descripcion string
+	}{
+		{nombre: "administrador", descripcion: "Rol con acceso administrativo total a la empresa"},
+		{nombre: "supervisor", descripcion: "Rol para supervisión operativa y reportes"},
+		{nombre: "vendedor", descripcion: "Rol para gestión comercial, clientes y contratos"},
+		{nombre: "inventario", descripcion: "Rol para control de activos y estado de unidades"},
 	}
 
-	if _, err := client.Rol.
-		Create().
-		SetNombre(rolAdmin).
-		SetDescripcion(rolAdminDesc).
-		Save(ctx); err != nil {
-		return err
+	for _, r := range roles {
+		exists, err := client.Rol.
+			Query().
+			Where(rol.NombreEQ(r.nombre)).
+			Exist(ctx)
+		if err != nil {
+			return err
+		}
+		if exists {
+			continue
+		}
+
+		if _, err := client.Rol.
+			Create().
+			SetNombre(r.nombre).
+			SetDescripcion(r.descripcion).
+			Save(ctx); err != nil {
+			return err
+		}
+		log.Printf("🟦 Rol '%s' inicializado\n", r.nombre)
 	}
-	log.Println("🟦 Rol 'administrador' inicializado")
 	return nil
 }
 

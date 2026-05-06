@@ -7,11 +7,16 @@ import (
 )
 
 type StaffService struct {
-	repo domain.StaffRepository
+	repo    domain.StaffRepository
+	rolRepo domain.RolRepository
 }
 
-func NewStaffService(repo domain.StaffRepository) *StaffService {
-	return &StaffService{repo: repo}
+func NewStaffService(repo domain.StaffRepository, rolRepo domain.RolRepository) *StaffService {
+	return &StaffService{repo: repo, rolRepo: rolRepo}
+}
+
+func (s *StaffService) ListarRoles(ctx context.Context) ([]*domain.Rol, error) {
+	return s.rolRepo.Listar(ctx)
 }
 
 func (s *StaffService) Listar(ctx context.Context, filtros domain.StaffFiltros) ([]*domain.Staff, int, error) {

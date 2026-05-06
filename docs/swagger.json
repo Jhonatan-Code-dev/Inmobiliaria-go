@@ -1157,6 +1157,425 @@
                 }
             }
         },
+        "/api/user/dashboard": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retorna los indicadores clave del mes actual: ocupación, ingresos, gastos, morosidad y contratos activos. Es el endpoint principal para el panel de control (dashboard).",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "KPIs generales del negocio",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ResumenGeneral"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/dashboard/contratos-por-vencer": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Lista los contratos activos cuya fecha_fin es menor o igual a los próximos N días. Por defecto 30 días.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Contratos próximos a vencer",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Días de anticipación (default: 30)",
+                        "name": "dias",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.ContratoProximoVencer"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/dashboard/estado-cuenta/{clienteId}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Devuelve el resumen financiero completo del cliente: cargos emitidos, monto pagado y saldo pendiente, con el desglose cargo por cargo.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Estado de cuenta de un inquilino",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del cliente (inquilino)",
+                        "name": "clienteId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.EstadoCuentaCliente"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/dashboard/financiero": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Devuelve el total de ingresos, gastos y balance neto en el rango indicado, además de la serie mensual desglosada. Si no se envían fechas, usa los últimos 6 meses.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Reporte financiero por rango de fechas",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Fecha inicio (YYYY-MM-DD)",
+                        "name": "desde",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Fecha fin (YYYY-MM-DD)",
+                        "name": "hasta",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ReporteFinanciero"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/dashboard/morosidad": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Lista todos los inquilinos con cargos vencidos sin pagar, con el monto adeudado y los días de atraso.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Reporte de inquilinos morosos",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ResumenMorosidad"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/dashboard/ocupacion": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Devuelve la tasa de ocupación global y el desglose por cada propiedad: unidades totales, ocupadas y libres.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Tasa de ocupación por propiedad",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ResumenOcupacion"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/dashboard/top-unidades": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Devuelve las unidades con mayor recaudación en el rango de fechas indicado. Por defecto usa el mes actual y muestra las 10 primeras.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Top unidades por ingresos generados",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Fecha inicio (YYYY-MM-DD)",
+                        "name": "desde",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Fecha fin (YYYY-MM-DD)",
+                        "name": "hasta",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Número de resultados (default: 10)",
+                        "name": "limite",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.TopUnidad"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/controller.errorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/user/gastos": {
             "get": {
                 "security": [
@@ -2310,6 +2729,15 @@
                     "Staff"
                 ],
                 "summary": "Registrar nuevo empleado",
+                "responses": {}
+            }
+        },
+        "/api/user/staff/roles": {
+            "get": {
+                "tags": [
+                    "Staff"
+                ],
+                "summary": "Listar roles disponibles",
                 "responses": {}
             }
         },
@@ -3495,6 +3923,318 @@
                 },
                 "usuario": {
                     "type": "string"
+                }
+            }
+        },
+        "domain.CargoResumen": {
+            "type": "object",
+            "properties": {
+                "cargo_id": {
+                    "type": "integer"
+                },
+                "concepto": {
+                    "type": "string"
+                },
+                "estado": {
+                    "type": "string"
+                },
+                "fecha_vencimiento": {
+                    "type": "string"
+                },
+                "monto": {
+                    "type": "number"
+                },
+                "saldo": {
+                    "type": "number"
+                }
+            }
+        },
+        "domain.ClienteMoroso": {
+            "type": "object",
+            "properties": {
+                "cliente_id": {
+                    "type": "integer"
+                },
+                "contrato_id": {
+                    "type": "integer"
+                },
+                "dias_vencido": {
+                    "type": "integer"
+                },
+                "fecha_vencimiento": {
+                    "type": "string"
+                },
+                "monto_pendiente": {
+                    "type": "number"
+                },
+                "nombre_completo": {
+                    "type": "string"
+                },
+                "propiedad_nombre": {
+                    "type": "string"
+                },
+                "unidad_codigo": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.ContratoProximoVencer": {
+            "type": "object",
+            "properties": {
+                "cliente_nombre": {
+                    "type": "string"
+                },
+                "codigo": {
+                    "type": "string"
+                },
+                "contrato_id": {
+                    "type": "integer"
+                },
+                "dias_restantes": {
+                    "type": "integer"
+                },
+                "fecha_fin": {
+                    "type": "string"
+                },
+                "monto_renta": {
+                    "type": "number"
+                },
+                "propiedad_nombre": {
+                    "type": "string"
+                },
+                "unidad_codigo": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.EstadoCuentaCliente": {
+            "type": "object",
+            "properties": {
+                "cargos": {
+                    "description": "Desglose de cargos",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.CargoResumen"
+                    }
+                },
+                "cliente_id": {
+                    "type": "integer"
+                },
+                "correo": {
+                    "type": "string"
+                },
+                "documento": {
+                    "type": "string"
+                },
+                "nombre_completo": {
+                    "type": "string"
+                },
+                "saldo_pendiente": {
+                    "type": "number"
+                },
+                "total_cargado": {
+                    "description": "Saldos",
+                    "type": "number"
+                },
+                "total_pagado": {
+                    "type": "number"
+                }
+            }
+        },
+        "domain.OcupacionPropiedad": {
+            "type": "object",
+            "properties": {
+                "direccion": {
+                    "type": "string"
+                },
+                "libres": {
+                    "type": "integer"
+                },
+                "nombre": {
+                    "type": "string"
+                },
+                "ocupadas": {
+                    "type": "integer"
+                },
+                "propiedad_id": {
+                    "type": "integer"
+                },
+                "tasa_ocupacion_pct": {
+                    "type": "number"
+                },
+                "total_unidades": {
+                    "type": "integer"
+                }
+            }
+        },
+        "domain.PuntoFinanciero": {
+            "type": "object",
+            "properties": {
+                "balance": {
+                    "type": "number"
+                },
+                "gastos": {
+                    "type": "number"
+                },
+                "ingresos": {
+                    "type": "number"
+                },
+                "periodo": {
+                    "description": "\"2025-01\", \"2025-02\" ...",
+                    "type": "string"
+                }
+            }
+        },
+        "domain.ReporteFinanciero": {
+            "type": "object",
+            "properties": {
+                "balance_neto": {
+                    "type": "number"
+                },
+                "desde": {
+                    "type": "string"
+                },
+                "hasta": {
+                    "type": "string"
+                },
+                "serie_mensual": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.PuntoFinanciero"
+                    }
+                },
+                "total_gastos": {
+                    "type": "number"
+                },
+                "total_ingresos": {
+                    "type": "number"
+                }
+            }
+        },
+        "domain.ResumenGeneral": {
+            "type": "object",
+            "properties": {
+                "anio": {
+                    "type": "integer"
+                },
+                "balance_neto_mes": {
+                    "type": "number"
+                },
+                "contratos_activos": {
+                    "description": "Contratos",
+                    "type": "integer"
+                },
+                "contratos_borrador": {
+                    "type": "integer"
+                },
+                "contratos_vencidos": {
+                    "type": "integer"
+                },
+                "gastos_mes_actual": {
+                    "type": "number"
+                },
+                "ingresos_mes_actual": {
+                    "description": "Finanzas del mes actual",
+                    "type": "number"
+                },
+                "mes": {
+                    "description": "Periodo",
+                    "type": "integer"
+                },
+                "monto_pendiente_cobro": {
+                    "type": "number"
+                },
+                "tasa_ocupacion_pct": {
+                    "description": "0-100",
+                    "type": "number"
+                },
+                "tickets_abiertos": {
+                    "description": "Tickets",
+                    "type": "integer"
+                },
+                "tickets_en_progreso": {
+                    "type": "integer"
+                },
+                "total_clientes": {
+                    "description": "Clientes",
+                    "type": "integer"
+                },
+                "total_morosos": {
+                    "description": "Morosidad",
+                    "type": "integer"
+                },
+                "total_propiedades": {
+                    "description": "Inmuebles",
+                    "type": "integer"
+                },
+                "total_unidades": {
+                    "type": "integer"
+                },
+                "unidades_libres": {
+                    "type": "integer"
+                },
+                "unidades_ocupadas": {
+                    "type": "integer"
+                }
+            }
+        },
+        "domain.ResumenMorosidad": {
+            "type": "object",
+            "properties": {
+                "monto_total_pendiente": {
+                    "type": "number"
+                },
+                "morosos": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.ClienteMoroso"
+                    }
+                },
+                "total_morosos": {
+                    "type": "integer"
+                }
+            }
+        },
+        "domain.ResumenOcupacion": {
+            "type": "object",
+            "properties": {
+                "por_propiedad": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.OcupacionPropiedad"
+                    }
+                },
+                "tasa_global_pct": {
+                    "type": "number"
+                },
+                "total_libres": {
+                    "type": "integer"
+                },
+                "total_ocupadas": {
+                    "type": "integer"
+                },
+                "total_unidades": {
+                    "type": "integer"
+                }
+            }
+        },
+        "domain.TopUnidad": {
+            "type": "object",
+            "properties": {
+                "codigo": {
+                    "type": "string"
+                },
+                "propiedad_nombre": {
+                    "type": "string"
+                },
+                "total_ingresos": {
+                    "type": "number"
+                },
+                "total_pagos": {
+                    "type": "integer"
+                },
+                "unidad_id": {
+                    "type": "integer"
                 }
             }
         },

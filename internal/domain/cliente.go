@@ -6,8 +6,9 @@ import (
 )
 
 var (
-	ErrNotFound  = errors.New("not found")
-	ErrForbidden = errors.New("forbidden")
+	ErrNotFound        = errors.New("not found")
+	ErrForbidden       = errors.New("forbidden")
+	ErrClienteConDatos = errors.New("no se puede eliminar el cliente porque tiene registros asociados (contratos, pagos, etc)")
 )
 
 type Cliente struct {

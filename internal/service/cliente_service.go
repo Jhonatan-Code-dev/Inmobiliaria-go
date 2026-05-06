@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"fmt"
+	"strings"
 	"rentals-go/internal/domain"
 )
 
@@ -78,5 +79,12 @@ func (s *ClienteService) EliminarCliente(ctx context.Context, id int, empresaID 
 	if existente.EmpresaID != empresaID {
 		return fmt.Errorf("%w: no autorizado para eliminar este cliente", domain.ErrForbidden)
 	}
-	return s.repo.Eliminar(ctx, id)
+	err = s.repo.Eliminar(ctx, id)
+	if err != nil {
+		if strings.Contains(err.Error(), "ForeignKey") || strings.Contains(err.Error(), "foreign key") || strings.Contains(err.Error(), "1217") || strings.Contains(err.Error(), "1451") {
+			return domain.ErrClienteConDatos
+		}
+		return err
+	}
+	return nil
 }

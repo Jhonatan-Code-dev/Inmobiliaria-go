@@ -42,3 +42,19 @@ func (r *RolRepoEnt) Crear(ctx context.Context, rolIn *domain.Rol) (*domain.Rol,
 		Descripcion: ptrToString(item.Descripcion),
 	}, nil
 }
+func (r *RolRepoEnt) Listar(ctx context.Context) ([]*domain.Rol, error) {
+	items, err := r.client.Rol.Query().All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	var results []*domain.Rol
+	for _, item := range items {
+		results = append(results, &domain.Rol{
+			ID:          item.ID,
+			Nombre:      item.Nombre,
+			Descripcion: ptrToString(item.Descripcion),
+		})
+	}
+	return results, nil
+}

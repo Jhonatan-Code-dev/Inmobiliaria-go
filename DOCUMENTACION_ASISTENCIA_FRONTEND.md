@@ -104,6 +104,19 @@ El administrador revisa una solicitud de permiso y decide su estado.
 }
 ```
 
+### 2.4 Supervisión: Eliminar Registro de Asistencia
+Si un trabajador marcó mal por error, el administrador puede borrar ese registro diario.
+
+*   **Endpoint:** `/api/user/asistencia/registros/:id?empresa_id=1`
+*   **Método:** `DELETE`
+*   **Reemplazar `:id`** por el ID de la asistencia.
+
+### 2.5 Supervisión: Ver Horario Detallado de un Trabajador
+Permite consultar la configuración actual de un empleado.
+
+*   **Endpoint:** `/api/user/asistencia/horarios/detalle?empresa_id=1&usuario_id=4`
+*   **Método:** `GET`
+
 ---
 
 ## 3. Ejemplo de Consumo en JS / React (Axios)

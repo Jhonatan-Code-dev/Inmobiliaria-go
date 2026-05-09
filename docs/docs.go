@@ -840,6 +840,43 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/user/asistencia/horarios/detalle": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "tags": [
+                    "Asistencia"
+                ],
+                "summary": "Obtener horario de un trabajador",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del usuario",
+                        "name": "usuario_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Horario"
+                        }
+                    }
+                }
+            }
+        },
         "/api/user/asistencia/marcar": {
             "post": {
                 "security": [
@@ -1014,6 +1051,40 @@ const docTemplate = `{
                                 "$ref": "#/definitions/domain.Asistencia"
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/api/user/asistencia/registros/{id}": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "tags": [
+                    "Asistencia"
+                ],
+                "summary": "Eliminar un registro de asistencia",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la asistencia",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
                     }
                 }
             }

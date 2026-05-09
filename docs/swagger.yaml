@@ -1481,6 +1481,29 @@ paths:
       summary: Asignar horario a un trabajador
       tags:
       - Asistencia
+  /api/user/asistencia/horarios/detalle:
+    get:
+      parameters:
+      - description: ID del usuario
+        in: query
+        name: usuario_id
+        required: true
+        type: integer
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Horario'
+      security:
+      - BearerAuth: []
+      summary: Obtener horario de un trabajador
+      tags:
+      - Asistencia
   /api/user/asistencia/marcar:
     post:
       description: Registra automáticamente si es entrada o salida según los registros
@@ -1589,6 +1612,27 @@ paths:
       security:
       - BearerAuth: []
       summary: Listar asistencia de todo el personal
+      tags:
+      - Asistencia
+  /api/user/asistencia/registros/{id}:
+    delete:
+      parameters:
+      - description: ID de la asistencia
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      responses:
+        "204":
+          description: No Content
+      security:
+      - BearerAuth: []
+      summary: Eliminar un registro de asistencia
       tags:
       - Asistencia
   /api/user/cargos:

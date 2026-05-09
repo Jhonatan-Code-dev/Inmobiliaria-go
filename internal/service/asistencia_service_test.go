@@ -43,6 +43,9 @@ func (s *asistenciaRepoStub) Actualizar(ctx context.Context, a *domain.Asistenci
 	s.updated = a
 	return a, nil
 }
+func (s *asistenciaRepoStub) Eliminar(ctx context.Context, id int, empresaID int) error {
+	return nil
+}
 
 type permisoRepoStub struct{}
 

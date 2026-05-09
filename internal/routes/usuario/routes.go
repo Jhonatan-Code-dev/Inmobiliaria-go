@@ -128,7 +128,9 @@ func Register(app *fiber.App, appDI *di.App) {
 
 	// Operaciones de Administrador
 	asistencia.Get("/registros", appDI.AsistenciaCtrl.ListarRegistros)
+	asistencia.Delete("/registros/:id", appDI.AsistenciaCtrl.EliminarRegistro)
 	asistencia.Post("/horarios", appDI.AsistenciaCtrl.AsignarHorario)
+	asistencia.Get("/horarios/detalle", appDI.AsistenciaCtrl.ObtenerHorario)
 	asistencia.Put("/permisos/:id/estado", appDI.AsistenciaCtrl.DecidirPermiso)
 }
 

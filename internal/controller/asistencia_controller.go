@@ -102,6 +102,7 @@ func (h *AsistenciaController) ListarRegistros(c *fiber.Ctx) error {
 	filtros := domain.AsistenciaFiltros{
 		EmpresaID: empresaID,
 		UsuarioID: c.QueryInt("usuario_id"),
+		Estado:    c.Query("estado"),
 		Pagina:    c.QueryInt("pag", 1),
 		Limite:    c.QueryInt("limite", 50),
 	}
@@ -182,4 +183,50 @@ func (h *AsistenciaController) DecidirPermiso(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(permiso)
+}
+
+// EliminarRegistro godoc
+// @Summary Eliminar un registro de asistencia
+// @Tags Asistencia
+// @Security BearerAuth
+// @Param id path int true "ID de la asistencia"
+// @Param empresa_id query int true "ID de la empresa"
+// @Success 204 "No Content"
+// @Router /api/user/asistencia/registros/{id} [delete]
+func (h *AsistenciaController) EliminarRegistro(c *fiber.Ctx) error {
+	empresaID := c.QueryInt("empresa_id")
+	if empresaID <= 0 {
+		return c.Status(400).JSON(errorResponse{Message: "empresa_id es requerido"})
+	}
+
+	id, _ := strconv.Atoi(c.Params("id"))
+
+	if err := h.svc.EliminarAsistencia(c.Context(), id, empresaID); err != nil {
+		return c.Status(400).JSON(errorResponse{Message: err.Error()})
+	}
+
+	return c.SendStatus(204)
+}
+
+// ObtenerHorario godoc
+// @Summary Obtener horario de un trabajador
+// @Tags Asistencia
+// @Security BearerAuth
+// @Param usuario_id query int true "ID del usuario"
+// @Param empresa_id query int true "ID de la empresa"
+// @Success 200 {object} domain.Horario
+// @Router /api/user/asistencia/horarios/detalle [get]
+func (h *AsistenciaController) ObtenerHorario(c *fiber.Ctx) error {
+	empresaID := c.QueryInt("empresa_id")
+	usuarioID := c.QueryInt("usuario_id")
+	if empresaID <= 0 || usuarioID <= 0 {
+		return c.Status(400).JSON(errorResponse{Message: "empresa_id y usuario_id son requeridos"})
+	}
+
+	horario, err := h.svc.ObtenerHorario(c.Context(), usuarioID, empresaID)
+	if err != nil {
+		return c.Status(404).JSON(errorResponse{Message: "horario no encontrado"})
+	}
+
+	return c.JSON(horario)
 }

@@ -225,6 +225,7 @@ type (
 		BuscarPorFechaUsuario(ctx context.Context, usuarioID int, empresaID int, fecha time.Time) (*Asistencia, error)
 		Crear(ctx context.Context, a *Asistencia) (*Asistencia, error)
 		Actualizar(ctx context.Context, a *Asistencia) (*Asistencia, error)
+		Eliminar(ctx context.Context, id int, empresaID int) error
 	}
 
 	PermisoRepository interface {
@@ -243,6 +244,7 @@ type (
 		MarcarAsistencia(ctx context.Context, usuarioID int, empresaID int) (*Asistencia, error)
 		ListarAsistencia(ctx context.Context, filtros AsistenciaFiltros) ([]*Asistencia, int, error)
 		ListarMiHistorial(ctx context.Context, usuarioID int, empresaID int) ([]*Asistencia, error)
+		EliminarAsistencia(ctx context.Context, id int, empresaID int) error
 
 		// Permisos
 		SolicitarPermiso(ctx context.Context, usuarioID int, empresaID int, req *RegistroPermiso) (*Permiso, error)

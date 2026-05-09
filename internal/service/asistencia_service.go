@@ -183,3 +183,7 @@ func (s *AsistenciaService) DecidirPermiso(ctx context.Context, permisoID int, e
 
 	return s.permisoRepo.Actualizar(ctx, existente)
 }
+
+func (s *AsistenciaService) EliminarAsistencia(ctx context.Context, id int, empresaID int) error {
+	return s.asistenciaRepo.Eliminar(ctx, id, empresaID)
+}

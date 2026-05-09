@@ -25,6 +25,9 @@ func (r *AsistenciaRepoEnt) ListarPaginado(ctx context.Context, filtros domain.A
 	if filtros.UsuarioID > 0 {
 		query = query.Where(asistencia.UsuarioIDEQ(filtros.UsuarioID))
 	}
+	if filtros.Estado != "" {
+		query = query.Where(asistencia.EstadoEQ(asistencia.Estado(filtros.Estado)))
+	}
 	if filtros.Desde != nil {
 		query = query.Where(asistencia.FechaGTE(*filtros.Desde))
 	}
@@ -42,8 +45,11 @@ func (r *AsistenciaRepoEnt) ListarPaginado(ctx context.Context, filtros domain.A
 		query = query.Offset(offset).Limit(filtros.Limite)
 	}
 
-	// Ordenar por fecha descendente
-	asistenciasEnt, err := query.Order(ent.Desc(asistencia.FieldFecha)).All(ctx)
+	// Cargar información del usuario y ordenar por fecha descendente
+	asistenciasEnt, err := query.
+		WithUsuario().
+		Order(ent.Desc(asistencia.FieldFecha)).
+		All(ctx)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -133,11 +139,17 @@ func (r *AsistenciaRepoEnt) Actualizar(ctx context.Context, a *domain.Asistencia
 	return mapAsistenciaEntToDomain(actualizado), nil
 }
 
+func (r *AsistenciaRepoEnt) Eliminar(ctx context.Context, id int, empresaID int) error {
+	return r.client.Asistencia.DeleteOneID(id).
+		Where(asistencia.EmpresaIDEQ(empresaID)).
+		Exec(ctx)
+}
+
 func mapAsistenciaEntToDomain(a *ent.Asistencia) *domain.Asistencia {
 	if a == nil {
 		return nil
 	}
-	return &domain.Asistencia{
+	d := &domain.Asistencia{
 		ID:              a.ID,
 		EmpresaID:       a.EmpresaID,
 		UsuarioID:       a.UsuarioID,
@@ -148,4 +160,10 @@ func mapAsistenciaEntToDomain(a *ent.Asistencia) *domain.Asistencia {
 		Notas:           a.Notas,
 		HorasTrabajadas: a.HorasTrabajadas,
 	}
+
+	if a.Edges.Usuario != nil {
+		d.UsuarioNombre = a.Edges.Usuario.Usuario
+	}
+
+	return d
 }

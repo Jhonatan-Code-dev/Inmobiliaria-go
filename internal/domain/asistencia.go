@@ -39,6 +39,7 @@ type Asistencia struct {
 type AsistenciaFiltros struct {
 	EmpresaID int
 	UsuarioID int // Opcional
+	Estado    string // Opcional (puntual, tarde, etc)
 	Desde     *time.Time
 	Hasta     *time.Time
 	Pagina    int

@@ -104,6 +104,8 @@ type (
 		RegistrarGasto(ctx context.Context, gasto *Gasto) (*Gasto, error)
 		ActualizarGasto(ctx context.Context, gasto *Gasto) (*Gasto, error)
 		EliminarGasto(ctx context.Context, id int, empresaID int) error
+		ExportarExcel(ctx context.Context, filtros GastoFiltros) ([]byte, error)
+		ExportarPDF(ctx context.Context, filtros GastoFiltros) ([]byte, error)
 	}
 
 	ClienteService interface {
@@ -210,5 +212,41 @@ type (
 		Crear(ctx context.Context, r *RegistroTicket, empresaID int) (*Ticket, error)
 		Actualizar(ctx context.Context, id int, empresaID int, r *RegistroTicket, estado string) (*Ticket, error)
 		Eliminar(ctx context.Context, id int, empresaID int) error
+	}
+
+	HorarioRepository interface {
+		BuscarPorUsuario(ctx context.Context, usuarioID int, empresaID int) (*Horario, error)
+		Crear(ctx context.Context, h *Horario) (*Horario, error)
+		Actualizar(ctx context.Context, h *Horario) (*Horario, error)
+	}
+
+	AsistenciaRepository interface {
+		ListarPaginado(ctx context.Context, filtros AsistenciaFiltros) ([]*Asistencia, int, error)
+		BuscarPorFechaUsuario(ctx context.Context, usuarioID int, empresaID int, fecha time.Time) (*Asistencia, error)
+		Crear(ctx context.Context, a *Asistencia) (*Asistencia, error)
+		Actualizar(ctx context.Context, a *Asistencia) (*Asistencia, error)
+	}
+
+	PermisoRepository interface {
+		ListarPaginado(ctx context.Context, filtros PermisoFiltros) ([]*Permiso, int, error)
+		BuscarPorID(ctx context.Context, id int, empresaID int) (*Permiso, error)
+		Crear(ctx context.Context, p *Permiso) (*Permiso, error)
+		Actualizar(ctx context.Context, p *Permiso) (*Permiso, error)
+	}
+
+	AsistenciaService interface {
+		// Horarios
+		ObtenerHorario(ctx context.Context, usuarioID int, empresaID int) (*Horario, error)
+		AsignarHorario(ctx context.Context, empresaID int, req *RegistroHorario) (*Horario, error)
+		
+		// Asistencia
+		MarcarAsistencia(ctx context.Context, usuarioID int, empresaID int) (*Asistencia, error)
+		ListarAsistencia(ctx context.Context, filtros AsistenciaFiltros) ([]*Asistencia, int, error)
+		ListarMiHistorial(ctx context.Context, usuarioID int, empresaID int) ([]*Asistencia, error)
+
+		// Permisos
+		SolicitarPermiso(ctx context.Context, usuarioID int, empresaID int, req *RegistroPermiso) (*Permiso, error)
+		ListarPermisos(ctx context.Context, filtros PermisoFiltros) ([]*Permiso, int, error)
+		DecidirPermiso(ctx context.Context, permisoID int, empresaID int, decision *DecisionPermiso) (*Permiso, error)
 	}
 )

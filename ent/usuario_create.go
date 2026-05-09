@@ -6,7 +6,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"rentals-go/ent/asistencia"
 	"rentals-go/ent/empresausuario"
+	"rentals-go/ent/horario"
+	"rentals-go/ent/permiso"
 	"rentals-go/ent/usuario"
 	"time"
 
@@ -74,6 +77,55 @@ func (_c *UsuarioCreate) AddEmpresasUsuario(v ...*EmpresaUsuario) *UsuarioCreate
 		ids[i] = v[i].ID
 	}
 	return _c.AddEmpresasUsuarioIDs(ids...)
+}
+
+// SetHorarioID sets the "horario" edge to the Horario entity by ID.
+func (_c *UsuarioCreate) SetHorarioID(id int) *UsuarioCreate {
+	_c.mutation.SetHorarioID(id)
+	return _c
+}
+
+// SetNillableHorarioID sets the "horario" edge to the Horario entity by ID if the given value is not nil.
+func (_c *UsuarioCreate) SetNillableHorarioID(id *int) *UsuarioCreate {
+	if id != nil {
+		_c = _c.SetHorarioID(*id)
+	}
+	return _c
+}
+
+// SetHorario sets the "horario" edge to the Horario entity.
+func (_c *UsuarioCreate) SetHorario(v *Horario) *UsuarioCreate {
+	return _c.SetHorarioID(v.ID)
+}
+
+// AddAsistenciaIDs adds the "asistencias" edge to the Asistencia entity by IDs.
+func (_c *UsuarioCreate) AddAsistenciaIDs(ids ...int) *UsuarioCreate {
+	_c.mutation.AddAsistenciaIDs(ids...)
+	return _c
+}
+
+// AddAsistencias adds the "asistencias" edges to the Asistencia entity.
+func (_c *UsuarioCreate) AddAsistencias(v ...*Asistencia) *UsuarioCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddAsistenciaIDs(ids...)
+}
+
+// AddPermisoIDs adds the "permisos" edge to the Permiso entity by IDs.
+func (_c *UsuarioCreate) AddPermisoIDs(ids ...int) *UsuarioCreate {
+	_c.mutation.AddPermisoIDs(ids...)
+	return _c
+}
+
+// AddPermisos adds the "permisos" edges to the Permiso entity.
+func (_c *UsuarioCreate) AddPermisos(v ...*Permiso) *UsuarioCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddPermisoIDs(ids...)
 }
 
 // Mutation returns the UsuarioMutation object of the builder.
@@ -196,6 +248,54 @@ func (_c *UsuarioCreate) createSpec() (*Usuario, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(empresausuario.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.HorarioIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   usuario.HorarioTable,
+			Columns: []string{usuario.HorarioColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(horario.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.AsistenciasIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   usuario.AsistenciasTable,
+			Columns: []string{usuario.AsistenciasColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asistencia.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.PermisosIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   usuario.PermisosTable,
+			Columns: []string{usuario.PermisosColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(permiso.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

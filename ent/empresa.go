@@ -55,9 +55,15 @@ type EmpresaEdges struct {
 	MovimientosCaja []*MovimientoCaja `json:"movimientos_caja,omitempty"`
 	// Tickets holds the value of the tickets edge.
 	Tickets []*Ticket `json:"tickets,omitempty"`
+	// Horarios holds the value of the horarios edge.
+	Horarios []*Horario `json:"horarios,omitempty"`
+	// Asistencias holds the value of the asistencias edge.
+	Asistencias []*Asistencia `json:"asistencias,omitempty"`
+	// Permisos holds the value of the permisos edge.
+	Permisos []*Permiso `json:"permisos,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [8]bool
+	loadedTypes [11]bool
 }
 
 // UsuariosEmpresaOrErr returns the UsuariosEmpresa value or an error if the edge
@@ -130,6 +136,33 @@ func (e EmpresaEdges) TicketsOrErr() ([]*Ticket, error) {
 		return e.Tickets, nil
 	}
 	return nil, &NotLoadedError{edge: "tickets"}
+}
+
+// HorariosOrErr returns the Horarios value or an error if the edge
+// was not loaded in eager-loading.
+func (e EmpresaEdges) HorariosOrErr() ([]*Horario, error) {
+	if e.loadedTypes[8] {
+		return e.Horarios, nil
+	}
+	return nil, &NotLoadedError{edge: "horarios"}
+}
+
+// AsistenciasOrErr returns the Asistencias value or an error if the edge
+// was not loaded in eager-loading.
+func (e EmpresaEdges) AsistenciasOrErr() ([]*Asistencia, error) {
+	if e.loadedTypes[9] {
+		return e.Asistencias, nil
+	}
+	return nil, &NotLoadedError{edge: "asistencias"}
+}
+
+// PermisosOrErr returns the Permisos value or an error if the edge
+// was not loaded in eager-loading.
+func (e EmpresaEdges) PermisosOrErr() ([]*Permiso, error) {
+	if e.loadedTypes[10] {
+		return e.Permisos, nil
+	}
+	return nil, &NotLoadedError{edge: "permisos"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -261,6 +294,21 @@ func (_m *Empresa) QueryMovimientosCaja() *MovimientoCajaQuery {
 // QueryTickets queries the "tickets" edge of the Empresa entity.
 func (_m *Empresa) QueryTickets() *TicketQuery {
 	return NewEmpresaClient(_m.config).QueryTickets(_m)
+}
+
+// QueryHorarios queries the "horarios" edge of the Empresa entity.
+func (_m *Empresa) QueryHorarios() *HorarioQuery {
+	return NewEmpresaClient(_m.config).QueryHorarios(_m)
+}
+
+// QueryAsistencias queries the "asistencias" edge of the Empresa entity.
+func (_m *Empresa) QueryAsistencias() *AsistenciaQuery {
+	return NewEmpresaClient(_m.config).QueryAsistencias(_m)
+}
+
+// QueryPermisos queries the "permisos" edge of the Empresa entity.
+func (_m *Empresa) QueryPermisos() *PermisoQuery {
+	return NewEmpresaClient(_m.config).QueryPermisos(_m)
 }
 
 // Update returns a builder for updating this Empresa.

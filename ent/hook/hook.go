@@ -20,6 +20,18 @@ func (f AdminFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AdminMutation", m)
 }
 
+// The AsistenciaFunc type is an adapter to allow the use of ordinary
+// function as Asistencia mutator.
+type AsistenciaFunc func(context.Context, *ent.AsistenciaMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AsistenciaFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AsistenciaMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AsistenciaMutation", m)
+}
+
 // The CargoFunc type is an adapter to allow the use of ordinary
 // function as Cargo mutator.
 type CargoFunc func(context.Context, *ent.CargoMutation) (ent.Value, error)
@@ -104,6 +116,18 @@ func (f GastoFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.GastoMutation", m)
 }
 
+// The HorarioFunc type is an adapter to allow the use of ordinary
+// function as Horario mutator.
+type HorarioFunc func(context.Context, *ent.HorarioMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f HorarioFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.HorarioMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.HorarioMutation", m)
+}
+
 // The MovimientoCajaFunc type is an adapter to allow the use of ordinary
 // function as MovimientoCaja mutator.
 type MovimientoCajaFunc func(context.Context, *ent.MovimientoCajaMutation) (ent.Value, error)
@@ -138,6 +162,18 @@ func (f PagoAplicacionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Val
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PagoAplicacionMutation", m)
+}
+
+// The PermisoFunc type is an adapter to allow the use of ordinary
+// function as Permiso mutator.
+type PermisoFunc func(context.Context, *ent.PermisoMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PermisoFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PermisoMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PermisoMutation", m)
 }
 
 // The PropiedadFunc type is an adapter to allow the use of ordinary

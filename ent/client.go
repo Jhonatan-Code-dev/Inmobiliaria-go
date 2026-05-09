@@ -12,6 +12,7 @@ import (
 	"rentals-go/ent/migrate"
 
 	"rentals-go/ent/admin"
+	"rentals-go/ent/asistencia"
 	"rentals-go/ent/cargo"
 	"rentals-go/ent/cliente"
 	"rentals-go/ent/clientetelefono"
@@ -19,9 +20,11 @@ import (
 	"rentals-go/ent/empresa"
 	"rentals-go/ent/empresausuario"
 	"rentals-go/ent/gasto"
+	"rentals-go/ent/horario"
 	"rentals-go/ent/movimientocaja"
 	"rentals-go/ent/pago"
 	"rentals-go/ent/pagoaplicacion"
+	"rentals-go/ent/permiso"
 	"rentals-go/ent/propiedad"
 	"rentals-go/ent/rol"
 	"rentals-go/ent/serviciomedicion"
@@ -44,6 +47,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Admin is the client for interacting with the Admin builders.
 	Admin *AdminClient
+	// Asistencia is the client for interacting with the Asistencia builders.
+	Asistencia *AsistenciaClient
 	// Cargo is the client for interacting with the Cargo builders.
 	Cargo *CargoClient
 	// Cliente is the client for interacting with the Cliente builders.
@@ -58,12 +63,16 @@ type Client struct {
 	EmpresaUsuario *EmpresaUsuarioClient
 	// Gasto is the client for interacting with the Gasto builders.
 	Gasto *GastoClient
+	// Horario is the client for interacting with the Horario builders.
+	Horario *HorarioClient
 	// MovimientoCaja is the client for interacting with the MovimientoCaja builders.
 	MovimientoCaja *MovimientoCajaClient
 	// Pago is the client for interacting with the Pago builders.
 	Pago *PagoClient
 	// PagoAplicacion is the client for interacting with the PagoAplicacion builders.
 	PagoAplicacion *PagoAplicacionClient
+	// Permiso is the client for interacting with the Permiso builders.
+	Permiso *PermisoClient
 	// Propiedad is the client for interacting with the Propiedad builders.
 	Propiedad *PropiedadClient
 	// Rol is the client for interacting with the Rol builders.
@@ -92,6 +101,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Admin = NewAdminClient(c.config)
+	c.Asistencia = NewAsistenciaClient(c.config)
 	c.Cargo = NewCargoClient(c.config)
 	c.Cliente = NewClienteClient(c.config)
 	c.ClienteTelefono = NewClienteTelefonoClient(c.config)
@@ -99,9 +109,11 @@ func (c *Client) init() {
 	c.Empresa = NewEmpresaClient(c.config)
 	c.EmpresaUsuario = NewEmpresaUsuarioClient(c.config)
 	c.Gasto = NewGastoClient(c.config)
+	c.Horario = NewHorarioClient(c.config)
 	c.MovimientoCaja = NewMovimientoCajaClient(c.config)
 	c.Pago = NewPagoClient(c.config)
 	c.PagoAplicacion = NewPagoAplicacionClient(c.config)
+	c.Permiso = NewPermisoClient(c.config)
 	c.Propiedad = NewPropiedadClient(c.config)
 	c.Rol = NewRolClient(c.config)
 	c.ServicioMedicion = NewServicioMedicionClient(c.config)
@@ -203,6 +215,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:                ctx,
 		config:             cfg,
 		Admin:              NewAdminClient(cfg),
+		Asistencia:         NewAsistenciaClient(cfg),
 		Cargo:              NewCargoClient(cfg),
 		Cliente:            NewClienteClient(cfg),
 		ClienteTelefono:    NewClienteTelefonoClient(cfg),
@@ -210,9 +223,11 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Empresa:            NewEmpresaClient(cfg),
 		EmpresaUsuario:     NewEmpresaUsuarioClient(cfg),
 		Gasto:              NewGastoClient(cfg),
+		Horario:            NewHorarioClient(cfg),
 		MovimientoCaja:     NewMovimientoCajaClient(cfg),
 		Pago:               NewPagoClient(cfg),
 		PagoAplicacion:     NewPagoAplicacionClient(cfg),
+		Permiso:            NewPermisoClient(cfg),
 		Propiedad:          NewPropiedadClient(cfg),
 		Rol:                NewRolClient(cfg),
 		ServicioMedicion:   NewServicioMedicionClient(cfg),
@@ -241,6 +256,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ctx:                ctx,
 		config:             cfg,
 		Admin:              NewAdminClient(cfg),
+		Asistencia:         NewAsistenciaClient(cfg),
 		Cargo:              NewCargoClient(cfg),
 		Cliente:            NewClienteClient(cfg),
 		ClienteTelefono:    NewClienteTelefonoClient(cfg),
@@ -248,9 +264,11 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Empresa:            NewEmpresaClient(cfg),
 		EmpresaUsuario:     NewEmpresaUsuarioClient(cfg),
 		Gasto:              NewGastoClient(cfg),
+		Horario:            NewHorarioClient(cfg),
 		MovimientoCaja:     NewMovimientoCajaClient(cfg),
 		Pago:               NewPagoClient(cfg),
 		PagoAplicacion:     NewPagoAplicacionClient(cfg),
+		Permiso:            NewPermisoClient(cfg),
 		Propiedad:          NewPropiedadClient(cfg),
 		Rol:                NewRolClient(cfg),
 		ServicioMedicion:   NewServicioMedicionClient(cfg),
@@ -288,10 +306,10 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.Admin, c.Cargo, c.Cliente, c.ClienteTelefono, c.Contrato, c.Empresa,
-		c.EmpresaUsuario, c.Gasto, c.MovimientoCaja, c.Pago, c.PagoAplicacion,
-		c.Propiedad, c.Rol, c.ServicioMedicion, c.Ticket, c.TipoIdentificacion,
-		c.TipoPago, c.Unidad, c.Usuario,
+		c.Admin, c.Asistencia, c.Cargo, c.Cliente, c.ClienteTelefono, c.Contrato,
+		c.Empresa, c.EmpresaUsuario, c.Gasto, c.Horario, c.MovimientoCaja, c.Pago,
+		c.PagoAplicacion, c.Permiso, c.Propiedad, c.Rol, c.ServicioMedicion, c.Ticket,
+		c.TipoIdentificacion, c.TipoPago, c.Unidad, c.Usuario,
 	} {
 		n.Use(hooks...)
 	}
@@ -301,10 +319,10 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.Admin, c.Cargo, c.Cliente, c.ClienteTelefono, c.Contrato, c.Empresa,
-		c.EmpresaUsuario, c.Gasto, c.MovimientoCaja, c.Pago, c.PagoAplicacion,
-		c.Propiedad, c.Rol, c.ServicioMedicion, c.Ticket, c.TipoIdentificacion,
-		c.TipoPago, c.Unidad, c.Usuario,
+		c.Admin, c.Asistencia, c.Cargo, c.Cliente, c.ClienteTelefono, c.Contrato,
+		c.Empresa, c.EmpresaUsuario, c.Gasto, c.Horario, c.MovimientoCaja, c.Pago,
+		c.PagoAplicacion, c.Permiso, c.Propiedad, c.Rol, c.ServicioMedicion, c.Ticket,
+		c.TipoIdentificacion, c.TipoPago, c.Unidad, c.Usuario,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -315,6 +333,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *AdminMutation:
 		return c.Admin.mutate(ctx, m)
+	case *AsistenciaMutation:
+		return c.Asistencia.mutate(ctx, m)
 	case *CargoMutation:
 		return c.Cargo.mutate(ctx, m)
 	case *ClienteMutation:
@@ -329,12 +349,16 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.EmpresaUsuario.mutate(ctx, m)
 	case *GastoMutation:
 		return c.Gasto.mutate(ctx, m)
+	case *HorarioMutation:
+		return c.Horario.mutate(ctx, m)
 	case *MovimientoCajaMutation:
 		return c.MovimientoCaja.mutate(ctx, m)
 	case *PagoMutation:
 		return c.Pago.mutate(ctx, m)
 	case *PagoAplicacionMutation:
 		return c.PagoAplicacion.mutate(ctx, m)
+	case *PermisoMutation:
+		return c.Permiso.mutate(ctx, m)
 	case *PropiedadMutation:
 		return c.Propiedad.mutate(ctx, m)
 	case *RolMutation:
@@ -486,6 +510,171 @@ func (c *AdminClient) mutate(ctx context.Context, m *AdminMutation) (Value, erro
 		return (&AdminDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Admin mutation op: %q", m.Op())
+	}
+}
+
+// AsistenciaClient is a client for the Asistencia schema.
+type AsistenciaClient struct {
+	config
+}
+
+// NewAsistenciaClient returns a client for the Asistencia from the given config.
+func NewAsistenciaClient(c config) *AsistenciaClient {
+	return &AsistenciaClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `asistencia.Hooks(f(g(h())))`.
+func (c *AsistenciaClient) Use(hooks ...Hook) {
+	c.hooks.Asistencia = append(c.hooks.Asistencia, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `asistencia.Intercept(f(g(h())))`.
+func (c *AsistenciaClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Asistencia = append(c.inters.Asistencia, interceptors...)
+}
+
+// Create returns a builder for creating a Asistencia entity.
+func (c *AsistenciaClient) Create() *AsistenciaCreate {
+	mutation := newAsistenciaMutation(c.config, OpCreate)
+	return &AsistenciaCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Asistencia entities.
+func (c *AsistenciaClient) CreateBulk(builders ...*AsistenciaCreate) *AsistenciaCreateBulk {
+	return &AsistenciaCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AsistenciaClient) MapCreateBulk(slice any, setFunc func(*AsistenciaCreate, int)) *AsistenciaCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AsistenciaCreateBulk{err: fmt.Errorf("calling to AsistenciaClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AsistenciaCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AsistenciaCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Asistencia.
+func (c *AsistenciaClient) Update() *AsistenciaUpdate {
+	mutation := newAsistenciaMutation(c.config, OpUpdate)
+	return &AsistenciaUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AsistenciaClient) UpdateOne(_m *Asistencia) *AsistenciaUpdateOne {
+	mutation := newAsistenciaMutation(c.config, OpUpdateOne, withAsistencia(_m))
+	return &AsistenciaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AsistenciaClient) UpdateOneID(id int) *AsistenciaUpdateOne {
+	mutation := newAsistenciaMutation(c.config, OpUpdateOne, withAsistenciaID(id))
+	return &AsistenciaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Asistencia.
+func (c *AsistenciaClient) Delete() *AsistenciaDelete {
+	mutation := newAsistenciaMutation(c.config, OpDelete)
+	return &AsistenciaDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AsistenciaClient) DeleteOne(_m *Asistencia) *AsistenciaDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AsistenciaClient) DeleteOneID(id int) *AsistenciaDeleteOne {
+	builder := c.Delete().Where(asistencia.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AsistenciaDeleteOne{builder}
+}
+
+// Query returns a query builder for Asistencia.
+func (c *AsistenciaClient) Query() *AsistenciaQuery {
+	return &AsistenciaQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAsistencia},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Asistencia entity by its id.
+func (c *AsistenciaClient) Get(ctx context.Context, id int) (*Asistencia, error) {
+	return c.Query().Where(asistencia.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AsistenciaClient) GetX(ctx context.Context, id int) *Asistencia {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEmpresa queries the empresa edge of a Asistencia.
+func (c *AsistenciaClient) QueryEmpresa(_m *Asistencia) *EmpresaQuery {
+	query := (&EmpresaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asistencia.Table, asistencia.FieldID, id),
+			sqlgraph.To(empresa.Table, empresa.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, asistencia.EmpresaTable, asistencia.EmpresaColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryUsuario queries the usuario edge of a Asistencia.
+func (c *AsistenciaClient) QueryUsuario(_m *Asistencia) *UsuarioQuery {
+	query := (&UsuarioClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(asistencia.Table, asistencia.FieldID, id),
+			sqlgraph.To(usuario.Table, usuario.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, asistencia.UsuarioTable, asistencia.UsuarioColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *AsistenciaClient) Hooks() []Hook {
+	return c.hooks.Asistencia
+}
+
+// Interceptors returns the client interceptors.
+func (c *AsistenciaClient) Interceptors() []Interceptor {
+	return c.inters.Asistencia
+}
+
+func (c *AsistenciaClient) mutate(ctx context.Context, m *AsistenciaMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AsistenciaCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AsistenciaUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AsistenciaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AsistenciaDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Asistencia mutation op: %q", m.Op())
 	}
 }
 
@@ -1513,6 +1702,54 @@ func (c *EmpresaClient) QueryTickets(_m *Empresa) *TicketQuery {
 	return query
 }
 
+// QueryHorarios queries the horarios edge of a Empresa.
+func (c *EmpresaClient) QueryHorarios(_m *Empresa) *HorarioQuery {
+	query := (&HorarioClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(empresa.Table, empresa.FieldID, id),
+			sqlgraph.To(horario.Table, horario.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, empresa.HorariosTable, empresa.HorariosColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAsistencias queries the asistencias edge of a Empresa.
+func (c *EmpresaClient) QueryAsistencias(_m *Empresa) *AsistenciaQuery {
+	query := (&AsistenciaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(empresa.Table, empresa.FieldID, id),
+			sqlgraph.To(asistencia.Table, asistencia.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, empresa.AsistenciasTable, empresa.AsistenciasColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPermisos queries the permisos edge of a Empresa.
+func (c *EmpresaClient) QueryPermisos(_m *Empresa) *PermisoQuery {
+	query := (&PermisoClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(empresa.Table, empresa.FieldID, id),
+			sqlgraph.To(permiso.Table, permiso.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, empresa.PermisosTable, empresa.PermisosColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *EmpresaClient) Hooks() []Hook {
 	return c.hooks.Empresa
@@ -1897,6 +2134,171 @@ func (c *GastoClient) mutate(ctx context.Context, m *GastoMutation) (Value, erro
 		return (&GastoDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Gasto mutation op: %q", m.Op())
+	}
+}
+
+// HorarioClient is a client for the Horario schema.
+type HorarioClient struct {
+	config
+}
+
+// NewHorarioClient returns a client for the Horario from the given config.
+func NewHorarioClient(c config) *HorarioClient {
+	return &HorarioClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `horario.Hooks(f(g(h())))`.
+func (c *HorarioClient) Use(hooks ...Hook) {
+	c.hooks.Horario = append(c.hooks.Horario, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `horario.Intercept(f(g(h())))`.
+func (c *HorarioClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Horario = append(c.inters.Horario, interceptors...)
+}
+
+// Create returns a builder for creating a Horario entity.
+func (c *HorarioClient) Create() *HorarioCreate {
+	mutation := newHorarioMutation(c.config, OpCreate)
+	return &HorarioCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Horario entities.
+func (c *HorarioClient) CreateBulk(builders ...*HorarioCreate) *HorarioCreateBulk {
+	return &HorarioCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *HorarioClient) MapCreateBulk(slice any, setFunc func(*HorarioCreate, int)) *HorarioCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &HorarioCreateBulk{err: fmt.Errorf("calling to HorarioClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*HorarioCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &HorarioCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Horario.
+func (c *HorarioClient) Update() *HorarioUpdate {
+	mutation := newHorarioMutation(c.config, OpUpdate)
+	return &HorarioUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *HorarioClient) UpdateOne(_m *Horario) *HorarioUpdateOne {
+	mutation := newHorarioMutation(c.config, OpUpdateOne, withHorario(_m))
+	return &HorarioUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *HorarioClient) UpdateOneID(id int) *HorarioUpdateOne {
+	mutation := newHorarioMutation(c.config, OpUpdateOne, withHorarioID(id))
+	return &HorarioUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Horario.
+func (c *HorarioClient) Delete() *HorarioDelete {
+	mutation := newHorarioMutation(c.config, OpDelete)
+	return &HorarioDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *HorarioClient) DeleteOne(_m *Horario) *HorarioDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *HorarioClient) DeleteOneID(id int) *HorarioDeleteOne {
+	builder := c.Delete().Where(horario.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &HorarioDeleteOne{builder}
+}
+
+// Query returns a query builder for Horario.
+func (c *HorarioClient) Query() *HorarioQuery {
+	return &HorarioQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeHorario},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Horario entity by its id.
+func (c *HorarioClient) Get(ctx context.Context, id int) (*Horario, error) {
+	return c.Query().Where(horario.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *HorarioClient) GetX(ctx context.Context, id int) *Horario {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEmpresa queries the empresa edge of a Horario.
+func (c *HorarioClient) QueryEmpresa(_m *Horario) *EmpresaQuery {
+	query := (&EmpresaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(horario.Table, horario.FieldID, id),
+			sqlgraph.To(empresa.Table, empresa.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, horario.EmpresaTable, horario.EmpresaColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryUsuario queries the usuario edge of a Horario.
+func (c *HorarioClient) QueryUsuario(_m *Horario) *UsuarioQuery {
+	query := (&UsuarioClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(horario.Table, horario.FieldID, id),
+			sqlgraph.To(usuario.Table, usuario.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, horario.UsuarioTable, horario.UsuarioColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *HorarioClient) Hooks() []Hook {
+	return c.hooks.Horario
+}
+
+// Interceptors returns the client interceptors.
+func (c *HorarioClient) Interceptors() []Interceptor {
+	return c.inters.Horario
+}
+
+func (c *HorarioClient) mutate(ctx context.Context, m *HorarioMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&HorarioCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&HorarioUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&HorarioUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&HorarioDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Horario mutation op: %q", m.Op())
 	}
 }
 
@@ -2456,6 +2858,171 @@ func (c *PagoAplicacionClient) mutate(ctx context.Context, m *PagoAplicacionMuta
 		return (&PagoAplicacionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown PagoAplicacion mutation op: %q", m.Op())
+	}
+}
+
+// PermisoClient is a client for the Permiso schema.
+type PermisoClient struct {
+	config
+}
+
+// NewPermisoClient returns a client for the Permiso from the given config.
+func NewPermisoClient(c config) *PermisoClient {
+	return &PermisoClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `permiso.Hooks(f(g(h())))`.
+func (c *PermisoClient) Use(hooks ...Hook) {
+	c.hooks.Permiso = append(c.hooks.Permiso, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `permiso.Intercept(f(g(h())))`.
+func (c *PermisoClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Permiso = append(c.inters.Permiso, interceptors...)
+}
+
+// Create returns a builder for creating a Permiso entity.
+func (c *PermisoClient) Create() *PermisoCreate {
+	mutation := newPermisoMutation(c.config, OpCreate)
+	return &PermisoCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Permiso entities.
+func (c *PermisoClient) CreateBulk(builders ...*PermisoCreate) *PermisoCreateBulk {
+	return &PermisoCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *PermisoClient) MapCreateBulk(slice any, setFunc func(*PermisoCreate, int)) *PermisoCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &PermisoCreateBulk{err: fmt.Errorf("calling to PermisoClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*PermisoCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &PermisoCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Permiso.
+func (c *PermisoClient) Update() *PermisoUpdate {
+	mutation := newPermisoMutation(c.config, OpUpdate)
+	return &PermisoUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PermisoClient) UpdateOne(_m *Permiso) *PermisoUpdateOne {
+	mutation := newPermisoMutation(c.config, OpUpdateOne, withPermiso(_m))
+	return &PermisoUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PermisoClient) UpdateOneID(id int) *PermisoUpdateOne {
+	mutation := newPermisoMutation(c.config, OpUpdateOne, withPermisoID(id))
+	return &PermisoUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Permiso.
+func (c *PermisoClient) Delete() *PermisoDelete {
+	mutation := newPermisoMutation(c.config, OpDelete)
+	return &PermisoDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PermisoClient) DeleteOne(_m *Permiso) *PermisoDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *PermisoClient) DeleteOneID(id int) *PermisoDeleteOne {
+	builder := c.Delete().Where(permiso.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PermisoDeleteOne{builder}
+}
+
+// Query returns a query builder for Permiso.
+func (c *PermisoClient) Query() *PermisoQuery {
+	return &PermisoQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypePermiso},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Permiso entity by its id.
+func (c *PermisoClient) Get(ctx context.Context, id int) (*Permiso, error) {
+	return c.Query().Where(permiso.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PermisoClient) GetX(ctx context.Context, id int) *Permiso {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEmpresa queries the empresa edge of a Permiso.
+func (c *PermisoClient) QueryEmpresa(_m *Permiso) *EmpresaQuery {
+	query := (&EmpresaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(permiso.Table, permiso.FieldID, id),
+			sqlgraph.To(empresa.Table, empresa.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, permiso.EmpresaTable, permiso.EmpresaColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryUsuario queries the usuario edge of a Permiso.
+func (c *PermisoClient) QueryUsuario(_m *Permiso) *UsuarioQuery {
+	query := (&UsuarioClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(permiso.Table, permiso.FieldID, id),
+			sqlgraph.To(usuario.Table, usuario.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, permiso.UsuarioTable, permiso.UsuarioColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PermisoClient) Hooks() []Hook {
+	return c.hooks.Permiso
+}
+
+// Interceptors returns the client interceptors.
+func (c *PermisoClient) Interceptors() []Interceptor {
+	return c.inters.Permiso
+}
+
+func (c *PermisoClient) mutate(ctx context.Context, m *PermisoMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PermisoCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PermisoUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PermisoUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PermisoDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Permiso mutation op: %q", m.Op())
 	}
 }
 
@@ -3754,6 +4321,54 @@ func (c *UsuarioClient) QueryEmpresasUsuario(_m *Usuario) *EmpresaUsuarioQuery {
 	return query
 }
 
+// QueryHorario queries the horario edge of a Usuario.
+func (c *UsuarioClient) QueryHorario(_m *Usuario) *HorarioQuery {
+	query := (&HorarioClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(usuario.Table, usuario.FieldID, id),
+			sqlgraph.To(horario.Table, horario.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, usuario.HorarioTable, usuario.HorarioColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryAsistencias queries the asistencias edge of a Usuario.
+func (c *UsuarioClient) QueryAsistencias(_m *Usuario) *AsistenciaQuery {
+	query := (&AsistenciaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(usuario.Table, usuario.FieldID, id),
+			sqlgraph.To(asistencia.Table, asistencia.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, usuario.AsistenciasTable, usuario.AsistenciasColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPermisos queries the permisos edge of a Usuario.
+func (c *UsuarioClient) QueryPermisos(_m *Usuario) *PermisoQuery {
+	query := (&PermisoClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(usuario.Table, usuario.FieldID, id),
+			sqlgraph.To(permiso.Table, permiso.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, usuario.PermisosTable, usuario.PermisosColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UsuarioClient) Hooks() []Hook {
 	return c.hooks.Usuario
@@ -3782,13 +4397,15 @@ func (c *UsuarioClient) mutate(ctx context.Context, m *UsuarioMutation) (Value, 
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Admin, Cargo, Cliente, ClienteTelefono, Contrato, Empresa, EmpresaUsuario,
-		Gasto, MovimientoCaja, Pago, PagoAplicacion, Propiedad, Rol, ServicioMedicion,
-		Ticket, TipoIdentificacion, TipoPago, Unidad, Usuario []ent.Hook
+		Admin, Asistencia, Cargo, Cliente, ClienteTelefono, Contrato, Empresa,
+		EmpresaUsuario, Gasto, Horario, MovimientoCaja, Pago, PagoAplicacion, Permiso,
+		Propiedad, Rol, ServicioMedicion, Ticket, TipoIdentificacion, TipoPago, Unidad,
+		Usuario []ent.Hook
 	}
 	inters struct {
-		Admin, Cargo, Cliente, ClienteTelefono, Contrato, Empresa, EmpresaUsuario,
-		Gasto, MovimientoCaja, Pago, PagoAplicacion, Propiedad, Rol, ServicioMedicion,
-		Ticket, TipoIdentificacion, TipoPago, Unidad, Usuario []ent.Interceptor
+		Admin, Asistencia, Cargo, Cliente, ClienteTelefono, Contrato, Empresa,
+		EmpresaUsuario, Gasto, Horario, MovimientoCaja, Pago, PagoAplicacion, Permiso,
+		Propiedad, Rol, ServicioMedicion, Ticket, TipoIdentificacion, TipoPago, Unidad,
+		Usuario []ent.Interceptor
 	}
 )

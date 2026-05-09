@@ -9,6 +9,9 @@ import (
 // Admin is the predicate function for admin builders.
 type Admin func(*sql.Selector)
 
+// Asistencia is the predicate function for asistencia builders.
+type Asistencia func(*sql.Selector)
+
 // Cargo is the predicate function for cargo builders.
 type Cargo func(*sql.Selector)
 
@@ -30,6 +33,9 @@ type EmpresaUsuario func(*sql.Selector)
 // Gasto is the predicate function for gasto builders.
 type Gasto func(*sql.Selector)
 
+// Horario is the predicate function for horario builders.
+type Horario func(*sql.Selector)
+
 // MovimientoCaja is the predicate function for movimientocaja builders.
 type MovimientoCaja func(*sql.Selector)
 
@@ -38,6 +44,9 @@ type Pago func(*sql.Selector)
 
 // PagoAplicacion is the predicate function for pagoaplicacion builders.
 type PagoAplicacion func(*sql.Selector)
+
+// Permiso is the predicate function for permiso builders.
+type Permiso func(*sql.Selector)
 
 // Propiedad is the predicate function for propiedad builders.
 type Propiedad func(*sql.Selector)

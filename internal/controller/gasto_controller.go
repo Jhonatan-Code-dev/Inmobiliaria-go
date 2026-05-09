@@ -290,6 +290,104 @@ func (h *GastoController) Eliminar(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"message": "gasto eliminado"})
 }
 
+// ExportarExcel godoc
+// @Summary Exportar gastos a Excel
+// @Description Genera un archivo Excel con el listado de gastos filtrados.
+// @Tags Gastos
+// @Security BearerAuth
+// @Produce application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+// @Param empresa_id query int true "ID de la empresa"
+// @Param anio query int false "Año del gasto"
+// @Param mes query int false "Mes del gasto (1-12)"
+// @Param desde query string false "Fecha inicio (YYYY-MM-DD)"
+// @Param hasta query string false "Fecha fin (YYYY-MM-DD)"
+// @Success 200 {binary} []byte
+// @Router /api/user/gastos/reporte/excel [get]
+func (h *GastoController) ExportarExcel(c *fiber.Ctx) error {
+	empresaID, errResp := obtenerEmpresaIDListado(c)
+	if errResp != nil {
+		return c.Status(errResp.Code).JSON(errorResponse{Message: errResp.Message})
+	}
+
+	filtros := domain.GastoFiltros{
+		EmpresaID: empresaID,
+		Anio:      c.QueryInt("anio"),
+		Mes:       c.QueryInt("mes"),
+	}
+
+	if d := c.Query("desde"); d != "" {
+		t, _ := time.Parse("2006-01-02", d)
+		if !t.IsZero() {
+			filtros.Desde = &t
+		}
+	}
+	if h_query := c.Query("hasta"); h_query != "" {
+		t, _ := time.Parse("2006-01-02", h_query)
+		if !t.IsZero() {
+			filtros.Hasta = &t
+		}
+	}
+
+	buf, err := h.svc.ExportarExcel(c.Context(), filtros)
+	if err != nil {
+		return c.Status(500).JSON(errorResponse{Message: err.Error()})
+	}
+
+	c.Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	c.Set("Content-Disposition", `attachment; filename="reporte_gastos.xlsx"`)
+
+	return c.Send(buf)
+}
+
+// ExportarPDF godoc
+// @Summary Exportar gastos a PDF
+// @Description Genera un archivo PDF con el listado de gastos filtrados.
+// @Tags Gastos
+// @Security BearerAuth
+// @Produce application/pdf
+// @Param empresa_id query int true "ID de la empresa"
+// @Param anio query int false "Año del gasto"
+// @Param mes query int false "Mes del gasto (1-12)"
+// @Param desde query string false "Fecha inicio (YYYY-MM-DD)"
+// @Param hasta query string false "Fecha fin (YYYY-MM-DD)"
+// @Success 200 {binary} []byte
+// @Router /api/user/gastos/reporte/pdf [get]
+func (h *GastoController) ExportarPDF(c *fiber.Ctx) error {
+	empresaID, errResp := obtenerEmpresaIDListado(c)
+	if errResp != nil {
+		return c.Status(errResp.Code).JSON(errorResponse{Message: errResp.Message})
+	}
+
+	filtros := domain.GastoFiltros{
+		EmpresaID: empresaID,
+		Anio:      c.QueryInt("anio"),
+		Mes:       c.QueryInt("mes"),
+	}
+
+	if d := c.Query("desde"); d != "" {
+		t, _ := time.Parse("2006-01-02", d)
+		if !t.IsZero() {
+			filtros.Desde = &t
+		}
+	}
+	if h_query := c.Query("hasta"); h_query != "" {
+		t, _ := time.Parse("2006-01-02", h_query)
+		if !t.IsZero() {
+			filtros.Hasta = &t
+		}
+	}
+
+	buf, err := h.svc.ExportarPDF(c.Context(), filtros)
+	if err != nil {
+		return c.Status(500).JSON(errorResponse{Message: err.Error()})
+	}
+
+	c.Set("Content-Type", "application/pdf")
+	c.Set("Content-Disposition", `attachment; filename="reporte_gastos.pdf"`)
+
+	return c.Send(buf)
+}
+
 func mapGastoToResponse(g *domain.Gasto) gastoResponse {
 	return gastoResponse{
 		ID:          g.ID,

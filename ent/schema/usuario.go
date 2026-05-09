@@ -37,5 +37,8 @@ func (Usuario) Fields() []ent.Field {
 func (Usuario) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("empresas_usuario", EmpresaUsuario.Type),
+		edge.To("horario", Horario.Type).Unique(),
+		edge.To("asistencias", Asistencia.Type),
+		edge.To("permisos", Permiso.Type),
 	}
 }

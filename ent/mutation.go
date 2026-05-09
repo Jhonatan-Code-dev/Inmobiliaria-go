@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"rentals-go/ent/admin"
+	"rentals-go/ent/asistencia"
 	"rentals-go/ent/cargo"
 	"rentals-go/ent/cliente"
 	"rentals-go/ent/clientetelefono"
@@ -14,9 +15,11 @@ import (
 	"rentals-go/ent/empresa"
 	"rentals-go/ent/empresausuario"
 	"rentals-go/ent/gasto"
+	"rentals-go/ent/horario"
 	"rentals-go/ent/movimientocaja"
 	"rentals-go/ent/pago"
 	"rentals-go/ent/pagoaplicacion"
+	"rentals-go/ent/permiso"
 	"rentals-go/ent/predicate"
 	"rentals-go/ent/propiedad"
 	"rentals-go/ent/rol"
@@ -43,6 +46,7 @@ const (
 
 	// Node types.
 	TypeAdmin              = "Admin"
+	TypeAsistencia         = "Asistencia"
 	TypeCargo              = "Cargo"
 	TypeCliente            = "Cliente"
 	TypeClienteTelefono    = "ClienteTelefono"
@@ -50,9 +54,11 @@ const (
 	TypeEmpresa            = "Empresa"
 	TypeEmpresaUsuario     = "EmpresaUsuario"
 	TypeGasto              = "Gasto"
+	TypeHorario            = "Horario"
 	TypeMovimientoCaja     = "MovimientoCaja"
 	TypePago               = "Pago"
 	TypePagoAplicacion     = "PagoAplicacion"
+	TypePermiso            = "Permiso"
 	TypePropiedad          = "Propiedad"
 	TypeRol                = "Rol"
 	TypeServicioMedicion   = "ServicioMedicion"
@@ -549,6 +555,980 @@ func (m *AdminMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *AdminMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Admin edge %s", name)
+}
+
+// AsistenciaMutation represents an operation that mutates the Asistencia nodes in the graph.
+type AsistenciaMutation struct {
+	config
+	op                  Op
+	typ                 string
+	id                  *int
+	creado_en           *time.Time
+	fecha               *time.Time
+	hora_entrada        *time.Time
+	hora_salida         *time.Time
+	estado              *asistencia.Estado
+	notas               *string
+	horas_trabajadas    *float64
+	addhoras_trabajadas *float64
+	clearedFields       map[string]struct{}
+	empresa             *int
+	clearedempresa      bool
+	usuario             *int
+	clearedusuario      bool
+	done                bool
+	oldValue            func(context.Context) (*Asistencia, error)
+	predicates          []predicate.Asistencia
+}
+
+var _ ent.Mutation = (*AsistenciaMutation)(nil)
+
+// asistenciaOption allows management of the mutation configuration using functional options.
+type asistenciaOption func(*AsistenciaMutation)
+
+// newAsistenciaMutation creates new mutation for the Asistencia entity.
+func newAsistenciaMutation(c config, op Op, opts ...asistenciaOption) *AsistenciaMutation {
+	m := &AsistenciaMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeAsistencia,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withAsistenciaID sets the ID field of the mutation.
+func withAsistenciaID(id int) asistenciaOption {
+	return func(m *AsistenciaMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Asistencia
+		)
+		m.oldValue = func(ctx context.Context) (*Asistencia, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Asistencia.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withAsistencia sets the old Asistencia of the mutation.
+func withAsistencia(node *Asistencia) asistenciaOption {
+	return func(m *AsistenciaMutation) {
+		m.oldValue = func(context.Context) (*Asistencia, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m AsistenciaMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m AsistenciaMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *AsistenciaMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *AsistenciaMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Asistencia.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreadoEn sets the "creado_en" field.
+func (m *AsistenciaMutation) SetCreadoEn(t time.Time) {
+	m.creado_en = &t
+}
+
+// CreadoEn returns the value of the "creado_en" field in the mutation.
+func (m *AsistenciaMutation) CreadoEn() (r time.Time, exists bool) {
+	v := m.creado_en
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreadoEn returns the old "creado_en" field's value of the Asistencia entity.
+// If the Asistencia object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AsistenciaMutation) OldCreadoEn(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreadoEn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreadoEn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreadoEn: %w", err)
+	}
+	return oldValue.CreadoEn, nil
+}
+
+// ResetCreadoEn resets all changes to the "creado_en" field.
+func (m *AsistenciaMutation) ResetCreadoEn() {
+	m.creado_en = nil
+}
+
+// SetEmpresaID sets the "empresa_id" field.
+func (m *AsistenciaMutation) SetEmpresaID(i int) {
+	m.empresa = &i
+}
+
+// EmpresaID returns the value of the "empresa_id" field in the mutation.
+func (m *AsistenciaMutation) EmpresaID() (r int, exists bool) {
+	v := m.empresa
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmpresaID returns the old "empresa_id" field's value of the Asistencia entity.
+// If the Asistencia object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AsistenciaMutation) OldEmpresaID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEmpresaID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEmpresaID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmpresaID: %w", err)
+	}
+	return oldValue.EmpresaID, nil
+}
+
+// ResetEmpresaID resets all changes to the "empresa_id" field.
+func (m *AsistenciaMutation) ResetEmpresaID() {
+	m.empresa = nil
+}
+
+// SetUsuarioID sets the "usuario_id" field.
+func (m *AsistenciaMutation) SetUsuarioID(i int) {
+	m.usuario = &i
+}
+
+// UsuarioID returns the value of the "usuario_id" field in the mutation.
+func (m *AsistenciaMutation) UsuarioID() (r int, exists bool) {
+	v := m.usuario
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUsuarioID returns the old "usuario_id" field's value of the Asistencia entity.
+// If the Asistencia object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AsistenciaMutation) OldUsuarioID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUsuarioID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUsuarioID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUsuarioID: %w", err)
+	}
+	return oldValue.UsuarioID, nil
+}
+
+// ResetUsuarioID resets all changes to the "usuario_id" field.
+func (m *AsistenciaMutation) ResetUsuarioID() {
+	m.usuario = nil
+}
+
+// SetFecha sets the "fecha" field.
+func (m *AsistenciaMutation) SetFecha(t time.Time) {
+	m.fecha = &t
+}
+
+// Fecha returns the value of the "fecha" field in the mutation.
+func (m *AsistenciaMutation) Fecha() (r time.Time, exists bool) {
+	v := m.fecha
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFecha returns the old "fecha" field's value of the Asistencia entity.
+// If the Asistencia object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AsistenciaMutation) OldFecha(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFecha is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFecha requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFecha: %w", err)
+	}
+	return oldValue.Fecha, nil
+}
+
+// ResetFecha resets all changes to the "fecha" field.
+func (m *AsistenciaMutation) ResetFecha() {
+	m.fecha = nil
+}
+
+// SetHoraEntrada sets the "hora_entrada" field.
+func (m *AsistenciaMutation) SetHoraEntrada(t time.Time) {
+	m.hora_entrada = &t
+}
+
+// HoraEntrada returns the value of the "hora_entrada" field in the mutation.
+func (m *AsistenciaMutation) HoraEntrada() (r time.Time, exists bool) {
+	v := m.hora_entrada
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHoraEntrada returns the old "hora_entrada" field's value of the Asistencia entity.
+// If the Asistencia object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AsistenciaMutation) OldHoraEntrada(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHoraEntrada is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHoraEntrada requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHoraEntrada: %w", err)
+	}
+	return oldValue.HoraEntrada, nil
+}
+
+// ClearHoraEntrada clears the value of the "hora_entrada" field.
+func (m *AsistenciaMutation) ClearHoraEntrada() {
+	m.hora_entrada = nil
+	m.clearedFields[asistencia.FieldHoraEntrada] = struct{}{}
+}
+
+// HoraEntradaCleared returns if the "hora_entrada" field was cleared in this mutation.
+func (m *AsistenciaMutation) HoraEntradaCleared() bool {
+	_, ok := m.clearedFields[asistencia.FieldHoraEntrada]
+	return ok
+}
+
+// ResetHoraEntrada resets all changes to the "hora_entrada" field.
+func (m *AsistenciaMutation) ResetHoraEntrada() {
+	m.hora_entrada = nil
+	delete(m.clearedFields, asistencia.FieldHoraEntrada)
+}
+
+// SetHoraSalida sets the "hora_salida" field.
+func (m *AsistenciaMutation) SetHoraSalida(t time.Time) {
+	m.hora_salida = &t
+}
+
+// HoraSalida returns the value of the "hora_salida" field in the mutation.
+func (m *AsistenciaMutation) HoraSalida() (r time.Time, exists bool) {
+	v := m.hora_salida
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHoraSalida returns the old "hora_salida" field's value of the Asistencia entity.
+// If the Asistencia object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AsistenciaMutation) OldHoraSalida(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHoraSalida is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHoraSalida requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHoraSalida: %w", err)
+	}
+	return oldValue.HoraSalida, nil
+}
+
+// ClearHoraSalida clears the value of the "hora_salida" field.
+func (m *AsistenciaMutation) ClearHoraSalida() {
+	m.hora_salida = nil
+	m.clearedFields[asistencia.FieldHoraSalida] = struct{}{}
+}
+
+// HoraSalidaCleared returns if the "hora_salida" field was cleared in this mutation.
+func (m *AsistenciaMutation) HoraSalidaCleared() bool {
+	_, ok := m.clearedFields[asistencia.FieldHoraSalida]
+	return ok
+}
+
+// ResetHoraSalida resets all changes to the "hora_salida" field.
+func (m *AsistenciaMutation) ResetHoraSalida() {
+	m.hora_salida = nil
+	delete(m.clearedFields, asistencia.FieldHoraSalida)
+}
+
+// SetEstado sets the "estado" field.
+func (m *AsistenciaMutation) SetEstado(a asistencia.Estado) {
+	m.estado = &a
+}
+
+// Estado returns the value of the "estado" field in the mutation.
+func (m *AsistenciaMutation) Estado() (r asistencia.Estado, exists bool) {
+	v := m.estado
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEstado returns the old "estado" field's value of the Asistencia entity.
+// If the Asistencia object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AsistenciaMutation) OldEstado(ctx context.Context) (v asistencia.Estado, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEstado is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEstado requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEstado: %w", err)
+	}
+	return oldValue.Estado, nil
+}
+
+// ResetEstado resets all changes to the "estado" field.
+func (m *AsistenciaMutation) ResetEstado() {
+	m.estado = nil
+}
+
+// SetNotas sets the "notas" field.
+func (m *AsistenciaMutation) SetNotas(s string) {
+	m.notas = &s
+}
+
+// Notas returns the value of the "notas" field in the mutation.
+func (m *AsistenciaMutation) Notas() (r string, exists bool) {
+	v := m.notas
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNotas returns the old "notas" field's value of the Asistencia entity.
+// If the Asistencia object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AsistenciaMutation) OldNotas(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNotas is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNotas requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNotas: %w", err)
+	}
+	return oldValue.Notas, nil
+}
+
+// ClearNotas clears the value of the "notas" field.
+func (m *AsistenciaMutation) ClearNotas() {
+	m.notas = nil
+	m.clearedFields[asistencia.FieldNotas] = struct{}{}
+}
+
+// NotasCleared returns if the "notas" field was cleared in this mutation.
+func (m *AsistenciaMutation) NotasCleared() bool {
+	_, ok := m.clearedFields[asistencia.FieldNotas]
+	return ok
+}
+
+// ResetNotas resets all changes to the "notas" field.
+func (m *AsistenciaMutation) ResetNotas() {
+	m.notas = nil
+	delete(m.clearedFields, asistencia.FieldNotas)
+}
+
+// SetHorasTrabajadas sets the "horas_trabajadas" field.
+func (m *AsistenciaMutation) SetHorasTrabajadas(f float64) {
+	m.horas_trabajadas = &f
+	m.addhoras_trabajadas = nil
+}
+
+// HorasTrabajadas returns the value of the "horas_trabajadas" field in the mutation.
+func (m *AsistenciaMutation) HorasTrabajadas() (r float64, exists bool) {
+	v := m.horas_trabajadas
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHorasTrabajadas returns the old "horas_trabajadas" field's value of the Asistencia entity.
+// If the Asistencia object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AsistenciaMutation) OldHorasTrabajadas(ctx context.Context) (v *float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHorasTrabajadas is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHorasTrabajadas requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHorasTrabajadas: %w", err)
+	}
+	return oldValue.HorasTrabajadas, nil
+}
+
+// AddHorasTrabajadas adds f to the "horas_trabajadas" field.
+func (m *AsistenciaMutation) AddHorasTrabajadas(f float64) {
+	if m.addhoras_trabajadas != nil {
+		*m.addhoras_trabajadas += f
+	} else {
+		m.addhoras_trabajadas = &f
+	}
+}
+
+// AddedHorasTrabajadas returns the value that was added to the "horas_trabajadas" field in this mutation.
+func (m *AsistenciaMutation) AddedHorasTrabajadas() (r float64, exists bool) {
+	v := m.addhoras_trabajadas
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearHorasTrabajadas clears the value of the "horas_trabajadas" field.
+func (m *AsistenciaMutation) ClearHorasTrabajadas() {
+	m.horas_trabajadas = nil
+	m.addhoras_trabajadas = nil
+	m.clearedFields[asistencia.FieldHorasTrabajadas] = struct{}{}
+}
+
+// HorasTrabajadasCleared returns if the "horas_trabajadas" field was cleared in this mutation.
+func (m *AsistenciaMutation) HorasTrabajadasCleared() bool {
+	_, ok := m.clearedFields[asistencia.FieldHorasTrabajadas]
+	return ok
+}
+
+// ResetHorasTrabajadas resets all changes to the "horas_trabajadas" field.
+func (m *AsistenciaMutation) ResetHorasTrabajadas() {
+	m.horas_trabajadas = nil
+	m.addhoras_trabajadas = nil
+	delete(m.clearedFields, asistencia.FieldHorasTrabajadas)
+}
+
+// ClearEmpresa clears the "empresa" edge to the Empresa entity.
+func (m *AsistenciaMutation) ClearEmpresa() {
+	m.clearedempresa = true
+	m.clearedFields[asistencia.FieldEmpresaID] = struct{}{}
+}
+
+// EmpresaCleared reports if the "empresa" edge to the Empresa entity was cleared.
+func (m *AsistenciaMutation) EmpresaCleared() bool {
+	return m.clearedempresa
+}
+
+// EmpresaIDs returns the "empresa" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EmpresaID instead. It exists only for internal usage by the builders.
+func (m *AsistenciaMutation) EmpresaIDs() (ids []int) {
+	if id := m.empresa; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEmpresa resets all changes to the "empresa" edge.
+func (m *AsistenciaMutation) ResetEmpresa() {
+	m.empresa = nil
+	m.clearedempresa = false
+}
+
+// ClearUsuario clears the "usuario" edge to the Usuario entity.
+func (m *AsistenciaMutation) ClearUsuario() {
+	m.clearedusuario = true
+	m.clearedFields[asistencia.FieldUsuarioID] = struct{}{}
+}
+
+// UsuarioCleared reports if the "usuario" edge to the Usuario entity was cleared.
+func (m *AsistenciaMutation) UsuarioCleared() bool {
+	return m.clearedusuario
+}
+
+// UsuarioIDs returns the "usuario" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UsuarioID instead. It exists only for internal usage by the builders.
+func (m *AsistenciaMutation) UsuarioIDs() (ids []int) {
+	if id := m.usuario; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUsuario resets all changes to the "usuario" edge.
+func (m *AsistenciaMutation) ResetUsuario() {
+	m.usuario = nil
+	m.clearedusuario = false
+}
+
+// Where appends a list predicates to the AsistenciaMutation builder.
+func (m *AsistenciaMutation) Where(ps ...predicate.Asistencia) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the AsistenciaMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *AsistenciaMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Asistencia, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *AsistenciaMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *AsistenciaMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Asistencia).
+func (m *AsistenciaMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *AsistenciaMutation) Fields() []string {
+	fields := make([]string, 0, 9)
+	if m.creado_en != nil {
+		fields = append(fields, asistencia.FieldCreadoEn)
+	}
+	if m.empresa != nil {
+		fields = append(fields, asistencia.FieldEmpresaID)
+	}
+	if m.usuario != nil {
+		fields = append(fields, asistencia.FieldUsuarioID)
+	}
+	if m.fecha != nil {
+		fields = append(fields, asistencia.FieldFecha)
+	}
+	if m.hora_entrada != nil {
+		fields = append(fields, asistencia.FieldHoraEntrada)
+	}
+	if m.hora_salida != nil {
+		fields = append(fields, asistencia.FieldHoraSalida)
+	}
+	if m.estado != nil {
+		fields = append(fields, asistencia.FieldEstado)
+	}
+	if m.notas != nil {
+		fields = append(fields, asistencia.FieldNotas)
+	}
+	if m.horas_trabajadas != nil {
+		fields = append(fields, asistencia.FieldHorasTrabajadas)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *AsistenciaMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case asistencia.FieldCreadoEn:
+		return m.CreadoEn()
+	case asistencia.FieldEmpresaID:
+		return m.EmpresaID()
+	case asistencia.FieldUsuarioID:
+		return m.UsuarioID()
+	case asistencia.FieldFecha:
+		return m.Fecha()
+	case asistencia.FieldHoraEntrada:
+		return m.HoraEntrada()
+	case asistencia.FieldHoraSalida:
+		return m.HoraSalida()
+	case asistencia.FieldEstado:
+		return m.Estado()
+	case asistencia.FieldNotas:
+		return m.Notas()
+	case asistencia.FieldHorasTrabajadas:
+		return m.HorasTrabajadas()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *AsistenciaMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case asistencia.FieldCreadoEn:
+		return m.OldCreadoEn(ctx)
+	case asistencia.FieldEmpresaID:
+		return m.OldEmpresaID(ctx)
+	case asistencia.FieldUsuarioID:
+		return m.OldUsuarioID(ctx)
+	case asistencia.FieldFecha:
+		return m.OldFecha(ctx)
+	case asistencia.FieldHoraEntrada:
+		return m.OldHoraEntrada(ctx)
+	case asistencia.FieldHoraSalida:
+		return m.OldHoraSalida(ctx)
+	case asistencia.FieldEstado:
+		return m.OldEstado(ctx)
+	case asistencia.FieldNotas:
+		return m.OldNotas(ctx)
+	case asistencia.FieldHorasTrabajadas:
+		return m.OldHorasTrabajadas(ctx)
+	}
+	return nil, fmt.Errorf("unknown Asistencia field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AsistenciaMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case asistencia.FieldCreadoEn:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreadoEn(v)
+		return nil
+	case asistencia.FieldEmpresaID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmpresaID(v)
+		return nil
+	case asistencia.FieldUsuarioID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUsuarioID(v)
+		return nil
+	case asistencia.FieldFecha:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFecha(v)
+		return nil
+	case asistencia.FieldHoraEntrada:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHoraEntrada(v)
+		return nil
+	case asistencia.FieldHoraSalida:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHoraSalida(v)
+		return nil
+	case asistencia.FieldEstado:
+		v, ok := value.(asistencia.Estado)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEstado(v)
+		return nil
+	case asistencia.FieldNotas:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNotas(v)
+		return nil
+	case asistencia.FieldHorasTrabajadas:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHorasTrabajadas(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Asistencia field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *AsistenciaMutation) AddedFields() []string {
+	var fields []string
+	if m.addhoras_trabajadas != nil {
+		fields = append(fields, asistencia.FieldHorasTrabajadas)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *AsistenciaMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case asistencia.FieldHorasTrabajadas:
+		return m.AddedHorasTrabajadas()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AsistenciaMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case asistencia.FieldHorasTrabajadas:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddHorasTrabajadas(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Asistencia numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *AsistenciaMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(asistencia.FieldHoraEntrada) {
+		fields = append(fields, asistencia.FieldHoraEntrada)
+	}
+	if m.FieldCleared(asistencia.FieldHoraSalida) {
+		fields = append(fields, asistencia.FieldHoraSalida)
+	}
+	if m.FieldCleared(asistencia.FieldNotas) {
+		fields = append(fields, asistencia.FieldNotas)
+	}
+	if m.FieldCleared(asistencia.FieldHorasTrabajadas) {
+		fields = append(fields, asistencia.FieldHorasTrabajadas)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *AsistenciaMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *AsistenciaMutation) ClearField(name string) error {
+	switch name {
+	case asistencia.FieldHoraEntrada:
+		m.ClearHoraEntrada()
+		return nil
+	case asistencia.FieldHoraSalida:
+		m.ClearHoraSalida()
+		return nil
+	case asistencia.FieldNotas:
+		m.ClearNotas()
+		return nil
+	case asistencia.FieldHorasTrabajadas:
+		m.ClearHorasTrabajadas()
+		return nil
+	}
+	return fmt.Errorf("unknown Asistencia nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *AsistenciaMutation) ResetField(name string) error {
+	switch name {
+	case asistencia.FieldCreadoEn:
+		m.ResetCreadoEn()
+		return nil
+	case asistencia.FieldEmpresaID:
+		m.ResetEmpresaID()
+		return nil
+	case asistencia.FieldUsuarioID:
+		m.ResetUsuarioID()
+		return nil
+	case asistencia.FieldFecha:
+		m.ResetFecha()
+		return nil
+	case asistencia.FieldHoraEntrada:
+		m.ResetHoraEntrada()
+		return nil
+	case asistencia.FieldHoraSalida:
+		m.ResetHoraSalida()
+		return nil
+	case asistencia.FieldEstado:
+		m.ResetEstado()
+		return nil
+	case asistencia.FieldNotas:
+		m.ResetNotas()
+		return nil
+	case asistencia.FieldHorasTrabajadas:
+		m.ResetHorasTrabajadas()
+		return nil
+	}
+	return fmt.Errorf("unknown Asistencia field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *AsistenciaMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.empresa != nil {
+		edges = append(edges, asistencia.EdgeEmpresa)
+	}
+	if m.usuario != nil {
+		edges = append(edges, asistencia.EdgeUsuario)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *AsistenciaMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case asistencia.EdgeEmpresa:
+		if id := m.empresa; id != nil {
+			return []ent.Value{*id}
+		}
+	case asistencia.EdgeUsuario:
+		if id := m.usuario; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *AsistenciaMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *AsistenciaMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *AsistenciaMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedempresa {
+		edges = append(edges, asistencia.EdgeEmpresa)
+	}
+	if m.clearedusuario {
+		edges = append(edges, asistencia.EdgeUsuario)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *AsistenciaMutation) EdgeCleared(name string) bool {
+	switch name {
+	case asistencia.EdgeEmpresa:
+		return m.clearedempresa
+	case asistencia.EdgeUsuario:
+		return m.clearedusuario
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *AsistenciaMutation) ClearEdge(name string) error {
+	switch name {
+	case asistencia.EdgeEmpresa:
+		m.ClearEmpresa()
+		return nil
+	case asistencia.EdgeUsuario:
+		m.ClearUsuario()
+		return nil
+	}
+	return fmt.Errorf("unknown Asistencia unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *AsistenciaMutation) ResetEdge(name string) error {
+	switch name {
+	case asistencia.EdgeEmpresa:
+		m.ResetEmpresa()
+		return nil
+	case asistencia.EdgeUsuario:
+		m.ResetUsuario()
+		return nil
+	}
+	return fmt.Errorf("unknown Asistencia edge %s", name)
 }
 
 // CargoMutation represents an operation that mutates the Cargo nodes in the graph.
@@ -5911,6 +6891,15 @@ type EmpresaMutation struct {
 	tickets                 map[int]struct{}
 	removedtickets          map[int]struct{}
 	clearedtickets          bool
+	horarios                map[int]struct{}
+	removedhorarios         map[int]struct{}
+	clearedhorarios         bool
+	asistencias             map[int]struct{}
+	removedasistencias      map[int]struct{}
+	clearedasistencias      bool
+	permisos                map[int]struct{}
+	removedpermisos         map[int]struct{}
+	clearedpermisos         bool
 	done                    bool
 	oldValue                func(context.Context) (*Empresa, error)
 	predicates              []predicate.Empresa
@@ -6744,6 +7733,168 @@ func (m *EmpresaMutation) ResetTickets() {
 	m.removedtickets = nil
 }
 
+// AddHorarioIDs adds the "horarios" edge to the Horario entity by ids.
+func (m *EmpresaMutation) AddHorarioIDs(ids ...int) {
+	if m.horarios == nil {
+		m.horarios = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.horarios[ids[i]] = struct{}{}
+	}
+}
+
+// ClearHorarios clears the "horarios" edge to the Horario entity.
+func (m *EmpresaMutation) ClearHorarios() {
+	m.clearedhorarios = true
+}
+
+// HorariosCleared reports if the "horarios" edge to the Horario entity was cleared.
+func (m *EmpresaMutation) HorariosCleared() bool {
+	return m.clearedhorarios
+}
+
+// RemoveHorarioIDs removes the "horarios" edge to the Horario entity by IDs.
+func (m *EmpresaMutation) RemoveHorarioIDs(ids ...int) {
+	if m.removedhorarios == nil {
+		m.removedhorarios = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.horarios, ids[i])
+		m.removedhorarios[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedHorarios returns the removed IDs of the "horarios" edge to the Horario entity.
+func (m *EmpresaMutation) RemovedHorariosIDs() (ids []int) {
+	for id := range m.removedhorarios {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// HorariosIDs returns the "horarios" edge IDs in the mutation.
+func (m *EmpresaMutation) HorariosIDs() (ids []int) {
+	for id := range m.horarios {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetHorarios resets all changes to the "horarios" edge.
+func (m *EmpresaMutation) ResetHorarios() {
+	m.horarios = nil
+	m.clearedhorarios = false
+	m.removedhorarios = nil
+}
+
+// AddAsistenciaIDs adds the "asistencias" edge to the Asistencia entity by ids.
+func (m *EmpresaMutation) AddAsistenciaIDs(ids ...int) {
+	if m.asistencias == nil {
+		m.asistencias = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.asistencias[ids[i]] = struct{}{}
+	}
+}
+
+// ClearAsistencias clears the "asistencias" edge to the Asistencia entity.
+func (m *EmpresaMutation) ClearAsistencias() {
+	m.clearedasistencias = true
+}
+
+// AsistenciasCleared reports if the "asistencias" edge to the Asistencia entity was cleared.
+func (m *EmpresaMutation) AsistenciasCleared() bool {
+	return m.clearedasistencias
+}
+
+// RemoveAsistenciaIDs removes the "asistencias" edge to the Asistencia entity by IDs.
+func (m *EmpresaMutation) RemoveAsistenciaIDs(ids ...int) {
+	if m.removedasistencias == nil {
+		m.removedasistencias = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.asistencias, ids[i])
+		m.removedasistencias[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedAsistencias returns the removed IDs of the "asistencias" edge to the Asistencia entity.
+func (m *EmpresaMutation) RemovedAsistenciasIDs() (ids []int) {
+	for id := range m.removedasistencias {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// AsistenciasIDs returns the "asistencias" edge IDs in the mutation.
+func (m *EmpresaMutation) AsistenciasIDs() (ids []int) {
+	for id := range m.asistencias {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetAsistencias resets all changes to the "asistencias" edge.
+func (m *EmpresaMutation) ResetAsistencias() {
+	m.asistencias = nil
+	m.clearedasistencias = false
+	m.removedasistencias = nil
+}
+
+// AddPermisoIDs adds the "permisos" edge to the Permiso entity by ids.
+func (m *EmpresaMutation) AddPermisoIDs(ids ...int) {
+	if m.permisos == nil {
+		m.permisos = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.permisos[ids[i]] = struct{}{}
+	}
+}
+
+// ClearPermisos clears the "permisos" edge to the Permiso entity.
+func (m *EmpresaMutation) ClearPermisos() {
+	m.clearedpermisos = true
+}
+
+// PermisosCleared reports if the "permisos" edge to the Permiso entity was cleared.
+func (m *EmpresaMutation) PermisosCleared() bool {
+	return m.clearedpermisos
+}
+
+// RemovePermisoIDs removes the "permisos" edge to the Permiso entity by IDs.
+func (m *EmpresaMutation) RemovePermisoIDs(ids ...int) {
+	if m.removedpermisos == nil {
+		m.removedpermisos = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.permisos, ids[i])
+		m.removedpermisos[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedPermisos returns the removed IDs of the "permisos" edge to the Permiso entity.
+func (m *EmpresaMutation) RemovedPermisosIDs() (ids []int) {
+	for id := range m.removedpermisos {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// PermisosIDs returns the "permisos" edge IDs in the mutation.
+func (m *EmpresaMutation) PermisosIDs() (ids []int) {
+	for id := range m.permisos {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetPermisos resets all changes to the "permisos" edge.
+func (m *EmpresaMutation) ResetPermisos() {
+	m.permisos = nil
+	m.clearedpermisos = false
+	m.removedpermisos = nil
+}
+
 // Where appends a list predicates to the EmpresaMutation builder.
 func (m *EmpresaMutation) Where(ps ...predicate.Empresa) {
 	m.predicates = append(m.predicates, ps...)
@@ -7009,7 +8160,7 @@ func (m *EmpresaMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EmpresaMutation) AddedEdges() []string {
-	edges := make([]string, 0, 8)
+	edges := make([]string, 0, 11)
 	if m.usuarios_empresa != nil {
 		edges = append(edges, empresa.EdgeUsuariosEmpresa)
 	}
@@ -7033,6 +8184,15 @@ func (m *EmpresaMutation) AddedEdges() []string {
 	}
 	if m.tickets != nil {
 		edges = append(edges, empresa.EdgeTickets)
+	}
+	if m.horarios != nil {
+		edges = append(edges, empresa.EdgeHorarios)
+	}
+	if m.asistencias != nil {
+		edges = append(edges, empresa.EdgeAsistencias)
+	}
+	if m.permisos != nil {
+		edges = append(edges, empresa.EdgePermisos)
 	}
 	return edges
 }
@@ -7089,13 +8249,31 @@ func (m *EmpresaMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case empresa.EdgeHorarios:
+		ids := make([]ent.Value, 0, len(m.horarios))
+		for id := range m.horarios {
+			ids = append(ids, id)
+		}
+		return ids
+	case empresa.EdgeAsistencias:
+		ids := make([]ent.Value, 0, len(m.asistencias))
+		for id := range m.asistencias {
+			ids = append(ids, id)
+		}
+		return ids
+	case empresa.EdgePermisos:
+		ids := make([]ent.Value, 0, len(m.permisos))
+		for id := range m.permisos {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EmpresaMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 8)
+	edges := make([]string, 0, 11)
 	if m.removedusuarios_empresa != nil {
 		edges = append(edges, empresa.EdgeUsuariosEmpresa)
 	}
@@ -7119,6 +8297,15 @@ func (m *EmpresaMutation) RemovedEdges() []string {
 	}
 	if m.removedtickets != nil {
 		edges = append(edges, empresa.EdgeTickets)
+	}
+	if m.removedhorarios != nil {
+		edges = append(edges, empresa.EdgeHorarios)
+	}
+	if m.removedasistencias != nil {
+		edges = append(edges, empresa.EdgeAsistencias)
+	}
+	if m.removedpermisos != nil {
+		edges = append(edges, empresa.EdgePermisos)
 	}
 	return edges
 }
@@ -7175,13 +8362,31 @@ func (m *EmpresaMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case empresa.EdgeHorarios:
+		ids := make([]ent.Value, 0, len(m.removedhorarios))
+		for id := range m.removedhorarios {
+			ids = append(ids, id)
+		}
+		return ids
+	case empresa.EdgeAsistencias:
+		ids := make([]ent.Value, 0, len(m.removedasistencias))
+		for id := range m.removedasistencias {
+			ids = append(ids, id)
+		}
+		return ids
+	case empresa.EdgePermisos:
+		ids := make([]ent.Value, 0, len(m.removedpermisos))
+		for id := range m.removedpermisos {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EmpresaMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 8)
+	edges := make([]string, 0, 11)
 	if m.clearedusuarios_empresa {
 		edges = append(edges, empresa.EdgeUsuariosEmpresa)
 	}
@@ -7206,6 +8411,15 @@ func (m *EmpresaMutation) ClearedEdges() []string {
 	if m.clearedtickets {
 		edges = append(edges, empresa.EdgeTickets)
 	}
+	if m.clearedhorarios {
+		edges = append(edges, empresa.EdgeHorarios)
+	}
+	if m.clearedasistencias {
+		edges = append(edges, empresa.EdgeAsistencias)
+	}
+	if m.clearedpermisos {
+		edges = append(edges, empresa.EdgePermisos)
+	}
 	return edges
 }
 
@@ -7229,6 +8443,12 @@ func (m *EmpresaMutation) EdgeCleared(name string) bool {
 		return m.clearedmovimientos_caja
 	case empresa.EdgeTickets:
 		return m.clearedtickets
+	case empresa.EdgeHorarios:
+		return m.clearedhorarios
+	case empresa.EdgeAsistencias:
+		return m.clearedasistencias
+	case empresa.EdgePermisos:
+		return m.clearedpermisos
 	}
 	return false
 }
@@ -7268,6 +8488,15 @@ func (m *EmpresaMutation) ResetEdge(name string) error {
 		return nil
 	case empresa.EdgeTickets:
 		m.ResetTickets()
+		return nil
+	case empresa.EdgeHorarios:
+		m.ResetHorarios()
+		return nil
+	case empresa.EdgeAsistencias:
+		m.ResetAsistencias()
+		return nil
+	case empresa.EdgePermisos:
+		m.ResetPermisos()
 		return nil
 	}
 	return fmt.Errorf("unknown Empresa edge %s", name)
@@ -8779,6 +10008,792 @@ func (m *GastoMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Gasto edge %s", name)
+}
+
+// HorarioMutation represents an operation that mutates the Horario nodes in the graph.
+type HorarioMutation struct {
+	config
+	op                    Op
+	typ                   string
+	id                    *int
+	creado_en             *time.Time
+	hora_entrada          *string
+	hora_salida           *string
+	tolerancia_minutos    *int
+	addtolerancia_minutos *int
+	dias_laborables       *string
+	clearedFields         map[string]struct{}
+	empresa               *int
+	clearedempresa        bool
+	usuario               *int
+	clearedusuario        bool
+	done                  bool
+	oldValue              func(context.Context) (*Horario, error)
+	predicates            []predicate.Horario
+}
+
+var _ ent.Mutation = (*HorarioMutation)(nil)
+
+// horarioOption allows management of the mutation configuration using functional options.
+type horarioOption func(*HorarioMutation)
+
+// newHorarioMutation creates new mutation for the Horario entity.
+func newHorarioMutation(c config, op Op, opts ...horarioOption) *HorarioMutation {
+	m := &HorarioMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeHorario,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withHorarioID sets the ID field of the mutation.
+func withHorarioID(id int) horarioOption {
+	return func(m *HorarioMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Horario
+		)
+		m.oldValue = func(ctx context.Context) (*Horario, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Horario.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withHorario sets the old Horario of the mutation.
+func withHorario(node *Horario) horarioOption {
+	return func(m *HorarioMutation) {
+		m.oldValue = func(context.Context) (*Horario, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m HorarioMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m HorarioMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *HorarioMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *HorarioMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Horario.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreadoEn sets the "creado_en" field.
+func (m *HorarioMutation) SetCreadoEn(t time.Time) {
+	m.creado_en = &t
+}
+
+// CreadoEn returns the value of the "creado_en" field in the mutation.
+func (m *HorarioMutation) CreadoEn() (r time.Time, exists bool) {
+	v := m.creado_en
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreadoEn returns the old "creado_en" field's value of the Horario entity.
+// If the Horario object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HorarioMutation) OldCreadoEn(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreadoEn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreadoEn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreadoEn: %w", err)
+	}
+	return oldValue.CreadoEn, nil
+}
+
+// ResetCreadoEn resets all changes to the "creado_en" field.
+func (m *HorarioMutation) ResetCreadoEn() {
+	m.creado_en = nil
+}
+
+// SetEmpresaID sets the "empresa_id" field.
+func (m *HorarioMutation) SetEmpresaID(i int) {
+	m.empresa = &i
+}
+
+// EmpresaID returns the value of the "empresa_id" field in the mutation.
+func (m *HorarioMutation) EmpresaID() (r int, exists bool) {
+	v := m.empresa
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmpresaID returns the old "empresa_id" field's value of the Horario entity.
+// If the Horario object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HorarioMutation) OldEmpresaID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEmpresaID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEmpresaID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmpresaID: %w", err)
+	}
+	return oldValue.EmpresaID, nil
+}
+
+// ResetEmpresaID resets all changes to the "empresa_id" field.
+func (m *HorarioMutation) ResetEmpresaID() {
+	m.empresa = nil
+}
+
+// SetUsuarioID sets the "usuario_id" field.
+func (m *HorarioMutation) SetUsuarioID(i int) {
+	m.usuario = &i
+}
+
+// UsuarioID returns the value of the "usuario_id" field in the mutation.
+func (m *HorarioMutation) UsuarioID() (r int, exists bool) {
+	v := m.usuario
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUsuarioID returns the old "usuario_id" field's value of the Horario entity.
+// If the Horario object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HorarioMutation) OldUsuarioID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUsuarioID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUsuarioID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUsuarioID: %w", err)
+	}
+	return oldValue.UsuarioID, nil
+}
+
+// ResetUsuarioID resets all changes to the "usuario_id" field.
+func (m *HorarioMutation) ResetUsuarioID() {
+	m.usuario = nil
+}
+
+// SetHoraEntrada sets the "hora_entrada" field.
+func (m *HorarioMutation) SetHoraEntrada(s string) {
+	m.hora_entrada = &s
+}
+
+// HoraEntrada returns the value of the "hora_entrada" field in the mutation.
+func (m *HorarioMutation) HoraEntrada() (r string, exists bool) {
+	v := m.hora_entrada
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHoraEntrada returns the old "hora_entrada" field's value of the Horario entity.
+// If the Horario object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HorarioMutation) OldHoraEntrada(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHoraEntrada is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHoraEntrada requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHoraEntrada: %w", err)
+	}
+	return oldValue.HoraEntrada, nil
+}
+
+// ResetHoraEntrada resets all changes to the "hora_entrada" field.
+func (m *HorarioMutation) ResetHoraEntrada() {
+	m.hora_entrada = nil
+}
+
+// SetHoraSalida sets the "hora_salida" field.
+func (m *HorarioMutation) SetHoraSalida(s string) {
+	m.hora_salida = &s
+}
+
+// HoraSalida returns the value of the "hora_salida" field in the mutation.
+func (m *HorarioMutation) HoraSalida() (r string, exists bool) {
+	v := m.hora_salida
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHoraSalida returns the old "hora_salida" field's value of the Horario entity.
+// If the Horario object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HorarioMutation) OldHoraSalida(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHoraSalida is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHoraSalida requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHoraSalida: %w", err)
+	}
+	return oldValue.HoraSalida, nil
+}
+
+// ResetHoraSalida resets all changes to the "hora_salida" field.
+func (m *HorarioMutation) ResetHoraSalida() {
+	m.hora_salida = nil
+}
+
+// SetToleranciaMinutos sets the "tolerancia_minutos" field.
+func (m *HorarioMutation) SetToleranciaMinutos(i int) {
+	m.tolerancia_minutos = &i
+	m.addtolerancia_minutos = nil
+}
+
+// ToleranciaMinutos returns the value of the "tolerancia_minutos" field in the mutation.
+func (m *HorarioMutation) ToleranciaMinutos() (r int, exists bool) {
+	v := m.tolerancia_minutos
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldToleranciaMinutos returns the old "tolerancia_minutos" field's value of the Horario entity.
+// If the Horario object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HorarioMutation) OldToleranciaMinutos(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldToleranciaMinutos is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldToleranciaMinutos requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldToleranciaMinutos: %w", err)
+	}
+	return oldValue.ToleranciaMinutos, nil
+}
+
+// AddToleranciaMinutos adds i to the "tolerancia_minutos" field.
+func (m *HorarioMutation) AddToleranciaMinutos(i int) {
+	if m.addtolerancia_minutos != nil {
+		*m.addtolerancia_minutos += i
+	} else {
+		m.addtolerancia_minutos = &i
+	}
+}
+
+// AddedToleranciaMinutos returns the value that was added to the "tolerancia_minutos" field in this mutation.
+func (m *HorarioMutation) AddedToleranciaMinutos() (r int, exists bool) {
+	v := m.addtolerancia_minutos
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetToleranciaMinutos resets all changes to the "tolerancia_minutos" field.
+func (m *HorarioMutation) ResetToleranciaMinutos() {
+	m.tolerancia_minutos = nil
+	m.addtolerancia_minutos = nil
+}
+
+// SetDiasLaborables sets the "dias_laborables" field.
+func (m *HorarioMutation) SetDiasLaborables(s string) {
+	m.dias_laborables = &s
+}
+
+// DiasLaborables returns the value of the "dias_laborables" field in the mutation.
+func (m *HorarioMutation) DiasLaborables() (r string, exists bool) {
+	v := m.dias_laborables
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDiasLaborables returns the old "dias_laborables" field's value of the Horario entity.
+// If the Horario object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *HorarioMutation) OldDiasLaborables(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDiasLaborables is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDiasLaborables requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDiasLaborables: %w", err)
+	}
+	return oldValue.DiasLaborables, nil
+}
+
+// ResetDiasLaborables resets all changes to the "dias_laborables" field.
+func (m *HorarioMutation) ResetDiasLaborables() {
+	m.dias_laborables = nil
+}
+
+// ClearEmpresa clears the "empresa" edge to the Empresa entity.
+func (m *HorarioMutation) ClearEmpresa() {
+	m.clearedempresa = true
+	m.clearedFields[horario.FieldEmpresaID] = struct{}{}
+}
+
+// EmpresaCleared reports if the "empresa" edge to the Empresa entity was cleared.
+func (m *HorarioMutation) EmpresaCleared() bool {
+	return m.clearedempresa
+}
+
+// EmpresaIDs returns the "empresa" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EmpresaID instead. It exists only for internal usage by the builders.
+func (m *HorarioMutation) EmpresaIDs() (ids []int) {
+	if id := m.empresa; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEmpresa resets all changes to the "empresa" edge.
+func (m *HorarioMutation) ResetEmpresa() {
+	m.empresa = nil
+	m.clearedempresa = false
+}
+
+// ClearUsuario clears the "usuario" edge to the Usuario entity.
+func (m *HorarioMutation) ClearUsuario() {
+	m.clearedusuario = true
+	m.clearedFields[horario.FieldUsuarioID] = struct{}{}
+}
+
+// UsuarioCleared reports if the "usuario" edge to the Usuario entity was cleared.
+func (m *HorarioMutation) UsuarioCleared() bool {
+	return m.clearedusuario
+}
+
+// UsuarioIDs returns the "usuario" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UsuarioID instead. It exists only for internal usage by the builders.
+func (m *HorarioMutation) UsuarioIDs() (ids []int) {
+	if id := m.usuario; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUsuario resets all changes to the "usuario" edge.
+func (m *HorarioMutation) ResetUsuario() {
+	m.usuario = nil
+	m.clearedusuario = false
+}
+
+// Where appends a list predicates to the HorarioMutation builder.
+func (m *HorarioMutation) Where(ps ...predicate.Horario) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the HorarioMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *HorarioMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Horario, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *HorarioMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *HorarioMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Horario).
+func (m *HorarioMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *HorarioMutation) Fields() []string {
+	fields := make([]string, 0, 7)
+	if m.creado_en != nil {
+		fields = append(fields, horario.FieldCreadoEn)
+	}
+	if m.empresa != nil {
+		fields = append(fields, horario.FieldEmpresaID)
+	}
+	if m.usuario != nil {
+		fields = append(fields, horario.FieldUsuarioID)
+	}
+	if m.hora_entrada != nil {
+		fields = append(fields, horario.FieldHoraEntrada)
+	}
+	if m.hora_salida != nil {
+		fields = append(fields, horario.FieldHoraSalida)
+	}
+	if m.tolerancia_minutos != nil {
+		fields = append(fields, horario.FieldToleranciaMinutos)
+	}
+	if m.dias_laborables != nil {
+		fields = append(fields, horario.FieldDiasLaborables)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *HorarioMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case horario.FieldCreadoEn:
+		return m.CreadoEn()
+	case horario.FieldEmpresaID:
+		return m.EmpresaID()
+	case horario.FieldUsuarioID:
+		return m.UsuarioID()
+	case horario.FieldHoraEntrada:
+		return m.HoraEntrada()
+	case horario.FieldHoraSalida:
+		return m.HoraSalida()
+	case horario.FieldToleranciaMinutos:
+		return m.ToleranciaMinutos()
+	case horario.FieldDiasLaborables:
+		return m.DiasLaborables()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *HorarioMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case horario.FieldCreadoEn:
+		return m.OldCreadoEn(ctx)
+	case horario.FieldEmpresaID:
+		return m.OldEmpresaID(ctx)
+	case horario.FieldUsuarioID:
+		return m.OldUsuarioID(ctx)
+	case horario.FieldHoraEntrada:
+		return m.OldHoraEntrada(ctx)
+	case horario.FieldHoraSalida:
+		return m.OldHoraSalida(ctx)
+	case horario.FieldToleranciaMinutos:
+		return m.OldToleranciaMinutos(ctx)
+	case horario.FieldDiasLaborables:
+		return m.OldDiasLaborables(ctx)
+	}
+	return nil, fmt.Errorf("unknown Horario field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *HorarioMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case horario.FieldCreadoEn:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreadoEn(v)
+		return nil
+	case horario.FieldEmpresaID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmpresaID(v)
+		return nil
+	case horario.FieldUsuarioID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUsuarioID(v)
+		return nil
+	case horario.FieldHoraEntrada:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHoraEntrada(v)
+		return nil
+	case horario.FieldHoraSalida:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHoraSalida(v)
+		return nil
+	case horario.FieldToleranciaMinutos:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetToleranciaMinutos(v)
+		return nil
+	case horario.FieldDiasLaborables:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDiasLaborables(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Horario field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *HorarioMutation) AddedFields() []string {
+	var fields []string
+	if m.addtolerancia_minutos != nil {
+		fields = append(fields, horario.FieldToleranciaMinutos)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *HorarioMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case horario.FieldToleranciaMinutos:
+		return m.AddedToleranciaMinutos()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *HorarioMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case horario.FieldToleranciaMinutos:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddToleranciaMinutos(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Horario numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *HorarioMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *HorarioMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *HorarioMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Horario nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *HorarioMutation) ResetField(name string) error {
+	switch name {
+	case horario.FieldCreadoEn:
+		m.ResetCreadoEn()
+		return nil
+	case horario.FieldEmpresaID:
+		m.ResetEmpresaID()
+		return nil
+	case horario.FieldUsuarioID:
+		m.ResetUsuarioID()
+		return nil
+	case horario.FieldHoraEntrada:
+		m.ResetHoraEntrada()
+		return nil
+	case horario.FieldHoraSalida:
+		m.ResetHoraSalida()
+		return nil
+	case horario.FieldToleranciaMinutos:
+		m.ResetToleranciaMinutos()
+		return nil
+	case horario.FieldDiasLaborables:
+		m.ResetDiasLaborables()
+		return nil
+	}
+	return fmt.Errorf("unknown Horario field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *HorarioMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.empresa != nil {
+		edges = append(edges, horario.EdgeEmpresa)
+	}
+	if m.usuario != nil {
+		edges = append(edges, horario.EdgeUsuario)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *HorarioMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case horario.EdgeEmpresa:
+		if id := m.empresa; id != nil {
+			return []ent.Value{*id}
+		}
+	case horario.EdgeUsuario:
+		if id := m.usuario; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *HorarioMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *HorarioMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *HorarioMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedempresa {
+		edges = append(edges, horario.EdgeEmpresa)
+	}
+	if m.clearedusuario {
+		edges = append(edges, horario.EdgeUsuario)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *HorarioMutation) EdgeCleared(name string) bool {
+	switch name {
+	case horario.EdgeEmpresa:
+		return m.clearedempresa
+	case horario.EdgeUsuario:
+		return m.clearedusuario
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *HorarioMutation) ClearEdge(name string) error {
+	switch name {
+	case horario.EdgeEmpresa:
+		m.ClearEmpresa()
+		return nil
+	case horario.EdgeUsuario:
+		m.ClearUsuario()
+		return nil
+	}
+	return fmt.Errorf("unknown Horario unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *HorarioMutation) ResetEdge(name string) error {
+	switch name {
+	case horario.EdgeEmpresa:
+		m.ResetEmpresa()
+		return nil
+	case horario.EdgeUsuario:
+		m.ResetUsuario()
+		return nil
+	}
+	return fmt.Errorf("unknown Horario edge %s", name)
 }
 
 // MovimientoCajaMutation represents an operation that mutates the MovimientoCaja nodes in the graph.
@@ -11987,6 +14002,781 @@ func (m *PagoAplicacionMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown PagoAplicacion edge %s", name)
+}
+
+// PermisoMutation represents an operation that mutates the Permiso nodes in the graph.
+type PermisoMutation struct {
+	config
+	op             Op
+	typ            string
+	id             *int
+	creado_en      *time.Time
+	fecha          *time.Time
+	motivo         *string
+	estado         *permiso.Estado
+	respuesta      *string
+	clearedFields  map[string]struct{}
+	empresa        *int
+	clearedempresa bool
+	usuario        *int
+	clearedusuario bool
+	done           bool
+	oldValue       func(context.Context) (*Permiso, error)
+	predicates     []predicate.Permiso
+}
+
+var _ ent.Mutation = (*PermisoMutation)(nil)
+
+// permisoOption allows management of the mutation configuration using functional options.
+type permisoOption func(*PermisoMutation)
+
+// newPermisoMutation creates new mutation for the Permiso entity.
+func newPermisoMutation(c config, op Op, opts ...permisoOption) *PermisoMutation {
+	m := &PermisoMutation{
+		config:        c,
+		op:            op,
+		typ:           TypePermiso,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withPermisoID sets the ID field of the mutation.
+func withPermisoID(id int) permisoOption {
+	return func(m *PermisoMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Permiso
+		)
+		m.oldValue = func(ctx context.Context) (*Permiso, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Permiso.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withPermiso sets the old Permiso of the mutation.
+func withPermiso(node *Permiso) permisoOption {
+	return func(m *PermisoMutation) {
+		m.oldValue = func(context.Context) (*Permiso, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m PermisoMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m PermisoMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *PermisoMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *PermisoMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Permiso.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreadoEn sets the "creado_en" field.
+func (m *PermisoMutation) SetCreadoEn(t time.Time) {
+	m.creado_en = &t
+}
+
+// CreadoEn returns the value of the "creado_en" field in the mutation.
+func (m *PermisoMutation) CreadoEn() (r time.Time, exists bool) {
+	v := m.creado_en
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreadoEn returns the old "creado_en" field's value of the Permiso entity.
+// If the Permiso object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PermisoMutation) OldCreadoEn(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreadoEn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreadoEn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreadoEn: %w", err)
+	}
+	return oldValue.CreadoEn, nil
+}
+
+// ResetCreadoEn resets all changes to the "creado_en" field.
+func (m *PermisoMutation) ResetCreadoEn() {
+	m.creado_en = nil
+}
+
+// SetEmpresaID sets the "empresa_id" field.
+func (m *PermisoMutation) SetEmpresaID(i int) {
+	m.empresa = &i
+}
+
+// EmpresaID returns the value of the "empresa_id" field in the mutation.
+func (m *PermisoMutation) EmpresaID() (r int, exists bool) {
+	v := m.empresa
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmpresaID returns the old "empresa_id" field's value of the Permiso entity.
+// If the Permiso object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PermisoMutation) OldEmpresaID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEmpresaID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEmpresaID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmpresaID: %w", err)
+	}
+	return oldValue.EmpresaID, nil
+}
+
+// ResetEmpresaID resets all changes to the "empresa_id" field.
+func (m *PermisoMutation) ResetEmpresaID() {
+	m.empresa = nil
+}
+
+// SetUsuarioID sets the "usuario_id" field.
+func (m *PermisoMutation) SetUsuarioID(i int) {
+	m.usuario = &i
+}
+
+// UsuarioID returns the value of the "usuario_id" field in the mutation.
+func (m *PermisoMutation) UsuarioID() (r int, exists bool) {
+	v := m.usuario
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUsuarioID returns the old "usuario_id" field's value of the Permiso entity.
+// If the Permiso object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PermisoMutation) OldUsuarioID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUsuarioID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUsuarioID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUsuarioID: %w", err)
+	}
+	return oldValue.UsuarioID, nil
+}
+
+// ResetUsuarioID resets all changes to the "usuario_id" field.
+func (m *PermisoMutation) ResetUsuarioID() {
+	m.usuario = nil
+}
+
+// SetFecha sets the "fecha" field.
+func (m *PermisoMutation) SetFecha(t time.Time) {
+	m.fecha = &t
+}
+
+// Fecha returns the value of the "fecha" field in the mutation.
+func (m *PermisoMutation) Fecha() (r time.Time, exists bool) {
+	v := m.fecha
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFecha returns the old "fecha" field's value of the Permiso entity.
+// If the Permiso object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PermisoMutation) OldFecha(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFecha is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFecha requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFecha: %w", err)
+	}
+	return oldValue.Fecha, nil
+}
+
+// ResetFecha resets all changes to the "fecha" field.
+func (m *PermisoMutation) ResetFecha() {
+	m.fecha = nil
+}
+
+// SetMotivo sets the "motivo" field.
+func (m *PermisoMutation) SetMotivo(s string) {
+	m.motivo = &s
+}
+
+// Motivo returns the value of the "motivo" field in the mutation.
+func (m *PermisoMutation) Motivo() (r string, exists bool) {
+	v := m.motivo
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMotivo returns the old "motivo" field's value of the Permiso entity.
+// If the Permiso object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PermisoMutation) OldMotivo(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMotivo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMotivo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMotivo: %w", err)
+	}
+	return oldValue.Motivo, nil
+}
+
+// ResetMotivo resets all changes to the "motivo" field.
+func (m *PermisoMutation) ResetMotivo() {
+	m.motivo = nil
+}
+
+// SetEstado sets the "estado" field.
+func (m *PermisoMutation) SetEstado(pe permiso.Estado) {
+	m.estado = &pe
+}
+
+// Estado returns the value of the "estado" field in the mutation.
+func (m *PermisoMutation) Estado() (r permiso.Estado, exists bool) {
+	v := m.estado
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEstado returns the old "estado" field's value of the Permiso entity.
+// If the Permiso object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PermisoMutation) OldEstado(ctx context.Context) (v permiso.Estado, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEstado is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEstado requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEstado: %w", err)
+	}
+	return oldValue.Estado, nil
+}
+
+// ResetEstado resets all changes to the "estado" field.
+func (m *PermisoMutation) ResetEstado() {
+	m.estado = nil
+}
+
+// SetRespuesta sets the "respuesta" field.
+func (m *PermisoMutation) SetRespuesta(s string) {
+	m.respuesta = &s
+}
+
+// Respuesta returns the value of the "respuesta" field in the mutation.
+func (m *PermisoMutation) Respuesta() (r string, exists bool) {
+	v := m.respuesta
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRespuesta returns the old "respuesta" field's value of the Permiso entity.
+// If the Permiso object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PermisoMutation) OldRespuesta(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRespuesta is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRespuesta requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRespuesta: %w", err)
+	}
+	return oldValue.Respuesta, nil
+}
+
+// ClearRespuesta clears the value of the "respuesta" field.
+func (m *PermisoMutation) ClearRespuesta() {
+	m.respuesta = nil
+	m.clearedFields[permiso.FieldRespuesta] = struct{}{}
+}
+
+// RespuestaCleared returns if the "respuesta" field was cleared in this mutation.
+func (m *PermisoMutation) RespuestaCleared() bool {
+	_, ok := m.clearedFields[permiso.FieldRespuesta]
+	return ok
+}
+
+// ResetRespuesta resets all changes to the "respuesta" field.
+func (m *PermisoMutation) ResetRespuesta() {
+	m.respuesta = nil
+	delete(m.clearedFields, permiso.FieldRespuesta)
+}
+
+// ClearEmpresa clears the "empresa" edge to the Empresa entity.
+func (m *PermisoMutation) ClearEmpresa() {
+	m.clearedempresa = true
+	m.clearedFields[permiso.FieldEmpresaID] = struct{}{}
+}
+
+// EmpresaCleared reports if the "empresa" edge to the Empresa entity was cleared.
+func (m *PermisoMutation) EmpresaCleared() bool {
+	return m.clearedempresa
+}
+
+// EmpresaIDs returns the "empresa" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EmpresaID instead. It exists only for internal usage by the builders.
+func (m *PermisoMutation) EmpresaIDs() (ids []int) {
+	if id := m.empresa; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEmpresa resets all changes to the "empresa" edge.
+func (m *PermisoMutation) ResetEmpresa() {
+	m.empresa = nil
+	m.clearedempresa = false
+}
+
+// ClearUsuario clears the "usuario" edge to the Usuario entity.
+func (m *PermisoMutation) ClearUsuario() {
+	m.clearedusuario = true
+	m.clearedFields[permiso.FieldUsuarioID] = struct{}{}
+}
+
+// UsuarioCleared reports if the "usuario" edge to the Usuario entity was cleared.
+func (m *PermisoMutation) UsuarioCleared() bool {
+	return m.clearedusuario
+}
+
+// UsuarioIDs returns the "usuario" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UsuarioID instead. It exists only for internal usage by the builders.
+func (m *PermisoMutation) UsuarioIDs() (ids []int) {
+	if id := m.usuario; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUsuario resets all changes to the "usuario" edge.
+func (m *PermisoMutation) ResetUsuario() {
+	m.usuario = nil
+	m.clearedusuario = false
+}
+
+// Where appends a list predicates to the PermisoMutation builder.
+func (m *PermisoMutation) Where(ps ...predicate.Permiso) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the PermisoMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *PermisoMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Permiso, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *PermisoMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *PermisoMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Permiso).
+func (m *PermisoMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *PermisoMutation) Fields() []string {
+	fields := make([]string, 0, 7)
+	if m.creado_en != nil {
+		fields = append(fields, permiso.FieldCreadoEn)
+	}
+	if m.empresa != nil {
+		fields = append(fields, permiso.FieldEmpresaID)
+	}
+	if m.usuario != nil {
+		fields = append(fields, permiso.FieldUsuarioID)
+	}
+	if m.fecha != nil {
+		fields = append(fields, permiso.FieldFecha)
+	}
+	if m.motivo != nil {
+		fields = append(fields, permiso.FieldMotivo)
+	}
+	if m.estado != nil {
+		fields = append(fields, permiso.FieldEstado)
+	}
+	if m.respuesta != nil {
+		fields = append(fields, permiso.FieldRespuesta)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *PermisoMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case permiso.FieldCreadoEn:
+		return m.CreadoEn()
+	case permiso.FieldEmpresaID:
+		return m.EmpresaID()
+	case permiso.FieldUsuarioID:
+		return m.UsuarioID()
+	case permiso.FieldFecha:
+		return m.Fecha()
+	case permiso.FieldMotivo:
+		return m.Motivo()
+	case permiso.FieldEstado:
+		return m.Estado()
+	case permiso.FieldRespuesta:
+		return m.Respuesta()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *PermisoMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case permiso.FieldCreadoEn:
+		return m.OldCreadoEn(ctx)
+	case permiso.FieldEmpresaID:
+		return m.OldEmpresaID(ctx)
+	case permiso.FieldUsuarioID:
+		return m.OldUsuarioID(ctx)
+	case permiso.FieldFecha:
+		return m.OldFecha(ctx)
+	case permiso.FieldMotivo:
+		return m.OldMotivo(ctx)
+	case permiso.FieldEstado:
+		return m.OldEstado(ctx)
+	case permiso.FieldRespuesta:
+		return m.OldRespuesta(ctx)
+	}
+	return nil, fmt.Errorf("unknown Permiso field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PermisoMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case permiso.FieldCreadoEn:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreadoEn(v)
+		return nil
+	case permiso.FieldEmpresaID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmpresaID(v)
+		return nil
+	case permiso.FieldUsuarioID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUsuarioID(v)
+		return nil
+	case permiso.FieldFecha:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFecha(v)
+		return nil
+	case permiso.FieldMotivo:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMotivo(v)
+		return nil
+	case permiso.FieldEstado:
+		v, ok := value.(permiso.Estado)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEstado(v)
+		return nil
+	case permiso.FieldRespuesta:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRespuesta(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Permiso field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *PermisoMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *PermisoMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PermisoMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Permiso numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *PermisoMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(permiso.FieldRespuesta) {
+		fields = append(fields, permiso.FieldRespuesta)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *PermisoMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *PermisoMutation) ClearField(name string) error {
+	switch name {
+	case permiso.FieldRespuesta:
+		m.ClearRespuesta()
+		return nil
+	}
+	return fmt.Errorf("unknown Permiso nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *PermisoMutation) ResetField(name string) error {
+	switch name {
+	case permiso.FieldCreadoEn:
+		m.ResetCreadoEn()
+		return nil
+	case permiso.FieldEmpresaID:
+		m.ResetEmpresaID()
+		return nil
+	case permiso.FieldUsuarioID:
+		m.ResetUsuarioID()
+		return nil
+	case permiso.FieldFecha:
+		m.ResetFecha()
+		return nil
+	case permiso.FieldMotivo:
+		m.ResetMotivo()
+		return nil
+	case permiso.FieldEstado:
+		m.ResetEstado()
+		return nil
+	case permiso.FieldRespuesta:
+		m.ResetRespuesta()
+		return nil
+	}
+	return fmt.Errorf("unknown Permiso field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *PermisoMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.empresa != nil {
+		edges = append(edges, permiso.EdgeEmpresa)
+	}
+	if m.usuario != nil {
+		edges = append(edges, permiso.EdgeUsuario)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *PermisoMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case permiso.EdgeEmpresa:
+		if id := m.empresa; id != nil {
+			return []ent.Value{*id}
+		}
+	case permiso.EdgeUsuario:
+		if id := m.usuario; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *PermisoMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *PermisoMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *PermisoMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedempresa {
+		edges = append(edges, permiso.EdgeEmpresa)
+	}
+	if m.clearedusuario {
+		edges = append(edges, permiso.EdgeUsuario)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *PermisoMutation) EdgeCleared(name string) bool {
+	switch name {
+	case permiso.EdgeEmpresa:
+		return m.clearedempresa
+	case permiso.EdgeUsuario:
+		return m.clearedusuario
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *PermisoMutation) ClearEdge(name string) error {
+	switch name {
+	case permiso.EdgeEmpresa:
+		m.ClearEmpresa()
+		return nil
+	case permiso.EdgeUsuario:
+		m.ClearUsuario()
+		return nil
+	}
+	return fmt.Errorf("unknown Permiso unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *PermisoMutation) ResetEdge(name string) error {
+	switch name {
+	case permiso.EdgeEmpresa:
+		m.ResetEmpresa()
+		return nil
+	case permiso.EdgeUsuario:
+		m.ResetUsuario()
+		return nil
+	}
+	return fmt.Errorf("unknown Permiso edge %s", name)
 }
 
 // PropiedadMutation represents an operation that mutates the Propiedad nodes in the graph.
@@ -18721,6 +21511,14 @@ type UsuarioMutation struct {
 	empresas_usuario        map[int]struct{}
 	removedempresas_usuario map[int]struct{}
 	clearedempresas_usuario bool
+	horario                 *int
+	clearedhorario          bool
+	asistencias             map[int]struct{}
+	removedasistencias      map[int]struct{}
+	clearedasistencias      bool
+	permisos                map[int]struct{}
+	removedpermisos         map[int]struct{}
+	clearedpermisos         bool
 	done                    bool
 	oldValue                func(context.Context) (*Usuario, error)
 	predicates              []predicate.Usuario
@@ -19022,6 +21820,153 @@ func (m *UsuarioMutation) ResetEmpresasUsuario() {
 	m.removedempresas_usuario = nil
 }
 
+// SetHorarioID sets the "horario" edge to the Horario entity by id.
+func (m *UsuarioMutation) SetHorarioID(id int) {
+	m.horario = &id
+}
+
+// ClearHorario clears the "horario" edge to the Horario entity.
+func (m *UsuarioMutation) ClearHorario() {
+	m.clearedhorario = true
+}
+
+// HorarioCleared reports if the "horario" edge to the Horario entity was cleared.
+func (m *UsuarioMutation) HorarioCleared() bool {
+	return m.clearedhorario
+}
+
+// HorarioID returns the "horario" edge ID in the mutation.
+func (m *UsuarioMutation) HorarioID() (id int, exists bool) {
+	if m.horario != nil {
+		return *m.horario, true
+	}
+	return
+}
+
+// HorarioIDs returns the "horario" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// HorarioID instead. It exists only for internal usage by the builders.
+func (m *UsuarioMutation) HorarioIDs() (ids []int) {
+	if id := m.horario; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetHorario resets all changes to the "horario" edge.
+func (m *UsuarioMutation) ResetHorario() {
+	m.horario = nil
+	m.clearedhorario = false
+}
+
+// AddAsistenciaIDs adds the "asistencias" edge to the Asistencia entity by ids.
+func (m *UsuarioMutation) AddAsistenciaIDs(ids ...int) {
+	if m.asistencias == nil {
+		m.asistencias = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.asistencias[ids[i]] = struct{}{}
+	}
+}
+
+// ClearAsistencias clears the "asistencias" edge to the Asistencia entity.
+func (m *UsuarioMutation) ClearAsistencias() {
+	m.clearedasistencias = true
+}
+
+// AsistenciasCleared reports if the "asistencias" edge to the Asistencia entity was cleared.
+func (m *UsuarioMutation) AsistenciasCleared() bool {
+	return m.clearedasistencias
+}
+
+// RemoveAsistenciaIDs removes the "asistencias" edge to the Asistencia entity by IDs.
+func (m *UsuarioMutation) RemoveAsistenciaIDs(ids ...int) {
+	if m.removedasistencias == nil {
+		m.removedasistencias = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.asistencias, ids[i])
+		m.removedasistencias[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedAsistencias returns the removed IDs of the "asistencias" edge to the Asistencia entity.
+func (m *UsuarioMutation) RemovedAsistenciasIDs() (ids []int) {
+	for id := range m.removedasistencias {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// AsistenciasIDs returns the "asistencias" edge IDs in the mutation.
+func (m *UsuarioMutation) AsistenciasIDs() (ids []int) {
+	for id := range m.asistencias {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetAsistencias resets all changes to the "asistencias" edge.
+func (m *UsuarioMutation) ResetAsistencias() {
+	m.asistencias = nil
+	m.clearedasistencias = false
+	m.removedasistencias = nil
+}
+
+// AddPermisoIDs adds the "permisos" edge to the Permiso entity by ids.
+func (m *UsuarioMutation) AddPermisoIDs(ids ...int) {
+	if m.permisos == nil {
+		m.permisos = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.permisos[ids[i]] = struct{}{}
+	}
+}
+
+// ClearPermisos clears the "permisos" edge to the Permiso entity.
+func (m *UsuarioMutation) ClearPermisos() {
+	m.clearedpermisos = true
+}
+
+// PermisosCleared reports if the "permisos" edge to the Permiso entity was cleared.
+func (m *UsuarioMutation) PermisosCleared() bool {
+	return m.clearedpermisos
+}
+
+// RemovePermisoIDs removes the "permisos" edge to the Permiso entity by IDs.
+func (m *UsuarioMutation) RemovePermisoIDs(ids ...int) {
+	if m.removedpermisos == nil {
+		m.removedpermisos = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.permisos, ids[i])
+		m.removedpermisos[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedPermisos returns the removed IDs of the "permisos" edge to the Permiso entity.
+func (m *UsuarioMutation) RemovedPermisosIDs() (ids []int) {
+	for id := range m.removedpermisos {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// PermisosIDs returns the "permisos" edge IDs in the mutation.
+func (m *UsuarioMutation) PermisosIDs() (ids []int) {
+	for id := range m.permisos {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetPermisos resets all changes to the "permisos" edge.
+func (m *UsuarioMutation) ResetPermisos() {
+	m.permisos = nil
+	m.clearedpermisos = false
+	m.removedpermisos = nil
+}
+
 // Where appends a list predicates to the UsuarioMutation builder.
 func (m *UsuarioMutation) Where(ps ...predicate.Usuario) {
 	m.predicates = append(m.predicates, ps...)
@@ -19206,9 +22151,18 @@ func (m *UsuarioMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UsuarioMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 4)
 	if m.empresas_usuario != nil {
 		edges = append(edges, usuario.EdgeEmpresasUsuario)
+	}
+	if m.horario != nil {
+		edges = append(edges, usuario.EdgeHorario)
+	}
+	if m.asistencias != nil {
+		edges = append(edges, usuario.EdgeAsistencias)
+	}
+	if m.permisos != nil {
+		edges = append(edges, usuario.EdgePermisos)
 	}
 	return edges
 }
@@ -19223,15 +22177,37 @@ func (m *UsuarioMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case usuario.EdgeHorario:
+		if id := m.horario; id != nil {
+			return []ent.Value{*id}
+		}
+	case usuario.EdgeAsistencias:
+		ids := make([]ent.Value, 0, len(m.asistencias))
+		for id := range m.asistencias {
+			ids = append(ids, id)
+		}
+		return ids
+	case usuario.EdgePermisos:
+		ids := make([]ent.Value, 0, len(m.permisos))
+		for id := range m.permisos {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UsuarioMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 4)
 	if m.removedempresas_usuario != nil {
 		edges = append(edges, usuario.EdgeEmpresasUsuario)
+	}
+	if m.removedasistencias != nil {
+		edges = append(edges, usuario.EdgeAsistencias)
+	}
+	if m.removedpermisos != nil {
+		edges = append(edges, usuario.EdgePermisos)
 	}
 	return edges
 }
@@ -19246,15 +22222,36 @@ func (m *UsuarioMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case usuario.EdgeAsistencias:
+		ids := make([]ent.Value, 0, len(m.removedasistencias))
+		for id := range m.removedasistencias {
+			ids = append(ids, id)
+		}
+		return ids
+	case usuario.EdgePermisos:
+		ids := make([]ent.Value, 0, len(m.removedpermisos))
+		for id := range m.removedpermisos {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UsuarioMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 4)
 	if m.clearedempresas_usuario {
 		edges = append(edges, usuario.EdgeEmpresasUsuario)
+	}
+	if m.clearedhorario {
+		edges = append(edges, usuario.EdgeHorario)
+	}
+	if m.clearedasistencias {
+		edges = append(edges, usuario.EdgeAsistencias)
+	}
+	if m.clearedpermisos {
+		edges = append(edges, usuario.EdgePermisos)
 	}
 	return edges
 }
@@ -19265,6 +22262,12 @@ func (m *UsuarioMutation) EdgeCleared(name string) bool {
 	switch name {
 	case usuario.EdgeEmpresasUsuario:
 		return m.clearedempresas_usuario
+	case usuario.EdgeHorario:
+		return m.clearedhorario
+	case usuario.EdgeAsistencias:
+		return m.clearedasistencias
+	case usuario.EdgePermisos:
+		return m.clearedpermisos
 	}
 	return false
 }
@@ -19273,6 +22276,9 @@ func (m *UsuarioMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *UsuarioMutation) ClearEdge(name string) error {
 	switch name {
+	case usuario.EdgeHorario:
+		m.ClearHorario()
+		return nil
 	}
 	return fmt.Errorf("unknown Usuario unique edge %s", name)
 }
@@ -19283,6 +22289,15 @@ func (m *UsuarioMutation) ResetEdge(name string) error {
 	switch name {
 	case usuario.EdgeEmpresasUsuario:
 		m.ResetEmpresasUsuario()
+		return nil
+	case usuario.EdgeHorario:
+		m.ResetHorario()
+		return nil
+	case usuario.EdgeAsistencias:
+		m.ResetAsistencias()
+		return nil
+	case usuario.EdgePermisos:
+		m.ResetPermisos()
 		return nil
 	}
 	return fmt.Errorf("unknown Usuario edge %s", name)

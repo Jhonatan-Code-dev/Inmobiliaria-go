@@ -635,6 +635,30 @@ definitions:
       usuario:
         type: string
     type: object
+  domain.Asistencia:
+    properties:
+      empresa_id:
+        type: integer
+      estado:
+        description: puntual, tarde, falta, justificado
+        type: string
+      fecha:
+        type: string
+      hora_entrada:
+        type: string
+      hora_salida:
+        type: string
+      horas_trabajadas:
+        type: number
+      id:
+        type: integer
+      notas:
+        type: string
+      usuario_id:
+        type: integer
+      usuario_nombre:
+        type: string
+    type: object
   domain.CargoResumen:
     properties:
       cargo_id:
@@ -688,6 +712,14 @@ definitions:
       unidad_codigo:
         type: string
     type: object
+  domain.DecisionPermiso:
+    properties:
+      estado:
+        description: aprobado, rechazado
+        type: string
+      respuesta:
+        type: string
+    type: object
   domain.EstadoCuentaCliente:
     properties:
       cargos:
@@ -711,6 +743,27 @@ definitions:
       total_pagado:
         type: number
     type: object
+  domain.Horario:
+    properties:
+      dias_laborables:
+        description: 'Ej: "1,2,3,4,5"'
+        type: string
+      empresa_id:
+        type: integer
+      hora_entrada:
+        description: Formato HH:mm
+        type: string
+      hora_salida:
+        description: Formato HH:mm
+        type: string
+      id:
+        type: integer
+      tolerancia_minutos:
+        description: Minutos de gracia
+        type: integer
+      usuario_id:
+        type: integer
+    type: object
   domain.OcupacionPropiedad:
     properties:
       direccion:
@@ -728,6 +781,26 @@ definitions:
       total_unidades:
         type: integer
     type: object
+  domain.Permiso:
+    properties:
+      empresa_id:
+        type: integer
+      estado:
+        description: pendiente, aprobado, rechazado
+        type: string
+      fecha:
+        type: string
+      id:
+        type: integer
+      motivo:
+        type: string
+      respuesta:
+        type: string
+      usuario_id:
+        type: integer
+      usuario_nombre:
+        type: string
+    type: object
   domain.PuntoFinanciero:
     properties:
       balance:
@@ -738,6 +811,26 @@ definitions:
         type: number
       periodo:
         description: '"2025-01", "2025-02" ...'
+        type: string
+    type: object
+  domain.RegistroHorario:
+    properties:
+      dias_laborables:
+        type: string
+      hora_entrada:
+        type: string
+      hora_salida:
+        type: string
+      tolerancia_minutos:
+        type: integer
+      usuario_id:
+        type: integer
+    type: object
+  domain.RegistroPermiso:
+    properties:
+      fecha:
+        type: string
+      motivo:
         type: string
     type: object
   domain.ReporteFinanciero:
@@ -1360,6 +1453,144 @@ paths:
       summary: Finalizar contrato formalmente
       tags:
       - Alquileres
+  /api/user/asistencia/horarios:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      - description: Datos del horario
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.RegistroHorario'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Horario'
+      security:
+      - BearerAuth: []
+      summary: Asignar horario a un trabajador
+      tags:
+      - Asistencia
+  /api/user/asistencia/marcar:
+    post:
+      description: Registra automáticamente si es entrada o salida según los registros
+        del día.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Asistencia'
+      security:
+      - BearerAuth: []
+      summary: Registrar entrada o salida
+      tags:
+      - Asistencia
+  /api/user/asistencia/mi-historial:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Asistencia'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Ver mi historial de asistencia
+      tags:
+      - Asistencia
+  /api/user/asistencia/permisos:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Datos del permiso
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.RegistroPermiso'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/domain.Permiso'
+      security:
+      - BearerAuth: []
+      summary: Solicitar un permiso o justificación
+      tags:
+      - Asistencia
+  /api/user/asistencia/permisos/{id}/estado:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID del permiso
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      - description: Decisión
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.DecisionPermiso'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Permiso'
+      security:
+      - BearerAuth: []
+      summary: Aprobar o rechazar un permiso
+      tags:
+      - Asistencia
+  /api/user/asistencia/registros:
+    get:
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Asistencia'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Listar asistencia de todo el personal
+      tags:
+      - Asistencia
   /api/user/cargos:
     get:
       responses: {}
@@ -2000,6 +2231,80 @@ paths:
       security:
       - BearerAuth: []
       summary: Actualizar un gasto
+      tags:
+      - Gastos
+  /api/user/gastos/reporte/excel:
+    get:
+      description: Genera un archivo Excel con el listado de gastos filtrados.
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      - description: Año del gasto
+        in: query
+        name: anio
+        type: integer
+      - description: Mes del gasto (1-12)
+        in: query
+        name: mes
+        type: integer
+      - description: Fecha inicio (YYYY-MM-DD)
+        in: query
+        name: desde
+        type: string
+      - description: Fecha fin (YYYY-MM-DD)
+        in: query
+        name: hasta
+        type: string
+      produces:
+      - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: binary
+      security:
+      - BearerAuth: []
+      summary: Exportar gastos a Excel
+      tags:
+      - Gastos
+  /api/user/gastos/reporte/pdf:
+    get:
+      description: Genera un archivo PDF con el listado de gastos filtrados.
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      - description: Año del gasto
+        in: query
+        name: anio
+        type: integer
+      - description: Mes del gasto (1-12)
+        in: query
+        name: mes
+        type: integer
+      - description: Fecha inicio (YYYY-MM-DD)
+        in: query
+        name: desde
+        type: string
+      - description: Fecha fin (YYYY-MM-DD)
+        in: query
+        name: hasta
+        type: string
+      produces:
+      - application/pdf
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: binary
+      security:
+      - BearerAuth: []
+      summary: Exportar gastos a PDF
       tags:
       - Gastos
   /api/user/gastos/tipos-pago:

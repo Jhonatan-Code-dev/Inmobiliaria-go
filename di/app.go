@@ -22,4 +22,5 @@ type App struct {
 	ServicioCtrl   *controller.ServicioMedicionController
 	TicketCtrl     *controller.TicketController
 	DashboardCtrl  *controller.DashboardController
+	AsistenciaCtrl *controller.AsistenciaController
 }

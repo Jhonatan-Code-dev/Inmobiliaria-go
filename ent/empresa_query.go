@@ -7,13 +7,16 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"math"
+	"rentals-go/ent/asistencia"
 	"rentals-go/ent/cliente"
 	"rentals-go/ent/contrato"
 	"rentals-go/ent/empresa"
 	"rentals-go/ent/empresausuario"
 	"rentals-go/ent/gasto"
+	"rentals-go/ent/horario"
 	"rentals-go/ent/movimientocaja"
 	"rentals-go/ent/pago"
+	"rentals-go/ent/permiso"
 	"rentals-go/ent/predicate"
 	"rentals-go/ent/propiedad"
 	"rentals-go/ent/ticket"
@@ -39,6 +42,9 @@ type EmpresaQuery struct {
 	withGastos          *GastoQuery
 	withMovimientosCaja *MovimientoCajaQuery
 	withTickets         *TicketQuery
+	withHorarios        *HorarioQuery
+	withAsistencias     *AsistenciaQuery
+	withPermisos        *PermisoQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -251,6 +257,72 @@ func (_q *EmpresaQuery) QueryTickets() *TicketQuery {
 	return query
 }
 
+// QueryHorarios chains the current query on the "horarios" edge.
+func (_q *EmpresaQuery) QueryHorarios() *HorarioQuery {
+	query := (&HorarioClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(empresa.Table, empresa.FieldID, selector),
+			sqlgraph.To(horario.Table, horario.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, empresa.HorariosTable, empresa.HorariosColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAsistencias chains the current query on the "asistencias" edge.
+func (_q *EmpresaQuery) QueryAsistencias() *AsistenciaQuery {
+	query := (&AsistenciaClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(empresa.Table, empresa.FieldID, selector),
+			sqlgraph.To(asistencia.Table, asistencia.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, empresa.AsistenciasTable, empresa.AsistenciasColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPermisos chains the current query on the "permisos" edge.
+func (_q *EmpresaQuery) QueryPermisos() *PermisoQuery {
+	query := (&PermisoClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(empresa.Table, empresa.FieldID, selector),
+			sqlgraph.To(permiso.Table, permiso.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, empresa.PermisosTable, empresa.PermisosColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Empresa entity from the query.
 // Returns a *NotFoundError when no Empresa was found.
 func (_q *EmpresaQuery) First(ctx context.Context) (*Empresa, error) {
@@ -451,6 +523,9 @@ func (_q *EmpresaQuery) Clone() *EmpresaQuery {
 		withGastos:          _q.withGastos.Clone(),
 		withMovimientosCaja: _q.withMovimientosCaja.Clone(),
 		withTickets:         _q.withTickets.Clone(),
+		withHorarios:        _q.withHorarios.Clone(),
+		withAsistencias:     _q.withAsistencias.Clone(),
+		withPermisos:        _q.withPermisos.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -545,6 +620,39 @@ func (_q *EmpresaQuery) WithTickets(opts ...func(*TicketQuery)) *EmpresaQuery {
 	return _q
 }
 
+// WithHorarios tells the query-builder to eager-load the nodes that are connected to
+// the "horarios" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *EmpresaQuery) WithHorarios(opts ...func(*HorarioQuery)) *EmpresaQuery {
+	query := (&HorarioClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withHorarios = query
+	return _q
+}
+
+// WithAsistencias tells the query-builder to eager-load the nodes that are connected to
+// the "asistencias" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *EmpresaQuery) WithAsistencias(opts ...func(*AsistenciaQuery)) *EmpresaQuery {
+	query := (&AsistenciaClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withAsistencias = query
+	return _q
+}
+
+// WithPermisos tells the query-builder to eager-load the nodes that are connected to
+// the "permisos" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *EmpresaQuery) WithPermisos(opts ...func(*PermisoQuery)) *EmpresaQuery {
+	query := (&PermisoClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withPermisos = query
+	return _q
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -623,7 +731,7 @@ func (_q *EmpresaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Empr
 	var (
 		nodes       = []*Empresa{}
 		_spec       = _q.querySpec()
-		loadedTypes = [8]bool{
+		loadedTypes = [11]bool{
 			_q.withUsuariosEmpresa != nil,
 			_q.withClientes != nil,
 			_q.withPropiedades != nil,
@@ -632,6 +740,9 @@ func (_q *EmpresaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Empr
 			_q.withGastos != nil,
 			_q.withMovimientosCaja != nil,
 			_q.withTickets != nil,
+			_q.withHorarios != nil,
+			_q.withAsistencias != nil,
+			_q.withPermisos != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -705,6 +816,27 @@ func (_q *EmpresaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Empr
 		if err := _q.loadTickets(ctx, query, nodes,
 			func(n *Empresa) { n.Edges.Tickets = []*Ticket{} },
 			func(n *Empresa, e *Ticket) { n.Edges.Tickets = append(n.Edges.Tickets, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withHorarios; query != nil {
+		if err := _q.loadHorarios(ctx, query, nodes,
+			func(n *Empresa) { n.Edges.Horarios = []*Horario{} },
+			func(n *Empresa, e *Horario) { n.Edges.Horarios = append(n.Edges.Horarios, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withAsistencias; query != nil {
+		if err := _q.loadAsistencias(ctx, query, nodes,
+			func(n *Empresa) { n.Edges.Asistencias = []*Asistencia{} },
+			func(n *Empresa, e *Asistencia) { n.Edges.Asistencias = append(n.Edges.Asistencias, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withPermisos; query != nil {
+		if err := _q.loadPermisos(ctx, query, nodes,
+			func(n *Empresa) { n.Edges.Permisos = []*Permiso{} },
+			func(n *Empresa, e *Permiso) { n.Edges.Permisos = append(n.Edges.Permisos, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -936,6 +1068,96 @@ func (_q *EmpresaQuery) loadTickets(ctx context.Context, query *TicketQuery, nod
 	}
 	query.Where(predicate.Ticket(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(empresa.TicketsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.EmpresaID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "empresa_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *EmpresaQuery) loadHorarios(ctx context.Context, query *HorarioQuery, nodes []*Empresa, init func(*Empresa), assign func(*Empresa, *Horario)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Empresa)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(horario.FieldEmpresaID)
+	}
+	query.Where(predicate.Horario(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(empresa.HorariosColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.EmpresaID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "empresa_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *EmpresaQuery) loadAsistencias(ctx context.Context, query *AsistenciaQuery, nodes []*Empresa, init func(*Empresa), assign func(*Empresa, *Asistencia)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Empresa)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(asistencia.FieldEmpresaID)
+	}
+	query.Where(predicate.Asistencia(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(empresa.AsistenciasColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.EmpresaID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "empresa_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *EmpresaQuery) loadPermisos(ctx context.Context, query *PermisoQuery, nodes []*Empresa, init func(*Empresa), assign func(*Empresa, *Permiso)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Empresa)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(permiso.FieldEmpresaID)
+	}
+	query.Where(predicate.Permiso(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(empresa.PermisosColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

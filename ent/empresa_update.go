@@ -6,13 +6,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"rentals-go/ent/asistencia"
 	"rentals-go/ent/cliente"
 	"rentals-go/ent/contrato"
 	"rentals-go/ent/empresa"
 	"rentals-go/ent/empresausuario"
 	"rentals-go/ent/gasto"
+	"rentals-go/ent/horario"
 	"rentals-go/ent/movimientocaja"
 	"rentals-go/ent/pago"
+	"rentals-go/ent/permiso"
 	"rentals-go/ent/predicate"
 	"rentals-go/ent/propiedad"
 	"rentals-go/ent/ticket"
@@ -259,6 +262,51 @@ func (_u *EmpresaUpdate) AddTickets(v ...*Ticket) *EmpresaUpdate {
 	return _u.AddTicketIDs(ids...)
 }
 
+// AddHorarioIDs adds the "horarios" edge to the Horario entity by IDs.
+func (_u *EmpresaUpdate) AddHorarioIDs(ids ...int) *EmpresaUpdate {
+	_u.mutation.AddHorarioIDs(ids...)
+	return _u
+}
+
+// AddHorarios adds the "horarios" edges to the Horario entity.
+func (_u *EmpresaUpdate) AddHorarios(v ...*Horario) *EmpresaUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddHorarioIDs(ids...)
+}
+
+// AddAsistenciaIDs adds the "asistencias" edge to the Asistencia entity by IDs.
+func (_u *EmpresaUpdate) AddAsistenciaIDs(ids ...int) *EmpresaUpdate {
+	_u.mutation.AddAsistenciaIDs(ids...)
+	return _u
+}
+
+// AddAsistencias adds the "asistencias" edges to the Asistencia entity.
+func (_u *EmpresaUpdate) AddAsistencias(v ...*Asistencia) *EmpresaUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddAsistenciaIDs(ids...)
+}
+
+// AddPermisoIDs adds the "permisos" edge to the Permiso entity by IDs.
+func (_u *EmpresaUpdate) AddPermisoIDs(ids ...int) *EmpresaUpdate {
+	_u.mutation.AddPermisoIDs(ids...)
+	return _u
+}
+
+// AddPermisos adds the "permisos" edges to the Permiso entity.
+func (_u *EmpresaUpdate) AddPermisos(v ...*Permiso) *EmpresaUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddPermisoIDs(ids...)
+}
+
 // Mutation returns the EmpresaMutation object of the builder.
 func (_u *EmpresaUpdate) Mutation() *EmpresaMutation {
 	return _u.mutation
@@ -430,6 +478,69 @@ func (_u *EmpresaUpdate) RemoveTickets(v ...*Ticket) *EmpresaUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveTicketIDs(ids...)
+}
+
+// ClearHorarios clears all "horarios" edges to the Horario entity.
+func (_u *EmpresaUpdate) ClearHorarios() *EmpresaUpdate {
+	_u.mutation.ClearHorarios()
+	return _u
+}
+
+// RemoveHorarioIDs removes the "horarios" edge to Horario entities by IDs.
+func (_u *EmpresaUpdate) RemoveHorarioIDs(ids ...int) *EmpresaUpdate {
+	_u.mutation.RemoveHorarioIDs(ids...)
+	return _u
+}
+
+// RemoveHorarios removes "horarios" edges to Horario entities.
+func (_u *EmpresaUpdate) RemoveHorarios(v ...*Horario) *EmpresaUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveHorarioIDs(ids...)
+}
+
+// ClearAsistencias clears all "asistencias" edges to the Asistencia entity.
+func (_u *EmpresaUpdate) ClearAsistencias() *EmpresaUpdate {
+	_u.mutation.ClearAsistencias()
+	return _u
+}
+
+// RemoveAsistenciaIDs removes the "asistencias" edge to Asistencia entities by IDs.
+func (_u *EmpresaUpdate) RemoveAsistenciaIDs(ids ...int) *EmpresaUpdate {
+	_u.mutation.RemoveAsistenciaIDs(ids...)
+	return _u
+}
+
+// RemoveAsistencias removes "asistencias" edges to Asistencia entities.
+func (_u *EmpresaUpdate) RemoveAsistencias(v ...*Asistencia) *EmpresaUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveAsistenciaIDs(ids...)
+}
+
+// ClearPermisos clears all "permisos" edges to the Permiso entity.
+func (_u *EmpresaUpdate) ClearPermisos() *EmpresaUpdate {
+	_u.mutation.ClearPermisos()
+	return _u
+}
+
+// RemovePermisoIDs removes the "permisos" edge to Permiso entities by IDs.
+func (_u *EmpresaUpdate) RemovePermisoIDs(ids ...int) *EmpresaUpdate {
+	_u.mutation.RemovePermisoIDs(ids...)
+	return _u
+}
+
+// RemovePermisos removes "permisos" edges to Permiso entities.
+func (_u *EmpresaUpdate) RemovePermisos(v ...*Permiso) *EmpresaUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemovePermisoIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -883,6 +994,141 @@ func (_u *EmpresaUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.HorariosCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.HorariosTable,
+			Columns: []string{empresa.HorariosColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(horario.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedHorariosIDs(); len(nodes) > 0 && !_u.mutation.HorariosCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.HorariosTable,
+			Columns: []string{empresa.HorariosColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(horario.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.HorariosIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.HorariosTable,
+			Columns: []string{empresa.HorariosColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(horario.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.AsistenciasCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.AsistenciasTable,
+			Columns: []string{empresa.AsistenciasColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asistencia.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedAsistenciasIDs(); len(nodes) > 0 && !_u.mutation.AsistenciasCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.AsistenciasTable,
+			Columns: []string{empresa.AsistenciasColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asistencia.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.AsistenciasIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.AsistenciasTable,
+			Columns: []string{empresa.AsistenciasColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asistencia.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.PermisosCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.PermisosTable,
+			Columns: []string{empresa.PermisosColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(permiso.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedPermisosIDs(); len(nodes) > 0 && !_u.mutation.PermisosCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.PermisosTable,
+			Columns: []string{empresa.PermisosColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(permiso.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.PermisosIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.PermisosTable,
+			Columns: []string{empresa.PermisosColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(permiso.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{empresa.Label}
@@ -1126,6 +1372,51 @@ func (_u *EmpresaUpdateOne) AddTickets(v ...*Ticket) *EmpresaUpdateOne {
 	return _u.AddTicketIDs(ids...)
 }
 
+// AddHorarioIDs adds the "horarios" edge to the Horario entity by IDs.
+func (_u *EmpresaUpdateOne) AddHorarioIDs(ids ...int) *EmpresaUpdateOne {
+	_u.mutation.AddHorarioIDs(ids...)
+	return _u
+}
+
+// AddHorarios adds the "horarios" edges to the Horario entity.
+func (_u *EmpresaUpdateOne) AddHorarios(v ...*Horario) *EmpresaUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddHorarioIDs(ids...)
+}
+
+// AddAsistenciaIDs adds the "asistencias" edge to the Asistencia entity by IDs.
+func (_u *EmpresaUpdateOne) AddAsistenciaIDs(ids ...int) *EmpresaUpdateOne {
+	_u.mutation.AddAsistenciaIDs(ids...)
+	return _u
+}
+
+// AddAsistencias adds the "asistencias" edges to the Asistencia entity.
+func (_u *EmpresaUpdateOne) AddAsistencias(v ...*Asistencia) *EmpresaUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddAsistenciaIDs(ids...)
+}
+
+// AddPermisoIDs adds the "permisos" edge to the Permiso entity by IDs.
+func (_u *EmpresaUpdateOne) AddPermisoIDs(ids ...int) *EmpresaUpdateOne {
+	_u.mutation.AddPermisoIDs(ids...)
+	return _u
+}
+
+// AddPermisos adds the "permisos" edges to the Permiso entity.
+func (_u *EmpresaUpdateOne) AddPermisos(v ...*Permiso) *EmpresaUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddPermisoIDs(ids...)
+}
+
 // Mutation returns the EmpresaMutation object of the builder.
 func (_u *EmpresaUpdateOne) Mutation() *EmpresaMutation {
 	return _u.mutation
@@ -1297,6 +1588,69 @@ func (_u *EmpresaUpdateOne) RemoveTickets(v ...*Ticket) *EmpresaUpdateOne {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveTicketIDs(ids...)
+}
+
+// ClearHorarios clears all "horarios" edges to the Horario entity.
+func (_u *EmpresaUpdateOne) ClearHorarios() *EmpresaUpdateOne {
+	_u.mutation.ClearHorarios()
+	return _u
+}
+
+// RemoveHorarioIDs removes the "horarios" edge to Horario entities by IDs.
+func (_u *EmpresaUpdateOne) RemoveHorarioIDs(ids ...int) *EmpresaUpdateOne {
+	_u.mutation.RemoveHorarioIDs(ids...)
+	return _u
+}
+
+// RemoveHorarios removes "horarios" edges to Horario entities.
+func (_u *EmpresaUpdateOne) RemoveHorarios(v ...*Horario) *EmpresaUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveHorarioIDs(ids...)
+}
+
+// ClearAsistencias clears all "asistencias" edges to the Asistencia entity.
+func (_u *EmpresaUpdateOne) ClearAsistencias() *EmpresaUpdateOne {
+	_u.mutation.ClearAsistencias()
+	return _u
+}
+
+// RemoveAsistenciaIDs removes the "asistencias" edge to Asistencia entities by IDs.
+func (_u *EmpresaUpdateOne) RemoveAsistenciaIDs(ids ...int) *EmpresaUpdateOne {
+	_u.mutation.RemoveAsistenciaIDs(ids...)
+	return _u
+}
+
+// RemoveAsistencias removes "asistencias" edges to Asistencia entities.
+func (_u *EmpresaUpdateOne) RemoveAsistencias(v ...*Asistencia) *EmpresaUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveAsistenciaIDs(ids...)
+}
+
+// ClearPermisos clears all "permisos" edges to the Permiso entity.
+func (_u *EmpresaUpdateOne) ClearPermisos() *EmpresaUpdateOne {
+	_u.mutation.ClearPermisos()
+	return _u
+}
+
+// RemovePermisoIDs removes the "permisos" edge to Permiso entities by IDs.
+func (_u *EmpresaUpdateOne) RemovePermisoIDs(ids ...int) *EmpresaUpdateOne {
+	_u.mutation.RemovePermisoIDs(ids...)
+	return _u
+}
+
+// RemovePermisos removes "permisos" edges to Permiso entities.
+func (_u *EmpresaUpdateOne) RemovePermisos(v ...*Permiso) *EmpresaUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemovePermisoIDs(ids...)
 }
 
 // Where appends a list predicates to the EmpresaUpdate builder.
@@ -1773,6 +2127,141 @@ func (_u *EmpresaUpdateOne) sqlSave(ctx context.Context) (_node *Empresa, err er
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.HorariosCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.HorariosTable,
+			Columns: []string{empresa.HorariosColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(horario.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedHorariosIDs(); len(nodes) > 0 && !_u.mutation.HorariosCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.HorariosTable,
+			Columns: []string{empresa.HorariosColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(horario.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.HorariosIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.HorariosTable,
+			Columns: []string{empresa.HorariosColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(horario.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.AsistenciasCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.AsistenciasTable,
+			Columns: []string{empresa.AsistenciasColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asistencia.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedAsistenciasIDs(); len(nodes) > 0 && !_u.mutation.AsistenciasCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.AsistenciasTable,
+			Columns: []string{empresa.AsistenciasColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asistencia.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.AsistenciasIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.AsistenciasTable,
+			Columns: []string{empresa.AsistenciasColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asistencia.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.PermisosCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.PermisosTable,
+			Columns: []string{empresa.PermisosColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(permiso.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedPermisosIDs(); len(nodes) > 0 && !_u.mutation.PermisosCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.PermisosTable,
+			Columns: []string{empresa.PermisosColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(permiso.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.PermisosIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.PermisosTable,
+			Columns: []string{empresa.PermisosColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(permiso.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

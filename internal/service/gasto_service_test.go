@@ -87,3 +87,48 @@ func TestRegistrarGastoMantieneCentavosEnMovimiento(t *testing.T) {
 		t.Fatalf("movimiento monto = %v, want 50.50", movRepo.created.Monto)
 	}
 }
+
+func TestExportarExcelGeneraBuffer(t *testing.T) {
+	t.Parallel()
+
+	gastoRepo := &gastoRepoStubReporte{}
+	svc := NewGastoService(gastoRepo, &movRepoStub{}, &tipoPagoRepoStub{})
+
+	filtros := domain.GastoFiltros{EmpresaID: 1}
+	buf, err := svc.ExportarExcel(context.Background(), filtros)
+
+	if err != nil {
+		t.Fatalf("ExportarExcel() error = %v", err)
+	}
+	if len(buf) == 0 {
+		t.Fatal("expected non-empty buffer for Excel")
+	}
+}
+
+func TestExportarPDFGeneraBuffer(t *testing.T) {
+	t.Parallel()
+
+	gastoRepo := &gastoRepoStubReporte{}
+	svc := NewGastoService(gastoRepo, &movRepoStub{}, &tipoPagoRepoStub{})
+
+	filtros := domain.GastoFiltros{EmpresaID: 1}
+	buf, err := svc.ExportarPDF(context.Background(), filtros)
+
+	if err != nil {
+		t.Fatalf("ExportarPDF() error = %v", err)
+	}
+	if len(buf) == 0 {
+		t.Fatal("expected non-empty buffer for PDF")
+	}
+}
+
+type gastoRepoStubReporte struct {
+	gastoRepoStub
+}
+
+func (s *gastoRepoStubReporte) ListarPaginado(ctx context.Context, filtros domain.GastoFiltros) ([]*domain.Gasto, int, error) {
+	return []*domain.Gasto{
+		{ID: 1, EmpresaID: 1, Monto: 100.0, Fecha: time.Now(), Descripcion: "Gasto Test 1", TipoPagoID: 3},
+		{ID: 2, EmpresaID: 1, Monto: 250.50, Fecha: time.Now(), Descripcion: "Gasto Test 2", TipoPagoID: 3},
+	}, 2, nil
+}

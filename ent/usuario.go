@@ -4,6 +4,7 @@ package ent
 
 import (
 	"fmt"
+	"rentals-go/ent/horario"
 	"rentals-go/ent/usuario"
 	"strings"
 	"time"
@@ -35,9 +36,15 @@ type Usuario struct {
 type UsuarioEdges struct {
 	// EmpresasUsuario holds the value of the empresas_usuario edge.
 	EmpresasUsuario []*EmpresaUsuario `json:"empresas_usuario,omitempty"`
+	// Horario holds the value of the horario edge.
+	Horario *Horario `json:"horario,omitempty"`
+	// Asistencias holds the value of the asistencias edge.
+	Asistencias []*Asistencia `json:"asistencias,omitempty"`
+	// Permisos holds the value of the permisos edge.
+	Permisos []*Permiso `json:"permisos,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [4]bool
 }
 
 // EmpresasUsuarioOrErr returns the EmpresasUsuario value or an error if the edge
@@ -47,6 +54,35 @@ func (e UsuarioEdges) EmpresasUsuarioOrErr() ([]*EmpresaUsuario, error) {
 		return e.EmpresasUsuario, nil
 	}
 	return nil, &NotLoadedError{edge: "empresas_usuario"}
+}
+
+// HorarioOrErr returns the Horario value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e UsuarioEdges) HorarioOrErr() (*Horario, error) {
+	if e.Horario != nil {
+		return e.Horario, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: horario.Label}
+	}
+	return nil, &NotLoadedError{edge: "horario"}
+}
+
+// AsistenciasOrErr returns the Asistencias value or an error if the edge
+// was not loaded in eager-loading.
+func (e UsuarioEdges) AsistenciasOrErr() ([]*Asistencia, error) {
+	if e.loadedTypes[2] {
+		return e.Asistencias, nil
+	}
+	return nil, &NotLoadedError{edge: "asistencias"}
+}
+
+// PermisosOrErr returns the Permisos value or an error if the edge
+// was not loaded in eager-loading.
+func (e UsuarioEdges) PermisosOrErr() ([]*Permiso, error) {
+	if e.loadedTypes[3] {
+		return e.Permisos, nil
+	}
+	return nil, &NotLoadedError{edge: "permisos"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -123,6 +159,21 @@ func (_m *Usuario) Value(name string) (ent.Value, error) {
 // QueryEmpresasUsuario queries the "empresas_usuario" edge of the Usuario entity.
 func (_m *Usuario) QueryEmpresasUsuario() *EmpresaUsuarioQuery {
 	return NewUsuarioClient(_m.config).QueryEmpresasUsuario(_m)
+}
+
+// QueryHorario queries the "horario" edge of the Usuario entity.
+func (_m *Usuario) QueryHorario() *HorarioQuery {
+	return NewUsuarioClient(_m.config).QueryHorario(_m)
+}
+
+// QueryAsistencias queries the "asistencias" edge of the Usuario entity.
+func (_m *Usuario) QueryAsistencias() *AsistenciaQuery {
+	return NewUsuarioClient(_m.config).QueryAsistencias(_m)
+}
+
+// QueryPermisos queries the "permisos" edge of the Usuario entity.
+func (_m *Usuario) QueryPermisos() *PermisoQuery {
+	return NewUsuarioClient(_m.config).QueryPermisos(_m)
 }
 
 // Update returns a builder for updating this Usuario.

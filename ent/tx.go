@@ -14,6 +14,8 @@ type Tx struct {
 	config
 	// Admin is the client for interacting with the Admin builders.
 	Admin *AdminClient
+	// Asistencia is the client for interacting with the Asistencia builders.
+	Asistencia *AsistenciaClient
 	// Cargo is the client for interacting with the Cargo builders.
 	Cargo *CargoClient
 	// Cliente is the client for interacting with the Cliente builders.
@@ -28,12 +30,16 @@ type Tx struct {
 	EmpresaUsuario *EmpresaUsuarioClient
 	// Gasto is the client for interacting with the Gasto builders.
 	Gasto *GastoClient
+	// Horario is the client for interacting with the Horario builders.
+	Horario *HorarioClient
 	// MovimientoCaja is the client for interacting with the MovimientoCaja builders.
 	MovimientoCaja *MovimientoCajaClient
 	// Pago is the client for interacting with the Pago builders.
 	Pago *PagoClient
 	// PagoAplicacion is the client for interacting with the PagoAplicacion builders.
 	PagoAplicacion *PagoAplicacionClient
+	// Permiso is the client for interacting with the Permiso builders.
+	Permiso *PermisoClient
 	// Propiedad is the client for interacting with the Propiedad builders.
 	Propiedad *PropiedadClient
 	// Rol is the client for interacting with the Rol builders.
@@ -182,6 +188,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Admin = NewAdminClient(tx.config)
+	tx.Asistencia = NewAsistenciaClient(tx.config)
 	tx.Cargo = NewCargoClient(tx.config)
 	tx.Cliente = NewClienteClient(tx.config)
 	tx.ClienteTelefono = NewClienteTelefonoClient(tx.config)
@@ -189,9 +196,11 @@ func (tx *Tx) init() {
 	tx.Empresa = NewEmpresaClient(tx.config)
 	tx.EmpresaUsuario = NewEmpresaUsuarioClient(tx.config)
 	tx.Gasto = NewGastoClient(tx.config)
+	tx.Horario = NewHorarioClient(tx.config)
 	tx.MovimientoCaja = NewMovimientoCajaClient(tx.config)
 	tx.Pago = NewPagoClient(tx.config)
 	tx.PagoAplicacion = NewPagoAplicacionClient(tx.config)
+	tx.Permiso = NewPermisoClient(tx.config)
 	tx.Propiedad = NewPropiedadClient(tx.config)
 	tx.Rol = NewRolClient(tx.config)
 	tx.ServicioMedicion = NewServicioMedicionClient(tx.config)

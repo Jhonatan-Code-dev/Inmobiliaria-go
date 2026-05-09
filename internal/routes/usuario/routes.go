@@ -22,6 +22,8 @@ func Register(app *fiber.App, appDI *di.App) {
 	gastos.Post("/", appDI.GastoCtrl.Crear)
 	gastos.Put("/:id", appDI.GastoCtrl.Actualizar)
 	gastos.Delete("/:id", appDI.GastoCtrl.Eliminar)
+	gastos.Get("/reporte/excel", appDI.GastoCtrl.ExportarExcel)
+	gastos.Get("/reporte/pdf", appDI.GastoCtrl.ExportarPDF)
 
 	// Módulo de Clientes
 	clientes := app.Group("/api/user/clientes")
@@ -114,6 +116,20 @@ func Register(app *fiber.App, appDI *di.App) {
 	dashboard.Get("/contratos-por-vencer", appDI.DashboardCtrl.ContratosProximosVencer)
 	dashboard.Get("/estado-cuenta/:clienteId", appDI.DashboardCtrl.EstadoCuentaCliente)
 	dashboard.Get("/top-unidades", appDI.DashboardCtrl.TopUnidades)
+
+	// Módulo de Asistencia
+	asistencia := app.Group("/api/user/asistencia")
+	asistencia.Use(middlewares.TenantAuth(appDI.Config))
+	
+	// Operaciones de Empleado
+	asistencia.Post("/marcar", appDI.AsistenciaCtrl.MarcarAsistencia)
+	asistencia.Get("/mi-historial", appDI.AsistenciaCtrl.MiHistorial)
+	asistencia.Post("/permisos", appDI.AsistenciaCtrl.SolicitarPermiso)
+
+	// Operaciones de Administrador
+	asistencia.Get("/registros", appDI.AsistenciaCtrl.ListarRegistros)
+	asistencia.Post("/horarios", appDI.AsistenciaCtrl.AsignarHorario)
+	asistencia.Put("/permisos/:id/estado", appDI.AsistenciaCtrl.DecidirPermiso)
 }
 
 func registrarRutasAuth(group fiber.Router, appDI *di.App) {

@@ -24,6 +24,12 @@ const (
 	FieldEstado = "estado"
 	// EdgeEmpresasUsuario holds the string denoting the empresas_usuario edge name in mutations.
 	EdgeEmpresasUsuario = "empresas_usuario"
+	// EdgeHorario holds the string denoting the horario edge name in mutations.
+	EdgeHorario = "horario"
+	// EdgeAsistencias holds the string denoting the asistencias edge name in mutations.
+	EdgeAsistencias = "asistencias"
+	// EdgePermisos holds the string denoting the permisos edge name in mutations.
+	EdgePermisos = "permisos"
 	// Table holds the table name of the usuario in the database.
 	Table = "usuarios"
 	// EmpresasUsuarioTable is the table that holds the empresas_usuario relation/edge.
@@ -33,6 +39,27 @@ const (
 	EmpresasUsuarioInverseTable = "empresa_usuarios"
 	// EmpresasUsuarioColumn is the table column denoting the empresas_usuario relation/edge.
 	EmpresasUsuarioColumn = "usuario_id"
+	// HorarioTable is the table that holds the horario relation/edge.
+	HorarioTable = "horarios"
+	// HorarioInverseTable is the table name for the Horario entity.
+	// It exists in this package in order to avoid circular dependency with the "horario" package.
+	HorarioInverseTable = "horarios"
+	// HorarioColumn is the table column denoting the horario relation/edge.
+	HorarioColumn = "usuario_id"
+	// AsistenciasTable is the table that holds the asistencias relation/edge.
+	AsistenciasTable = "asistencias"
+	// AsistenciasInverseTable is the table name for the Asistencia entity.
+	// It exists in this package in order to avoid circular dependency with the "asistencia" package.
+	AsistenciasInverseTable = "asistencias"
+	// AsistenciasColumn is the table column denoting the asistencias relation/edge.
+	AsistenciasColumn = "usuario_id"
+	// PermisosTable is the table that holds the permisos relation/edge.
+	PermisosTable = "permisos"
+	// PermisosInverseTable is the table name for the Permiso entity.
+	// It exists in this package in order to avoid circular dependency with the "permiso" package.
+	PermisosInverseTable = "permisos"
+	// PermisosColumn is the table column denoting the permisos relation/edge.
+	PermisosColumn = "usuario_id"
 )
 
 // Columns holds all SQL columns for usuario fields.
@@ -106,10 +133,66 @@ func ByEmpresasUsuario(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newEmpresasUsuarioStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByHorarioField orders the results by horario field.
+func ByHorarioField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newHorarioStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByAsistenciasCount orders the results by asistencias count.
+func ByAsistenciasCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newAsistenciasStep(), opts...)
+	}
+}
+
+// ByAsistencias orders the results by asistencias terms.
+func ByAsistencias(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newAsistenciasStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
+// ByPermisosCount orders the results by permisos count.
+func ByPermisosCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newPermisosStep(), opts...)
+	}
+}
+
+// ByPermisos orders the results by permisos terms.
+func ByPermisos(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPermisosStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newEmpresasUsuarioStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(EmpresasUsuarioInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, EmpresasUsuarioTable, EmpresasUsuarioColumn),
+	)
+}
+func newHorarioStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(HorarioInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2O, false, HorarioTable, HorarioColumn),
+	)
+}
+func newAsistenciasStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(AsistenciasInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, AsistenciasTable, AsistenciasColumn),
+	)
+}
+func newPermisosStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PermisosInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, PermisosTable, PermisosColumn),
 	)
 }

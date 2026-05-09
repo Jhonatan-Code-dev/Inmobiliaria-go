@@ -23,6 +23,46 @@ var (
 		Columns:    AdminsColumns,
 		PrimaryKey: []*schema.Column{AdminsColumns[0]},
 	}
+	// AsistenciasColumns holds the columns for the "asistencias" table.
+	AsistenciasColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "creado_en", Type: field.TypeTime},
+		{Name: "fecha", Type: field.TypeTime},
+		{Name: "hora_entrada", Type: field.TypeTime, Nullable: true},
+		{Name: "hora_salida", Type: field.TypeTime, Nullable: true},
+		{Name: "estado", Type: field.TypeEnum, Enums: []string{"puntual", "tarde", "falta", "justificado"}, Default: "puntual"},
+		{Name: "notas", Type: field.TypeString, Nullable: true, Size: 500},
+		{Name: "horas_trabajadas", Type: field.TypeFloat64, Nullable: true},
+		{Name: "empresa_id", Type: field.TypeInt},
+		{Name: "usuario_id", Type: field.TypeInt},
+	}
+	// AsistenciasTable holds the schema information for the "asistencias" table.
+	AsistenciasTable = &schema.Table{
+		Name:       "asistencias",
+		Columns:    AsistenciasColumns,
+		PrimaryKey: []*schema.Column{AsistenciasColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "asistencias_empresas_asistencias",
+				Columns:    []*schema.Column{AsistenciasColumns[8]},
+				RefColumns: []*schema.Column{EmpresasColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "asistencias_usuarios_asistencias",
+				Columns:    []*schema.Column{AsistenciasColumns[9]},
+				RefColumns: []*schema.Column{UsuariosColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "asistencia_empresa_id_usuario_id_fecha",
+				Unique:  true,
+				Columns: []*schema.Column{AsistenciasColumns[8], AsistenciasColumns[9], AsistenciasColumns[2]},
+			},
+		},
+	}
 	// CargosColumns holds the columns for the "cargos" table.
 	CargosColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -287,6 +327,44 @@ var (
 			},
 		},
 	}
+	// HorariosColumns holds the columns for the "horarios" table.
+	HorariosColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "creado_en", Type: field.TypeTime},
+		{Name: "hora_entrada", Type: field.TypeString, Default: "08:00"},
+		{Name: "hora_salida", Type: field.TypeString, Default: "17:00"},
+		{Name: "tolerancia_minutos", Type: field.TypeInt, Default: 15},
+		{Name: "dias_laborables", Type: field.TypeString, Default: "1,2,3,4,5"},
+		{Name: "empresa_id", Type: field.TypeInt},
+		{Name: "usuario_id", Type: field.TypeInt, Unique: true},
+	}
+	// HorariosTable holds the schema information for the "horarios" table.
+	HorariosTable = &schema.Table{
+		Name:       "horarios",
+		Columns:    HorariosColumns,
+		PrimaryKey: []*schema.Column{HorariosColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "horarios_empresas_horarios",
+				Columns:    []*schema.Column{HorariosColumns[6]},
+				RefColumns: []*schema.Column{EmpresasColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "horarios_usuarios_horario",
+				Columns:    []*schema.Column{HorariosColumns[7]},
+				RefColumns: []*schema.Column{UsuariosColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "horario_empresa_id_usuario_id",
+				Unique:  false,
+				Columns: []*schema.Column{HorariosColumns[6], HorariosColumns[7]},
+			},
+		},
+	}
 	// MovimientosCajaColumns holds the columns for the "movimientos_caja" table.
 	MovimientosCajaColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -411,6 +489,44 @@ var (
 				Name:    "pagoaplicacion_pago_id_cargo_id",
 				Unique:  true,
 				Columns: []*schema.Column{PagoAplicacionesColumns[5], PagoAplicacionesColumns[4]},
+			},
+		},
+	}
+	// PermisosColumns holds the columns for the "permisos" table.
+	PermisosColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "creado_en", Type: field.TypeTime},
+		{Name: "fecha", Type: field.TypeTime},
+		{Name: "motivo", Type: field.TypeString, Size: 1000},
+		{Name: "estado", Type: field.TypeEnum, Enums: []string{"pendiente", "aprobado", "rechazado"}, Default: "pendiente"},
+		{Name: "respuesta", Type: field.TypeString, Nullable: true, Size: 1000},
+		{Name: "empresa_id", Type: field.TypeInt},
+		{Name: "usuario_id", Type: field.TypeInt},
+	}
+	// PermisosTable holds the schema information for the "permisos" table.
+	PermisosTable = &schema.Table{
+		Name:       "permisos",
+		Columns:    PermisosColumns,
+		PrimaryKey: []*schema.Column{PermisosColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "permisos_empresas_permisos",
+				Columns:    []*schema.Column{PermisosColumns[6]},
+				RefColumns: []*schema.Column{EmpresasColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "permisos_usuarios_permisos",
+				Columns:    []*schema.Column{PermisosColumns[7]},
+				RefColumns: []*schema.Column{UsuariosColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "permiso_empresa_id_usuario_id",
+				Unique:  false,
+				Columns: []*schema.Column{PermisosColumns[6], PermisosColumns[7]},
 			},
 		},
 	}
@@ -646,6 +762,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		AdminsTable,
+		AsistenciasTable,
 		CargosTable,
 		ClientesTable,
 		ClienteTelefonosTable,
@@ -653,9 +770,11 @@ var (
 		EmpresasTable,
 		EmpresaUsuariosTable,
 		GastosTable,
+		HorariosTable,
 		MovimientosCajaTable,
 		PagosTable,
 		PagoAplicacionesTable,
+		PermisosTable,
 		PropiedadesTable,
 		RolesTable,
 		ServicioMedicionesTable,
@@ -670,6 +789,11 @@ var (
 func init() {
 	AdminsTable.Annotation = &entsql.Annotation{
 		Table: "admins",
+	}
+	AsistenciasTable.ForeignKeys[0].RefTable = EmpresasTable
+	AsistenciasTable.ForeignKeys[1].RefTable = UsuariosTable
+	AsistenciasTable.Annotation = &entsql.Annotation{
+		Table: "asistencias",
 	}
 	CargosTable.ForeignKeys[0].RefTable = ContratosTable
 	CargosTable.ForeignKeys[1].RefTable = ServicioMedicionesTable
@@ -707,6 +831,11 @@ func init() {
 	GastosTable.Annotation = &entsql.Annotation{
 		Table: "gastos",
 	}
+	HorariosTable.ForeignKeys[0].RefTable = EmpresasTable
+	HorariosTable.ForeignKeys[1].RefTable = UsuariosTable
+	HorariosTable.Annotation = &entsql.Annotation{
+		Table: "horarios",
+	}
 	MovimientosCajaTable.ForeignKeys[0].RefTable = EmpresasTable
 	MovimientosCajaTable.ForeignKeys[1].RefTable = GastosTable
 	MovimientosCajaTable.ForeignKeys[2].RefTable = PagosTable
@@ -723,6 +852,11 @@ func init() {
 	PagoAplicacionesTable.ForeignKeys[1].RefTable = PagosTable
 	PagoAplicacionesTable.Annotation = &entsql.Annotation{
 		Table: "pago_aplicaciones",
+	}
+	PermisosTable.ForeignKeys[0].RefTable = EmpresasTable
+	PermisosTable.ForeignKeys[1].RefTable = UsuariosTable
+	PermisosTable.Annotation = &entsql.Annotation{
+		Table: "permisos",
 	}
 	PropiedadesTable.ForeignKeys[0].RefTable = EmpresasTable
 	PropiedadesTable.Annotation = &entsql.Annotation{

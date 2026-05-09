@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"reflect"
 	"rentals-go/ent/admin"
+	"rentals-go/ent/asistencia"
 	"rentals-go/ent/cargo"
 	"rentals-go/ent/cliente"
 	"rentals-go/ent/clientetelefono"
@@ -15,9 +16,11 @@ import (
 	"rentals-go/ent/empresa"
 	"rentals-go/ent/empresausuario"
 	"rentals-go/ent/gasto"
+	"rentals-go/ent/horario"
 	"rentals-go/ent/movimientocaja"
 	"rentals-go/ent/pago"
 	"rentals-go/ent/pagoaplicacion"
+	"rentals-go/ent/permiso"
 	"rentals-go/ent/propiedad"
 	"rentals-go/ent/rol"
 	"rentals-go/ent/serviciomedicion"
@@ -92,6 +95,7 @@ func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			admin.Table:              admin.ValidColumn,
+			asistencia.Table:         asistencia.ValidColumn,
 			cargo.Table:              cargo.ValidColumn,
 			cliente.Table:            cliente.ValidColumn,
 			clientetelefono.Table:    clientetelefono.ValidColumn,
@@ -99,9 +103,11 @@ func checkColumn(t, c string) error {
 			empresa.Table:            empresa.ValidColumn,
 			empresausuario.Table:     empresausuario.ValidColumn,
 			gasto.Table:              gasto.ValidColumn,
+			horario.Table:            horario.ValidColumn,
 			movimientocaja.Table:     movimientocaja.ValidColumn,
 			pago.Table:               pago.ValidColumn,
 			pagoaplicacion.Table:     pagoaplicacion.ValidColumn,
+			permiso.Table:            permiso.ValidColumn,
 			propiedad.Table:          propiedad.ValidColumn,
 			rol.Table:                rol.ValidColumn,
 			serviciomedicion.Table:   serviciomedicion.ValidColumn,

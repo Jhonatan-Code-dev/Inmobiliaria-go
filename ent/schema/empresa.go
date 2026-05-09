@@ -48,6 +48,9 @@ func (Empresa) Edges() []ent.Edge {
 		edge.To("gastos", Gasto.Type),
 		edge.To("movimientos_caja", MovimientoCaja.Type),
 		edge.To("tickets", Ticket.Type),
+		edge.To("horarios", Horario.Type),
+		edge.To("asistencias", Asistencia.Type),
+		edge.To("permisos", Permiso.Type),
 	}
 }
 

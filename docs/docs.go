@@ -795,6 +795,229 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/user/asistencia/horarios": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Asistencia"
+                ],
+                "summary": "Asignar horario a un trabajador",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Datos del horario",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.RegistroHorario"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Horario"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/asistencia/marcar": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Registra automáticamente si es entrada o salida según los registros del día.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Asistencia"
+                ],
+                "summary": "Registrar entrada o salida",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Asistencia"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/asistencia/mi-historial": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Asistencia"
+                ],
+                "summary": "Ver mi historial de asistencia",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.Asistencia"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/asistencia/permisos": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Asistencia"
+                ],
+                "summary": "Solicitar un permiso o justificación",
+                "parameters": [
+                    {
+                        "description": "Datos del permiso",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.RegistroPermiso"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Permiso"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/asistencia/permisos/{id}/estado": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Asistencia"
+                ],
+                "summary": "Aprobar o rechazar un permiso",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del permiso",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Decisión",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.DecisionPermiso"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Permiso"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/asistencia/registros": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Asistencia"
+                ],
+                "summary": "Listar asistencia de todo el personal",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.Asistencia"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/user/cargos": {
             "get": {
                 "tags": [
@@ -1682,6 +1905,122 @@ const docTemplate = `{
                         "description": "Created",
                         "schema": {
                             "$ref": "#/definitions/controller.gastoResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/gastos/reporte/excel": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Genera un archivo Excel con el listado de gastos filtrados.",
+                "produces": [
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                ],
+                "tags": [
+                    "Gastos"
+                ],
+                "summary": "Exportar gastos a Excel",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Año del gasto",
+                        "name": "anio",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Mes del gasto (1-12)",
+                        "name": "mes",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Fecha inicio (YYYY-MM-DD)",
+                        "name": "desde",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Fecha fin (YYYY-MM-DD)",
+                        "name": "hasta",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "binary"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/gastos/reporte/pdf": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Genera un archivo PDF con el listado de gastos filtrados.",
+                "produces": [
+                    "application/pdf"
+                ],
+                "tags": [
+                    "Gastos"
+                ],
+                "summary": "Exportar gastos a PDF",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Año del gasto",
+                        "name": "anio",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Mes del gasto (1-12)",
+                        "name": "mes",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Fecha inicio (YYYY-MM-DD)",
+                        "name": "desde",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Fecha fin (YYYY-MM-DD)",
+                        "name": "hasta",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "binary"
                         }
                     }
                 }
@@ -3929,6 +4268,42 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.Asistencia": {
+            "type": "object",
+            "properties": {
+                "empresa_id": {
+                    "type": "integer"
+                },
+                "estado": {
+                    "description": "puntual, tarde, falta, justificado",
+                    "type": "string"
+                },
+                "fecha": {
+                    "type": "string"
+                },
+                "hora_entrada": {
+                    "type": "string"
+                },
+                "hora_salida": {
+                    "type": "string"
+                },
+                "horas_trabajadas": {
+                    "type": "number"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "notas": {
+                    "type": "string"
+                },
+                "usuario_id": {
+                    "type": "integer"
+                },
+                "usuario_nombre": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.CargoResumen": {
             "type": "object",
             "properties": {
@@ -4010,6 +4385,18 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.DecisionPermiso": {
+            "type": "object",
+            "properties": {
+                "estado": {
+                    "description": "aprobado, rechazado",
+                    "type": "string"
+                },
+                "respuesta": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.EstadoCuentaCliente": {
             "type": "object",
             "properties": {
@@ -4044,6 +4431,36 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.Horario": {
+            "type": "object",
+            "properties": {
+                "dias_laborables": {
+                    "description": "Ej: \"1,2,3,4,5\"",
+                    "type": "string"
+                },
+                "empresa_id": {
+                    "type": "integer"
+                },
+                "hora_entrada": {
+                    "description": "Formato HH:mm",
+                    "type": "string"
+                },
+                "hora_salida": {
+                    "description": "Formato HH:mm",
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "tolerancia_minutos": {
+                    "description": "Minutos de gracia",
+                    "type": "integer"
+                },
+                "usuario_id": {
+                    "type": "integer"
+                }
+            }
+        },
         "domain.OcupacionPropiedad": {
             "type": "object",
             "properties": {
@@ -4070,6 +4487,36 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.Permiso": {
+            "type": "object",
+            "properties": {
+                "empresa_id": {
+                    "type": "integer"
+                },
+                "estado": {
+                    "description": "pendiente, aprobado, rechazado",
+                    "type": "string"
+                },
+                "fecha": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "motivo": {
+                    "type": "string"
+                },
+                "respuesta": {
+                    "type": "string"
+                },
+                "usuario_id": {
+                    "type": "integer"
+                },
+                "usuario_nombre": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.PuntoFinanciero": {
             "type": "object",
             "properties": {
@@ -4084,6 +4531,37 @@ const docTemplate = `{
                 },
                 "periodo": {
                     "description": "\"2025-01\", \"2025-02\" ...",
+                    "type": "string"
+                }
+            }
+        },
+        "domain.RegistroHorario": {
+            "type": "object",
+            "properties": {
+                "dias_laborables": {
+                    "type": "string"
+                },
+                "hora_entrada": {
+                    "type": "string"
+                },
+                "hora_salida": {
+                    "type": "string"
+                },
+                "tolerancia_minutos": {
+                    "type": "integer"
+                },
+                "usuario_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "domain.RegistroPermiso": {
+            "type": "object",
+            "properties": {
+                "fecha": {
+                    "type": "string"
+                },
+                "motivo": {
                     "type": "string"
                 }
             }

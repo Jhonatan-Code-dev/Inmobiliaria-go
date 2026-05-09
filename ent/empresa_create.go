@@ -6,13 +6,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"rentals-go/ent/asistencia"
 	"rentals-go/ent/cliente"
 	"rentals-go/ent/contrato"
 	"rentals-go/ent/empresa"
 	"rentals-go/ent/empresausuario"
 	"rentals-go/ent/gasto"
+	"rentals-go/ent/horario"
 	"rentals-go/ent/movimientocaja"
 	"rentals-go/ent/pago"
+	"rentals-go/ent/permiso"
 	"rentals-go/ent/propiedad"
 	"rentals-go/ent/ticket"
 	"time"
@@ -236,6 +239,51 @@ func (_c *EmpresaCreate) AddTickets(v ...*Ticket) *EmpresaCreate {
 		ids[i] = v[i].ID
 	}
 	return _c.AddTicketIDs(ids...)
+}
+
+// AddHorarioIDs adds the "horarios" edge to the Horario entity by IDs.
+func (_c *EmpresaCreate) AddHorarioIDs(ids ...int) *EmpresaCreate {
+	_c.mutation.AddHorarioIDs(ids...)
+	return _c
+}
+
+// AddHorarios adds the "horarios" edges to the Horario entity.
+func (_c *EmpresaCreate) AddHorarios(v ...*Horario) *EmpresaCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddHorarioIDs(ids...)
+}
+
+// AddAsistenciaIDs adds the "asistencias" edge to the Asistencia entity by IDs.
+func (_c *EmpresaCreate) AddAsistenciaIDs(ids ...int) *EmpresaCreate {
+	_c.mutation.AddAsistenciaIDs(ids...)
+	return _c
+}
+
+// AddAsistencias adds the "asistencias" edges to the Asistencia entity.
+func (_c *EmpresaCreate) AddAsistencias(v ...*Asistencia) *EmpresaCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddAsistenciaIDs(ids...)
+}
+
+// AddPermisoIDs adds the "permisos" edge to the Permiso entity by IDs.
+func (_c *EmpresaCreate) AddPermisoIDs(ids ...int) *EmpresaCreate {
+	_c.mutation.AddPermisoIDs(ids...)
+	return _c
+}
+
+// AddPermisos adds the "permisos" edges to the Permiso entity.
+func (_c *EmpresaCreate) AddPermisos(v ...*Permiso) *EmpresaCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddPermisoIDs(ids...)
 }
 
 // Mutation returns the EmpresaMutation object of the builder.
@@ -503,6 +551,54 @@ func (_c *EmpresaCreate) createSpec() (*Empresa, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.HorariosIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.HorariosTable,
+			Columns: []string{empresa.HorariosColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(horario.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.AsistenciasIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.AsistenciasTable,
+			Columns: []string{empresa.AsistenciasColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(asistencia.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.PermisosIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.PermisosTable,
+			Columns: []string{empresa.PermisosColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(permiso.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

@@ -619,6 +619,75 @@ func HasTicketsWith(preds ...predicate.Ticket) predicate.Empresa {
 	})
 }
 
+// HasHorarios applies the HasEdge predicate on the "horarios" edge.
+func HasHorarios() predicate.Empresa {
+	return predicate.Empresa(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, HorariosTable, HorariosColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasHorariosWith applies the HasEdge predicate on the "horarios" edge with a given conditions (other predicates).
+func HasHorariosWith(preds ...predicate.Horario) predicate.Empresa {
+	return predicate.Empresa(func(s *sql.Selector) {
+		step := newHorariosStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasAsistencias applies the HasEdge predicate on the "asistencias" edge.
+func HasAsistencias() predicate.Empresa {
+	return predicate.Empresa(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, AsistenciasTable, AsistenciasColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasAsistenciasWith applies the HasEdge predicate on the "asistencias" edge with a given conditions (other predicates).
+func HasAsistenciasWith(preds ...predicate.Asistencia) predicate.Empresa {
+	return predicate.Empresa(func(s *sql.Selector) {
+		step := newAsistenciasStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasPermisos applies the HasEdge predicate on the "permisos" edge.
+func HasPermisos() predicate.Empresa {
+	return predicate.Empresa(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PermisosTable, PermisosColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPermisosWith applies the HasEdge predicate on the "permisos" edge with a given conditions (other predicates).
+func HasPermisosWith(preds ...predicate.Permiso) predicate.Empresa {
+	return predicate.Empresa(func(s *sql.Selector) {
+		step := newPermisosStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Empresa) predicate.Empresa {
 	return predicate.Empresa(sql.AndPredicates(predicates...))

@@ -7,7 +7,10 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"math"
+	"rentals-go/ent/asistencia"
 	"rentals-go/ent/empresausuario"
+	"rentals-go/ent/horario"
+	"rentals-go/ent/permiso"
 	"rentals-go/ent/predicate"
 	"rentals-go/ent/usuario"
 
@@ -25,6 +28,9 @@ type UsuarioQuery struct {
 	inters              []Interceptor
 	predicates          []predicate.Usuario
 	withEmpresasUsuario *EmpresaUsuarioQuery
+	withHorario         *HorarioQuery
+	withAsistencias     *AsistenciaQuery
+	withPermisos        *PermisoQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -76,6 +82,72 @@ func (_q *UsuarioQuery) QueryEmpresasUsuario() *EmpresaUsuarioQuery {
 			sqlgraph.From(usuario.Table, usuario.FieldID, selector),
 			sqlgraph.To(empresausuario.Table, empresausuario.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, usuario.EmpresasUsuarioTable, usuario.EmpresasUsuarioColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryHorario chains the current query on the "horario" edge.
+func (_q *UsuarioQuery) QueryHorario() *HorarioQuery {
+	query := (&HorarioClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(usuario.Table, usuario.FieldID, selector),
+			sqlgraph.To(horario.Table, horario.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, usuario.HorarioTable, usuario.HorarioColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryAsistencias chains the current query on the "asistencias" edge.
+func (_q *UsuarioQuery) QueryAsistencias() *AsistenciaQuery {
+	query := (&AsistenciaClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(usuario.Table, usuario.FieldID, selector),
+			sqlgraph.To(asistencia.Table, asistencia.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, usuario.AsistenciasTable, usuario.AsistenciasColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryPermisos chains the current query on the "permisos" edge.
+func (_q *UsuarioQuery) QueryPermisos() *PermisoQuery {
+	query := (&PermisoClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(usuario.Table, usuario.FieldID, selector),
+			sqlgraph.To(permiso.Table, permiso.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, usuario.PermisosTable, usuario.PermisosColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -276,6 +348,9 @@ func (_q *UsuarioQuery) Clone() *UsuarioQuery {
 		inters:              append([]Interceptor{}, _q.inters...),
 		predicates:          append([]predicate.Usuario{}, _q.predicates...),
 		withEmpresasUsuario: _q.withEmpresasUsuario.Clone(),
+		withHorario:         _q.withHorario.Clone(),
+		withAsistencias:     _q.withAsistencias.Clone(),
+		withPermisos:        _q.withPermisos.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -290,6 +365,39 @@ func (_q *UsuarioQuery) WithEmpresasUsuario(opts ...func(*EmpresaUsuarioQuery)) 
 		opt(query)
 	}
 	_q.withEmpresasUsuario = query
+	return _q
+}
+
+// WithHorario tells the query-builder to eager-load the nodes that are connected to
+// the "horario" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UsuarioQuery) WithHorario(opts ...func(*HorarioQuery)) *UsuarioQuery {
+	query := (&HorarioClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withHorario = query
+	return _q
+}
+
+// WithAsistencias tells the query-builder to eager-load the nodes that are connected to
+// the "asistencias" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UsuarioQuery) WithAsistencias(opts ...func(*AsistenciaQuery)) *UsuarioQuery {
+	query := (&AsistenciaClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withAsistencias = query
+	return _q
+}
+
+// WithPermisos tells the query-builder to eager-load the nodes that are connected to
+// the "permisos" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UsuarioQuery) WithPermisos(opts ...func(*PermisoQuery)) *UsuarioQuery {
+	query := (&PermisoClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withPermisos = query
 	return _q
 }
 
@@ -371,8 +479,11 @@ func (_q *UsuarioQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Usua
 	var (
 		nodes       = []*Usuario{}
 		_spec       = _q.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [4]bool{
 			_q.withEmpresasUsuario != nil,
+			_q.withHorario != nil,
+			_q.withAsistencias != nil,
+			_q.withPermisos != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -400,6 +511,26 @@ func (_q *UsuarioQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Usua
 			return nil, err
 		}
 	}
+	if query := _q.withHorario; query != nil {
+		if err := _q.loadHorario(ctx, query, nodes, nil,
+			func(n *Usuario, e *Horario) { n.Edges.Horario = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withAsistencias; query != nil {
+		if err := _q.loadAsistencias(ctx, query, nodes,
+			func(n *Usuario) { n.Edges.Asistencias = []*Asistencia{} },
+			func(n *Usuario, e *Asistencia) { n.Edges.Asistencias = append(n.Edges.Asistencias, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withPermisos; query != nil {
+		if err := _q.loadPermisos(ctx, query, nodes,
+			func(n *Usuario) { n.Edges.Permisos = []*Permiso{} },
+			func(n *Usuario, e *Permiso) { n.Edges.Permisos = append(n.Edges.Permisos, e) }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
 }
 
@@ -418,6 +549,93 @@ func (_q *UsuarioQuery) loadEmpresasUsuario(ctx context.Context, query *EmpresaU
 	}
 	query.Where(predicate.EmpresaUsuario(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(usuario.EmpresasUsuarioColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.UsuarioID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "usuario_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *UsuarioQuery) loadHorario(ctx context.Context, query *HorarioQuery, nodes []*Usuario, init func(*Usuario), assign func(*Usuario, *Horario)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Usuario)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(horario.FieldUsuarioID)
+	}
+	query.Where(predicate.Horario(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(usuario.HorarioColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.UsuarioID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "usuario_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *UsuarioQuery) loadAsistencias(ctx context.Context, query *AsistenciaQuery, nodes []*Usuario, init func(*Usuario), assign func(*Usuario, *Asistencia)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Usuario)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(asistencia.FieldUsuarioID)
+	}
+	query.Where(predicate.Asistencia(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(usuario.AsistenciasColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.UsuarioID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "usuario_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *UsuarioQuery) loadPermisos(ctx context.Context, query *PermisoQuery, nodes []*Usuario, init func(*Usuario), assign func(*Usuario, *Permiso)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Usuario)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(permiso.FieldUsuarioID)
+	}
+	query.Where(predicate.Permiso(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(usuario.PermisosColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

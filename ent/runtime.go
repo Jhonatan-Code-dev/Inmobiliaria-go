@@ -4,6 +4,7 @@ package ent
 
 import (
 	"rentals-go/ent/admin"
+	"rentals-go/ent/asistencia"
 	"rentals-go/ent/cargo"
 	"rentals-go/ent/cliente"
 	"rentals-go/ent/clientetelefono"
@@ -11,9 +12,11 @@ import (
 	"rentals-go/ent/empresa"
 	"rentals-go/ent/empresausuario"
 	"rentals-go/ent/gasto"
+	"rentals-go/ent/horario"
 	"rentals-go/ent/movimientocaja"
 	"rentals-go/ent/pago"
 	"rentals-go/ent/pagoaplicacion"
+	"rentals-go/ent/permiso"
 	"rentals-go/ent/propiedad"
 	"rentals-go/ent/rol"
 	"rentals-go/ent/schema"
@@ -79,6 +82,19 @@ func init() {
 	adminDescActivo := adminFields[2].Descriptor()
 	// admin.DefaultActivo holds the default value on creation for the activo field.
 	admin.DefaultActivo = adminDescActivo.Default.(bool)
+	asistenciaMixin := schema.Asistencia{}.Mixin()
+	asistenciaMixinFields0 := asistenciaMixin[0].Fields()
+	_ = asistenciaMixinFields0
+	asistenciaFields := schema.Asistencia{}.Fields()
+	_ = asistenciaFields
+	// asistenciaDescCreadoEn is the schema descriptor for creado_en field.
+	asistenciaDescCreadoEn := asistenciaMixinFields0[0].Descriptor()
+	// asistencia.DefaultCreadoEn holds the default value on creation for the creado_en field.
+	asistencia.DefaultCreadoEn = asistenciaDescCreadoEn.Default.(func() time.Time)
+	// asistenciaDescNotas is the schema descriptor for notas field.
+	asistenciaDescNotas := asistenciaFields[6].Descriptor()
+	// asistencia.NotasValidator is a validator for the "notas" field. It is called by the builders before save.
+	asistencia.NotasValidator = asistenciaDescNotas.Validators[0].(func(string) error)
 	cargoMixin := schema.Cargo{}.Mixin()
 	cargoMixinFields0 := cargoMixin[0].Fields()
 	_ = cargoMixinFields0
@@ -405,6 +421,31 @@ func init() {
 			return nil
 		}
 	}()
+	horarioMixin := schema.Horario{}.Mixin()
+	horarioMixinFields0 := horarioMixin[0].Fields()
+	_ = horarioMixinFields0
+	horarioFields := schema.Horario{}.Fields()
+	_ = horarioFields
+	// horarioDescCreadoEn is the schema descriptor for creado_en field.
+	horarioDescCreadoEn := horarioMixinFields0[0].Descriptor()
+	// horario.DefaultCreadoEn holds the default value on creation for the creado_en field.
+	horario.DefaultCreadoEn = horarioDescCreadoEn.Default.(func() time.Time)
+	// horarioDescHoraEntrada is the schema descriptor for hora_entrada field.
+	horarioDescHoraEntrada := horarioFields[2].Descriptor()
+	// horario.DefaultHoraEntrada holds the default value on creation for the hora_entrada field.
+	horario.DefaultHoraEntrada = horarioDescHoraEntrada.Default.(string)
+	// horarioDescHoraSalida is the schema descriptor for hora_salida field.
+	horarioDescHoraSalida := horarioFields[3].Descriptor()
+	// horario.DefaultHoraSalida holds the default value on creation for the hora_salida field.
+	horario.DefaultHoraSalida = horarioDescHoraSalida.Default.(string)
+	// horarioDescToleranciaMinutos is the schema descriptor for tolerancia_minutos field.
+	horarioDescToleranciaMinutos := horarioFields[4].Descriptor()
+	// horario.DefaultToleranciaMinutos holds the default value on creation for the tolerancia_minutos field.
+	horario.DefaultToleranciaMinutos = horarioDescToleranciaMinutos.Default.(int)
+	// horarioDescDiasLaborables is the schema descriptor for dias_laborables field.
+	horarioDescDiasLaborables := horarioFields[5].Descriptor()
+	// horario.DefaultDiasLaborables holds the default value on creation for the dias_laborables field.
+	horario.DefaultDiasLaborables = horarioDescDiasLaborables.Default.(string)
 	movimientocajaMixin := schema.MovimientoCaja{}.Mixin()
 	movimientocajaMixinFields0 := movimientocajaMixin[0].Fields()
 	_ = movimientocajaMixinFields0
@@ -556,6 +597,23 @@ func init() {
 	pagoaplicacionDescMontoAplicado := pagoaplicacionFields[3].Descriptor()
 	// pagoaplicacion.DefaultMontoAplicado holds the default value on creation for the monto_aplicado field.
 	pagoaplicacion.DefaultMontoAplicado = pagoaplicacionDescMontoAplicado.Default.(int64)
+	permisoMixin := schema.Permiso{}.Mixin()
+	permisoMixinFields0 := permisoMixin[0].Fields()
+	_ = permisoMixinFields0
+	permisoFields := schema.Permiso{}.Fields()
+	_ = permisoFields
+	// permisoDescCreadoEn is the schema descriptor for creado_en field.
+	permisoDescCreadoEn := permisoMixinFields0[0].Descriptor()
+	// permiso.DefaultCreadoEn holds the default value on creation for the creado_en field.
+	permiso.DefaultCreadoEn = permisoDescCreadoEn.Default.(func() time.Time)
+	// permisoDescMotivo is the schema descriptor for motivo field.
+	permisoDescMotivo := permisoFields[3].Descriptor()
+	// permiso.MotivoValidator is a validator for the "motivo" field. It is called by the builders before save.
+	permiso.MotivoValidator = permisoDescMotivo.Validators[0].(func(string) error)
+	// permisoDescRespuesta is the schema descriptor for respuesta field.
+	permisoDescRespuesta := permisoFields[5].Descriptor()
+	// permiso.RespuestaValidator is a validator for the "respuesta" field. It is called by the builders before save.
+	permiso.RespuestaValidator = permisoDescRespuesta.Validators[0].(func(string) error)
 	propiedadMixin := schema.Propiedad{}.Mixin()
 	propiedadMixinFields0 := propiedadMixin[0].Fields()
 	_ = propiedadMixinFields0

@@ -67,21 +67,27 @@ func InitializeApp() (*App, error) {
 	dashboardRepoEnt := repository.NewDashboardRepo(client)
 	dashboardService := service.NewDashboardService(dashboardRepoEnt)
 	dashboardController := controller.NewDashboardController(dashboardService)
+	horarioRepoEnt := repository.NewHorarioRepo(client)
+	asistenciaRepoEnt := repository.NewAsistenciaRepo(client)
+	permisoRepoEnt := repository.NewPermisoRepo(client)
+	asistenciaService := service.NewAsistenciaService(horarioRepoEnt, asistenciaRepoEnt, permisoRepoEnt, empresaRepoEnt)
+	asistenciaController := controller.NewAsistenciaController(asistenciaService)
 	app := &App{
-		Config:       config,
-		EntClient:    client,
-		AdminCtrl:    adminController,
-		MonedaCtrl:   monedaController,
-		UsuarioCtrl:  usuarioController,
-		GastoCtrl:    gastoController,
-		ClienteCtrl:  clienteController,
-		InmuebleCtrl: inmuebleController,
-		AlquilerCtrl: alquilerController,
-		StaffCtrl:    staffController,
-		CargoCtrl:    cargoController,
-		ServicioCtrl: servicioMedicionController,
-		TicketCtrl:   ticketController,
-		DashboardCtrl: dashboardController,
+		Config:         config,
+		EntClient:      client,
+		AdminCtrl:      adminController,
+		MonedaCtrl:     monedaController,
+		UsuarioCtrl:    usuarioController,
+		GastoCtrl:      gastoController,
+		ClienteCtrl:    clienteController,
+		InmuebleCtrl:   inmuebleController,
+		AlquilerCtrl:   alquilerController,
+		StaffCtrl:      staffController,
+		CargoCtrl:      cargoController,
+		ServicioCtrl:   servicioMedicionController,
+		TicketCtrl:     ticketController,
+		DashboardCtrl:  dashboardController,
+		AsistenciaCtrl: asistenciaController,
 	}
 	return app, nil
 }

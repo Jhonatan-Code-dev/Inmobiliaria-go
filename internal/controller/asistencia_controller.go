@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -235,6 +236,130 @@ func (h *AsistenciaController) ConsultarReporteAsistencia(c *fiber.Ctx) error {
 		"pagina":  filtros.Pagina,
 		"limite":  filtros.Limite,
 	})
+}
+
+// ExportarReporteExcel godoc
+// @Summary Exportar reporte de asistencia a Excel
+// @Description Genera un archivo Excel (.xlsx) con las asistencias según los filtros aplicados.
+// @Tags Asistencia
+// @Security BearerAuth
+// @Produce application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+// @Param empresa_id query int true "ID de la empresa"
+// @Param buscar query string false "Nombre del trabajador"
+// @Param fecha query string false "Fecha específica (YYYY-MM-DD)"
+// @Param desde query string false "Fecha desde (YYYY-MM-DD)"
+// @Param hasta query string false "Fecha hasta (YYYY-MM-DD)"
+// @Param estado query string false "Estado (puntual, tarde, falta)"
+// @Success 200 {file} file "Reporte en Excel"
+// @Router /api/user/asistencia/reporte/excel [get]
+func (h *AsistenciaController) ExportarReporteExcel(c *fiber.Ctx) error {
+	empresaID := c.QueryInt("empresa_id")
+	if empresaID <= 0 {
+		if id, ok := c.Locals("empresa_id").(int); ok && id > 0 {
+			empresaID = id
+		} else {
+			return c.Status(400).JSON(errorResponse{Message: "empresa_id es requerido"})
+		}
+	}
+
+	filtros := domain.AsistenciaFiltros{
+		EmpresaID: empresaID,
+		UsuarioID: c.QueryInt("usuario_id"),
+		Estado:    c.Query("estado"),
+		Busqueda:  c.Query("buscar"),
+	}
+
+	if f := c.Query("fecha"); f != "" {
+		t, err := time.Parse("2006-01-02", f)
+		if err == nil {
+			inicio := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
+			fin := time.Date(t.Year(), t.Month(), t.Day(), 23, 59, 59, 0, time.UTC)
+			filtros.Desde = &inicio
+			filtros.Hasta = &fin
+		}
+	} else {
+		if d := c.Query("desde"); d != "" {
+			t, _ := time.Parse("2006-01-02", d)
+			inicio := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
+			filtros.Desde = &inicio
+		}
+		if d := c.Query("hasta"); d != "" {
+			t, _ := time.Parse("2006-01-02", d)
+			fin := time.Date(t.Year(), t.Month(), t.Day(), 23, 59, 59, 0, time.UTC)
+			filtros.Hasta = &fin
+		}
+	}
+
+	bytes, err := h.svc.ExportarReporteExcel(c.Context(), filtros)
+	if err != nil {
+		return c.Status(500).JSON(errorResponse{Message: "error generando excel: " + err.Error()})
+	}
+
+	c.Set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+	c.Set("Content-Disposition", fmt.Sprintf("attachment; filename=reporte_asistencia_%s.xlsx", time.Now().Format("20060102_150405")))
+	return c.Send(bytes)
+}
+
+// ExportarReportePDF godoc
+// @Summary Exportar reporte de asistencia a PDF
+// @Description Genera un archivo PDF con las asistencias según los filtros aplicados.
+// @Tags Asistencia
+// @Security BearerAuth
+// @Produce application/pdf
+// @Param empresa_id query int true "ID de la empresa"
+// @Param buscar query string false "Nombre del trabajador"
+// @Param fecha query string false "Fecha específica (YYYY-MM-DD)"
+// @Param desde query string false "Fecha desde (YYYY-MM-DD)"
+// @Param hasta query string false "Fecha hasta (YYYY-MM-DD)"
+// @Param estado query string false "Estado (puntual, tarde, falta)"
+// @Success 200 {file} file "Reporte en PDF"
+// @Router /api/user/asistencia/reporte/pdf [get]
+func (h *AsistenciaController) ExportarReportePDF(c *fiber.Ctx) error {
+	empresaID := c.QueryInt("empresa_id")
+	if empresaID <= 0 {
+		if id, ok := c.Locals("empresa_id").(int); ok && id > 0 {
+			empresaID = id
+		} else {
+			return c.Status(400).JSON(errorResponse{Message: "empresa_id es requerido"})
+		}
+	}
+
+	filtros := domain.AsistenciaFiltros{
+		EmpresaID: empresaID,
+		UsuarioID: c.QueryInt("usuario_id"),
+		Estado:    c.Query("estado"),
+		Busqueda:  c.Query("buscar"),
+	}
+
+	if f := c.Query("fecha"); f != "" {
+		t, err := time.Parse("2006-01-02", f)
+		if err == nil {
+			inicio := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
+			fin := time.Date(t.Year(), t.Month(), t.Day(), 23, 59, 59, 0, time.UTC)
+			filtros.Desde = &inicio
+			filtros.Hasta = &fin
+		}
+	} else {
+		if d := c.Query("desde"); d != "" {
+			t, _ := time.Parse("2006-01-02", d)
+			inicio := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
+			filtros.Desde = &inicio
+		}
+		if d := c.Query("hasta"); d != "" {
+			t, _ := time.Parse("2006-01-02", d)
+			fin := time.Date(t.Year(), t.Month(), t.Day(), 23, 59, 59, 0, time.UTC)
+			filtros.Hasta = &fin
+		}
+	}
+
+	bytes, err := h.svc.ExportarReportePDF(c.Context(), filtros)
+	if err != nil {
+		return c.Status(500).JSON(errorResponse{Message: "error generando pdf: " + err.Error()})
+	}
+
+	c.Set("Content-Type", "application/pdf")
+	c.Set("Content-Disposition", fmt.Sprintf("attachment; filename=reporte_asistencia_%s.pdf", time.Now().Format("20060102_150405")))
+	return c.Send(bytes)
 }
 
 // AsignarHorario godoc

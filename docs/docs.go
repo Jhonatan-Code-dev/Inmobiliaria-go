@@ -1293,6 +1293,134 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/user/asistencia/reporte/excel": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Genera un archivo Excel (.xlsx) con las asistencias según los filtros aplicados.",
+                "produces": [
+                    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                ],
+                "tags": [
+                    "Asistencia"
+                ],
+                "summary": "Exportar reporte de asistencia a Excel",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nombre del trabajador",
+                        "name": "buscar",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Fecha específica (YYYY-MM-DD)",
+                        "name": "fecha",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Fecha desde (YYYY-MM-DD)",
+                        "name": "desde",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Fecha hasta (YYYY-MM-DD)",
+                        "name": "hasta",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Estado (puntual, tarde, falta)",
+                        "name": "estado",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Reporte en Excel",
+                        "schema": {
+                            "type": "file"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/asistencia/reporte/pdf": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Genera un archivo PDF con las asistencias según los filtros aplicados.",
+                "produces": [
+                    "application/pdf"
+                ],
+                "tags": [
+                    "Asistencia"
+                ],
+                "summary": "Exportar reporte de asistencia a PDF",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nombre del trabajador",
+                        "name": "buscar",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Fecha específica (YYYY-MM-DD)",
+                        "name": "fecha",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Fecha desde (YYYY-MM-DD)",
+                        "name": "desde",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Fecha hasta (YYYY-MM-DD)",
+                        "name": "hasta",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Estado (puntual, tarde, falta)",
+                        "name": "estado",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Reporte en PDF",
+                        "schema": {
+                            "type": "file"
+                        }
+                    }
+                }
+            }
+        },
         "/api/user/cargos": {
             "get": {
                 "tags": [
@@ -4588,6 +4716,9 @@ const docTemplate = `{
                 },
                 "horas_trabajadas": {
                     "type": "number"
+                },
+                "horas_trabajadas_formato": {
+                    "type": "string"
                 },
                 "id": {
                     "type": "integer"

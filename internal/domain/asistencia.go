@@ -50,6 +50,7 @@ type Asistencia struct {
 	Estado          string     `json:"estado"` // puntual, tarde, falta, justificado
 	Notas           *string    `json:"notas"`
 	HorasTrabajadas *float64   `json:"horas_trabajadas"`
+	HorasTrabajadasFormato string `json:"horas_trabajadas_formato,omitempty"`
 	
 	// Datos de referencia del horario (para reportes)
 	HoraEntradaEsperada string `json:"hora_entrada_esperada,omitempty"`

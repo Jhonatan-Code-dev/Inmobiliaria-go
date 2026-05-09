@@ -41,6 +41,7 @@ Este endpoint permite obtener un listado exhaustivo de las marcas de asistencia 
             "estado": "tarde",
             "notas": null,
             "horas_trabajadas": 0.84,
+            "horas_trabajadas_formato": "0H 50M 24S",
             "hora_entrada_esperada": "08:00",
             "hora_salida_esperada": "17:00"
         }
@@ -64,3 +65,44 @@ Este endpoint permite obtener un listado exhaustivo de las marcas de asistencia 
 - Se recomienda usar el parámetro `buscar` para implementar una barra de búsqueda en tiempo real.
 - Para el filtrado de fechas, se puede usar un componente de calendario que envíe `desde` y `hasta` al seleccionar un rango, o simplemente `fecha` para una vista diaria.
 - El campo `estado` se calcula dinámicamente basándose en la configuración global de la empresa si el trabajador no tiene un horario específico.
+
+---
+
+## 6. Endpoints de Exportación
+
+El sistema provee dos endpoints adicionales para descargar el mismo reporte en formatos binarios. Estos endpoints **soportan exactamente los mismos parámetros de filtro** (`empresa_id`, `buscar`, `fecha`, `desde`, `hasta`, `estado`) que el reporte principal, asegurando que lo exportado coincida con lo visualizado. Se ignora la paginación para exportar el reporte completo.
+
+### 6.1. Exportar a Excel
+- **URL:** `/api/user/asistencia/reporte/excel`
+- **Método:** `GET`
+- **Content-Type Retornado:** `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`
+
+### 6.2. Exportar a PDF
+- **URL:** `/api/user/asistencia/reporte/pdf`
+- **Método:** `GET`
+- **Content-Type Retornado:** `application/pdf`
+
+### Ejemplo de Consumo en Frontend (Axios / Blob)
+Al consumir estos endpoints de exportación desde el frontend, **es crítico configurar `responseType: 'blob'`** para no corromper el archivo descargado.
+
+```javascript
+import axios from 'axios';
+
+async function descargarReporte(tipo = 'excel', filtros) {
+    const queryParams = new URLSearchParams(filtros).toString();
+    const url = `/api/user/asistencia/reporte/${tipo}?${queryParams}`;
+
+    const response = await axios.get(url, {
+        headers: { Authorization: `Bearer TU_TOKEN` },
+        responseType: 'blob', // OBLIGATORIO para archivos binarios
+    });
+
+    const urlBlob = window.URL.createObjectURL(new Blob([response.data]));
+    const link = document.createElement('a');
+    link.href = urlBlob;
+    link.setAttribute('download', `reporte_asistencia.${tipo === 'excel' ? 'xlsx' : 'pdf'}`);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+}
+```

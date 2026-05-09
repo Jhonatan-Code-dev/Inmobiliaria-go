@@ -246,6 +246,8 @@ type (
 		MarcarAsistencia(ctx context.Context, usuarioID int, empresaID int) (*Asistencia, error)
 		ListarAsistencia(ctx context.Context, filtros AsistenciaFiltros) ([]*Asistencia, int, error)
 		ConsultarReporteAsistencia(ctx context.Context, filtros AsistenciaFiltros) ([]*Asistencia, int, error)
+		ExportarReporteExcel(ctx context.Context, filtros AsistenciaFiltros) ([]byte, error)
+		ExportarReportePDF(ctx context.Context, filtros AsistenciaFiltros) ([]byte, error)
 		ListarMiHistorial(ctx context.Context, usuarioID int, empresaID int) ([]*Asistencia, error)
 		EliminarAsistencia(ctx context.Context, id int, empresaID int) error
 

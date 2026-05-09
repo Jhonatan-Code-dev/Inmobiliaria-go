@@ -666,6 +666,8 @@ definitions:
         type: string
       horas_trabajadas:
         type: number
+      horas_trabajadas_formato:
+        type: string
       id:
         type: integer
       notas:
@@ -1793,6 +1795,89 @@ paths:
       security:
       - BearerAuth: []
       summary: Reporte detallado de asistencia con búsqueda y paginación
+      tags:
+      - Asistencia
+  /api/user/asistencia/reporte/excel:
+    get:
+      description: Genera un archivo Excel (.xlsx) con las asistencias según los filtros
+        aplicados.
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      - description: Nombre del trabajador
+        in: query
+        name: buscar
+        type: string
+      - description: Fecha específica (YYYY-MM-DD)
+        in: query
+        name: fecha
+        type: string
+      - description: Fecha desde (YYYY-MM-DD)
+        in: query
+        name: desde
+        type: string
+      - description: Fecha hasta (YYYY-MM-DD)
+        in: query
+        name: hasta
+        type: string
+      - description: Estado (puntual, tarde, falta)
+        in: query
+        name: estado
+        type: string
+      produces:
+      - application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+      responses:
+        "200":
+          description: Reporte en Excel
+          schema:
+            type: file
+      security:
+      - BearerAuth: []
+      summary: Exportar reporte de asistencia a Excel
+      tags:
+      - Asistencia
+  /api/user/asistencia/reporte/pdf:
+    get:
+      description: Genera un archivo PDF con las asistencias según los filtros aplicados.
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      - description: Nombre del trabajador
+        in: query
+        name: buscar
+        type: string
+      - description: Fecha específica (YYYY-MM-DD)
+        in: query
+        name: fecha
+        type: string
+      - description: Fecha desde (YYYY-MM-DD)
+        in: query
+        name: desde
+        type: string
+      - description: Fecha hasta (YYYY-MM-DD)
+        in: query
+        name: hasta
+        type: string
+      - description: Estado (puntual, tarde, falta)
+        in: query
+        name: estado
+        type: string
+      produces:
+      - application/pdf
+      responses:
+        "200":
+          description: Reporte en PDF
+          schema:
+            type: file
+      security:
+      - BearerAuth: []
+      summary: Exportar reporte de asistencia a PDF
       tags:
       - Asistencia
   /api/user/cargos:

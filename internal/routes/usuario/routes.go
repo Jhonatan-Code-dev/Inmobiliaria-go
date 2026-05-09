@@ -138,6 +138,10 @@ func Register(app *fiber.App, appDI *di.App) {
 	// Configuración Global
 	asistencia.Get("/configuracion", appDI.AsistenciaCtrl.ObtenerConfiguracion)
 	asistencia.Post("/configuracion", appDI.AsistenciaCtrl.ActualizarConfiguracion)
+
+	// Exportaciones
+	asistencia.Get("/reporte/excel", appDI.AsistenciaCtrl.ExportarReporteExcel)
+	asistencia.Get("/reporte/pdf", appDI.AsistenciaCtrl.ExportarReportePDF)
 }
 
 func registrarRutasAuth(group fiber.Router, appDI *di.App) {

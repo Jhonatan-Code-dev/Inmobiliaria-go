@@ -38,10 +38,11 @@ type Asistencia struct {
 
 type AsistenciaFiltros struct {
 	EmpresaID int
-	UsuarioID int // Opcional
+	UsuarioID int    // Opcional
 	Estado    string // Opcional (puntual, tarde, etc)
 	Desde     *time.Time
 	Hasta     *time.Time
+	Busqueda  string // Nueva: Búsqueda por nombre de trabajador
 	Pagina    int
 	Limite    int
 }

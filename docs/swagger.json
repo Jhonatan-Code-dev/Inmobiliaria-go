@@ -927,6 +927,65 @@
             }
         },
         "/api/user/asistencia/permisos": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Devuelve la lista paginada de permisos, filtrable por estado y usuario.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Asistencia"
+                ],
+                "summary": "Listar permisos del personal",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID del usuario (opcional)",
+                        "name": "usuario_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Estado: pendiente, aprobado, rechazado",
+                        "name": "estado",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Página (default 1)",
+                        "name": "pag",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Registros por página (default 50)",
+                        "name": "limite",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.Permiso"
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "security": [
                     {
@@ -1082,6 +1141,77 @@
                 "responses": {
                     "204": {
                         "description": "No Content"
+                    }
+                }
+            }
+        },
+        "/api/user/asistencia/reporte": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Permite buscar por trabajador, filtrar por fecha y obtener datos paginados.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Asistencia"
+                ],
+                "summary": "Reporte detallado de asistencia con búsqueda y paginación",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Nombre del trabajador",
+                        "name": "buscar",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Fecha desde (YYYY-MM-DD)",
+                        "name": "desde",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Fecha hasta (YYYY-MM-DD)",
+                        "name": "hasta",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Estado (puntual, tarde, falta)",
+                        "name": "estado",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Página (default 1)",
+                        "name": "pag",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Límite (default 50)",
+                        "name": "limite",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
                     }
                 }
             }

@@ -31,6 +31,9 @@ type asistenciaRepoStub struct {
 func (s *asistenciaRepoStub) ListarPaginado(ctx context.Context, filtros domain.AsistenciaFiltros) ([]*domain.Asistencia, int, error) {
 	return nil, 0, nil
 }
+func (s *asistenciaRepoStub) ConsultarReporteAsistencia(ctx context.Context, filtros domain.AsistenciaFiltros) ([]*domain.Asistencia, int, error) {
+	return nil, 0, nil
+}
 func (s *asistenciaRepoStub) BuscarPorFechaUsuario(ctx context.Context, usuarioID int, empresaID int, fecha time.Time) (*domain.Asistencia, error) {
 	key := fecha.Format("2006-01-02")
 	return s.data[key], nil
@@ -133,8 +136,26 @@ func TestMarcarAsistencia_DeteccionTardanza(t *testing.T) {
 		HoraEntrada:       "08:00",
 		ToleranciaMinutos: 15,
 	}
-	
+
 	repo := &asistenciaRepoStub{data: make(map[string]*domain.Asistencia)}
 	hRepo := &horarioRepoStub{horario: horario}
 	NewAsistenciaService(hRepo, repo, &permisoRepoStub{}, &empresaRepoStub{empresa: &domain.Empresa{Pais: "PE"}})
+}
+
+func TestConsultarReporteAsistencia(t *testing.T) {
+	repo := &asistenciaRepoStub{}
+	svc := NewAsistenciaService(&horarioRepoStub{}, repo, &permisoRepoStub{}, &empresaRepoStub{})
+
+	filtros := domain.AsistenciaFiltros{
+		EmpresaID: 1,
+		Busqueda:  "test",
+		Pagina:    1,
+		Limite:    10,
+	}
+
+	_, _, err := svc.ConsultarReporteAsistencia(context.Background(), filtros)
+
+	if err != nil {
+		t.Errorf("error inesperado en ConsultarReporteAsistencia: %v", err)
+	}
 }

@@ -131,6 +131,10 @@ func (s *AsistenciaService) ListarAsistencia(ctx context.Context, filtros domain
 	return s.asistenciaRepo.ListarPaginado(ctx, filtros)
 }
 
+func (s *AsistenciaService) ConsultarReporteAsistencia(ctx context.Context, filtros domain.AsistenciaFiltros) ([]*domain.Asistencia, int, error) {
+	return s.asistenciaRepo.ConsultarReporteAsistencia(ctx, filtros)
+}
+
 func (s *AsistenciaService) ListarMiHistorial(ctx context.Context, usuarioID int, empresaID int) ([]*domain.Asistencia, error) {
 	filtros := domain.AsistenciaFiltros{
 		EmpresaID: empresaID,

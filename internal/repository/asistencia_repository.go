@@ -7,6 +7,7 @@ import (
 
 	"rentals-go/ent"
 	"rentals-go/ent/asistencia"
+	"rentals-go/ent/usuario"
 	"rentals-go/internal/domain"
 )
 
@@ -46,6 +47,54 @@ func (r *AsistenciaRepoEnt) ListarPaginado(ctx context.Context, filtros domain.A
 	}
 
 	// Cargar información del usuario y ordenar por fecha descendente
+	asistenciasEnt, err := query.
+		WithUsuario().
+		Order(ent.Desc(asistencia.FieldFecha)).
+		All(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var resultados []*domain.Asistencia
+	for _, a := range asistenciasEnt {
+		resultados = append(resultados, mapAsistenciaEntToDomain(a))
+	}
+
+	return resultados, total, nil
+}
+
+func (r *AsistenciaRepoEnt) ConsultarReporteAsistencia(ctx context.Context, filtros domain.AsistenciaFiltros) ([]*domain.Asistencia, int, error) {
+	query := r.client.Asistencia.Query().
+		Where(asistencia.EmpresaIDEQ(filtros.EmpresaID))
+
+	if filtros.UsuarioID > 0 {
+		query = query.Where(asistencia.UsuarioIDEQ(filtros.UsuarioID))
+	}
+	if filtros.Estado != "" {
+		query = query.Where(asistencia.EstadoEQ(asistencia.Estado(filtros.Estado)))
+	}
+	if filtros.Desde != nil {
+		query = query.Where(asistencia.FechaGTE(*filtros.Desde))
+	}
+	if filtros.Hasta != nil {
+		query = query.Where(asistencia.FechaLTE(*filtros.Hasta))
+	}
+
+	// Búsqueda por trabajador (nombre de usuario)
+	if filtros.Busqueda != "" {
+		query = query.Where(asistencia.HasUsuarioWith(usuario.UsuarioContains(filtros.Busqueda)))
+	}
+
+	total, err := query.Count(ctx)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	if filtros.Pagina > 0 && filtros.Limite > 0 {
+		offset := (filtros.Pagina - 1) * filtros.Limite
+		query = query.Offset(offset).Limit(filtros.Limite)
+	}
+
 	asistenciasEnt, err := query.
 		WithUsuario().
 		Order(ent.Desc(asistencia.FieldFecha)).

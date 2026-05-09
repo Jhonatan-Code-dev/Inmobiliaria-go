@@ -1537,6 +1537,45 @@ paths:
       tags:
       - Asistencia
   /api/user/asistencia/permisos:
+    get:
+      description: Devuelve la lista paginada de permisos, filtrable por estado y
+        usuario.
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      - description: ID del usuario (opcional)
+        in: query
+        name: usuario_id
+        type: integer
+      - description: 'Estado: pendiente, aprobado, rechazado'
+        in: query
+        name: estado
+        type: string
+      - description: Página (default 1)
+        in: query
+        name: pag
+        type: integer
+      - description: Registros por página (default 50)
+        in: query
+        name: limite
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.Permiso'
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Listar permisos del personal
+      tags:
+      - Asistencia
     post:
       consumes:
       - application/json
@@ -1633,6 +1672,53 @@ paths:
       security:
       - BearerAuth: []
       summary: Eliminar un registro de asistencia
+      tags:
+      - Asistencia
+  /api/user/asistencia/reporte:
+    get:
+      description: Permite buscar por trabajador, filtrar por fecha y obtener datos
+        paginados.
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      - description: Nombre del trabajador
+        in: query
+        name: buscar
+        type: string
+      - description: Fecha desde (YYYY-MM-DD)
+        in: query
+        name: desde
+        type: string
+      - description: Fecha hasta (YYYY-MM-DD)
+        in: query
+        name: hasta
+        type: string
+      - description: Estado (puntual, tarde, falta)
+        in: query
+        name: estado
+        type: string
+      - description: Página (default 1)
+        in: query
+        name: pag
+        type: integer
+      - description: Límite (default 50)
+        in: query
+        name: limite
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Reporte detallado de asistencia con búsqueda y paginación
       tags:
       - Asistencia
   /api/user/cargos:

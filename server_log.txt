@@ -1,0 +1,38 @@
+2026/05/09 01:40:07 🟦 Mysql conectado correctamente
+2026/05/09 01:40:08 🟦 Migraciones ejecutadas correctamente en Mysql
+2026/05/09 01:40:08 🟦 Tipos de identificación inicializados
+2026/05/09 01:40:08 ✅ Todos los tipos de pago inicializados correctamente
+2026/05/09 01:40:08 API corriendo en http://localhost:5000
+
+ ┌───────────────────────────────────────────────────┐ 
+ │                  Fiber v2.52.10                   │ 
+ │               http://127.0.0.1:5000               │ 
+ │       (bound on host 0.0.0.0 and port 5000)       │ 
+ │                                                   │ 
+ │ Handlers ........... 158  Processes ........... 1 │ 
+ │ Prefork ....... Disabled  PID ............. 42657 │ 
+ └───────────────────────────────────────────────────┘ 
+
+[01:40:39] 200 -    5.792334ms GET /api/user/asistencia/reporte
+[01:44:57] 200 -   12.441635ms GET /api/me
+[01:44:58] 200 -    3.169526ms GET /api/user/asistencia/reporte
+[01:45:10] 200 -    2.476451ms GET /api/user/asistencia/reporte
+[01:49:08] 200 -    7.206743ms GET /api/user/asistencia/reporte
+[01:49:09] 200 -    2.625903ms GET /api/me
+[01:49:09] 200 -    2.555985ms GET /api/user/asistencia/reporte
+[01:49:20] 200 -    5.182243ms GET /api/me
+[01:49:20] 200 -    2.523302ms GET /api/user/asistencia/reporte
+[01:49:22] 204 -    7.615344ms DELETE /api/user/asistencia/registros/3
+[01:49:22] 200 -    4.635546ms GET /api/user/asistencia/reporte
+[01:50:06] 200 -    4.126498ms GET /api/me
+[01:50:06] 200 -    2.994589ms GET /api/me
+[01:50:08] 200 -    2.701362ms GET /api/user/asistencia/reporte
+[01:50:08] 200 -    2.933372ms GET /api/user/asistencia/mi-historial
+[01:50:32] 200 -    4.008466ms GET /api/me
+[01:50:32] 200 -    6.507194ms GET /api/me
+[01:50:32] 200 -    3.795594ms GET /api/user/asistencia/reporte
+[01:50:32] 200 -     2.89942ms GET /api/user/asistencia/mi-historial
+[01:51:07] 200 -    2.764478ms GET /api/me
+[01:51:07] 200 -    3.050786ms GET /api/user/asistencia/reporte
+[01:51:08] 200 -    2.419997ms GET /api/me
+[01:51:08] 200 -    2.435588ms GET /api/user/asistencia/reporte

@@ -83,6 +83,49 @@ func (h *AsistenciaController) SolicitarPermiso(c *fiber.Ctx) error {
 	return c.Status(201).JSON(permiso)
 }
 
+// ListarPermisos godoc
+// @Summary Listar permisos del personal
+// @Description Devuelve la lista paginada de permisos, filtrable por estado y usuario.
+// @Tags Asistencia
+// @Security BearerAuth
+// @Produce json
+// @Param empresa_id query int true "ID de la empresa"
+// @Param usuario_id query int false "ID del usuario (opcional)"
+// @Param estado query string false "Estado: pendiente, aprobado, rechazado"
+// @Param pag query int false "Página (default 1)"
+// @Param limite query int false "Registros por página (default 50)"
+// @Success 200 {array} domain.Permiso
+// @Router /api/user/asistencia/permisos [get]
+func (h *AsistenciaController) ListarPermisos(c *fiber.Ctx) error {
+	empresaID := c.QueryInt("empresa_id")
+	if empresaID <= 0 {
+		// Fallback al empresa_id del JWT si no se pasa como query param
+		if id, ok := c.Locals("empresa_id").(int); ok && id > 0 {
+			empresaID = id
+		} else {
+			return c.Status(400).JSON(errorResponse{Message: "empresa_id es requerido"})
+		}
+	}
+
+	filtros := domain.PermisoFiltros{
+		EmpresaID: empresaID,
+		UsuarioID: c.QueryInt("usuario_id"),
+		Estado:    c.Query("estado"),
+		Pagina:    c.QueryInt("pag", 1),
+		Limite:    c.QueryInt("limite", 50),
+	}
+
+	lista, total, err := h.svc.ListarPermisos(c.Context(), filtros)
+	if err != nil {
+		return c.Status(500).JSON(errorResponse{Message: err.Error()})
+	}
+
+	return c.JSON(fiber.Map{
+		"data":  lista,
+		"total": total,
+	})
+}
+
 // --- Operaciones del Administrador ---
 
 // ListarRegistros godoc
@@ -122,6 +165,64 @@ func (h *AsistenciaController) ListarRegistros(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(lista)
+}
+
+// ConsultarReporteAsistencia godoc
+// @Summary Reporte detallado de asistencia con búsqueda y paginación
+// @Description Permite buscar por trabajador, filtrar por fecha y obtener datos paginados.
+// @Tags Asistencia
+// @Security BearerAuth
+// @Produce json
+// @Param empresa_id query int true "ID de la empresa"
+// @Param buscar query string false "Nombre del trabajador"
+// @Param desde query string false "Fecha desde (YYYY-MM-DD)"
+// @Param hasta query string false "Fecha hasta (YYYY-MM-DD)"
+// @Param estado query string false "Estado (puntual, tarde, falta)"
+// @Param pag query int false "Página (default 1)"
+// @Param limite query int false "Límite (default 50)"
+// @Success 200 {object} map[string]interface{}
+// @Router /api/user/asistencia/reporte [get]
+func (h *AsistenciaController) ConsultarReporteAsistencia(c *fiber.Ctx) error {
+	empresaID := c.QueryInt("empresa_id")
+	if empresaID <= 0 {
+		// Fallback al empresa_id del JWT si no se pasa como query param
+		if id, ok := c.Locals("empresa_id").(int); ok && id > 0 {
+			empresaID = id
+		} else {
+			return c.Status(400).JSON(errorResponse{Message: "empresa_id es requerido"})
+		}
+	}
+
+	filtros := domain.AsistenciaFiltros{
+		EmpresaID: empresaID,
+		UsuarioID: c.QueryInt("usuario_id"),
+		Estado:    c.Query("estado"),
+		Busqueda:  c.Query("buscar"),
+		Pagina:    c.QueryInt("pag", 1),
+		Limite:    c.QueryInt("limite", 50),
+	}
+
+	if d := c.Query("desde"); d != "" {
+		t, _ := time.Parse("2006-01-02", d)
+		filtros.Desde = &t
+	}
+	if d := c.Query("hasta"); d != "" {
+		t, _ := time.Parse("2006-01-02", d)
+		filtros.Hasta = &t
+	}
+
+	lista, total, err := h.svc.ConsultarReporteAsistencia(c.Context(), filtros)
+	if err != nil {
+		return c.Status(500).JSON(errorResponse{Message: err.Error()})
+	}
+
+	return c.JSON(fiber.Map{
+		"success": true,
+		"data":    lista,
+		"total":   total,
+		"pagina":  filtros.Pagina,
+		"limite":  filtros.Limite,
+	})
 }
 
 // AsignarHorario godoc

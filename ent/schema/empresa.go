@@ -35,6 +35,10 @@ func (Empresa) Fields() []ent.Field {
 		field.Int("maximo_usuarios").Default(1).Positive(),
 		field.Bool("estado").Default(true),
 		field.Time("vencimiento").Optional().Nillable(),
+		field.String("horario_entrada_defecto").Default("08:00"),
+		field.String("horario_salida_defecto").Default("17:00"),
+		field.Int("tolerancia_defecto").Default(15),
+		field.String("dias_laborables_defecto").Default("1,2,3,4,5"),
 	}
 }
 

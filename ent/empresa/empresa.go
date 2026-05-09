@@ -28,6 +28,14 @@ const (
 	FieldEstado = "estado"
 	// FieldVencimiento holds the string denoting the vencimiento field in the database.
 	FieldVencimiento = "vencimiento"
+	// FieldHorarioEntradaDefecto holds the string denoting the horario_entrada_defecto field in the database.
+	FieldHorarioEntradaDefecto = "horario_entrada_defecto"
+	// FieldHorarioSalidaDefecto holds the string denoting the horario_salida_defecto field in the database.
+	FieldHorarioSalidaDefecto = "horario_salida_defecto"
+	// FieldToleranciaDefecto holds the string denoting the tolerancia_defecto field in the database.
+	FieldToleranciaDefecto = "tolerancia_defecto"
+	// FieldDiasLaborablesDefecto holds the string denoting the dias_laborables_defecto field in the database.
+	FieldDiasLaborablesDefecto = "dias_laborables_defecto"
 	// EdgeUsuariosEmpresa holds the string denoting the usuarios_empresa edge name in mutations.
 	EdgeUsuariosEmpresa = "usuarios_empresa"
 	// EdgeClientes holds the string denoting the clientes edge name in mutations.
@@ -141,6 +149,10 @@ var Columns = []string{
 	FieldMaximoUsuarios,
 	FieldEstado,
 	FieldVencimiento,
+	FieldHorarioEntradaDefecto,
+	FieldHorarioSalidaDefecto,
+	FieldToleranciaDefecto,
+	FieldDiasLaborablesDefecto,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -170,6 +182,14 @@ var (
 	MaximoUsuariosValidator func(int) error
 	// DefaultEstado holds the default value on creation for the "estado" field.
 	DefaultEstado bool
+	// DefaultHorarioEntradaDefecto holds the default value on creation for the "horario_entrada_defecto" field.
+	DefaultHorarioEntradaDefecto string
+	// DefaultHorarioSalidaDefecto holds the default value on creation for the "horario_salida_defecto" field.
+	DefaultHorarioSalidaDefecto string
+	// DefaultToleranciaDefecto holds the default value on creation for the "tolerancia_defecto" field.
+	DefaultToleranciaDefecto int
+	// DefaultDiasLaborablesDefecto holds the default value on creation for the "dias_laborables_defecto" field.
+	DefaultDiasLaborablesDefecto string
 )
 
 // OrderOption defines the ordering options for the Empresa queries.
@@ -213,6 +233,26 @@ func ByEstado(opts ...sql.OrderTermOption) OrderOption {
 // ByVencimiento orders the results by the vencimiento field.
 func ByVencimiento(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldVencimiento, opts...).ToFunc()
+}
+
+// ByHorarioEntradaDefecto orders the results by the horario_entrada_defecto field.
+func ByHorarioEntradaDefecto(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldHorarioEntradaDefecto, opts...).ToFunc()
+}
+
+// ByHorarioSalidaDefecto orders the results by the horario_salida_defecto field.
+func ByHorarioSalidaDefecto(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldHorarioSalidaDefecto, opts...).ToFunc()
+}
+
+// ByToleranciaDefecto orders the results by the tolerancia_defecto field.
+func ByToleranciaDefecto(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldToleranciaDefecto, opts...).ToFunc()
+}
+
+// ByDiasLaborablesDefecto orders the results by the dias_laborables_defecto field.
+func ByDiasLaborablesDefecto(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDiasLaborablesDefecto, opts...).ToFunc()
 }
 
 // ByUsuariosEmpresaCount orders the results by usuarios_empresa count.

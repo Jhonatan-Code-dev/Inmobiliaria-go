@@ -79,28 +79,34 @@ func (s *AsistenciaService) MarcarAsistencia(ctx context.Context, usuarioID int,
 
 		// Obtener horario para verificar tardanza
 		horario, err := s.horarioRepo.BuscarPorUsuario(ctx, usuarioID, empresaID)
+		
+		var horaEntradaStr string
+		var toleranciaMinutos int
+		
 		if err == nil && horario != nil {
-			// Obtener zona horaria de la empresa
-			zona := "UTC"
+			horaEntradaStr = horario.HoraEntrada
+			toleranciaMinutos = horario.ToleranciaMinutos
+		} else {
+			// Usar configuración por defecto de la empresa
 			emp, errEmp := s.empresaRepo.BuscarPorID(ctx, empresaID)
-			if errEmp == nil && emp.Pais != "" {
-				if emp.Pais == "PE" || emp.Pais == "CO" || emp.Pais == "EC" {
-					zona = "America/Lima" // UTC-5
-				} else if emp.Pais == "MX" {
-					zona = "America/Mexico_City"
-				} else if emp.Pais == "CL" {
-					zona = "America/Santiago"
-				}
+			if errEmp == nil {
+				horaEntradaStr = emp.HorarioEntradaDefecto
+				toleranciaMinutos = emp.ToleranciaDefecto
 			}
+		}
+
+		if horaEntradaStr != "" {
+			// Obtener zona horaria de la empresa
+			zona := s.getZonaHorariaEmpresa(ctx, empresaID)
 
 			// Convertir 'ahora' a la hora local de la empresa para comparar
 			ahoraLocal, _ := tiempo.EnZona(ahora, zona)
 			
-			horaAsignada, errParse := time.Parse("15:04", horario.HoraEntrada)
+			horaAsignada, errParse := time.Parse("15:04", horaEntradaStr)
 			if errParse == nil {
 				// Crear instancia de la hora esperada en la zona local
 				horaEsperada := time.Date(ahoraLocal.Year(), ahoraLocal.Month(), ahoraLocal.Day(), horaAsignada.Hour(), horaAsignada.Minute(), 0, 0, ahoraLocal.Location())
-				limiteTolerancia := horaEsperada.Add(time.Duration(horario.ToleranciaMinutos) * time.Minute)
+				limiteTolerancia := horaEsperada.Add(time.Duration(toleranciaMinutos) * time.Minute)
 
 				if ahoraLocal.After(limiteTolerancia) {
 					nuevoRegistro.Estado = "tarde"
@@ -132,7 +138,58 @@ func (s *AsistenciaService) ListarAsistencia(ctx context.Context, filtros domain
 }
 
 func (s *AsistenciaService) ConsultarReporteAsistencia(ctx context.Context, filtros domain.AsistenciaFiltros) ([]*domain.Asistencia, int, error) {
-	return s.asistenciaRepo.ConsultarReporteAsistencia(ctx, filtros)
+	lista, total, err := s.asistenciaRepo.ConsultarReporteAsistencia(ctx, filtros)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	// Obtener configuración global de la empresa para enriquecer el reporte
+	config, _ := s.ObtenerConfiguracionEmpresa(ctx, filtros.EmpresaID)
+	zona := s.getZonaHorariaEmpresa(ctx, filtros.EmpresaID)
+
+	for _, a := range lista {
+		// Por ahora usamos la configuración global para todos los del reporte
+		// En el futuro se podría buscar el horario específico de cada usuario si se desea precisión total
+		if config != nil {
+			a.HoraEntradaEsperada = config.HoraEntrada
+			a.HoraSalidaEsperada = config.HoraSalida
+
+			// Corregir estado visualmente en el reporte si no coincide con la configuración actual
+			// Esto ayuda a que el reporte "muestre bien" según las reglas actuales
+			if a.Estado == "puntual" && a.HoraEntrada != nil {
+				ahoraLocal, _ := tiempo.EnZona(*a.HoraEntrada, zona)
+				horaAsignada, errParse := time.Parse("15:04", config.HoraEntrada)
+				if errParse == nil {
+					horaEsperada := time.Date(ahoraLocal.Year(), ahoraLocal.Month(), ahoraLocal.Day(), horaAsignada.Hour(), horaAsignada.Minute(), 0, 0, ahoraLocal.Location())
+					limiteTolerancia := horaEsperada.Add(time.Duration(config.ToleranciaMinutos) * time.Minute)
+
+					if ahoraLocal.After(limiteTolerancia) {
+						a.Estado = "tarde"
+					}
+				}
+			}
+		}
+	}
+
+	return lista, total, nil
+}
+
+func (s *AsistenciaService) getZonaHorariaEmpresa(ctx context.Context, empresaID int) string {
+	zona := "UTC"
+	emp, errEmp := s.empresaRepo.BuscarPorID(ctx, empresaID)
+	if errEmp == nil && emp != nil && emp.Pais != "" {
+		switch emp.Pais {
+		case "PE", "CO", "EC":
+			zona = "America/Lima"
+		case "MX":
+			zona = "America/Mexico_City"
+		case "CL":
+			zona = "America/Santiago"
+		case "AR":
+			zona = "America/Argentina/Buenos_Aires"
+		}
+	}
+	return zona
 }
 
 func (s *AsistenciaService) ListarMiHistorial(ctx context.Context, usuarioID int, empresaID int) ([]*domain.Asistencia, error) {
@@ -190,4 +247,34 @@ func (s *AsistenciaService) DecidirPermiso(ctx context.Context, permisoID int, e
 
 func (s *AsistenciaService) EliminarAsistencia(ctx context.Context, id int, empresaID int) error {
 	return s.asistenciaRepo.Eliminar(ctx, id, empresaID)
+}
+
+func (s *AsistenciaService) ObtenerConfiguracionEmpresa(ctx context.Context, empresaID int) (*domain.ConfiguracionAsistencia, error) {
+	emp, err := s.empresaRepo.BuscarPorID(ctx, empresaID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &domain.ConfiguracionAsistencia{
+		HoraEntrada:       emp.HorarioEntradaDefecto,
+		HoraSalida:        emp.HorarioSalidaDefecto,
+		ToleranciaMinutos: emp.ToleranciaDefecto,
+		DiasLaborables:    emp.DiasLaborablesDefecto,
+	}, nil
+}
+
+func (s *AsistenciaService) ActualizarConfiguracionEmpresa(ctx context.Context, empresaID int, req *domain.ActualizarConfiguracionAsistencia) (*domain.ConfiguracionAsistencia, error) {
+	config := &domain.ConfiguracionAsistencia{
+		HoraEntrada:       req.HoraEntrada,
+		HoraSalida:        req.HoraSalida,
+		ToleranciaMinutos: req.ToleranciaMinutos,
+		DiasLaborables:    req.DiasLaborables,
+	}
+
+	err := s.empresaRepo.ActualizarConfiguracionAsistencia(ctx, empresaID, config)
+	if err != nil {
+		return nil, err
+	}
+
+	return config, nil
 }

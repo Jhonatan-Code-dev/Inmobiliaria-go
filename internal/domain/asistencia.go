@@ -13,6 +13,22 @@ type Horario struct {
 	DiasLaborables     string `json:"dias_laborables"`    // Ej: "1,2,3,4,5"
 }
 
+// ConfiguracionAsistencia define los parámetros por defecto de la empresa
+type ConfiguracionAsistencia struct {
+	HoraEntrada       string `json:"hora_entrada"`
+	HoraSalida        string `json:"hora_salida"`
+	ToleranciaMinutos int    `json:"tolerancia_minutos"`
+	DiasLaborables    string `json:"dias_laborables"`
+}
+
+// ActualizarConfiguracionAsistencia DTO para actualizar la configuración
+type ActualizarConfiguracionAsistencia struct {
+	HoraEntrada       string `json:"hora_entrada"`
+	HoraSalida        string `json:"hora_salida"`
+	ToleranciaMinutos int    `json:"tolerancia_minutos"`
+	DiasLaborables    string `json:"dias_laborables"`
+}
+
 // RegistroHorario DTO para crear o actualizar un horario
 type RegistroHorario struct {
 	UsuarioID         int    `json:"usuario_id"`
@@ -34,6 +50,10 @@ type Asistencia struct {
 	Estado          string     `json:"estado"` // puntual, tarde, falta, justificado
 	Notas           *string    `json:"notas"`
 	HorasTrabajadas *float64   `json:"horas_trabajadas"`
+	
+	// Datos de referencia del horario (para reportes)
+	HoraEntradaEsperada string `json:"hora_entrada_esperada,omitempty"`
+	HoraSalidaEsperada  string `json:"hora_salida_esperada,omitempty"`
 }
 
 type AsistenciaFiltros struct {

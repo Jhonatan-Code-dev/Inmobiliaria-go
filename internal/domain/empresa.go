@@ -13,4 +13,10 @@ type Empresa struct {
 	Estado          bool
 	Vencimiento     time.Time
 	CreadoEn        time.Time
+
+	// Configuración de Asistencia
+	HorarioEntradaDefecto  string
+	HorarioSalidaDefecto   string
+	ToleranciaDefecto      int
+	DiasLaborablesDefecto string
 }

@@ -388,6 +388,22 @@ func init() {
 	empresaDescEstado := empresaFields[4].Descriptor()
 	// empresa.DefaultEstado holds the default value on creation for the estado field.
 	empresa.DefaultEstado = empresaDescEstado.Default.(bool)
+	// empresaDescHorarioEntradaDefecto is the schema descriptor for horario_entrada_defecto field.
+	empresaDescHorarioEntradaDefecto := empresaFields[6].Descriptor()
+	// empresa.DefaultHorarioEntradaDefecto holds the default value on creation for the horario_entrada_defecto field.
+	empresa.DefaultHorarioEntradaDefecto = empresaDescHorarioEntradaDefecto.Default.(string)
+	// empresaDescHorarioSalidaDefecto is the schema descriptor for horario_salida_defecto field.
+	empresaDescHorarioSalidaDefecto := empresaFields[7].Descriptor()
+	// empresa.DefaultHorarioSalidaDefecto holds the default value on creation for the horario_salida_defecto field.
+	empresa.DefaultHorarioSalidaDefecto = empresaDescHorarioSalidaDefecto.Default.(string)
+	// empresaDescToleranciaDefecto is the schema descriptor for tolerancia_defecto field.
+	empresaDescToleranciaDefecto := empresaFields[8].Descriptor()
+	// empresa.DefaultToleranciaDefecto holds the default value on creation for the tolerancia_defecto field.
+	empresa.DefaultToleranciaDefecto = empresaDescToleranciaDefecto.Default.(int)
+	// empresaDescDiasLaborablesDefecto is the schema descriptor for dias_laborables_defecto field.
+	empresaDescDiasLaborablesDefecto := empresaFields[9].Descriptor()
+	// empresa.DefaultDiasLaborablesDefecto holds the default value on creation for the dias_laborables_defecto field.
+	empresa.DefaultDiasLaborablesDefecto = empresaDescDiasLaborablesDefecto.Default.(string)
 	empresausuarioMixin := schema.EmpresaUsuario{}.Mixin()
 	empresausuarioMixinFields0 := empresausuarioMixin[0].Fields()
 	_ = empresausuarioMixinFields0

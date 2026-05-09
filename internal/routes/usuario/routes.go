@@ -134,6 +134,10 @@ func Register(app *fiber.App, appDI *di.App) {
 	asistencia.Post("/horarios", appDI.AsistenciaCtrl.AsignarHorario)
 	asistencia.Get("/horarios/detalle", appDI.AsistenciaCtrl.ObtenerHorario)
 	asistencia.Put("/permisos/:id/estado", appDI.AsistenciaCtrl.DecidirPermiso)
+
+	// Configuración Global
+	asistencia.Get("/configuracion", appDI.AsistenciaCtrl.ObtenerConfiguracion)
+	asistencia.Post("/configuracion", appDI.AsistenciaCtrl.ActualizarConfiguracion)
 }
 
 func registrarRutasAuth(group fiber.Router, appDI *di.App) {

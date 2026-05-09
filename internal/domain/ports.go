@@ -19,6 +19,7 @@ type (
 		Crear(ctx context.Context, emp *Empresa) (*Empresa, error)
 		Actualizar(ctx context.Context, emp *Empresa) (*Empresa, error)
 		Eliminar(ctx context.Context, id int) error
+		ActualizarConfiguracionAsistencia(ctx context.Context, empresaID int, config *ConfiguracionAsistencia) error
 	}
 
 	RolRepository interface {
@@ -252,5 +253,9 @@ type (
 		SolicitarPermiso(ctx context.Context, usuarioID int, empresaID int, req *RegistroPermiso) (*Permiso, error)
 		ListarPermisos(ctx context.Context, filtros PermisoFiltros) ([]*Permiso, int, error)
 		DecidirPermiso(ctx context.Context, permisoID int, empresaID int, decision *DecisionPermiso) (*Permiso, error)
+
+		// Configuración
+		ObtenerConfiguracionEmpresa(ctx context.Context, empresaID int) (*ConfiguracionAsistencia, error)
+		ActualizarConfiguracionEmpresa(ctx context.Context, empresaID int, req *ActualizarConfiguracionAsistencia) (*ConfiguracionAsistencia, error)
 	}
 )

@@ -795,6 +795,80 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/user/asistencia/configuracion": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "tags": [
+                    "Asistencia"
+                ],
+                "summary": "Obtener configuración global de asistencia de la empresa",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ConfiguracionAsistencia"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Permite definir el horario base para todos los trabajadores de la empresa.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Asistencia"
+                ],
+                "summary": "Establecer configuración global de asistencia (entrada, salida, tolerancia)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID de la empresa",
+                        "name": "empresa_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Nuevos parámetros",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.ActualizarConfiguracionAsistencia"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ConfiguracionAsistencia"
+                        }
+                    }
+                }
+            }
+        },
         "/api/user/asistencia/horarios": {
             "post": {
                 "security": [
@@ -4469,6 +4543,23 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.ActualizarConfiguracionAsistencia": {
+            "type": "object",
+            "properties": {
+                "dias_laborables": {
+                    "type": "string"
+                },
+                "hora_entrada": {
+                    "type": "string"
+                },
+                "hora_salida": {
+                    "type": "string"
+                },
+                "tolerancia_minutos": {
+                    "type": "integer"
+                }
+            }
+        },
         "domain.Asistencia": {
             "type": "object",
             "properties": {
@@ -4485,7 +4576,14 @@ const docTemplate = `{
                 "hora_entrada": {
                     "type": "string"
                 },
+                "hora_entrada_esperada": {
+                    "description": "Datos de referencia del horario (para reportes)",
+                    "type": "string"
+                },
                 "hora_salida": {
+                    "type": "string"
+                },
+                "hora_salida_esperada": {
                     "type": "string"
                 },
                 "horas_trabajadas": {
@@ -4554,6 +4652,23 @@ const docTemplate = `{
                 },
                 "unidad_codigo": {
                     "type": "string"
+                }
+            }
+        },
+        "domain.ConfiguracionAsistencia": {
+            "type": "object",
+            "properties": {
+                "dias_laborables": {
+                    "type": "string"
+                },
+                "hora_entrada": {
+                    "type": "string"
+                },
+                "hora_salida": {
+                    "type": "string"
+                },
+                "tolerancia_minutos": {
+                    "type": "integer"
                 }
             }
         },

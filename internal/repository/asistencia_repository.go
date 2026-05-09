@@ -82,7 +82,7 @@ func (r *AsistenciaRepoEnt) ConsultarReporteAsistencia(ctx context.Context, filt
 
 	// Búsqueda por trabajador (nombre de usuario)
 	if filtros.Busqueda != "" {
-		query = query.Where(asistencia.HasUsuarioWith(usuario.UsuarioContains(filtros.Busqueda)))
+		query = query.Where(asistencia.HasUsuarioWith(usuario.UsuarioContainsFold(filtros.Busqueda)))
 	}
 
 	total, err := query.Count(ctx)

@@ -88,16 +88,30 @@ func (r *EmpresaRepoEnt) Eliminar(ctx context.Context, id int) error {
 	return r.client.Empresa.DeleteOneID(id).Exec(ctx)
 }
 
+func (r *EmpresaRepoEnt) ActualizarConfiguracionAsistencia(ctx context.Context, empresaID int, config *domain.ConfiguracionAsistencia) error {
+	_, err := r.client.Empresa.UpdateOneID(empresaID).
+		SetHorarioEntradaDefecto(config.HoraEntrada).
+		SetHorarioSalidaDefecto(config.HoraSalida).
+		SetToleranciaDefecto(config.ToleranciaMinutos).
+		SetDiasLaborablesDefecto(config.DiasLaborables).
+		Save(ctx)
+	return err
+}
+
 func mapEmpresaEntity(e *ent.Empresa) *domain.Empresa {
 	return &domain.Empresa{
-		ID:              e.ID,
-		Nombre:          e.Nombre,
-		Pais:            ptrToString(e.Pais),
-		Moneda:          e.Moneda,
-		MaximoUsuarios:  e.MaximoUsuarios,
-		Estado:          e.Estado,
-		Vencimiento:     ptrToTime(e.Vencimiento),
-		CreadoEn:        e.CreadoEn,
+		ID:                     e.ID,
+		Nombre:                 e.Nombre,
+		Pais:                   ptrToString(e.Pais),
+		Moneda:                 e.Moneda,
+		MaximoUsuarios:         e.MaximoUsuarios,
+		Estado:                 e.Estado,
+		Vencimiento:            ptrToTime(e.Vencimiento),
+		CreadoEn:               e.CreadoEn,
+		HorarioEntradaDefecto:  e.HorarioEntradaDefecto,
+		HorarioSalidaDefecto:   e.HorarioSalidaDefecto,
+		ToleranciaDefecto:      e.ToleranciaDefecto,
+		DiasLaborablesDefecto: e.DiasLaborablesDefecto,
 	}
 }
 

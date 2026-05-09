@@ -202,13 +202,25 @@ func (h *AsistenciaController) ConsultarReporteAsistencia(c *fiber.Ctx) error {
 		Limite:    c.QueryInt("limite", 50),
 	}
 
-	if d := c.Query("desde"); d != "" {
-		t, _ := time.Parse("2006-01-02", d)
-		filtros.Desde = &t
-	}
-	if d := c.Query("hasta"); d != "" {
-		t, _ := time.Parse("2006-01-02", d)
-		filtros.Hasta = &t
+	if f := c.Query("fecha"); f != "" {
+		t, err := time.Parse("2006-01-02", f)
+		if err == nil {
+			inicio := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
+			fin := time.Date(t.Year(), t.Month(), t.Day(), 23, 59, 59, 0, time.UTC)
+			filtros.Desde = &inicio
+			filtros.Hasta = &fin
+		}
+	} else {
+		if d := c.Query("desde"); d != "" {
+			t, _ := time.Parse("2006-01-02", d)
+			inicio := time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, time.UTC)
+			filtros.Desde = &inicio
+		}
+		if d := c.Query("hasta"); d != "" {
+			t, _ := time.Parse("2006-01-02", d)
+			fin := time.Date(t.Year(), t.Month(), t.Day(), 23, 59, 59, 0, time.UTC)
+			filtros.Hasta = &fin
+		}
 	}
 
 	lista, total, err := h.svc.ConsultarReporteAsistencia(c.Context(), filtros)
@@ -330,4 +342,55 @@ func (h *AsistenciaController) ObtenerHorario(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(horario)
+}
+
+// ObtenerConfiguracion godoc
+// @Summary Obtener configuración global de asistencia de la empresa
+// @Tags Asistencia
+// @Security BearerAuth
+// @Param empresa_id query int true "ID de la empresa"
+// @Success 200 {object} domain.ConfiguracionAsistencia
+// @Router /api/user/asistencia/configuracion [get]
+func (h *AsistenciaController) ObtenerConfiguracion(c *fiber.Ctx) error {
+	empresaID := c.QueryInt("empresa_id")
+	if empresaID <= 0 {
+		return c.Status(400).JSON(errorResponse{Message: "empresa_id es requerido"})
+	}
+
+	config, err := h.svc.ObtenerConfiguracionEmpresa(c.Context(), empresaID)
+	if err != nil {
+		return c.Status(500).JSON(errorResponse{Message: err.Error()})
+	}
+
+	return c.JSON(config)
+}
+
+// ActualizarConfiguracion godoc
+// @Summary Establecer configuración global de asistencia (entrada, salida, tolerancia)
+// @Description Permite definir el horario base para todos los trabajadores de la empresa.
+// @Tags Asistencia
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param empresa_id query int true "ID de la empresa"
+// @Param request body domain.ActualizarConfiguracionAsistencia true "Nuevos parámetros"
+// @Success 200 {object} domain.ConfiguracionAsistencia
+// @Router /api/user/asistencia/configuracion [post]
+func (h *AsistenciaController) ActualizarConfiguracion(c *fiber.Ctx) error {
+	empresaID := c.QueryInt("empresa_id")
+	if empresaID <= 0 {
+		return c.Status(400).JSON(errorResponse{Message: "empresa_id es requerido"})
+	}
+
+	var req domain.ActualizarConfiguracionAsistencia
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(400).JSON(errorResponse{Message: "formato inválido"})
+	}
+
+	config, err := h.svc.ActualizarConfiguracionEmpresa(c.Context(), empresaID, &req)
+	if err != nil {
+		return c.Status(400).JSON(errorResponse{Message: err.Error()})
+	}
+
+	return c.JSON(config)
 }

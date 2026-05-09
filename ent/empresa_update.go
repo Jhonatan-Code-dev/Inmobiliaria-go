@@ -142,6 +142,69 @@ func (_u *EmpresaUpdate) ClearVencimiento() *EmpresaUpdate {
 	return _u
 }
 
+// SetHorarioEntradaDefecto sets the "horario_entrada_defecto" field.
+func (_u *EmpresaUpdate) SetHorarioEntradaDefecto(v string) *EmpresaUpdate {
+	_u.mutation.SetHorarioEntradaDefecto(v)
+	return _u
+}
+
+// SetNillableHorarioEntradaDefecto sets the "horario_entrada_defecto" field if the given value is not nil.
+func (_u *EmpresaUpdate) SetNillableHorarioEntradaDefecto(v *string) *EmpresaUpdate {
+	if v != nil {
+		_u.SetHorarioEntradaDefecto(*v)
+	}
+	return _u
+}
+
+// SetHorarioSalidaDefecto sets the "horario_salida_defecto" field.
+func (_u *EmpresaUpdate) SetHorarioSalidaDefecto(v string) *EmpresaUpdate {
+	_u.mutation.SetHorarioSalidaDefecto(v)
+	return _u
+}
+
+// SetNillableHorarioSalidaDefecto sets the "horario_salida_defecto" field if the given value is not nil.
+func (_u *EmpresaUpdate) SetNillableHorarioSalidaDefecto(v *string) *EmpresaUpdate {
+	if v != nil {
+		_u.SetHorarioSalidaDefecto(*v)
+	}
+	return _u
+}
+
+// SetToleranciaDefecto sets the "tolerancia_defecto" field.
+func (_u *EmpresaUpdate) SetToleranciaDefecto(v int) *EmpresaUpdate {
+	_u.mutation.ResetToleranciaDefecto()
+	_u.mutation.SetToleranciaDefecto(v)
+	return _u
+}
+
+// SetNillableToleranciaDefecto sets the "tolerancia_defecto" field if the given value is not nil.
+func (_u *EmpresaUpdate) SetNillableToleranciaDefecto(v *int) *EmpresaUpdate {
+	if v != nil {
+		_u.SetToleranciaDefecto(*v)
+	}
+	return _u
+}
+
+// AddToleranciaDefecto adds value to the "tolerancia_defecto" field.
+func (_u *EmpresaUpdate) AddToleranciaDefecto(v int) *EmpresaUpdate {
+	_u.mutation.AddToleranciaDefecto(v)
+	return _u
+}
+
+// SetDiasLaborablesDefecto sets the "dias_laborables_defecto" field.
+func (_u *EmpresaUpdate) SetDiasLaborablesDefecto(v string) *EmpresaUpdate {
+	_u.mutation.SetDiasLaborablesDefecto(v)
+	return _u
+}
+
+// SetNillableDiasLaborablesDefecto sets the "dias_laborables_defecto" field if the given value is not nil.
+func (_u *EmpresaUpdate) SetNillableDiasLaborablesDefecto(v *string) *EmpresaUpdate {
+	if v != nil {
+		_u.SetDiasLaborablesDefecto(*v)
+	}
+	return _u
+}
+
 // AddUsuariosEmpresaIDs adds the "usuarios_empresa" edge to the EmpresaUsuario entity by IDs.
 func (_u *EmpresaUpdate) AddUsuariosEmpresaIDs(ids ...int) *EmpresaUpdate {
 	_u.mutation.AddUsuariosEmpresaIDs(ids...)
@@ -633,6 +696,21 @@ func (_u *EmpresaUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.VencimientoCleared() {
 		_spec.ClearField(empresa.FieldVencimiento, field.TypeTime)
+	}
+	if value, ok := _u.mutation.HorarioEntradaDefecto(); ok {
+		_spec.SetField(empresa.FieldHorarioEntradaDefecto, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.HorarioSalidaDefecto(); ok {
+		_spec.SetField(empresa.FieldHorarioSalidaDefecto, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.ToleranciaDefecto(); ok {
+		_spec.SetField(empresa.FieldToleranciaDefecto, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedToleranciaDefecto(); ok {
+		_spec.AddField(empresa.FieldToleranciaDefecto, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.DiasLaborablesDefecto(); ok {
+		_spec.SetField(empresa.FieldDiasLaborablesDefecto, field.TypeString, value)
 	}
 	if _u.mutation.UsuariosEmpresaCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -1252,6 +1330,69 @@ func (_u *EmpresaUpdateOne) ClearVencimiento() *EmpresaUpdateOne {
 	return _u
 }
 
+// SetHorarioEntradaDefecto sets the "horario_entrada_defecto" field.
+func (_u *EmpresaUpdateOne) SetHorarioEntradaDefecto(v string) *EmpresaUpdateOne {
+	_u.mutation.SetHorarioEntradaDefecto(v)
+	return _u
+}
+
+// SetNillableHorarioEntradaDefecto sets the "horario_entrada_defecto" field if the given value is not nil.
+func (_u *EmpresaUpdateOne) SetNillableHorarioEntradaDefecto(v *string) *EmpresaUpdateOne {
+	if v != nil {
+		_u.SetHorarioEntradaDefecto(*v)
+	}
+	return _u
+}
+
+// SetHorarioSalidaDefecto sets the "horario_salida_defecto" field.
+func (_u *EmpresaUpdateOne) SetHorarioSalidaDefecto(v string) *EmpresaUpdateOne {
+	_u.mutation.SetHorarioSalidaDefecto(v)
+	return _u
+}
+
+// SetNillableHorarioSalidaDefecto sets the "horario_salida_defecto" field if the given value is not nil.
+func (_u *EmpresaUpdateOne) SetNillableHorarioSalidaDefecto(v *string) *EmpresaUpdateOne {
+	if v != nil {
+		_u.SetHorarioSalidaDefecto(*v)
+	}
+	return _u
+}
+
+// SetToleranciaDefecto sets the "tolerancia_defecto" field.
+func (_u *EmpresaUpdateOne) SetToleranciaDefecto(v int) *EmpresaUpdateOne {
+	_u.mutation.ResetToleranciaDefecto()
+	_u.mutation.SetToleranciaDefecto(v)
+	return _u
+}
+
+// SetNillableToleranciaDefecto sets the "tolerancia_defecto" field if the given value is not nil.
+func (_u *EmpresaUpdateOne) SetNillableToleranciaDefecto(v *int) *EmpresaUpdateOne {
+	if v != nil {
+		_u.SetToleranciaDefecto(*v)
+	}
+	return _u
+}
+
+// AddToleranciaDefecto adds value to the "tolerancia_defecto" field.
+func (_u *EmpresaUpdateOne) AddToleranciaDefecto(v int) *EmpresaUpdateOne {
+	_u.mutation.AddToleranciaDefecto(v)
+	return _u
+}
+
+// SetDiasLaborablesDefecto sets the "dias_laborables_defecto" field.
+func (_u *EmpresaUpdateOne) SetDiasLaborablesDefecto(v string) *EmpresaUpdateOne {
+	_u.mutation.SetDiasLaborablesDefecto(v)
+	return _u
+}
+
+// SetNillableDiasLaborablesDefecto sets the "dias_laborables_defecto" field if the given value is not nil.
+func (_u *EmpresaUpdateOne) SetNillableDiasLaborablesDefecto(v *string) *EmpresaUpdateOne {
+	if v != nil {
+		_u.SetDiasLaborablesDefecto(*v)
+	}
+	return _u
+}
+
 // AddUsuariosEmpresaIDs adds the "usuarios_empresa" edge to the EmpresaUsuario entity by IDs.
 func (_u *EmpresaUpdateOne) AddUsuariosEmpresaIDs(ids ...int) *EmpresaUpdateOne {
 	_u.mutation.AddUsuariosEmpresaIDs(ids...)
@@ -1773,6 +1914,21 @@ func (_u *EmpresaUpdateOne) sqlSave(ctx context.Context) (_node *Empresa, err er
 	}
 	if _u.mutation.VencimientoCleared() {
 		_spec.ClearField(empresa.FieldVencimiento, field.TypeTime)
+	}
+	if value, ok := _u.mutation.HorarioEntradaDefecto(); ok {
+		_spec.SetField(empresa.FieldHorarioEntradaDefecto, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.HorarioSalidaDefecto(); ok {
+		_spec.SetField(empresa.FieldHorarioSalidaDefecto, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.ToleranciaDefecto(); ok {
+		_spec.SetField(empresa.FieldToleranciaDefecto, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedToleranciaDefecto(); ok {
+		_spec.AddField(empresa.FieldToleranciaDefecto, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.DiasLaborablesDefecto(); ok {
+		_spec.SetField(empresa.FieldDiasLaborablesDefecto, field.TypeString, value)
 	}
 	if _u.mutation.UsuariosEmpresaCleared() {
 		edge := &sqlgraph.EdgeSpec{

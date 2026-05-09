@@ -31,6 +31,14 @@ type Empresa struct {
 	Estado bool `json:"estado,omitempty"`
 	// Vencimiento holds the value of the "vencimiento" field.
 	Vencimiento *time.Time `json:"vencimiento,omitempty"`
+	// HorarioEntradaDefecto holds the value of the "horario_entrada_defecto" field.
+	HorarioEntradaDefecto string `json:"horario_entrada_defecto,omitempty"`
+	// HorarioSalidaDefecto holds the value of the "horario_salida_defecto" field.
+	HorarioSalidaDefecto string `json:"horario_salida_defecto,omitempty"`
+	// ToleranciaDefecto holds the value of the "tolerancia_defecto" field.
+	ToleranciaDefecto int `json:"tolerancia_defecto,omitempty"`
+	// DiasLaborablesDefecto holds the value of the "dias_laborables_defecto" field.
+	DiasLaborablesDefecto string `json:"dias_laborables_defecto,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the EmpresaQuery when eager-loading is set.
 	Edges        EmpresaEdges `json:"edges"`
@@ -172,9 +180,9 @@ func (*Empresa) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case empresa.FieldEstado:
 			values[i] = new(sql.NullBool)
-		case empresa.FieldID, empresa.FieldMaximoUsuarios:
+		case empresa.FieldID, empresa.FieldMaximoUsuarios, empresa.FieldToleranciaDefecto:
 			values[i] = new(sql.NullInt64)
-		case empresa.FieldNombre, empresa.FieldPais, empresa.FieldMoneda:
+		case empresa.FieldNombre, empresa.FieldPais, empresa.FieldMoneda, empresa.FieldHorarioEntradaDefecto, empresa.FieldHorarioSalidaDefecto, empresa.FieldDiasLaborablesDefecto:
 			values[i] = new(sql.NullString)
 		case empresa.FieldCreadoEn, empresa.FieldVencimiento:
 			values[i] = new(sql.NullTime)
@@ -242,6 +250,30 @@ func (_m *Empresa) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Vencimiento = new(time.Time)
 				*_m.Vencimiento = value.Time
+			}
+		case empresa.FieldHorarioEntradaDefecto:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field horario_entrada_defecto", values[i])
+			} else if value.Valid {
+				_m.HorarioEntradaDefecto = value.String
+			}
+		case empresa.FieldHorarioSalidaDefecto:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field horario_salida_defecto", values[i])
+			} else if value.Valid {
+				_m.HorarioSalidaDefecto = value.String
+			}
+		case empresa.FieldToleranciaDefecto:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field tolerancia_defecto", values[i])
+			} else if value.Valid {
+				_m.ToleranciaDefecto = int(value.Int64)
+			}
+		case empresa.FieldDiasLaborablesDefecto:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field dias_laborables_defecto", values[i])
+			} else if value.Valid {
+				_m.DiasLaborablesDefecto = value.String
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -358,6 +390,18 @@ func (_m *Empresa) String() string {
 		builder.WriteString("vencimiento=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
+	builder.WriteString(", ")
+	builder.WriteString("horario_entrada_defecto=")
+	builder.WriteString(_m.HorarioEntradaDefecto)
+	builder.WriteString(", ")
+	builder.WriteString("horario_salida_defecto=")
+	builder.WriteString(_m.HorarioSalidaDefecto)
+	builder.WriteString(", ")
+	builder.WriteString("tolerancia_defecto=")
+	builder.WriteString(fmt.Sprintf("%v", _m.ToleranciaDefecto))
+	builder.WriteString(", ")
+	builder.WriteString("dias_laborables_defecto=")
+	builder.WriteString(_m.DiasLaborablesDefecto)
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -241,6 +241,10 @@ var (
 		{Name: "maximo_usuarios", Type: field.TypeInt, Default: 1},
 		{Name: "estado", Type: field.TypeBool, Default: true},
 		{Name: "vencimiento", Type: field.TypeTime, Nullable: true},
+		{Name: "horario_entrada_defecto", Type: field.TypeString, Default: "08:00"},
+		{Name: "horario_salida_defecto", Type: field.TypeString, Default: "17:00"},
+		{Name: "tolerancia_defecto", Type: field.TypeInt, Default: 15},
+		{Name: "dias_laborables_defecto", Type: field.TypeString, Default: "1,2,3,4,5"},
 	}
 	// EmpresasTable holds the schema information for the "empresas" table.
 	EmpresasTable = &schema.Table{

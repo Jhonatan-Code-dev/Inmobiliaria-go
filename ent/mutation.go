@@ -6866,6 +6866,11 @@ type EmpresaMutation struct {
 	addmaximo_usuarios      *int
 	estado                  *bool
 	vencimiento             *time.Time
+	horario_entrada_defecto *string
+	horario_salida_defecto  *string
+	tolerancia_defecto      *int
+	addtolerancia_defecto   *int
+	dias_laborables_defecto *string
 	clearedFields           map[string]struct{}
 	usuarios_empresa        map[int]struct{}
 	removedusuarios_empresa map[int]struct{}
@@ -7299,6 +7304,170 @@ func (m *EmpresaMutation) VencimientoCleared() bool {
 func (m *EmpresaMutation) ResetVencimiento() {
 	m.vencimiento = nil
 	delete(m.clearedFields, empresa.FieldVencimiento)
+}
+
+// SetHorarioEntradaDefecto sets the "horario_entrada_defecto" field.
+func (m *EmpresaMutation) SetHorarioEntradaDefecto(s string) {
+	m.horario_entrada_defecto = &s
+}
+
+// HorarioEntradaDefecto returns the value of the "horario_entrada_defecto" field in the mutation.
+func (m *EmpresaMutation) HorarioEntradaDefecto() (r string, exists bool) {
+	v := m.horario_entrada_defecto
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHorarioEntradaDefecto returns the old "horario_entrada_defecto" field's value of the Empresa entity.
+// If the Empresa object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EmpresaMutation) OldHorarioEntradaDefecto(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHorarioEntradaDefecto is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHorarioEntradaDefecto requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHorarioEntradaDefecto: %w", err)
+	}
+	return oldValue.HorarioEntradaDefecto, nil
+}
+
+// ResetHorarioEntradaDefecto resets all changes to the "horario_entrada_defecto" field.
+func (m *EmpresaMutation) ResetHorarioEntradaDefecto() {
+	m.horario_entrada_defecto = nil
+}
+
+// SetHorarioSalidaDefecto sets the "horario_salida_defecto" field.
+func (m *EmpresaMutation) SetHorarioSalidaDefecto(s string) {
+	m.horario_salida_defecto = &s
+}
+
+// HorarioSalidaDefecto returns the value of the "horario_salida_defecto" field in the mutation.
+func (m *EmpresaMutation) HorarioSalidaDefecto() (r string, exists bool) {
+	v := m.horario_salida_defecto
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHorarioSalidaDefecto returns the old "horario_salida_defecto" field's value of the Empresa entity.
+// If the Empresa object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EmpresaMutation) OldHorarioSalidaDefecto(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldHorarioSalidaDefecto is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldHorarioSalidaDefecto requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHorarioSalidaDefecto: %w", err)
+	}
+	return oldValue.HorarioSalidaDefecto, nil
+}
+
+// ResetHorarioSalidaDefecto resets all changes to the "horario_salida_defecto" field.
+func (m *EmpresaMutation) ResetHorarioSalidaDefecto() {
+	m.horario_salida_defecto = nil
+}
+
+// SetToleranciaDefecto sets the "tolerancia_defecto" field.
+func (m *EmpresaMutation) SetToleranciaDefecto(i int) {
+	m.tolerancia_defecto = &i
+	m.addtolerancia_defecto = nil
+}
+
+// ToleranciaDefecto returns the value of the "tolerancia_defecto" field in the mutation.
+func (m *EmpresaMutation) ToleranciaDefecto() (r int, exists bool) {
+	v := m.tolerancia_defecto
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldToleranciaDefecto returns the old "tolerancia_defecto" field's value of the Empresa entity.
+// If the Empresa object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EmpresaMutation) OldToleranciaDefecto(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldToleranciaDefecto is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldToleranciaDefecto requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldToleranciaDefecto: %w", err)
+	}
+	return oldValue.ToleranciaDefecto, nil
+}
+
+// AddToleranciaDefecto adds i to the "tolerancia_defecto" field.
+func (m *EmpresaMutation) AddToleranciaDefecto(i int) {
+	if m.addtolerancia_defecto != nil {
+		*m.addtolerancia_defecto += i
+	} else {
+		m.addtolerancia_defecto = &i
+	}
+}
+
+// AddedToleranciaDefecto returns the value that was added to the "tolerancia_defecto" field in this mutation.
+func (m *EmpresaMutation) AddedToleranciaDefecto() (r int, exists bool) {
+	v := m.addtolerancia_defecto
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetToleranciaDefecto resets all changes to the "tolerancia_defecto" field.
+func (m *EmpresaMutation) ResetToleranciaDefecto() {
+	m.tolerancia_defecto = nil
+	m.addtolerancia_defecto = nil
+}
+
+// SetDiasLaborablesDefecto sets the "dias_laborables_defecto" field.
+func (m *EmpresaMutation) SetDiasLaborablesDefecto(s string) {
+	m.dias_laborables_defecto = &s
+}
+
+// DiasLaborablesDefecto returns the value of the "dias_laborables_defecto" field in the mutation.
+func (m *EmpresaMutation) DiasLaborablesDefecto() (r string, exists bool) {
+	v := m.dias_laborables_defecto
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDiasLaborablesDefecto returns the old "dias_laborables_defecto" field's value of the Empresa entity.
+// If the Empresa object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *EmpresaMutation) OldDiasLaborablesDefecto(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDiasLaborablesDefecto is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDiasLaborablesDefecto requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDiasLaborablesDefecto: %w", err)
+	}
+	return oldValue.DiasLaborablesDefecto, nil
+}
+
+// ResetDiasLaborablesDefecto resets all changes to the "dias_laborables_defecto" field.
+func (m *EmpresaMutation) ResetDiasLaborablesDefecto() {
+	m.dias_laborables_defecto = nil
 }
 
 // AddUsuariosEmpresaIDs adds the "usuarios_empresa" edge to the EmpresaUsuario entity by ids.
@@ -7929,7 +8098,7 @@ func (m *EmpresaMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *EmpresaMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 11)
 	if m.creado_en != nil {
 		fields = append(fields, empresa.FieldCreadoEn)
 	}
@@ -7950,6 +8119,18 @@ func (m *EmpresaMutation) Fields() []string {
 	}
 	if m.vencimiento != nil {
 		fields = append(fields, empresa.FieldVencimiento)
+	}
+	if m.horario_entrada_defecto != nil {
+		fields = append(fields, empresa.FieldHorarioEntradaDefecto)
+	}
+	if m.horario_salida_defecto != nil {
+		fields = append(fields, empresa.FieldHorarioSalidaDefecto)
+	}
+	if m.tolerancia_defecto != nil {
+		fields = append(fields, empresa.FieldToleranciaDefecto)
+	}
+	if m.dias_laborables_defecto != nil {
+		fields = append(fields, empresa.FieldDiasLaborablesDefecto)
 	}
 	return fields
 }
@@ -7973,6 +8154,14 @@ func (m *EmpresaMutation) Field(name string) (ent.Value, bool) {
 		return m.Estado()
 	case empresa.FieldVencimiento:
 		return m.Vencimiento()
+	case empresa.FieldHorarioEntradaDefecto:
+		return m.HorarioEntradaDefecto()
+	case empresa.FieldHorarioSalidaDefecto:
+		return m.HorarioSalidaDefecto()
+	case empresa.FieldToleranciaDefecto:
+		return m.ToleranciaDefecto()
+	case empresa.FieldDiasLaborablesDefecto:
+		return m.DiasLaborablesDefecto()
 	}
 	return nil, false
 }
@@ -7996,6 +8185,14 @@ func (m *EmpresaMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldEstado(ctx)
 	case empresa.FieldVencimiento:
 		return m.OldVencimiento(ctx)
+	case empresa.FieldHorarioEntradaDefecto:
+		return m.OldHorarioEntradaDefecto(ctx)
+	case empresa.FieldHorarioSalidaDefecto:
+		return m.OldHorarioSalidaDefecto(ctx)
+	case empresa.FieldToleranciaDefecto:
+		return m.OldToleranciaDefecto(ctx)
+	case empresa.FieldDiasLaborablesDefecto:
+		return m.OldDiasLaborablesDefecto(ctx)
 	}
 	return nil, fmt.Errorf("unknown Empresa field %s", name)
 }
@@ -8054,6 +8251,34 @@ func (m *EmpresaMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetVencimiento(v)
 		return nil
+	case empresa.FieldHorarioEntradaDefecto:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHorarioEntradaDefecto(v)
+		return nil
+	case empresa.FieldHorarioSalidaDefecto:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHorarioSalidaDefecto(v)
+		return nil
+	case empresa.FieldToleranciaDefecto:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetToleranciaDefecto(v)
+		return nil
+	case empresa.FieldDiasLaborablesDefecto:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDiasLaborablesDefecto(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Empresa field %s", name)
 }
@@ -8065,6 +8290,9 @@ func (m *EmpresaMutation) AddedFields() []string {
 	if m.addmaximo_usuarios != nil {
 		fields = append(fields, empresa.FieldMaximoUsuarios)
 	}
+	if m.addtolerancia_defecto != nil {
+		fields = append(fields, empresa.FieldToleranciaDefecto)
+	}
 	return fields
 }
 
@@ -8075,6 +8303,8 @@ func (m *EmpresaMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case empresa.FieldMaximoUsuarios:
 		return m.AddedMaximoUsuarios()
+	case empresa.FieldToleranciaDefecto:
+		return m.AddedToleranciaDefecto()
 	}
 	return nil, false
 }
@@ -8090,6 +8320,13 @@ func (m *EmpresaMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddMaximoUsuarios(v)
+		return nil
+	case empresa.FieldToleranciaDefecto:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddToleranciaDefecto(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Empresa numeric field %s", name)
@@ -8153,6 +8390,18 @@ func (m *EmpresaMutation) ResetField(name string) error {
 		return nil
 	case empresa.FieldVencimiento:
 		m.ResetVencimiento()
+		return nil
+	case empresa.FieldHorarioEntradaDefecto:
+		m.ResetHorarioEntradaDefecto()
+		return nil
+	case empresa.FieldHorarioSalidaDefecto:
+		m.ResetHorarioSalidaDefecto()
+		return nil
+	case empresa.FieldToleranciaDefecto:
+		m.ResetToleranciaDefecto()
+		return nil
+	case empresa.FieldDiasLaborablesDefecto:
+		m.ResetDiasLaborablesDefecto()
 		return nil
 	}
 	return fmt.Errorf("unknown Empresa field %s", name)

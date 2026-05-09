@@ -635,6 +635,17 @@ definitions:
       usuario:
         type: string
     type: object
+  domain.ActualizarConfiguracionAsistencia:
+    properties:
+      dias_laborables:
+        type: string
+      hora_entrada:
+        type: string
+      hora_salida:
+        type: string
+      tolerancia_minutos:
+        type: integer
+    type: object
   domain.Asistencia:
     properties:
       empresa_id:
@@ -646,7 +657,12 @@ definitions:
         type: string
       hora_entrada:
         type: string
+      hora_entrada_esperada:
+        description: Datos de referencia del horario (para reportes)
+        type: string
       hora_salida:
+        type: string
+      hora_salida_esperada:
         type: string
       horas_trabajadas:
         type: number
@@ -692,6 +708,17 @@ definitions:
         type: string
       unidad_codigo:
         type: string
+    type: object
+  domain.ConfiguracionAsistencia:
+    properties:
+      dias_laborables:
+        type: string
+      hora_entrada:
+        type: string
+      hora_salida:
+        type: string
+      tolerancia_minutos:
+        type: integer
     type: object
   domain.ContratoProximoVencer:
     properties:
@@ -1453,6 +1480,53 @@ paths:
       summary: Finalizar contrato formalmente
       tags:
       - Alquileres
+  /api/user/asistencia/configuracion:
+    get:
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.ConfiguracionAsistencia'
+      security:
+      - BearerAuth: []
+      summary: Obtener configuración global de asistencia de la empresa
+      tags:
+      - Asistencia
+    post:
+      consumes:
+      - application/json
+      description: Permite definir el horario base para todos los trabajadores de
+        la empresa.
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      - description: Nuevos parámetros
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/domain.ActualizarConfiguracionAsistencia'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.ConfiguracionAsistencia'
+      security:
+      - BearerAuth: []
+      summary: Establecer configuración global de asistencia (entrada, salida, tolerancia)
+      tags:
+      - Asistencia
   /api/user/asistencia/horarios:
     post:
       consumes:

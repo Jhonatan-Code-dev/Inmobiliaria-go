@@ -90,6 +90,26 @@ func Vencimiento(v time.Time) predicate.Empresa {
 	return predicate.Empresa(sql.FieldEQ(FieldVencimiento, v))
 }
 
+// HorarioEntradaDefecto applies equality check predicate on the "horario_entrada_defecto" field. It's identical to HorarioEntradaDefectoEQ.
+func HorarioEntradaDefecto(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldEQ(FieldHorarioEntradaDefecto, v))
+}
+
+// HorarioSalidaDefecto applies equality check predicate on the "horario_salida_defecto" field. It's identical to HorarioSalidaDefectoEQ.
+func HorarioSalidaDefecto(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldEQ(FieldHorarioSalidaDefecto, v))
+}
+
+// ToleranciaDefecto applies equality check predicate on the "tolerancia_defecto" field. It's identical to ToleranciaDefectoEQ.
+func ToleranciaDefecto(v int) predicate.Empresa {
+	return predicate.Empresa(sql.FieldEQ(FieldToleranciaDefecto, v))
+}
+
+// DiasLaborablesDefecto applies equality check predicate on the "dias_laborables_defecto" field. It's identical to DiasLaborablesDefectoEQ.
+func DiasLaborablesDefecto(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldEQ(FieldDiasLaborablesDefecto, v))
+}
+
 // CreadoEnEQ applies the EQ predicate on the "creado_en" field.
 func CreadoEnEQ(v time.Time) predicate.Empresa {
 	return predicate.Empresa(sql.FieldEQ(FieldCreadoEn, v))
@@ -433,6 +453,241 @@ func VencimientoIsNil() predicate.Empresa {
 // VencimientoNotNil applies the NotNil predicate on the "vencimiento" field.
 func VencimientoNotNil() predicate.Empresa {
 	return predicate.Empresa(sql.FieldNotNull(FieldVencimiento))
+}
+
+// HorarioEntradaDefectoEQ applies the EQ predicate on the "horario_entrada_defecto" field.
+func HorarioEntradaDefectoEQ(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldEQ(FieldHorarioEntradaDefecto, v))
+}
+
+// HorarioEntradaDefectoNEQ applies the NEQ predicate on the "horario_entrada_defecto" field.
+func HorarioEntradaDefectoNEQ(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldNEQ(FieldHorarioEntradaDefecto, v))
+}
+
+// HorarioEntradaDefectoIn applies the In predicate on the "horario_entrada_defecto" field.
+func HorarioEntradaDefectoIn(vs ...string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldIn(FieldHorarioEntradaDefecto, vs...))
+}
+
+// HorarioEntradaDefectoNotIn applies the NotIn predicate on the "horario_entrada_defecto" field.
+func HorarioEntradaDefectoNotIn(vs ...string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldNotIn(FieldHorarioEntradaDefecto, vs...))
+}
+
+// HorarioEntradaDefectoGT applies the GT predicate on the "horario_entrada_defecto" field.
+func HorarioEntradaDefectoGT(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldGT(FieldHorarioEntradaDefecto, v))
+}
+
+// HorarioEntradaDefectoGTE applies the GTE predicate on the "horario_entrada_defecto" field.
+func HorarioEntradaDefectoGTE(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldGTE(FieldHorarioEntradaDefecto, v))
+}
+
+// HorarioEntradaDefectoLT applies the LT predicate on the "horario_entrada_defecto" field.
+func HorarioEntradaDefectoLT(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldLT(FieldHorarioEntradaDefecto, v))
+}
+
+// HorarioEntradaDefectoLTE applies the LTE predicate on the "horario_entrada_defecto" field.
+func HorarioEntradaDefectoLTE(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldLTE(FieldHorarioEntradaDefecto, v))
+}
+
+// HorarioEntradaDefectoContains applies the Contains predicate on the "horario_entrada_defecto" field.
+func HorarioEntradaDefectoContains(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldContains(FieldHorarioEntradaDefecto, v))
+}
+
+// HorarioEntradaDefectoHasPrefix applies the HasPrefix predicate on the "horario_entrada_defecto" field.
+func HorarioEntradaDefectoHasPrefix(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldHasPrefix(FieldHorarioEntradaDefecto, v))
+}
+
+// HorarioEntradaDefectoHasSuffix applies the HasSuffix predicate on the "horario_entrada_defecto" field.
+func HorarioEntradaDefectoHasSuffix(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldHasSuffix(FieldHorarioEntradaDefecto, v))
+}
+
+// HorarioEntradaDefectoEqualFold applies the EqualFold predicate on the "horario_entrada_defecto" field.
+func HorarioEntradaDefectoEqualFold(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldEqualFold(FieldHorarioEntradaDefecto, v))
+}
+
+// HorarioEntradaDefectoContainsFold applies the ContainsFold predicate on the "horario_entrada_defecto" field.
+func HorarioEntradaDefectoContainsFold(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldContainsFold(FieldHorarioEntradaDefecto, v))
+}
+
+// HorarioSalidaDefectoEQ applies the EQ predicate on the "horario_salida_defecto" field.
+func HorarioSalidaDefectoEQ(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldEQ(FieldHorarioSalidaDefecto, v))
+}
+
+// HorarioSalidaDefectoNEQ applies the NEQ predicate on the "horario_salida_defecto" field.
+func HorarioSalidaDefectoNEQ(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldNEQ(FieldHorarioSalidaDefecto, v))
+}
+
+// HorarioSalidaDefectoIn applies the In predicate on the "horario_salida_defecto" field.
+func HorarioSalidaDefectoIn(vs ...string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldIn(FieldHorarioSalidaDefecto, vs...))
+}
+
+// HorarioSalidaDefectoNotIn applies the NotIn predicate on the "horario_salida_defecto" field.
+func HorarioSalidaDefectoNotIn(vs ...string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldNotIn(FieldHorarioSalidaDefecto, vs...))
+}
+
+// HorarioSalidaDefectoGT applies the GT predicate on the "horario_salida_defecto" field.
+func HorarioSalidaDefectoGT(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldGT(FieldHorarioSalidaDefecto, v))
+}
+
+// HorarioSalidaDefectoGTE applies the GTE predicate on the "horario_salida_defecto" field.
+func HorarioSalidaDefectoGTE(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldGTE(FieldHorarioSalidaDefecto, v))
+}
+
+// HorarioSalidaDefectoLT applies the LT predicate on the "horario_salida_defecto" field.
+func HorarioSalidaDefectoLT(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldLT(FieldHorarioSalidaDefecto, v))
+}
+
+// HorarioSalidaDefectoLTE applies the LTE predicate on the "horario_salida_defecto" field.
+func HorarioSalidaDefectoLTE(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldLTE(FieldHorarioSalidaDefecto, v))
+}
+
+// HorarioSalidaDefectoContains applies the Contains predicate on the "horario_salida_defecto" field.
+func HorarioSalidaDefectoContains(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldContains(FieldHorarioSalidaDefecto, v))
+}
+
+// HorarioSalidaDefectoHasPrefix applies the HasPrefix predicate on the "horario_salida_defecto" field.
+func HorarioSalidaDefectoHasPrefix(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldHasPrefix(FieldHorarioSalidaDefecto, v))
+}
+
+// HorarioSalidaDefectoHasSuffix applies the HasSuffix predicate on the "horario_salida_defecto" field.
+func HorarioSalidaDefectoHasSuffix(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldHasSuffix(FieldHorarioSalidaDefecto, v))
+}
+
+// HorarioSalidaDefectoEqualFold applies the EqualFold predicate on the "horario_salida_defecto" field.
+func HorarioSalidaDefectoEqualFold(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldEqualFold(FieldHorarioSalidaDefecto, v))
+}
+
+// HorarioSalidaDefectoContainsFold applies the ContainsFold predicate on the "horario_salida_defecto" field.
+func HorarioSalidaDefectoContainsFold(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldContainsFold(FieldHorarioSalidaDefecto, v))
+}
+
+// ToleranciaDefectoEQ applies the EQ predicate on the "tolerancia_defecto" field.
+func ToleranciaDefectoEQ(v int) predicate.Empresa {
+	return predicate.Empresa(sql.FieldEQ(FieldToleranciaDefecto, v))
+}
+
+// ToleranciaDefectoNEQ applies the NEQ predicate on the "tolerancia_defecto" field.
+func ToleranciaDefectoNEQ(v int) predicate.Empresa {
+	return predicate.Empresa(sql.FieldNEQ(FieldToleranciaDefecto, v))
+}
+
+// ToleranciaDefectoIn applies the In predicate on the "tolerancia_defecto" field.
+func ToleranciaDefectoIn(vs ...int) predicate.Empresa {
+	return predicate.Empresa(sql.FieldIn(FieldToleranciaDefecto, vs...))
+}
+
+// ToleranciaDefectoNotIn applies the NotIn predicate on the "tolerancia_defecto" field.
+func ToleranciaDefectoNotIn(vs ...int) predicate.Empresa {
+	return predicate.Empresa(sql.FieldNotIn(FieldToleranciaDefecto, vs...))
+}
+
+// ToleranciaDefectoGT applies the GT predicate on the "tolerancia_defecto" field.
+func ToleranciaDefectoGT(v int) predicate.Empresa {
+	return predicate.Empresa(sql.FieldGT(FieldToleranciaDefecto, v))
+}
+
+// ToleranciaDefectoGTE applies the GTE predicate on the "tolerancia_defecto" field.
+func ToleranciaDefectoGTE(v int) predicate.Empresa {
+	return predicate.Empresa(sql.FieldGTE(FieldToleranciaDefecto, v))
+}
+
+// ToleranciaDefectoLT applies the LT predicate on the "tolerancia_defecto" field.
+func ToleranciaDefectoLT(v int) predicate.Empresa {
+	return predicate.Empresa(sql.FieldLT(FieldToleranciaDefecto, v))
+}
+
+// ToleranciaDefectoLTE applies the LTE predicate on the "tolerancia_defecto" field.
+func ToleranciaDefectoLTE(v int) predicate.Empresa {
+	return predicate.Empresa(sql.FieldLTE(FieldToleranciaDefecto, v))
+}
+
+// DiasLaborablesDefectoEQ applies the EQ predicate on the "dias_laborables_defecto" field.
+func DiasLaborablesDefectoEQ(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldEQ(FieldDiasLaborablesDefecto, v))
+}
+
+// DiasLaborablesDefectoNEQ applies the NEQ predicate on the "dias_laborables_defecto" field.
+func DiasLaborablesDefectoNEQ(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldNEQ(FieldDiasLaborablesDefecto, v))
+}
+
+// DiasLaborablesDefectoIn applies the In predicate on the "dias_laborables_defecto" field.
+func DiasLaborablesDefectoIn(vs ...string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldIn(FieldDiasLaborablesDefecto, vs...))
+}
+
+// DiasLaborablesDefectoNotIn applies the NotIn predicate on the "dias_laborables_defecto" field.
+func DiasLaborablesDefectoNotIn(vs ...string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldNotIn(FieldDiasLaborablesDefecto, vs...))
+}
+
+// DiasLaborablesDefectoGT applies the GT predicate on the "dias_laborables_defecto" field.
+func DiasLaborablesDefectoGT(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldGT(FieldDiasLaborablesDefecto, v))
+}
+
+// DiasLaborablesDefectoGTE applies the GTE predicate on the "dias_laborables_defecto" field.
+func DiasLaborablesDefectoGTE(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldGTE(FieldDiasLaborablesDefecto, v))
+}
+
+// DiasLaborablesDefectoLT applies the LT predicate on the "dias_laborables_defecto" field.
+func DiasLaborablesDefectoLT(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldLT(FieldDiasLaborablesDefecto, v))
+}
+
+// DiasLaborablesDefectoLTE applies the LTE predicate on the "dias_laborables_defecto" field.
+func DiasLaborablesDefectoLTE(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldLTE(FieldDiasLaborablesDefecto, v))
+}
+
+// DiasLaborablesDefectoContains applies the Contains predicate on the "dias_laborables_defecto" field.
+func DiasLaborablesDefectoContains(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldContains(FieldDiasLaborablesDefecto, v))
+}
+
+// DiasLaborablesDefectoHasPrefix applies the HasPrefix predicate on the "dias_laborables_defecto" field.
+func DiasLaborablesDefectoHasPrefix(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldHasPrefix(FieldDiasLaborablesDefecto, v))
+}
+
+// DiasLaborablesDefectoHasSuffix applies the HasSuffix predicate on the "dias_laborables_defecto" field.
+func DiasLaborablesDefectoHasSuffix(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldHasSuffix(FieldDiasLaborablesDefecto, v))
+}
+
+// DiasLaborablesDefectoEqualFold applies the EqualFold predicate on the "dias_laborables_defecto" field.
+func DiasLaborablesDefectoEqualFold(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldEqualFold(FieldDiasLaborablesDefecto, v))
+}
+
+// DiasLaborablesDefectoContainsFold applies the ContainsFold predicate on the "dias_laborables_defecto" field.
+func DiasLaborablesDefectoContainsFold(v string) predicate.Empresa {
+	return predicate.Empresa(sql.FieldContainsFold(FieldDiasLaborablesDefecto, v))
 }
 
 // HasUsuariosEmpresa applies the HasEdge predicate on the "usuarios_empresa" edge.

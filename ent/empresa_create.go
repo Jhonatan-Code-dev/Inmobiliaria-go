@@ -121,6 +121,62 @@ func (_c *EmpresaCreate) SetNillableVencimiento(v *time.Time) *EmpresaCreate {
 	return _c
 }
 
+// SetHorarioEntradaDefecto sets the "horario_entrada_defecto" field.
+func (_c *EmpresaCreate) SetHorarioEntradaDefecto(v string) *EmpresaCreate {
+	_c.mutation.SetHorarioEntradaDefecto(v)
+	return _c
+}
+
+// SetNillableHorarioEntradaDefecto sets the "horario_entrada_defecto" field if the given value is not nil.
+func (_c *EmpresaCreate) SetNillableHorarioEntradaDefecto(v *string) *EmpresaCreate {
+	if v != nil {
+		_c.SetHorarioEntradaDefecto(*v)
+	}
+	return _c
+}
+
+// SetHorarioSalidaDefecto sets the "horario_salida_defecto" field.
+func (_c *EmpresaCreate) SetHorarioSalidaDefecto(v string) *EmpresaCreate {
+	_c.mutation.SetHorarioSalidaDefecto(v)
+	return _c
+}
+
+// SetNillableHorarioSalidaDefecto sets the "horario_salida_defecto" field if the given value is not nil.
+func (_c *EmpresaCreate) SetNillableHorarioSalidaDefecto(v *string) *EmpresaCreate {
+	if v != nil {
+		_c.SetHorarioSalidaDefecto(*v)
+	}
+	return _c
+}
+
+// SetToleranciaDefecto sets the "tolerancia_defecto" field.
+func (_c *EmpresaCreate) SetToleranciaDefecto(v int) *EmpresaCreate {
+	_c.mutation.SetToleranciaDefecto(v)
+	return _c
+}
+
+// SetNillableToleranciaDefecto sets the "tolerancia_defecto" field if the given value is not nil.
+func (_c *EmpresaCreate) SetNillableToleranciaDefecto(v *int) *EmpresaCreate {
+	if v != nil {
+		_c.SetToleranciaDefecto(*v)
+	}
+	return _c
+}
+
+// SetDiasLaborablesDefecto sets the "dias_laborables_defecto" field.
+func (_c *EmpresaCreate) SetDiasLaborablesDefecto(v string) *EmpresaCreate {
+	_c.mutation.SetDiasLaborablesDefecto(v)
+	return _c
+}
+
+// SetNillableDiasLaborablesDefecto sets the "dias_laborables_defecto" field if the given value is not nil.
+func (_c *EmpresaCreate) SetNillableDiasLaborablesDefecto(v *string) *EmpresaCreate {
+	if v != nil {
+		_c.SetDiasLaborablesDefecto(*v)
+	}
+	return _c
+}
+
 // AddUsuariosEmpresaIDs adds the "usuarios_empresa" edge to the EmpresaUsuario entity by IDs.
 func (_c *EmpresaCreate) AddUsuariosEmpresaIDs(ids ...int) *EmpresaCreate {
 	_c.mutation.AddUsuariosEmpresaIDs(ids...)
@@ -337,6 +393,22 @@ func (_c *EmpresaCreate) defaults() {
 		v := empresa.DefaultEstado
 		_c.mutation.SetEstado(v)
 	}
+	if _, ok := _c.mutation.HorarioEntradaDefecto(); !ok {
+		v := empresa.DefaultHorarioEntradaDefecto
+		_c.mutation.SetHorarioEntradaDefecto(v)
+	}
+	if _, ok := _c.mutation.HorarioSalidaDefecto(); !ok {
+		v := empresa.DefaultHorarioSalidaDefecto
+		_c.mutation.SetHorarioSalidaDefecto(v)
+	}
+	if _, ok := _c.mutation.ToleranciaDefecto(); !ok {
+		v := empresa.DefaultToleranciaDefecto
+		_c.mutation.SetToleranciaDefecto(v)
+	}
+	if _, ok := _c.mutation.DiasLaborablesDefecto(); !ok {
+		v := empresa.DefaultDiasLaborablesDefecto
+		_c.mutation.SetDiasLaborablesDefecto(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -375,6 +447,18 @@ func (_c *EmpresaCreate) check() error {
 	}
 	if _, ok := _c.mutation.Estado(); !ok {
 		return &ValidationError{Name: "estado", err: errors.New(`ent: missing required field "Empresa.estado"`)}
+	}
+	if _, ok := _c.mutation.HorarioEntradaDefecto(); !ok {
+		return &ValidationError{Name: "horario_entrada_defecto", err: errors.New(`ent: missing required field "Empresa.horario_entrada_defecto"`)}
+	}
+	if _, ok := _c.mutation.HorarioSalidaDefecto(); !ok {
+		return &ValidationError{Name: "horario_salida_defecto", err: errors.New(`ent: missing required field "Empresa.horario_salida_defecto"`)}
+	}
+	if _, ok := _c.mutation.ToleranciaDefecto(); !ok {
+		return &ValidationError{Name: "tolerancia_defecto", err: errors.New(`ent: missing required field "Empresa.tolerancia_defecto"`)}
+	}
+	if _, ok := _c.mutation.DiasLaborablesDefecto(); !ok {
+		return &ValidationError{Name: "dias_laborables_defecto", err: errors.New(`ent: missing required field "Empresa.dias_laborables_defecto"`)}
 	}
 	return nil
 }
@@ -429,6 +513,22 @@ func (_c *EmpresaCreate) createSpec() (*Empresa, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Vencimiento(); ok {
 		_spec.SetField(empresa.FieldVencimiento, field.TypeTime, value)
 		_node.Vencimiento = &value
+	}
+	if value, ok := _c.mutation.HorarioEntradaDefecto(); ok {
+		_spec.SetField(empresa.FieldHorarioEntradaDefecto, field.TypeString, value)
+		_node.HorarioEntradaDefecto = value
+	}
+	if value, ok := _c.mutation.HorarioSalidaDefecto(); ok {
+		_spec.SetField(empresa.FieldHorarioSalidaDefecto, field.TypeString, value)
+		_node.HorarioSalidaDefecto = value
+	}
+	if value, ok := _c.mutation.ToleranciaDefecto(); ok {
+		_spec.SetField(empresa.FieldToleranciaDefecto, field.TypeInt, value)
+		_node.ToleranciaDefecto = value
+	}
+	if value, ok := _c.mutation.DiasLaborablesDefecto(); ok {
+		_spec.SetField(empresa.FieldDiasLaborablesDefecto, field.TypeString, value)
+		_node.DiasLaborablesDefecto = value
 	}
 	if nodes := _c.mutation.UsuariosEmpresaIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

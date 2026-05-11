@@ -11,6 +11,7 @@ import (
 	entContrato "rentals-go/ent/contrato"
 	entMov "rentals-go/ent/movimientocaja"
 	entPago "rentals-go/ent/pago"
+	entPlantilla "rentals-go/ent/plantillacontrato"
 	entPropiedad "rentals-go/ent/propiedad"
 	entUnidad "rentals-go/ent/unidad"
 	"rentals-go/internal/domain"
@@ -189,6 +190,75 @@ func (r *AlquilerRepoEnt) Eliminar(ctx context.Context, id int) error {
 	}
 	return r.client.Contrato.DeleteOneID(id).Exec(ctx)
 }
+
+// --- Plantillas ---
+
+func (r *AlquilerRepoEnt) ListarPlantillas(ctx context.Context, empresaID int) ([]*domain.PlantillaContrato, error) {
+	list, err := r.client.PlantillaContrato.Query().
+		Where(entPlantilla.EmpresaID(empresaID)).
+		Order(ent.Asc(entPlantilla.FieldNombre)).
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	out := make([]*domain.PlantillaContrato, 0, len(list))
+	for _, item := range list {
+		out = append(out, mapPlantillaEntity(item))
+	}
+	return out, nil
+}
+
+func (r *AlquilerRepoEnt) ObtenerPlantilla(ctx context.Context, id int, empresaID int) (*domain.PlantillaContrato, error) {
+	item, err := r.client.PlantillaContrato.Query().
+		Where(entPlantilla.IDEQ(id), entPlantilla.EmpresaID(empresaID)).
+		Only(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return mapPlantillaEntity(item), nil
+}
+
+func (r *AlquilerRepoEnt) CrearPlantilla(ctx context.Context, p *domain.PlantillaContrato) (*domain.PlantillaContrato, error) {
+	item, err := r.client.PlantillaContrato.Create().
+		SetEmpresaID(p.EmpresaID).
+		SetNombre(p.Nombre).
+		SetContenido(p.Contenido).
+		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return mapPlantillaEntity(item), nil
+}
+
+func (r *AlquilerRepoEnt) ActualizarPlantilla(ctx context.Context, p *domain.PlantillaContrato) (*domain.PlantillaContrato, error) {
+	item, err := r.client.PlantillaContrato.UpdateOneID(p.ID).
+		SetNombre(p.Nombre).
+		SetContenido(p.Contenido).
+		Save(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return mapPlantillaEntity(item), nil
+}
+
+func (r *AlquilerRepoEnt) EliminarPlantilla(ctx context.Context, id int, empresaID int) error {
+	_, err := r.client.PlantillaContrato.Delete().
+		Where(entPlantilla.IDEQ(id), entPlantilla.EmpresaID(empresaID)).
+		Exec(ctx)
+	return err
+}
+
+func mapPlantillaEntity(item *ent.PlantillaContrato) *domain.PlantillaContrato {
+	return &domain.PlantillaContrato{
+		ID:        item.ID,
+		EmpresaID: item.EmpresaID,
+		Nombre:    item.Nombre,
+		Contenido: item.Contenido,
+		CreadoEn:  item.CreadoEn,
+	}
+}
+
 
 type PagoAlquilerRepoEnt struct {
 	client *ent.Client

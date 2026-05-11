@@ -87,6 +87,13 @@ type (
 		Crear(ctx context.Context, alquiler *Alquiler) (*Alquiler, error)
 		Actualizar(ctx context.Context, alquiler *Alquiler) (*Alquiler, error)
 		Eliminar(ctx context.Context, id int) error
+		
+		// Plantillas
+		ListarPlantillas(ctx context.Context, empresaID int) ([]*PlantillaContrato, error)
+		ObtenerPlantilla(ctx context.Context, id int, empresaID int) (*PlantillaContrato, error)
+		CrearPlantilla(ctx context.Context, p *PlantillaContrato) (*PlantillaContrato, error)
+		ActualizarPlantilla(ctx context.Context, p *PlantillaContrato) (*PlantillaContrato, error)
+		EliminarPlantilla(ctx context.Context, id int, empresaID int) error
 	}
 
 	PagoAlquilerRepository interface {
@@ -138,6 +145,13 @@ type (
 		Actualizar(ctx context.Context, id int, empresaID int, alq *Alquiler) (*Alquiler, error)
 		Eliminar(ctx context.Context, id int, empresaID int) error
 		Terminar(ctx context.Context, id int, empresaID int) error
+
+		// Generación de Documentos
+		ListarPlantillas(ctx context.Context, empresaID int) ([]*PlantillaContrato, error)
+		ObtenerPlantilla(ctx context.Context, id int, empresaID int) (*PlantillaContrato, error)
+		GuardarPlantilla(ctx context.Context, p *PlantillaContrato) (*PlantillaContrato, error)
+		EliminarPlantilla(ctx context.Context, id int, empresaID int) error
+		GenerarContrato(ctx context.Context, id int, empresaID int, plantillaID int) (string, error)
 	}
 
 	PagoAlquilerService interface {
@@ -201,18 +215,23 @@ type (
 
 	TicketRepository interface {
 		Listar(ctx context.Context, filtros TicketFiltros) ([]*Ticket, int, error)
+		ListarColaTrabajo(ctx context.Context, filtros TicketFiltros) ([]*Ticket, int, error)
 		BuscarPorID(ctx context.Context, id int, empresaID int) (*Ticket, error)
 		Crear(ctx context.Context, t *Ticket) (*Ticket, error)
 		Actualizar(ctx context.Context, t *Ticket) (*Ticket, error)
 		Eliminar(ctx context.Context, id int, empresaID int) error
+		ObtenerResumen(ctx context.Context, empresaID int, propiedadID int) (*TicketResumen, error)
 	}
 
 	TicketService interface {
 		Listar(ctx context.Context, filtros TicketFiltros) ([]*Ticket, int, error)
+		ListarColaTrabajo(ctx context.Context, filtros TicketFiltros) ([]*Ticket, int, error)
 		Obtener(ctx context.Context, id int, empresaID int) (*Ticket, error)
 		Crear(ctx context.Context, r *RegistroTicket, empresaID int) (*Ticket, error)
 		Actualizar(ctx context.Context, id int, empresaID int, r *RegistroTicket, estado string) (*Ticket, error)
+		CambiarEstado(ctx context.Context, id int, empresaID int, req *CambiarEstadoTicket) (*Ticket, error)
 		Eliminar(ctx context.Context, id int, empresaID int) error
+		ObtenerResumen(ctx context.Context, empresaID int, propiedadID int) (*TicketResumen, error)
 	}
 
 	HorarioRepository interface {

@@ -58,6 +58,12 @@ func Register(app *fiber.App, appDI *di.App) {
 	alquileres.Put("/:id", appDI.AlquilerCtrl.Actualizar)
 	alquileres.Delete("/:id", appDI.AlquilerCtrl.Eliminar)
 	alquileres.Post("/:id/terminar", appDI.AlquilerCtrl.TerminarContrato)
+	
+	// Generación y Plantillas
+	alquileres.Get("/plantillas", appDI.AlquilerCtrl.ListarPlantillas)
+	alquileres.Post("/plantillas", appDI.AlquilerCtrl.GuardarPlantilla)
+	alquileres.Delete("/plantillas/:id", appDI.AlquilerCtrl.EliminarPlantilla)
+	alquileres.Get("/:id/generar-documento", appDI.AlquilerCtrl.GenerarDocumento)
 
 	// Módulo de Pagos de alquiler
 	pagos := app.Group("/api/user/pagos")
@@ -101,9 +107,13 @@ func Register(app *fiber.App, appDI *di.App) {
 	tickets := app.Group("/api/user/tickets")
 	tickets.Use(middlewares.TenantAuth(appDI.Config))
 	tickets.Get("/", appDI.TicketCtrl.Listar)
+	tickets.Get("/resumen", appDI.TicketCtrl.Resumen)
+	tickets.Get("/cola-trabajo", appDI.TicketCtrl.ColaTrabajo)
+	tickets.Get("/config-formulario", appDI.TicketCtrl.ConfigFormulario)
 	tickets.Post("/", appDI.TicketCtrl.Crear)
 	tickets.Get("/:id", appDI.TicketCtrl.Obtener)
 	tickets.Put("/:id", appDI.TicketCtrl.Actualizar)
+	tickets.Patch("/:id/estado", appDI.TicketCtrl.CambiarEstado)
 	tickets.Delete("/:id", appDI.TicketCtrl.Eliminar)
 
 	// Módulo de Dashboard / KPIs

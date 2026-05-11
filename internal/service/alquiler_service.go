@@ -3,17 +3,19 @@ package service
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"rentals-go/internal/domain"
 )
 
 type AlquilerService struct {
-	repo domain.AlquilerRepository
+	repo    domain.AlquilerRepository
+	cliente domain.ClienteRepository
 }
 
-func NewAlquilerService(repo domain.AlquilerRepository) *AlquilerService {
-	return &AlquilerService{repo: repo}
+func NewAlquilerService(repo domain.AlquilerRepository, cliente domain.ClienteRepository) *AlquilerService {
+	return &AlquilerService{repo: repo, cliente: cliente}
 }
 
 func (s *AlquilerService) Listar(ctx context.Context, filtros domain.AlquilerFiltros) ([]*domain.Alquiler, int, error) {
@@ -85,6 +87,79 @@ func (s *AlquilerService) Terminar(ctx context.Context, id int, empresaID int) e
 	_, err = s.repo.Actualizar(ctx, alq)
 	return err
 }
+
+// --- Plantillas ---
+
+func (s *AlquilerService) ListarPlantillas(ctx context.Context, empresaID int) ([]*domain.PlantillaContrato, error) {
+	return s.repo.ListarPlantillas(ctx, empresaID)
+}
+
+func (s *AlquilerService) ObtenerPlantilla(ctx context.Context, id int, empresaID int) (*domain.PlantillaContrato, error) {
+	return s.repo.ObtenerPlantilla(ctx, id, empresaID)
+}
+
+func (s *AlquilerService) GuardarPlantilla(ctx context.Context, p *domain.PlantillaContrato) (*domain.PlantillaContrato, error) {
+	if p.ID > 0 {
+		return s.repo.ActualizarPlantilla(ctx, p)
+	}
+	return s.repo.CrearPlantilla(ctx, p)
+}
+
+func (s *AlquilerService) EliminarPlantilla(ctx context.Context, id int, empresaID int) error {
+	return s.repo.EliminarPlantilla(ctx, id, empresaID)
+}
+
+// --- Generación de Documentos ---
+
+func (s *AlquilerService) GenerarContrato(ctx context.Context, id int, empresaID int, plantillaID int) (string, error) {
+	alq, err := s.Obtener(ctx, id, empresaID)
+	if err != nil {
+		return "", err
+	}
+
+	cliente, err := s.cliente.BuscarPorID(ctx, alq.ClienteID)
+	if err != nil {
+		return "", fmt.Errorf("no se pudo cargar datos del cliente")
+	}
+
+	var contenido string
+	if plantillaID > 0 {
+		plantilla, err := s.ObtenerPlantilla(ctx, plantillaID, empresaID)
+		if err != nil {
+			return "", fmt.Errorf("plantilla no encontrada")
+		}
+		contenido = plantilla.Contenido
+	} else {
+		// Plantilla por defecto básica
+		contenido = `
+# CONTRATO DE ALQUILER
+
+Por el presente documento, se celebra un contrato de alquiler entre la empresa y el cliente **{{cliente_nombre}}**, identificado con documento **{{cliente_documento}}**.
+
+## DETALLES DEL ALQUILER
+- **Unidad:** {{unidad_codigo}}
+- **Monto Mensual:** {{moneda}} {{monto_renta}}
+- **Día de Pago:** {{dia_vencimiento}} de cada mes
+- **Fecha de Inicio:** {{fecha_inicio}}
+
+El arrendatario se compromete a cuidar la propiedad y realizar los pagos puntualmente.
+`
+	}
+
+	// Reemplazar placeholders
+	replacer := strings.NewReplacer(
+		"{{cliente_nombre}}", alq.ClienteNombre,
+		"{{cliente_documento}}", cliente.DocumentoNumero,
+		"{{unidad_codigo}}", alq.UnidadCodigo,
+		"{{monto_renta}}", fmt.Sprintf("%.2f", alq.MontoRenta),
+		"{{moneda}}", alq.Moneda,
+		"{{fecha_inicio}}", alq.FechaInicio.Format("2006-01-02"),
+		"{{dia_vencimiento}}", fmt.Sprintf("%d", alq.DiaVencimiento),
+	)
+
+	return replacer.Replace(contenido), nil
+}
+
 
 type PagoAlquilerService struct {
 	repo domain.PagoAlquilerRepository

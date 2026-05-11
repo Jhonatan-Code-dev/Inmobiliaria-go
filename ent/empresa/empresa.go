@@ -58,6 +58,8 @@ const (
 	EdgeAsistencias = "asistencias"
 	// EdgePermisos holds the string denoting the permisos edge name in mutations.
 	EdgePermisos = "permisos"
+	// EdgePlantillasContrato holds the string denoting the plantillas_contrato edge name in mutations.
+	EdgePlantillasContrato = "plantillas_contrato"
 	// Table holds the table name of the empresa in the database.
 	Table = "empresas"
 	// UsuariosEmpresaTable is the table that holds the usuarios_empresa relation/edge.
@@ -137,6 +139,13 @@ const (
 	PermisosInverseTable = "permisos"
 	// PermisosColumn is the table column denoting the permisos relation/edge.
 	PermisosColumn = "empresa_id"
+	// PlantillasContratoTable is the table that holds the plantillas_contrato relation/edge.
+	PlantillasContratoTable = "plantillas_contrato"
+	// PlantillasContratoInverseTable is the table name for the PlantillaContrato entity.
+	// It exists in this package in order to avoid circular dependency with the "plantillacontrato" package.
+	PlantillasContratoInverseTable = "plantillas_contrato"
+	// PlantillasContratoColumn is the table column denoting the plantillas_contrato relation/edge.
+	PlantillasContratoColumn = "empresa_id"
 )
 
 // Columns holds all SQL columns for empresa fields.
@@ -408,6 +417,20 @@ func ByPermisos(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newPermisosStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByPlantillasContratoCount orders the results by plantillas_contrato count.
+func ByPlantillasContratoCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newPlantillasContratoStep(), opts...)
+	}
+}
+
+// ByPlantillasContrato orders the results by plantillas_contrato terms.
+func ByPlantillasContrato(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newPlantillasContratoStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUsuariosEmpresaStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -483,5 +506,12 @@ func newPermisosStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(PermisosInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, PermisosTable, PermisosColumn),
+	)
+}
+func newPlantillasContratoStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(PlantillasContratoInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, PlantillasContratoTable, PlantillasContratoColumn),
 	)
 }

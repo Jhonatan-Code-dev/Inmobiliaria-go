@@ -16,6 +16,7 @@ import (
 	"rentals-go/ent/movimientocaja"
 	"rentals-go/ent/pago"
 	"rentals-go/ent/permiso"
+	"rentals-go/ent/plantillacontrato"
 	"rentals-go/ent/predicate"
 	"rentals-go/ent/propiedad"
 	"rentals-go/ent/ticket"
@@ -370,6 +371,21 @@ func (_u *EmpresaUpdate) AddPermisos(v ...*Permiso) *EmpresaUpdate {
 	return _u.AddPermisoIDs(ids...)
 }
 
+// AddPlantillasContratoIDs adds the "plantillas_contrato" edge to the PlantillaContrato entity by IDs.
+func (_u *EmpresaUpdate) AddPlantillasContratoIDs(ids ...int) *EmpresaUpdate {
+	_u.mutation.AddPlantillasContratoIDs(ids...)
+	return _u
+}
+
+// AddPlantillasContrato adds the "plantillas_contrato" edges to the PlantillaContrato entity.
+func (_u *EmpresaUpdate) AddPlantillasContrato(v ...*PlantillaContrato) *EmpresaUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddPlantillasContratoIDs(ids...)
+}
+
 // Mutation returns the EmpresaMutation object of the builder.
 func (_u *EmpresaUpdate) Mutation() *EmpresaMutation {
 	return _u.mutation
@@ -604,6 +620,27 @@ func (_u *EmpresaUpdate) RemovePermisos(v ...*Permiso) *EmpresaUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.RemovePermisoIDs(ids...)
+}
+
+// ClearPlantillasContrato clears all "plantillas_contrato" edges to the PlantillaContrato entity.
+func (_u *EmpresaUpdate) ClearPlantillasContrato() *EmpresaUpdate {
+	_u.mutation.ClearPlantillasContrato()
+	return _u
+}
+
+// RemovePlantillasContratoIDs removes the "plantillas_contrato" edge to PlantillaContrato entities by IDs.
+func (_u *EmpresaUpdate) RemovePlantillasContratoIDs(ids ...int) *EmpresaUpdate {
+	_u.mutation.RemovePlantillasContratoIDs(ids...)
+	return _u
+}
+
+// RemovePlantillasContrato removes "plantillas_contrato" edges to PlantillaContrato entities.
+func (_u *EmpresaUpdate) RemovePlantillasContrato(v ...*PlantillaContrato) *EmpresaUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemovePlantillasContratoIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1207,6 +1244,51 @@ func (_u *EmpresaUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.PlantillasContratoCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.PlantillasContratoTable,
+			Columns: []string{empresa.PlantillasContratoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plantillacontrato.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedPlantillasContratoIDs(); len(nodes) > 0 && !_u.mutation.PlantillasContratoCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.PlantillasContratoTable,
+			Columns: []string{empresa.PlantillasContratoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plantillacontrato.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.PlantillasContratoIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.PlantillasContratoTable,
+			Columns: []string{empresa.PlantillasContratoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plantillacontrato.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{empresa.Label}
@@ -1558,6 +1640,21 @@ func (_u *EmpresaUpdateOne) AddPermisos(v ...*Permiso) *EmpresaUpdateOne {
 	return _u.AddPermisoIDs(ids...)
 }
 
+// AddPlantillasContratoIDs adds the "plantillas_contrato" edge to the PlantillaContrato entity by IDs.
+func (_u *EmpresaUpdateOne) AddPlantillasContratoIDs(ids ...int) *EmpresaUpdateOne {
+	_u.mutation.AddPlantillasContratoIDs(ids...)
+	return _u
+}
+
+// AddPlantillasContrato adds the "plantillas_contrato" edges to the PlantillaContrato entity.
+func (_u *EmpresaUpdateOne) AddPlantillasContrato(v ...*PlantillaContrato) *EmpresaUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddPlantillasContratoIDs(ids...)
+}
+
 // Mutation returns the EmpresaMutation object of the builder.
 func (_u *EmpresaUpdateOne) Mutation() *EmpresaMutation {
 	return _u.mutation
@@ -1792,6 +1889,27 @@ func (_u *EmpresaUpdateOne) RemovePermisos(v ...*Permiso) *EmpresaUpdateOne {
 		ids[i] = v[i].ID
 	}
 	return _u.RemovePermisoIDs(ids...)
+}
+
+// ClearPlantillasContrato clears all "plantillas_contrato" edges to the PlantillaContrato entity.
+func (_u *EmpresaUpdateOne) ClearPlantillasContrato() *EmpresaUpdateOne {
+	_u.mutation.ClearPlantillasContrato()
+	return _u
+}
+
+// RemovePlantillasContratoIDs removes the "plantillas_contrato" edge to PlantillaContrato entities by IDs.
+func (_u *EmpresaUpdateOne) RemovePlantillasContratoIDs(ids ...int) *EmpresaUpdateOne {
+	_u.mutation.RemovePlantillasContratoIDs(ids...)
+	return _u
+}
+
+// RemovePlantillasContrato removes "plantillas_contrato" edges to PlantillaContrato entities.
+func (_u *EmpresaUpdateOne) RemovePlantillasContrato(v ...*PlantillaContrato) *EmpresaUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemovePlantillasContratoIDs(ids...)
 }
 
 // Where appends a list predicates to the EmpresaUpdate builder.
@@ -2418,6 +2536,51 @@ func (_u *EmpresaUpdateOne) sqlSave(ctx context.Context) (_node *Empresa, err er
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(permiso.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.PlantillasContratoCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.PlantillasContratoTable,
+			Columns: []string{empresa.PlantillasContratoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plantillacontrato.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedPlantillasContratoIDs(); len(nodes) > 0 && !_u.mutation.PlantillasContratoCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.PlantillasContratoTable,
+			Columns: []string{empresa.PlantillasContratoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plantillacontrato.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.PlantillasContratoIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.PlantillasContratoTable,
+			Columns: []string{empresa.PlantillasContratoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plantillacontrato.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

@@ -29,6 +29,14 @@ type Alquiler struct {
 	UnidadCodigo  string `json:"unidad_codigo,omitempty"`
 }
 
+type PlantillaContrato struct {
+	ID        int       `json:"id"`
+	EmpresaID int       `json:"empresa_id"`
+	Nombre    string    `json:"nombre"`
+	Contenido string    `json:"contenido"`
+	CreadoEn  time.Time `json:"creado_en"`
+}
+
 type AlquilerFiltros struct {
 	EmpresaID int
 	Busqueda  string

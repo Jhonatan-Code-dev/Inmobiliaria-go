@@ -25,6 +25,7 @@ import (
 	"rentals-go/ent/pago"
 	"rentals-go/ent/pagoaplicacion"
 	"rentals-go/ent/permiso"
+	"rentals-go/ent/plantillacontrato"
 	"rentals-go/ent/propiedad"
 	"rentals-go/ent/rol"
 	"rentals-go/ent/serviciomedicion"
@@ -73,6 +74,8 @@ type Client struct {
 	PagoAplicacion *PagoAplicacionClient
 	// Permiso is the client for interacting with the Permiso builders.
 	Permiso *PermisoClient
+	// PlantillaContrato is the client for interacting with the PlantillaContrato builders.
+	PlantillaContrato *PlantillaContratoClient
 	// Propiedad is the client for interacting with the Propiedad builders.
 	Propiedad *PropiedadClient
 	// Rol is the client for interacting with the Rol builders.
@@ -114,6 +117,7 @@ func (c *Client) init() {
 	c.Pago = NewPagoClient(c.config)
 	c.PagoAplicacion = NewPagoAplicacionClient(c.config)
 	c.Permiso = NewPermisoClient(c.config)
+	c.PlantillaContrato = NewPlantillaContratoClient(c.config)
 	c.Propiedad = NewPropiedadClient(c.config)
 	c.Rol = NewRolClient(c.config)
 	c.ServicioMedicion = NewServicioMedicionClient(c.config)
@@ -228,6 +232,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Pago:               NewPagoClient(cfg),
 		PagoAplicacion:     NewPagoAplicacionClient(cfg),
 		Permiso:            NewPermisoClient(cfg),
+		PlantillaContrato:  NewPlantillaContratoClient(cfg),
 		Propiedad:          NewPropiedadClient(cfg),
 		Rol:                NewRolClient(cfg),
 		ServicioMedicion:   NewServicioMedicionClient(cfg),
@@ -269,6 +274,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Pago:               NewPagoClient(cfg),
 		PagoAplicacion:     NewPagoAplicacionClient(cfg),
 		Permiso:            NewPermisoClient(cfg),
+		PlantillaContrato:  NewPlantillaContratoClient(cfg),
 		Propiedad:          NewPropiedadClient(cfg),
 		Rol:                NewRolClient(cfg),
 		ServicioMedicion:   NewServicioMedicionClient(cfg),
@@ -308,8 +314,9 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.Admin, c.Asistencia, c.Cargo, c.Cliente, c.ClienteTelefono, c.Contrato,
 		c.Empresa, c.EmpresaUsuario, c.Gasto, c.Horario, c.MovimientoCaja, c.Pago,
-		c.PagoAplicacion, c.Permiso, c.Propiedad, c.Rol, c.ServicioMedicion, c.Ticket,
-		c.TipoIdentificacion, c.TipoPago, c.Unidad, c.Usuario,
+		c.PagoAplicacion, c.Permiso, c.PlantillaContrato, c.Propiedad, c.Rol,
+		c.ServicioMedicion, c.Ticket, c.TipoIdentificacion, c.TipoPago, c.Unidad,
+		c.Usuario,
 	} {
 		n.Use(hooks...)
 	}
@@ -321,8 +328,9 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.Admin, c.Asistencia, c.Cargo, c.Cliente, c.ClienteTelefono, c.Contrato,
 		c.Empresa, c.EmpresaUsuario, c.Gasto, c.Horario, c.MovimientoCaja, c.Pago,
-		c.PagoAplicacion, c.Permiso, c.Propiedad, c.Rol, c.ServicioMedicion, c.Ticket,
-		c.TipoIdentificacion, c.TipoPago, c.Unidad, c.Usuario,
+		c.PagoAplicacion, c.Permiso, c.PlantillaContrato, c.Propiedad, c.Rol,
+		c.ServicioMedicion, c.Ticket, c.TipoIdentificacion, c.TipoPago, c.Unidad,
+		c.Usuario,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -359,6 +367,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.PagoAplicacion.mutate(ctx, m)
 	case *PermisoMutation:
 		return c.Permiso.mutate(ctx, m)
+	case *PlantillaContratoMutation:
+		return c.PlantillaContrato.mutate(ctx, m)
 	case *PropiedadMutation:
 		return c.Propiedad.mutate(ctx, m)
 	case *RolMutation:
@@ -1750,6 +1760,22 @@ func (c *EmpresaClient) QueryPermisos(_m *Empresa) *PermisoQuery {
 	return query
 }
 
+// QueryPlantillasContrato queries the plantillas_contrato edge of a Empresa.
+func (c *EmpresaClient) QueryPlantillasContrato(_m *Empresa) *PlantillaContratoQuery {
+	query := (&PlantillaContratoClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(empresa.Table, empresa.FieldID, id),
+			sqlgraph.To(plantillacontrato.Table, plantillacontrato.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, empresa.PlantillasContratoTable, empresa.PlantillasContratoColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *EmpresaClient) Hooks() []Hook {
 	return c.hooks.Empresa
@@ -3023,6 +3049,155 @@ func (c *PermisoClient) mutate(ctx context.Context, m *PermisoMutation) (Value, 
 		return (&PermisoDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Permiso mutation op: %q", m.Op())
+	}
+}
+
+// PlantillaContratoClient is a client for the PlantillaContrato schema.
+type PlantillaContratoClient struct {
+	config
+}
+
+// NewPlantillaContratoClient returns a client for the PlantillaContrato from the given config.
+func NewPlantillaContratoClient(c config) *PlantillaContratoClient {
+	return &PlantillaContratoClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `plantillacontrato.Hooks(f(g(h())))`.
+func (c *PlantillaContratoClient) Use(hooks ...Hook) {
+	c.hooks.PlantillaContrato = append(c.hooks.PlantillaContrato, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `plantillacontrato.Intercept(f(g(h())))`.
+func (c *PlantillaContratoClient) Intercept(interceptors ...Interceptor) {
+	c.inters.PlantillaContrato = append(c.inters.PlantillaContrato, interceptors...)
+}
+
+// Create returns a builder for creating a PlantillaContrato entity.
+func (c *PlantillaContratoClient) Create() *PlantillaContratoCreate {
+	mutation := newPlantillaContratoMutation(c.config, OpCreate)
+	return &PlantillaContratoCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PlantillaContrato entities.
+func (c *PlantillaContratoClient) CreateBulk(builders ...*PlantillaContratoCreate) *PlantillaContratoCreateBulk {
+	return &PlantillaContratoCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *PlantillaContratoClient) MapCreateBulk(slice any, setFunc func(*PlantillaContratoCreate, int)) *PlantillaContratoCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &PlantillaContratoCreateBulk{err: fmt.Errorf("calling to PlantillaContratoClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*PlantillaContratoCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &PlantillaContratoCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PlantillaContrato.
+func (c *PlantillaContratoClient) Update() *PlantillaContratoUpdate {
+	mutation := newPlantillaContratoMutation(c.config, OpUpdate)
+	return &PlantillaContratoUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PlantillaContratoClient) UpdateOne(_m *PlantillaContrato) *PlantillaContratoUpdateOne {
+	mutation := newPlantillaContratoMutation(c.config, OpUpdateOne, withPlantillaContrato(_m))
+	return &PlantillaContratoUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PlantillaContratoClient) UpdateOneID(id int) *PlantillaContratoUpdateOne {
+	mutation := newPlantillaContratoMutation(c.config, OpUpdateOne, withPlantillaContratoID(id))
+	return &PlantillaContratoUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PlantillaContrato.
+func (c *PlantillaContratoClient) Delete() *PlantillaContratoDelete {
+	mutation := newPlantillaContratoMutation(c.config, OpDelete)
+	return &PlantillaContratoDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PlantillaContratoClient) DeleteOne(_m *PlantillaContrato) *PlantillaContratoDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *PlantillaContratoClient) DeleteOneID(id int) *PlantillaContratoDeleteOne {
+	builder := c.Delete().Where(plantillacontrato.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PlantillaContratoDeleteOne{builder}
+}
+
+// Query returns a query builder for PlantillaContrato.
+func (c *PlantillaContratoClient) Query() *PlantillaContratoQuery {
+	return &PlantillaContratoQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypePlantillaContrato},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a PlantillaContrato entity by its id.
+func (c *PlantillaContratoClient) Get(ctx context.Context, id int) (*PlantillaContrato, error) {
+	return c.Query().Where(plantillacontrato.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PlantillaContratoClient) GetX(ctx context.Context, id int) *PlantillaContrato {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEmpresa queries the empresa edge of a PlantillaContrato.
+func (c *PlantillaContratoClient) QueryEmpresa(_m *PlantillaContrato) *EmpresaQuery {
+	query := (&EmpresaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(plantillacontrato.Table, plantillacontrato.FieldID, id),
+			sqlgraph.To(empresa.Table, empresa.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, plantillacontrato.EmpresaTable, plantillacontrato.EmpresaColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *PlantillaContratoClient) Hooks() []Hook {
+	return c.hooks.PlantillaContrato
+}
+
+// Interceptors returns the client interceptors.
+func (c *PlantillaContratoClient) Interceptors() []Interceptor {
+	return c.inters.PlantillaContrato
+}
+
+func (c *PlantillaContratoClient) mutate(ctx context.Context, m *PlantillaContratoMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PlantillaContratoCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PlantillaContratoUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PlantillaContratoUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PlantillaContratoDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown PlantillaContrato mutation op: %q", m.Op())
 	}
 }
 
@@ -4399,13 +4574,13 @@ type (
 	hooks struct {
 		Admin, Asistencia, Cargo, Cliente, ClienteTelefono, Contrato, Empresa,
 		EmpresaUsuario, Gasto, Horario, MovimientoCaja, Pago, PagoAplicacion, Permiso,
-		Propiedad, Rol, ServicioMedicion, Ticket, TipoIdentificacion, TipoPago, Unidad,
-		Usuario []ent.Hook
+		PlantillaContrato, Propiedad, Rol, ServicioMedicion, Ticket,
+		TipoIdentificacion, TipoPago, Unidad, Usuario []ent.Hook
 	}
 	inters struct {
 		Admin, Asistencia, Cargo, Cliente, ClienteTelefono, Contrato, Empresa,
 		EmpresaUsuario, Gasto, Horario, MovimientoCaja, Pago, PagoAplicacion, Permiso,
-		Propiedad, Rol, ServicioMedicion, Ticket, TipoIdentificacion, TipoPago, Unidad,
-		Usuario []ent.Interceptor
+		PlantillaContrato, Propiedad, Rol, ServicioMedicion, Ticket,
+		TipoIdentificacion, TipoPago, Unidad, Usuario []ent.Interceptor
 	}
 )

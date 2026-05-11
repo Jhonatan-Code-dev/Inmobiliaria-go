@@ -16,6 +16,7 @@ import (
 	"rentals-go/ent/movimientocaja"
 	"rentals-go/ent/pago"
 	"rentals-go/ent/permiso"
+	"rentals-go/ent/plantillacontrato"
 	"rentals-go/ent/propiedad"
 	"rentals-go/ent/ticket"
 	"time"
@@ -340,6 +341,21 @@ func (_c *EmpresaCreate) AddPermisos(v ...*Permiso) *EmpresaCreate {
 		ids[i] = v[i].ID
 	}
 	return _c.AddPermisoIDs(ids...)
+}
+
+// AddPlantillasContratoIDs adds the "plantillas_contrato" edge to the PlantillaContrato entity by IDs.
+func (_c *EmpresaCreate) AddPlantillasContratoIDs(ids ...int) *EmpresaCreate {
+	_c.mutation.AddPlantillasContratoIDs(ids...)
+	return _c
+}
+
+// AddPlantillasContrato adds the "plantillas_contrato" edges to the PlantillaContrato entity.
+func (_c *EmpresaCreate) AddPlantillasContrato(v ...*PlantillaContrato) *EmpresaCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddPlantillasContratoIDs(ids...)
 }
 
 // Mutation returns the EmpresaMutation object of the builder.
@@ -699,6 +715,22 @@ func (_c *EmpresaCreate) createSpec() (*Empresa, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(permiso.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.PlantillasContratoIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.PlantillasContratoTable,
+			Columns: []string{empresa.PlantillasContratoColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(plantillacontrato.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

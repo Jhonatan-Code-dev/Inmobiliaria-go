@@ -477,6 +477,78 @@ func (h *AlquilerController) AnularPago(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{"message": "pago anulado correctamente"})
 }
 
+// --- Plantillas ---
+
+// ListarPlantillas godoc
+// @Summary Listar plantillas de contrato
+// @Tags Alquileres
+// @Router /api/user/alquileres/plantillas [get]
+func (h *AlquilerController) ListarPlantillas(c *fiber.Ctx) error {
+	empresaID := c.Locals("empresa_id").(int)
+	list, err := h.svc.ListarPlantillas(c.Context(), empresaID)
+	if err != nil {
+		return c.Status(500).JSON(errorResponse{Message: err.Error()})
+	}
+	return c.JSON(list)
+}
+
+// GuardarPlantilla godoc
+// @Summary Crear o actualizar plantilla
+// @Tags Alquileres
+// @Router /api/user/alquileres/plantillas [post]
+func (h *AlquilerController) GuardarPlantilla(c *fiber.Ctx) error {
+	empresaID := c.Locals("empresa_id").(int)
+	var req domain.PlantillaContrato
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(400).JSON(errorResponse{Message: "formato inválido"})
+	}
+	req.EmpresaID = empresaID
+	res, err := h.svc.GuardarPlantilla(c.Context(), &req)
+	if err != nil {
+		return c.Status(500).JSON(errorResponse{Message: err.Error()})
+	}
+	return c.JSON(res)
+}
+
+// EliminarPlantilla godoc
+// @Summary Eliminar plantilla
+// @Tags Alquileres
+// @Router /api/user/alquileres/plantillas/{id} [delete]
+func (h *AlquilerController) EliminarPlantilla(c *fiber.Ctx) error {
+	empresaID := c.Locals("empresa_id").(int)
+	id, _ := c.ParamsInt("id")
+	if err := h.svc.EliminarPlantilla(c.Context(), id, empresaID); err != nil {
+		return c.Status(500).JSON(errorResponse{Message: err.Error()})
+	}
+	return c.JSON(fiber.Map{"message": "plantilla eliminada"})
+}
+
+// --- Generación ---
+
+// GenerarDocumento godoc
+// @Summary Generar documento de contrato (Texto/Markdown)
+// @Description Genera el contenido del contrato reemplazando las variables dinámicas.
+// @Tags Alquileres
+// @Param id path int true "ID del alquiler"
+// @Param plantilla_id query int false "ID de la plantilla opcional"
+// @Router /api/user/alquileres/{id}/generar-documento [get]
+func (h *AlquilerController) GenerarDocumento(c *fiber.Ctx) error {
+	empresaID := c.Locals("empresa_id").(int)
+	id, _ := c.ParamsInt("id")
+	plantillaID := c.QueryInt("plantilla_id", 0)
+
+	texto, err := h.svc.GenerarContrato(c.Context(), id, empresaID, plantillaID)
+	if err != nil {
+		return c.Status(500).JSON(errorResponse{Message: err.Error()})
+	}
+
+	return c.JSON(fiber.Map{
+		"alquiler_id": id,
+		"contenido":   texto,
+	})
+}
+
+
 func mapAlquilerResponse(item *domain.Alquiler) alquilerResponse {
 	resp := alquilerResponse{
 		ID:          item.ID,

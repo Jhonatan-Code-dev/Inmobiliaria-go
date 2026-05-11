@@ -20,6 +20,7 @@ import (
 	"rentals-go/ent/pago"
 	"rentals-go/ent/pagoaplicacion"
 	"rentals-go/ent/permiso"
+	"rentals-go/ent/plantillacontrato"
 	"rentals-go/ent/predicate"
 	"rentals-go/ent/propiedad"
 	"rentals-go/ent/rol"
@@ -59,6 +60,7 @@ const (
 	TypePago               = "Pago"
 	TypePagoAplicacion     = "PagoAplicacion"
 	TypePermiso            = "Permiso"
+	TypePlantillaContrato  = "PlantillaContrato"
 	TypePropiedad          = "Propiedad"
 	TypeRol                = "Rol"
 	TypeServicioMedicion   = "ServicioMedicion"
@@ -6855,59 +6857,62 @@ func (m *ContratoMutation) ResetEdge(name string) error {
 // EmpresaMutation represents an operation that mutates the Empresa nodes in the graph.
 type EmpresaMutation struct {
 	config
-	op                      Op
-	typ                     string
-	id                      *int
-	creado_en               *time.Time
-	nombre                  *string
-	pais                    *string
-	moneda                  *string
-	maximo_usuarios         *int
-	addmaximo_usuarios      *int
-	estado                  *bool
-	vencimiento             *time.Time
-	horario_entrada_defecto *string
-	horario_salida_defecto  *string
-	tolerancia_defecto      *int
-	addtolerancia_defecto   *int
-	dias_laborables_defecto *string
-	clearedFields           map[string]struct{}
-	usuarios_empresa        map[int]struct{}
-	removedusuarios_empresa map[int]struct{}
-	clearedusuarios_empresa bool
-	clientes                map[int]struct{}
-	removedclientes         map[int]struct{}
-	clearedclientes         bool
-	propiedades             map[int]struct{}
-	removedpropiedades      map[int]struct{}
-	clearedpropiedades      bool
-	contratos               map[int]struct{}
-	removedcontratos        map[int]struct{}
-	clearedcontratos        bool
-	pagos                   map[int]struct{}
-	removedpagos            map[int]struct{}
-	clearedpagos            bool
-	gastos                  map[int]struct{}
-	removedgastos           map[int]struct{}
-	clearedgastos           bool
-	movimientos_caja        map[int]struct{}
-	removedmovimientos_caja map[int]struct{}
-	clearedmovimientos_caja bool
-	tickets                 map[int]struct{}
-	removedtickets          map[int]struct{}
-	clearedtickets          bool
-	horarios                map[int]struct{}
-	removedhorarios         map[int]struct{}
-	clearedhorarios         bool
-	asistencias             map[int]struct{}
-	removedasistencias      map[int]struct{}
-	clearedasistencias      bool
-	permisos                map[int]struct{}
-	removedpermisos         map[int]struct{}
-	clearedpermisos         bool
-	done                    bool
-	oldValue                func(context.Context) (*Empresa, error)
-	predicates              []predicate.Empresa
+	op                         Op
+	typ                        string
+	id                         *int
+	creado_en                  *time.Time
+	nombre                     *string
+	pais                       *string
+	moneda                     *string
+	maximo_usuarios            *int
+	addmaximo_usuarios         *int
+	estado                     *bool
+	vencimiento                *time.Time
+	horario_entrada_defecto    *string
+	horario_salida_defecto     *string
+	tolerancia_defecto         *int
+	addtolerancia_defecto      *int
+	dias_laborables_defecto    *string
+	clearedFields              map[string]struct{}
+	usuarios_empresa           map[int]struct{}
+	removedusuarios_empresa    map[int]struct{}
+	clearedusuarios_empresa    bool
+	clientes                   map[int]struct{}
+	removedclientes            map[int]struct{}
+	clearedclientes            bool
+	propiedades                map[int]struct{}
+	removedpropiedades         map[int]struct{}
+	clearedpropiedades         bool
+	contratos                  map[int]struct{}
+	removedcontratos           map[int]struct{}
+	clearedcontratos           bool
+	pagos                      map[int]struct{}
+	removedpagos               map[int]struct{}
+	clearedpagos               bool
+	gastos                     map[int]struct{}
+	removedgastos              map[int]struct{}
+	clearedgastos              bool
+	movimientos_caja           map[int]struct{}
+	removedmovimientos_caja    map[int]struct{}
+	clearedmovimientos_caja    bool
+	tickets                    map[int]struct{}
+	removedtickets             map[int]struct{}
+	clearedtickets             bool
+	horarios                   map[int]struct{}
+	removedhorarios            map[int]struct{}
+	clearedhorarios            bool
+	asistencias                map[int]struct{}
+	removedasistencias         map[int]struct{}
+	clearedasistencias         bool
+	permisos                   map[int]struct{}
+	removedpermisos            map[int]struct{}
+	clearedpermisos            bool
+	plantillas_contrato        map[int]struct{}
+	removedplantillas_contrato map[int]struct{}
+	clearedplantillas_contrato bool
+	done                       bool
+	oldValue                   func(context.Context) (*Empresa, error)
+	predicates                 []predicate.Empresa
 }
 
 var _ ent.Mutation = (*EmpresaMutation)(nil)
@@ -8064,6 +8069,60 @@ func (m *EmpresaMutation) ResetPermisos() {
 	m.removedpermisos = nil
 }
 
+// AddPlantillasContratoIDs adds the "plantillas_contrato" edge to the PlantillaContrato entity by ids.
+func (m *EmpresaMutation) AddPlantillasContratoIDs(ids ...int) {
+	if m.plantillas_contrato == nil {
+		m.plantillas_contrato = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.plantillas_contrato[ids[i]] = struct{}{}
+	}
+}
+
+// ClearPlantillasContrato clears the "plantillas_contrato" edge to the PlantillaContrato entity.
+func (m *EmpresaMutation) ClearPlantillasContrato() {
+	m.clearedplantillas_contrato = true
+}
+
+// PlantillasContratoCleared reports if the "plantillas_contrato" edge to the PlantillaContrato entity was cleared.
+func (m *EmpresaMutation) PlantillasContratoCleared() bool {
+	return m.clearedplantillas_contrato
+}
+
+// RemovePlantillasContratoIDs removes the "plantillas_contrato" edge to the PlantillaContrato entity by IDs.
+func (m *EmpresaMutation) RemovePlantillasContratoIDs(ids ...int) {
+	if m.removedplantillas_contrato == nil {
+		m.removedplantillas_contrato = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.plantillas_contrato, ids[i])
+		m.removedplantillas_contrato[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedPlantillasContrato returns the removed IDs of the "plantillas_contrato" edge to the PlantillaContrato entity.
+func (m *EmpresaMutation) RemovedPlantillasContratoIDs() (ids []int) {
+	for id := range m.removedplantillas_contrato {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// PlantillasContratoIDs returns the "plantillas_contrato" edge IDs in the mutation.
+func (m *EmpresaMutation) PlantillasContratoIDs() (ids []int) {
+	for id := range m.plantillas_contrato {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetPlantillasContrato resets all changes to the "plantillas_contrato" edge.
+func (m *EmpresaMutation) ResetPlantillasContrato() {
+	m.plantillas_contrato = nil
+	m.clearedplantillas_contrato = false
+	m.removedplantillas_contrato = nil
+}
+
 // Where appends a list predicates to the EmpresaMutation builder.
 func (m *EmpresaMutation) Where(ps ...predicate.Empresa) {
 	m.predicates = append(m.predicates, ps...)
@@ -8409,7 +8468,7 @@ func (m *EmpresaMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EmpresaMutation) AddedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.usuarios_empresa != nil {
 		edges = append(edges, empresa.EdgeUsuariosEmpresa)
 	}
@@ -8442,6 +8501,9 @@ func (m *EmpresaMutation) AddedEdges() []string {
 	}
 	if m.permisos != nil {
 		edges = append(edges, empresa.EdgePermisos)
+	}
+	if m.plantillas_contrato != nil {
+		edges = append(edges, empresa.EdgePlantillasContrato)
 	}
 	return edges
 }
@@ -8516,13 +8578,19 @@ func (m *EmpresaMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case empresa.EdgePlantillasContrato:
+		ids := make([]ent.Value, 0, len(m.plantillas_contrato))
+		for id := range m.plantillas_contrato {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EmpresaMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.removedusuarios_empresa != nil {
 		edges = append(edges, empresa.EdgeUsuariosEmpresa)
 	}
@@ -8555,6 +8623,9 @@ func (m *EmpresaMutation) RemovedEdges() []string {
 	}
 	if m.removedpermisos != nil {
 		edges = append(edges, empresa.EdgePermisos)
+	}
+	if m.removedplantillas_contrato != nil {
+		edges = append(edges, empresa.EdgePlantillasContrato)
 	}
 	return edges
 }
@@ -8629,13 +8700,19 @@ func (m *EmpresaMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case empresa.EdgePlantillasContrato:
+		ids := make([]ent.Value, 0, len(m.removedplantillas_contrato))
+		for id := range m.removedplantillas_contrato {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EmpresaMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.clearedusuarios_empresa {
 		edges = append(edges, empresa.EdgeUsuariosEmpresa)
 	}
@@ -8669,6 +8746,9 @@ func (m *EmpresaMutation) ClearedEdges() []string {
 	if m.clearedpermisos {
 		edges = append(edges, empresa.EdgePermisos)
 	}
+	if m.clearedplantillas_contrato {
+		edges = append(edges, empresa.EdgePlantillasContrato)
+	}
 	return edges
 }
 
@@ -8698,6 +8778,8 @@ func (m *EmpresaMutation) EdgeCleared(name string) bool {
 		return m.clearedasistencias
 	case empresa.EdgePermisos:
 		return m.clearedpermisos
+	case empresa.EdgePlantillasContrato:
+		return m.clearedplantillas_contrato
 	}
 	return false
 }
@@ -8746,6 +8828,9 @@ func (m *EmpresaMutation) ResetEdge(name string) error {
 		return nil
 	case empresa.EdgePermisos:
 		m.ResetPermisos()
+		return nil
+	case empresa.EdgePlantillasContrato:
+		m.ResetPlantillasContrato()
 		return nil
 	}
 	return fmt.Errorf("unknown Empresa edge %s", name)
@@ -15026,6 +15111,551 @@ func (m *PermisoMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Permiso edge %s", name)
+}
+
+// PlantillaContratoMutation represents an operation that mutates the PlantillaContrato nodes in the graph.
+type PlantillaContratoMutation struct {
+	config
+	op             Op
+	typ            string
+	id             *int
+	creado_en      *time.Time
+	nombre         *string
+	contenido      *string
+	clearedFields  map[string]struct{}
+	empresa        *int
+	clearedempresa bool
+	done           bool
+	oldValue       func(context.Context) (*PlantillaContrato, error)
+	predicates     []predicate.PlantillaContrato
+}
+
+var _ ent.Mutation = (*PlantillaContratoMutation)(nil)
+
+// plantillacontratoOption allows management of the mutation configuration using functional options.
+type plantillacontratoOption func(*PlantillaContratoMutation)
+
+// newPlantillaContratoMutation creates new mutation for the PlantillaContrato entity.
+func newPlantillaContratoMutation(c config, op Op, opts ...plantillacontratoOption) *PlantillaContratoMutation {
+	m := &PlantillaContratoMutation{
+		config:        c,
+		op:            op,
+		typ:           TypePlantillaContrato,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withPlantillaContratoID sets the ID field of the mutation.
+func withPlantillaContratoID(id int) plantillacontratoOption {
+	return func(m *PlantillaContratoMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *PlantillaContrato
+		)
+		m.oldValue = func(ctx context.Context) (*PlantillaContrato, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().PlantillaContrato.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withPlantillaContrato sets the old PlantillaContrato of the mutation.
+func withPlantillaContrato(node *PlantillaContrato) plantillacontratoOption {
+	return func(m *PlantillaContratoMutation) {
+		m.oldValue = func(context.Context) (*PlantillaContrato, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m PlantillaContratoMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m PlantillaContratoMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *PlantillaContratoMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *PlantillaContratoMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().PlantillaContrato.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreadoEn sets the "creado_en" field.
+func (m *PlantillaContratoMutation) SetCreadoEn(t time.Time) {
+	m.creado_en = &t
+}
+
+// CreadoEn returns the value of the "creado_en" field in the mutation.
+func (m *PlantillaContratoMutation) CreadoEn() (r time.Time, exists bool) {
+	v := m.creado_en
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreadoEn returns the old "creado_en" field's value of the PlantillaContrato entity.
+// If the PlantillaContrato object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlantillaContratoMutation) OldCreadoEn(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreadoEn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreadoEn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreadoEn: %w", err)
+	}
+	return oldValue.CreadoEn, nil
+}
+
+// ResetCreadoEn resets all changes to the "creado_en" field.
+func (m *PlantillaContratoMutation) ResetCreadoEn() {
+	m.creado_en = nil
+}
+
+// SetEmpresaID sets the "empresa_id" field.
+func (m *PlantillaContratoMutation) SetEmpresaID(i int) {
+	m.empresa = &i
+}
+
+// EmpresaID returns the value of the "empresa_id" field in the mutation.
+func (m *PlantillaContratoMutation) EmpresaID() (r int, exists bool) {
+	v := m.empresa
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmpresaID returns the old "empresa_id" field's value of the PlantillaContrato entity.
+// If the PlantillaContrato object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlantillaContratoMutation) OldEmpresaID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEmpresaID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEmpresaID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmpresaID: %w", err)
+	}
+	return oldValue.EmpresaID, nil
+}
+
+// ResetEmpresaID resets all changes to the "empresa_id" field.
+func (m *PlantillaContratoMutation) ResetEmpresaID() {
+	m.empresa = nil
+}
+
+// SetNombre sets the "nombre" field.
+func (m *PlantillaContratoMutation) SetNombre(s string) {
+	m.nombre = &s
+}
+
+// Nombre returns the value of the "nombre" field in the mutation.
+func (m *PlantillaContratoMutation) Nombre() (r string, exists bool) {
+	v := m.nombre
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNombre returns the old "nombre" field's value of the PlantillaContrato entity.
+// If the PlantillaContrato object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlantillaContratoMutation) OldNombre(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNombre is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNombre requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNombre: %w", err)
+	}
+	return oldValue.Nombre, nil
+}
+
+// ResetNombre resets all changes to the "nombre" field.
+func (m *PlantillaContratoMutation) ResetNombre() {
+	m.nombre = nil
+}
+
+// SetContenido sets the "contenido" field.
+func (m *PlantillaContratoMutation) SetContenido(s string) {
+	m.contenido = &s
+}
+
+// Contenido returns the value of the "contenido" field in the mutation.
+func (m *PlantillaContratoMutation) Contenido() (r string, exists bool) {
+	v := m.contenido
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldContenido returns the old "contenido" field's value of the PlantillaContrato entity.
+// If the PlantillaContrato object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PlantillaContratoMutation) OldContenido(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldContenido is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldContenido requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldContenido: %w", err)
+	}
+	return oldValue.Contenido, nil
+}
+
+// ResetContenido resets all changes to the "contenido" field.
+func (m *PlantillaContratoMutation) ResetContenido() {
+	m.contenido = nil
+}
+
+// ClearEmpresa clears the "empresa" edge to the Empresa entity.
+func (m *PlantillaContratoMutation) ClearEmpresa() {
+	m.clearedempresa = true
+	m.clearedFields[plantillacontrato.FieldEmpresaID] = struct{}{}
+}
+
+// EmpresaCleared reports if the "empresa" edge to the Empresa entity was cleared.
+func (m *PlantillaContratoMutation) EmpresaCleared() bool {
+	return m.clearedempresa
+}
+
+// EmpresaIDs returns the "empresa" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EmpresaID instead. It exists only for internal usage by the builders.
+func (m *PlantillaContratoMutation) EmpresaIDs() (ids []int) {
+	if id := m.empresa; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEmpresa resets all changes to the "empresa" edge.
+func (m *PlantillaContratoMutation) ResetEmpresa() {
+	m.empresa = nil
+	m.clearedempresa = false
+}
+
+// Where appends a list predicates to the PlantillaContratoMutation builder.
+func (m *PlantillaContratoMutation) Where(ps ...predicate.PlantillaContrato) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the PlantillaContratoMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *PlantillaContratoMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.PlantillaContrato, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *PlantillaContratoMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *PlantillaContratoMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (PlantillaContrato).
+func (m *PlantillaContratoMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *PlantillaContratoMutation) Fields() []string {
+	fields := make([]string, 0, 4)
+	if m.creado_en != nil {
+		fields = append(fields, plantillacontrato.FieldCreadoEn)
+	}
+	if m.empresa != nil {
+		fields = append(fields, plantillacontrato.FieldEmpresaID)
+	}
+	if m.nombre != nil {
+		fields = append(fields, plantillacontrato.FieldNombre)
+	}
+	if m.contenido != nil {
+		fields = append(fields, plantillacontrato.FieldContenido)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *PlantillaContratoMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case plantillacontrato.FieldCreadoEn:
+		return m.CreadoEn()
+	case plantillacontrato.FieldEmpresaID:
+		return m.EmpresaID()
+	case plantillacontrato.FieldNombre:
+		return m.Nombre()
+	case plantillacontrato.FieldContenido:
+		return m.Contenido()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *PlantillaContratoMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case plantillacontrato.FieldCreadoEn:
+		return m.OldCreadoEn(ctx)
+	case plantillacontrato.FieldEmpresaID:
+		return m.OldEmpresaID(ctx)
+	case plantillacontrato.FieldNombre:
+		return m.OldNombre(ctx)
+	case plantillacontrato.FieldContenido:
+		return m.OldContenido(ctx)
+	}
+	return nil, fmt.Errorf("unknown PlantillaContrato field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PlantillaContratoMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case plantillacontrato.FieldCreadoEn:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreadoEn(v)
+		return nil
+	case plantillacontrato.FieldEmpresaID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmpresaID(v)
+		return nil
+	case plantillacontrato.FieldNombre:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNombre(v)
+		return nil
+	case plantillacontrato.FieldContenido:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetContenido(v)
+		return nil
+	}
+	return fmt.Errorf("unknown PlantillaContrato field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *PlantillaContratoMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *PlantillaContratoMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PlantillaContratoMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown PlantillaContrato numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *PlantillaContratoMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *PlantillaContratoMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *PlantillaContratoMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown PlantillaContrato nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *PlantillaContratoMutation) ResetField(name string) error {
+	switch name {
+	case plantillacontrato.FieldCreadoEn:
+		m.ResetCreadoEn()
+		return nil
+	case plantillacontrato.FieldEmpresaID:
+		m.ResetEmpresaID()
+		return nil
+	case plantillacontrato.FieldNombre:
+		m.ResetNombre()
+		return nil
+	case plantillacontrato.FieldContenido:
+		m.ResetContenido()
+		return nil
+	}
+	return fmt.Errorf("unknown PlantillaContrato field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *PlantillaContratoMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.empresa != nil {
+		edges = append(edges, plantillacontrato.EdgeEmpresa)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *PlantillaContratoMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case plantillacontrato.EdgeEmpresa:
+		if id := m.empresa; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *PlantillaContratoMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *PlantillaContratoMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *PlantillaContratoMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedempresa {
+		edges = append(edges, plantillacontrato.EdgeEmpresa)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *PlantillaContratoMutation) EdgeCleared(name string) bool {
+	switch name {
+	case plantillacontrato.EdgeEmpresa:
+		return m.clearedempresa
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *PlantillaContratoMutation) ClearEdge(name string) error {
+	switch name {
+	case plantillacontrato.EdgeEmpresa:
+		m.ClearEmpresa()
+		return nil
+	}
+	return fmt.Errorf("unknown PlantillaContrato unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *PlantillaContratoMutation) ResetEdge(name string) error {
+	switch name {
+	case plantillacontrato.EdgeEmpresa:
+		m.ResetEmpresa()
+		return nil
+	}
+	return fmt.Errorf("unknown PlantillaContrato edge %s", name)
 }
 
 // PropiedadMutation represents an operation that mutates the Propiedad nodes in the graph.

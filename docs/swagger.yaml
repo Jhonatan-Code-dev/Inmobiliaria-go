@@ -677,6 +677,12 @@ definitions:
       usuario_nombre:
         type: string
     type: object
+  domain.CambiarEstadoTicket:
+    properties:
+      estado:
+        description: abierto, en_progreso, resuelto, cerrado
+        type: string
+    type: object
   domain.CargoResumen:
     properties:
       cargo_id:
@@ -950,6 +956,48 @@ definitions:
       total_ocupadas:
         type: integer
       total_unidades:
+        type: integer
+    type: object
+  domain.Ticket:
+    properties:
+      asunto:
+        type: string
+      cliente_id:
+        type: integer
+      cliente_nombre:
+        type: string
+      descripcion:
+        type: string
+      empresa_id:
+        type: integer
+      estado:
+        description: abierto, en_progreso, resuelto, cerrado
+        type: string
+      fecha_apertura:
+        type: string
+      fecha_cierre:
+        type: string
+      id:
+        type: integer
+      prioridad:
+        description: baja, media, alta
+        type: string
+      unidad_id:
+        type: integer
+      unidad_nombre:
+        type: string
+    type: object
+  domain.TicketResumen:
+    properties:
+      abiertos:
+        type: integer
+      cerrados:
+        type: integer
+      en_progreso:
+        type: integer
+      resueltos:
+        type: integer
+      total:
         type: integer
     type: object
   domain.TopUnidad:
@@ -1470,6 +1518,23 @@ paths:
       summary: Editar contrato de alquiler
       tags:
       - Alquileres
+  /api/user/alquileres/{id}/generar-documento:
+    get:
+      description: Genera el contenido del contrato reemplazando las variables dinámicas.
+      parameters:
+      - description: ID del alquiler
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: ID de la plantilla opcional
+        in: query
+        name: plantilla_id
+        type: integer
+      responses: {}
+      summary: Generar documento de contrato (Texto/Markdown)
+      tags:
+      - Alquileres
   /api/user/alquileres/{id}/terminar:
     post:
       parameters:
@@ -1480,6 +1545,23 @@ paths:
         type: integer
       responses: {}
       summary: Finalizar contrato formalmente
+      tags:
+      - Alquileres
+  /api/user/alquileres/plantillas:
+    get:
+      responses: {}
+      summary: Listar plantillas de contrato
+      tags:
+      - Alquileres
+    post:
+      responses: {}
+      summary: Crear o actualizar plantilla
+      tags:
+      - Alquileres
+  /api/user/alquileres/plantillas/{id}:
+    delete:
+      responses: {}
+      summary: Eliminar plantilla
       tags:
       - Alquileres
   /api/user/asistencia/configuracion:
@@ -3264,6 +3346,8 @@ paths:
   /api/user/tickets/{id}:
     delete:
       responses: {}
+      security:
+      - BearerAuth: []
       summary: Eliminar ticket
       tags:
       - Tickets
@@ -3275,6 +3359,100 @@ paths:
     put:
       responses: {}
       summary: Actualizar ticket
+      tags:
+      - Tickets
+  /api/user/tickets/{id}/estado:
+    patch:
+      consumes:
+      - application/json
+      description: Cambia el estado de un ticket a en_progreso, resuelto, o cerrado
+      parameters:
+      - description: ID del Ticket
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Nuevo estado
+        in: body
+        name: req
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CambiarEstadoTicket'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.Ticket'
+      security:
+      - BearerAuth: []
+      summary: Cambiar estado de ticket
+      tags:
+      - Tickets
+  /api/user/tickets/cola-trabajo:
+    get:
+      description: Obtiene los tickets abiertos o en progreso, ordenados por prioridad
+        (Alta -> Baja) y antigüedad.
+      parameters:
+      - default: 1
+        description: Página
+        in: query
+        name: pag
+        type: integer
+      - description: Búsqueda
+        in: query
+        name: buscar
+        type: string
+      - description: Filtrar por inmueble
+        in: query
+        name: propiedad_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/controller.paginatedResponse'
+      security:
+      - BearerAuth: []
+      summary: Listar cola de trabajo (Pendientes prioritarios)
+      tags:
+      - Tickets
+  /api/user/tickets/config-formulario:
+    get:
+      description: Retorna las listas de inmuebles, clientes, prioridades y estados
+        para llenar los dropdowns del formulario.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Obtener catálogos para el formulario de tickets
+      tags:
+      - Tickets
+  /api/user/tickets/resumen:
+    get:
+      description: Retorna los totales de tickets agrupados por estado
+      parameters:
+      - description: ID del Inmueble/Propiedad
+        in: query
+        name: propiedad_id
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.TicketResumen'
+      security:
+      - BearerAuth: []
+      summary: Obtener resumen de tickets
       tags:
       - Tickets
   /auth/login:

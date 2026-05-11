@@ -17,6 +17,7 @@ import (
 	"rentals-go/ent/pago"
 	"rentals-go/ent/pagoaplicacion"
 	"rentals-go/ent/permiso"
+	"rentals-go/ent/plantillacontrato"
 	"rentals-go/ent/propiedad"
 	"rentals-go/ent/rol"
 	"rentals-go/ent/schema"
@@ -630,6 +631,33 @@ func init() {
 	permisoDescRespuesta := permisoFields[5].Descriptor()
 	// permiso.RespuestaValidator is a validator for the "respuesta" field. It is called by the builders before save.
 	permiso.RespuestaValidator = permisoDescRespuesta.Validators[0].(func(string) error)
+	plantillacontratoMixin := schema.PlantillaContrato{}.Mixin()
+	plantillacontratoMixinFields0 := plantillacontratoMixin[0].Fields()
+	_ = plantillacontratoMixinFields0
+	plantillacontratoFields := schema.PlantillaContrato{}.Fields()
+	_ = plantillacontratoFields
+	// plantillacontratoDescCreadoEn is the schema descriptor for creado_en field.
+	plantillacontratoDescCreadoEn := plantillacontratoMixinFields0[0].Descriptor()
+	// plantillacontrato.DefaultCreadoEn holds the default value on creation for the creado_en field.
+	plantillacontrato.DefaultCreadoEn = plantillacontratoDescCreadoEn.Default.(func() time.Time)
+	// plantillacontratoDescNombre is the schema descriptor for nombre field.
+	plantillacontratoDescNombre := plantillacontratoFields[1].Descriptor()
+	// plantillacontrato.NombreValidator is a validator for the "nombre" field. It is called by the builders before save.
+	plantillacontrato.NombreValidator = func() func(string) error {
+		validators := plantillacontratoDescNombre.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(nombre string) error {
+			for _, fn := range fns {
+				if err := fn(nombre); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	propiedadMixin := schema.Propiedad{}.Mixin()
 	propiedadMixinFields0 := propiedadMixin[0].Fields()
 	_ = propiedadMixinFields0

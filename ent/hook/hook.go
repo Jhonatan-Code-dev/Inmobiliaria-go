@@ -176,6 +176,18 @@ func (f PermisoFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PermisoMutation", m)
 }
 
+// The PlantillaContratoFunc type is an adapter to allow the use of ordinary
+// function as PlantillaContrato mutator.
+type PlantillaContratoFunc func(context.Context, *ent.PlantillaContratoMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PlantillaContratoFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PlantillaContratoMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PlantillaContratoMutation", m)
+}
+
 // The PropiedadFunc type is an adapter to allow the use of ordinary
 // function as Propiedad mutator.
 type PropiedadFunc func(context.Context, *ent.PropiedadMutation) (ent.Value, error)

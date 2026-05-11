@@ -943,6 +943,29 @@ func HasPermisosWith(preds ...predicate.Permiso) predicate.Empresa {
 	})
 }
 
+// HasPlantillasContrato applies the HasEdge predicate on the "plantillas_contrato" edge.
+func HasPlantillasContrato() predicate.Empresa {
+	return predicate.Empresa(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, PlantillasContratoTable, PlantillasContratoColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasPlantillasContratoWith applies the HasEdge predicate on the "plantillas_contrato" edge with a given conditions (other predicates).
+func HasPlantillasContratoWith(preds ...predicate.PlantillaContrato) predicate.Empresa {
+	return predicate.Empresa(func(s *sql.Selector) {
+		step := newPlantillasContratoStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Empresa) predicate.Empresa {
 	return predicate.Empresa(sql.AndPredicates(predicates...))

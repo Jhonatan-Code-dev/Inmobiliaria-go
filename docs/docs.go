@@ -677,6 +677,31 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/user/alquileres/plantillas": {
+            "get": {
+                "tags": [
+                    "Alquileres"
+                ],
+                "summary": "Listar plantillas de contrato",
+                "responses": {}
+            },
+            "post": {
+                "tags": [
+                    "Alquileres"
+                ],
+                "summary": "Crear o actualizar plantilla",
+                "responses": {}
+            }
+        },
+        "/api/user/alquileres/plantillas/{id}": {
+            "delete": {
+                "tags": [
+                    "Alquileres"
+                ],
+                "summary": "Eliminar plantilla",
+                "responses": {}
+            }
+        },
         "/api/user/alquileres/{id}": {
             "get": {
                 "security": [
@@ -772,6 +797,31 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/user/alquileres/{id}/generar-documento": {
+            "get": {
+                "description": "Genera el contenido del contrato reemplazando las variables dinámicas.",
+                "tags": [
+                    "Alquileres"
+                ],
+                "summary": "Generar documento de contrato (Texto/Markdown)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del alquiler",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la plantilla opcional",
+                        "name": "plantilla_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {}
@@ -3525,6 +3575,108 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/user/tickets/cola-trabajo": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Obtiene los tickets abiertos o en progreso, ordenados por prioridad (Alta -\u003e Baja) y antigüedad.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Listar cola de trabajo (Pendientes prioritarios)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "default": 1,
+                        "description": "Página",
+                        "name": "pag",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Búsqueda",
+                        "name": "buscar",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Filtrar por inmueble",
+                        "name": "propiedad_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/controller.paginatedResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/tickets/config-formulario": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retorna las listas de inmuebles, clientes, prioridades y estados para llenar los dropdowns del formulario.",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Obtener catálogos para el formulario de tickets",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/user/tickets/resumen": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Retorna los totales de tickets agrupados por estado",
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Obtener resumen de tickets",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del Inmueble/Propiedad",
+                        "name": "propiedad_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.TicketResumen"
+                        }
+                    }
+                }
+            }
+        },
         "/api/user/tickets/{id}": {
             "get": {
                 "tags": [
@@ -3541,11 +3693,62 @@ const docTemplate = `{
                 "responses": {}
             },
             "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "tags": [
                     "Tickets"
                 ],
                 "summary": "Eliminar ticket",
                 "responses": {}
+            }
+        },
+        "/api/user/tickets/{id}/estado": {
+            "patch": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Cambia el estado de un ticket a en_progreso, resuelto, o cerrado",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Tickets"
+                ],
+                "summary": "Cambiar estado de ticket",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del Ticket",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Nuevo estado",
+                        "name": "req",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.CambiarEstadoTicket"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Ticket"
+                        }
+                    }
+                }
             }
         },
         "/auth/login": {
@@ -4734,6 +4937,15 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.CambiarEstadoTicket": {
+            "type": "object",
+            "properties": {
+                "estado": {
+                    "description": "abierto, en_progreso, resuelto, cerrado",
+                    "type": "string"
+                }
+            }
+        },
         "domain.CargoResumen": {
             "type": "object",
             "properties": {
@@ -5142,6 +5354,69 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "total_unidades": {
+                    "type": "integer"
+                }
+            }
+        },
+        "domain.Ticket": {
+            "type": "object",
+            "properties": {
+                "asunto": {
+                    "type": "string"
+                },
+                "cliente_id": {
+                    "type": "integer"
+                },
+                "cliente_nombre": {
+                    "type": "string"
+                },
+                "descripcion": {
+                    "type": "string"
+                },
+                "empresa_id": {
+                    "type": "integer"
+                },
+                "estado": {
+                    "description": "abierto, en_progreso, resuelto, cerrado",
+                    "type": "string"
+                },
+                "fecha_apertura": {
+                    "type": "string"
+                },
+                "fecha_cierre": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "prioridad": {
+                    "description": "baja, media, alta",
+                    "type": "string"
+                },
+                "unidad_id": {
+                    "type": "integer"
+                },
+                "unidad_nombre": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.TicketResumen": {
+            "type": "object",
+            "properties": {
+                "abiertos": {
+                    "type": "integer"
+                },
+                "cerrados": {
+                    "type": "integer"
+                },
+                "en_progreso": {
+                    "type": "integer"
+                },
+                "resueltos": {
+                    "type": "integer"
+                },
+                "total": {
                     "type": "integer"
                 }
             }

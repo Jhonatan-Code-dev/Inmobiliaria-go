@@ -534,6 +534,28 @@ var (
 			},
 		},
 	}
+	// PlantillasContratoColumns holds the columns for the "plantillas_contrato" table.
+	PlantillasContratoColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "creado_en", Type: field.TypeTime},
+		{Name: "nombre", Type: field.TypeString, Size: 100},
+		{Name: "contenido", Type: field.TypeString, Size: 2147483647},
+		{Name: "empresa_id", Type: field.TypeInt},
+	}
+	// PlantillasContratoTable holds the schema information for the "plantillas_contrato" table.
+	PlantillasContratoTable = &schema.Table{
+		Name:       "plantillas_contrato",
+		Columns:    PlantillasContratoColumns,
+		PrimaryKey: []*schema.Column{PlantillasContratoColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "plantillas_contrato_empresas_plantillas_contrato",
+				Columns:    []*schema.Column{PlantillasContratoColumns[4]},
+				RefColumns: []*schema.Column{EmpresasColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// PropiedadesColumns holds the columns for the "propiedades" table.
 	PropiedadesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -779,6 +801,7 @@ var (
 		PagosTable,
 		PagoAplicacionesTable,
 		PermisosTable,
+		PlantillasContratoTable,
 		PropiedadesTable,
 		RolesTable,
 		ServicioMedicionesTable,
@@ -861,6 +884,10 @@ func init() {
 	PermisosTable.ForeignKeys[1].RefTable = UsuariosTable
 	PermisosTable.Annotation = &entsql.Annotation{
 		Table: "permisos",
+	}
+	PlantillasContratoTable.ForeignKeys[0].RefTable = EmpresasTable
+	PlantillasContratoTable.Annotation = &entsql.Annotation{
+		Table: "plantillas_contrato",
 	}
 	PropiedadesTable.ForeignKeys[0].RefTable = EmpresasTable
 	PropiedadesTable.Annotation = &entsql.Annotation{

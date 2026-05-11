@@ -40,6 +40,8 @@ type Tx struct {
 	PagoAplicacion *PagoAplicacionClient
 	// Permiso is the client for interacting with the Permiso builders.
 	Permiso *PermisoClient
+	// PlantillaContrato is the client for interacting with the PlantillaContrato builders.
+	PlantillaContrato *PlantillaContratoClient
 	// Propiedad is the client for interacting with the Propiedad builders.
 	Propiedad *PropiedadClient
 	// Rol is the client for interacting with the Rol builders.
@@ -201,6 +203,7 @@ func (tx *Tx) init() {
 	tx.Pago = NewPagoClient(tx.config)
 	tx.PagoAplicacion = NewPagoAplicacionClient(tx.config)
 	tx.Permiso = NewPermisoClient(tx.config)
+	tx.PlantillaContrato = NewPlantillaContratoClient(tx.config)
 	tx.Propiedad = NewPropiedadClient(tx.config)
 	tx.Rol = NewRolClient(tx.config)
 	tx.ServicioMedicion = NewServicioMedicionClient(tx.config)

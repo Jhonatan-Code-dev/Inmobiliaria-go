@@ -48,6 +48,9 @@ type PagoAplicacion func(*sql.Selector)
 // Permiso is the predicate function for permiso builders.
 type Permiso func(*sql.Selector)
 
+// PlantillaContrato is the predicate function for plantillacontrato builders.
+type PlantillaContrato func(*sql.Selector)
+
 // Propiedad is the predicate function for propiedad builders.
 type Propiedad func(*sql.Selector)
 

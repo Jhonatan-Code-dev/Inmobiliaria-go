@@ -84,14 +84,22 @@ func (s *empresaRepoStub) Actualizar(ctx context.Context, emp *domain.Empresa) (
 func (s *empresaRepoStub) Eliminar(ctx context.Context, id int) error {
 	return nil
 }
+func (s *empresaRepoStub) ActualizarConfiguracionAsistencia(ctx context.Context, id int, config *domain.ConfiguracionAsistencia) error {
+	return nil
+}
 
 func TestMarcarAsistencia_CalculoHoras(t *testing.T) {
 	// Preparar datos
-	hoy := time.Now().UTC()
-	fechaHoy := time.Date(hoy.Year(), hoy.Month(), hoy.Day(), 0, 0, 0, 0, hoy.Location())
+	zona := "America/Lima"
+	ahora := time.Now().UTC()
+	loc, _ := time.LoadLocation(zona)
+	ahoraLocal := ahora.In(loc)
+	
+	// Fecha lógica coincidente con la del servicio
+	fechaHoy := time.Date(ahoraLocal.Year(), ahoraLocal.Month(), ahoraLocal.Day(), 0, 0, 0, 0, time.UTC)
 	
 	// Simulamos que entró hace 8.5 horas
-	entrada := hoy.Add(-8 * time.Hour).Add(-30 * time.Minute)
+	entrada := ahora.Add(-8 * time.Hour).Add(-30 * time.Minute)
 	
 	repo := &asistenciaRepoStub{
 		data: map[string]*domain.Asistencia{

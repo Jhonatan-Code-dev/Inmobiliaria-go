@@ -64,6 +64,8 @@ func Register(app *fiber.App, appDI *di.App) {
 	alquileres.Post("/plantillas", appDI.AlquilerCtrl.GuardarPlantilla)
 	alquileres.Delete("/plantillas/:id", appDI.AlquilerCtrl.EliminarPlantilla)
 	alquileres.Get("/:id/generar-documento", appDI.AlquilerCtrl.GenerarDocumento)
+	alquileres.Get("/:id/descargar-word", appDI.AlquilerCtrl.DescargarWord)
+	alquileres.Post("/generar-borrador", appDI.AlquilerCtrl.GenerarBorrador)
 
 	// Módulo de Pagos de alquiler
 	pagos := app.Group("/api/user/pagos")

@@ -68,9 +68,12 @@ func (s *AsistenciaService) AsignarHorario(ctx context.Context, empresaID int, r
 // --- Asistencia ---
 
 func (s *AsistenciaService) MarcarAsistencia(ctx context.Context, usuarioID int, empresaID int) (*domain.Asistencia, error) {
+	zona := s.getZonaHorariaEmpresa(ctx, empresaID)
 	ahora := tiempo.AhoraUTC()
-	// Idealmente se debería usar la zona horaria de la empresa, simplificamos con UTC para el demo
-	hoy := time.Date(ahora.Year(), ahora.Month(), ahora.Day(), 0, 0, 0, 0, ahora.Location())
+	ahoraLocal, _ := tiempo.EnZona(ahora, zona)
+
+	// Fecha lógica del día en la zona horaria de la empresa
+	hoy := time.Date(ahoraLocal.Year(), ahoraLocal.Month(), ahoraLocal.Day(), 0, 0, 0, 0, time.UTC)
 
 	// 1. Buscar si ya tiene una marca hoy
 	registro, _ := s.asistenciaRepo.BuscarPorFechaUsuario(ctx, usuarioID, empresaID, hoy)
@@ -87,10 +90,10 @@ func (s *AsistenciaService) MarcarAsistencia(ctx context.Context, usuarioID int,
 
 		// Obtener horario para verificar tardanza
 		horario, err := s.horarioRepo.BuscarPorUsuario(ctx, usuarioID, empresaID)
-		
+
 		var horaEntradaStr string
 		var toleranciaMinutos int
-		
+
 		if err == nil && horario != nil {
 			horaEntradaStr = horario.HoraEntrada
 			toleranciaMinutos = horario.ToleranciaMinutos
@@ -104,12 +107,6 @@ func (s *AsistenciaService) MarcarAsistencia(ctx context.Context, usuarioID int,
 		}
 
 		if horaEntradaStr != "" {
-			// Obtener zona horaria de la empresa
-			zona := s.getZonaHorariaEmpresa(ctx, empresaID)
-
-			// Convertir 'ahora' a la hora local de la empresa para comparar
-			ahoraLocal, _ := tiempo.EnZona(ahora, zona)
-			
 			horaAsignada, errParse := time.Parse("15:04", horaEntradaStr)
 			if errParse == nil {
 				// Crear instancia de la hora esperada en la zona local
@@ -122,7 +119,11 @@ func (s *AsistenciaService) MarcarAsistencia(ctx context.Context, usuarioID int,
 			}
 		}
 
-		return s.asistenciaRepo.Crear(ctx, nuevoRegistro)
+		res, err := s.asistenciaRepo.Crear(ctx, nuevoRegistro)
+		if err == nil {
+			s.localizarAsistencia(res, zona)
+		}
+		return res, err
 	}
 
 	// 3. Si ya tiene registro, y no tiene salida, es SALIDA
@@ -134,7 +135,11 @@ func (s *AsistenciaService) MarcarAsistencia(ctx context.Context, usuarioID int,
 		horas := diff.Hours()
 		registro.HorasTrabajadas = &horas
 
-		return s.asistenciaRepo.Actualizar(ctx, registro)
+		res, err := s.asistenciaRepo.Actualizar(ctx, registro)
+		if err == nil {
+			s.localizarAsistencia(res, zona)
+		}
+		return res, err
 	}
 
 	// 4. Ya marcó entrada y salida
@@ -142,7 +147,17 @@ func (s *AsistenciaService) MarcarAsistencia(ctx context.Context, usuarioID int,
 }
 
 func (s *AsistenciaService) ListarAsistencia(ctx context.Context, filtros domain.AsistenciaFiltros) ([]*domain.Asistencia, int, error) {
-	return s.asistenciaRepo.ListarPaginado(ctx, filtros)
+	lista, total, err := s.asistenciaRepo.ListarPaginado(ctx, filtros)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	zona := s.getZonaHorariaEmpresa(ctx, filtros.EmpresaID)
+	for _, a := range lista {
+		s.localizarAsistencia(a, zona)
+	}
+
+	return lista, total, nil
 }
 
 func (s *AsistenciaService) ConsultarReporteAsistencia(ctx context.Context, filtros domain.AsistenciaFiltros) ([]*domain.Asistencia, int, error) {
@@ -177,6 +192,9 @@ func (s *AsistenciaService) ConsultarReporteAsistencia(ctx context.Context, filt
 				}
 			}
 		}
+
+		// Localizar horas para el reporte
+		s.localizarAsistencia(a, zona)
 
 		// Formatear horas trabajadas a texto (ej. 1H 2M 1S)
 		if a.HorasTrabajadas != nil {
@@ -227,7 +245,33 @@ func (s *AsistenciaService) ListarMiHistorial(ctx context.Context, usuarioID int
 		Limite:    100, // Últimos 100 registros
 	}
 	asistencias, _, err := s.asistenciaRepo.ListarPaginado(ctx, filtros)
-	return asistencias, err
+	if err != nil {
+		return nil, err
+	}
+
+	zona := s.getZonaHorariaEmpresa(ctx, empresaID)
+	for _, a := range asistencias {
+		s.localizarAsistencia(a, zona)
+	}
+
+	return asistencias, nil
+}
+
+func (s *AsistenciaService) localizarAsistencia(a *domain.Asistencia, zona string) {
+	if a == nil {
+		return
+	}
+
+	// La fecha ya representa el día correcto (00:00:00 UTC)
+	// Solo localizamos los instantes precisos de entrada y salida
+	if a.HoraEntrada != nil {
+		local, _ := tiempo.EnZona(*a.HoraEntrada, zona)
+		a.HoraEntrada = &local
+	}
+	if a.HoraSalida != nil {
+		local, _ := tiempo.EnZona(*a.HoraSalida, zona)
+		a.HoraSalida = &local
+	}
 }
 
 // --- Permisos ---
@@ -280,6 +324,9 @@ func (s *AsistenciaService) ObtenerConfiguracionEmpresa(ctx context.Context, emp
 	emp, err := s.empresaRepo.BuscarPorID(ctx, empresaID)
 	if err != nil {
 		return nil, err
+	}
+	if emp == nil {
+		return nil, fmt.Errorf("empresa no encontrada")
 	}
 
 	return &domain.ConfiguracionAsistencia{

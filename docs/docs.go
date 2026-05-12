@@ -677,6 +677,33 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/user/alquileres/generar-borrador": {
+            "post": {
+                "description": "Genera un documento Word (.doc) al vuelo con datos manuales.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/msword"
+                ],
+                "tags": [
+                    "Alquileres"
+                ],
+                "summary": "Generar contrato rápido en Word",
+                "parameters": [
+                    {
+                        "description": "Datos para generar el borrador",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.GenerarBorradorRequest"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/api/user/alquileres/plantillas": {
             "get": {
                 "tags": [
@@ -797,6 +824,34 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/api/user/alquileres/{id}/descargar-word": {
+            "get": {
+                "description": "Genera y descarga un archivo .doc compatible con Microsoft Word.",
+                "produces": [
+                    "application/vnd.ms-word"
+                ],
+                "tags": [
+                    "Alquileres"
+                ],
+                "summary": "Descargar contrato en formato Word",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID del alquiler",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "ID de la plantilla opcional",
+                        "name": "plantilla_id",
+                        "in": "query"
                     }
                 ],
                 "responses": {}
@@ -5087,6 +5142,53 @@ const docTemplate = `{
                 },
                 "total_pagado": {
                     "type": "number"
+                }
+            }
+        },
+        "domain.GenerarBorradorRequest": {
+            "type": "object",
+            "properties": {
+                "cliente_apellidos": {
+                    "type": "string"
+                },
+                "cliente_correo": {
+                    "type": "string"
+                },
+                "cliente_direccion": {
+                    "type": "string"
+                },
+                "cliente_documento": {
+                    "type": "string"
+                },
+                "cliente_nombre": {
+                    "type": "string"
+                },
+                "dia_vencimiento": {
+                    "type": "integer"
+                },
+                "fecha_fin": {
+                    "type": "string"
+                },
+                "fecha_inicio": {
+                    "type": "string"
+                },
+                "moneda": {
+                    "type": "string"
+                },
+                "monto_deposito": {
+                    "type": "number"
+                },
+                "monto_renta": {
+                    "type": "number"
+                },
+                "observaciones": {
+                    "type": "string"
+                },
+                "plantilla_id": {
+                    "type": "integer"
+                },
+                "unidad_codigo": {
+                    "type": "string"
                 }
             }
         },

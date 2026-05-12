@@ -17,6 +17,9 @@ const (
 // AdminAuth valida token de administrador.
 func AdminAuth(cfg *env.Config) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		if c.Method() == fiber.MethodOptions {
+			return c.Next()
+		}
 		claims, err := parseToken(c, []byte(cfg.JWTSecret))
 		if err != nil || claims.AdminID == 0 || claims.Rol != rolAdmin {
 			return fiber.ErrUnauthorized
@@ -29,6 +32,9 @@ func AdminAuth(cfg *env.Config) fiber.Handler {
 // TenantAuth valida token de usuario.
 func TenantAuth(cfg *env.Config) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		if c.Method() == fiber.MethodOptions {
+			return c.Next()
+		}
 		claims, err := parseToken(c, []byte(cfg.JWTSecret))
 		if err != nil || claims.UsuarioID == 0 || claims.Rol != rolTenant {
 			return fiber.ErrUnauthorized

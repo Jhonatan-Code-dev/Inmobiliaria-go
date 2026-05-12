@@ -48,7 +48,7 @@ func InitializeApp() (*App, error) {
 	inmuebleService := service.NewInmuebleService(inmuebleRepoEnt)
 	inmuebleController := controller.NewInmuebleController(inmuebleService)
 	alquilerRepoEnt := repository.NewAlquilerRepo(client)
-	alquilerService := service.NewAlquilerService(alquilerRepoEnt, clienteRepoEnt)
+	alquilerService := service.NewAlquilerService(alquilerRepoEnt, clienteRepoEnt, empresaRepoEnt)
 	pagoAlquilerRepoEnt := repository.NewPagoAlquilerRepo(client)
 	pagoAlquilerService := service.NewPagoAlquilerService(pagoAlquilerRepoEnt)
 	alquilerController := controller.NewAlquilerController(alquilerService, pagoAlquilerService)

@@ -37,6 +37,23 @@ type PlantillaContrato struct {
 	CreadoEn  time.Time `json:"creado_en"`
 }
 
+type GenerarBorradorRequest struct {
+	PlantillaID      int     `json:"plantilla_id"`
+	ClienteDocumento string  `json:"cliente_documento"`
+	ClienteNombre    string  `json:"cliente_nombre"`
+	ClienteApellidos string  `json:"cliente_apellidos"`
+	ClienteDireccion string  `json:"cliente_direccion"`
+	ClienteCorreo    string  `json:"cliente_correo"`
+	UnidadCodigo     string  `json:"unidad_codigo"`
+	MontoRenta       float64 `json:"monto_renta"`
+	MontoDeposito    float64 `json:"monto_deposito"`
+	Moneda           string  `json:"moneda"`
+	FechaInicio      string  `json:"fecha_inicio"`
+	FechaFin         string  `json:"fecha_fin"`
+	DiaVencimiento   int     `json:"dia_vencimiento"`
+	Observaciones    string  `json:"observaciones"`
+}
+
 type AlquilerFiltros struct {
 	EmpresaID int
 	Busqueda  string

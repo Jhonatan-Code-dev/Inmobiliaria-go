@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -546,6 +547,56 @@ func (h *AlquilerController) GenerarDocumento(c *fiber.Ctx) error {
 		"alquiler_id": id,
 		"contenido":   texto,
 	})
+}
+
+// DescargarWord godoc
+// @Summary Descargar contrato en formato Word
+// @Description Genera y descarga un archivo .doc compatible con Microsoft Word.
+// @Tags Alquileres
+// @Param id path int true "ID del alquiler"
+// @Param plantilla_id query int false "ID de la plantilla opcional"
+// @Produce application/vnd.ms-word
+// @Router /api/user/alquileres/{id}/descargar-word [get]
+func (h *AlquilerController) DescargarWord(c *fiber.Ctx) error {
+	empresaID := c.Locals("empresa_id").(int)
+	id, _ := c.ParamsInt("id")
+	plantillaID := c.QueryInt("plantilla_id", 0)
+
+	bytes, err := h.svc.GenerarContratoWord(c.Context(), id, empresaID, plantillaID)
+	if err != nil {
+		return c.Status(500).JSON(errorResponse{Message: err.Error()})
+	}
+
+	c.Set("Content-Type", "application/msword")
+	c.Set("Content-Disposition", fmt.Sprintf("attachment; filename=\"CONTRATO_ARRENDAMIENTO_%d.doc\"", id))
+
+	return c.Send(bytes)
+}
+
+// GenerarBorrador godoc
+// @Summary Generar contrato rápido en Word
+// @Description Genera un documento Word (.doc) al vuelo con datos manuales.
+// @Tags Alquileres
+// @Accept json
+// @Produce application/msword
+// @Param request body domain.GenerarBorradorRequest true "Datos para generar el borrador"
+// @Router /api/user/alquileres/generar-borrador [post]
+func (h *AlquilerController) GenerarBorrador(c *fiber.Ctx) error {
+	empresaID := c.Locals("empresa_id").(int)
+	var req domain.GenerarBorradorRequest
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(400).JSON(errorResponse{Message: "formato inválido"})
+	}
+
+	bytes, err := h.svc.GenerarContratoBorrador(c.Context(), empresaID, req)
+	if err != nil {
+		return c.Status(500).JSON(errorResponse{Message: err.Error()})
+	}
+
+	c.Set("Content-Type", "application/msword")
+	c.Set("Content-Disposition", "attachment; filename=\"BORRADOR_CONTRATO_ARRENDAMIENTO.doc\"")
+
+	return c.Send(bytes)
 }
 
 

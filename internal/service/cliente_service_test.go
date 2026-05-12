@@ -13,6 +13,9 @@ type clienteRepoStub struct {
 }
 
 func (s *clienteRepoStub) ListarPaginado(ctx context.Context, filtros domain.ClienteFiltros) ([]*domain.Cliente, int, error) {
+	if s.cliente != nil && s.cliente.DocumentoNumero == filtros.Busqueda {
+		return []*domain.Cliente{s.cliente}, 1, nil
+	}
 	return []*domain.Cliente{}, 0, nil
 }
 

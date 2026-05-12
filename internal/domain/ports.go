@@ -152,6 +152,8 @@ type (
 		GuardarPlantilla(ctx context.Context, p *PlantillaContrato) (*PlantillaContrato, error)
 		EliminarPlantilla(ctx context.Context, id int, empresaID int) error
 		GenerarContrato(ctx context.Context, id int, empresaID int, plantillaID int) (string, error)
+		GenerarContratoWord(ctx context.Context, id int, empresaID int, plantillaID int) ([]byte, error)
+		GenerarContratoBorrador(ctx context.Context, empresaID int, req GenerarBorradorRequest) ([]byte, error)
 	}
 
 	PagoAlquilerService interface {

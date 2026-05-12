@@ -192,13 +192,13 @@ __________________________&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	emp, _ := s.empresa.BuscarPorID(ctx, empresaID)
 	empNombre := "LA MERCANTIL E.I.R.L."
 	empRUC := "20615683346"
-	empDireccion := "Lima, Chiclayo, PERÚ"
+	empDireccion := "Lambayeque, Chiclayo, PERÚ"
+	// Ignoramos el nombre de la DB para usar "La Mercantil" directo como pidió el usuario
 	if emp != nil {
-		empNombre = emp.Nombre
-		if emp.RUC != nil {
+		if emp.RUC != nil && *emp.RUC != "" && *emp.RUC != "20615683346" {
 			empRUC = *emp.RUC
 		}
-		if emp.Direccion != nil {
+		if emp.Direccion != nil && *emp.Direccion != "" && *emp.Direccion != "Lambayeque, Chiclayo, PERÚ" {
 			empDireccion = *emp.Direccion
 		}
 	}
@@ -520,13 +520,13 @@ __________________________&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 	emp, _ := s.empresa.BuscarPorID(ctx, empresaID)
 	empNombre := "LA MERCANTIL E.I.R.L."
 	empRUC := "20615683346"
-	empDireccion := "Lima, Chiclayo, PERÚ"
+	empDireccion := "Lambayeque, Chiclayo, PERÚ"
+	// Ignoramos el nombre de la DB para usar "La Mercantil" directo como pidió el usuario
 	if emp != nil {
-		empNombre = emp.Nombre
-		if emp.RUC != nil {
+		if emp.RUC != nil && *emp.RUC != "" && *emp.RUC != "20615683346" {
 			empRUC = *emp.RUC
 		}
-		if emp.Direccion != nil {
+		if emp.Direccion != nil && *emp.Direccion != "" && *emp.Direccion != "Lambayeque, Chiclayo, PERÚ" {
 			empDireccion = *emp.Direccion
 		}
 	}

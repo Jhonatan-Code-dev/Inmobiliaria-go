@@ -1,74 +1,92 @@
-# Documentación Completa: Módulo de Mediciones y Servicios
+# Documentación Profesional: Módulo de Mediciones y Servicios (V2)
 
-Esta guía contiene la lista definitiva de endpoints para la gestión integral de servicios (Luz, Agua, etc.) en el sistema de alquileres.
+Este documento centraliza todos los endpoints necesarios para el registro, cálculo y facturación de servicios variables (Luz, Agua, etc.) en el sistema de Rentals.
 
-## 1. Consulta de Lectura Anterior
-Obtiene el valor del medidor del mes previo para un contrato específico.
+## 1. Consultar Estado Actual (Pre-llenado)
+Antes de registrar una lectura, el frontend debe obtener los datos históricos para calcular el consumo esperado.
 
 - **URL**: `GET /api/user/servicios/ultimo/:contrato_id`
-- **Query Params**: `tipo` (luz|agua)
-- **Respuesta**: El objeto de la última medición o `{"lectura_actual": 0}` si es nuevo.
-
----
-
-## 2. Registro Individual con Cobro Automático
-Registra una lectura y genera la deuda en el sistema financiero instantáneamente.
-
-- **URL**: `POST /api/user/servicios/registrar-y-cobrar`
-- **Body**:
+- **Query Params**: `tipo` (opcional, default `luz`)
+- **Respuesta**:
 ```json
 {
-  "contrato_id": 1,
+  "contrato_id": 12,
   "tipo_servicio": "luz",
-  "lectura_actual": 200.00,
-  "fecha_lectura": "2024-05-12",
-  "precio_unitario": 1.50
+  "lectura_actual": 1250.50,
+  "fecha_lectura": "2024-04-12T00:00:00Z"
 }
 ```
 
 ---
 
-## 3. Registro Masivo (Carga por Lote)
-Permite registrar las lecturas de múltiples habitaciones en una sola petición. Ideal para fin de mes.
+## 2. Registrar Lectura y Generar Cobro (Directo)
+Este endpoint registra la medición y **crea automáticamente una deuda** en el estado de cuenta del inquilino.
+
+- **URL**: `POST /api/user/servicios/registrar-y-cobrar`
+- **Cuerpo (JSON)**:
+```json
+{
+  "contrato_id": 12,        // Acepta número o string "12"
+  "tipo_servicio": "luz",   // "luz" o "agua"
+  "lectura_actual": 1300.0, // Valor final del medidor
+  "lectura_anterior": 1250, // Opcional. Si no se envía, usa la última lectura del sistema.
+  "precio_unitario": 1.50,  // Costo por kWh o m3
+  "factor": 1.0,            // Opcional. Multiplicador del medidor (ej. x10). Default 1.0
+  "cargo_fijo": 5.00,       // Opcional. Monto extra (Mantenimiento/Cargo Fijo). Default 0.0
+  "fecha_lectura": "2024-05-13" 
+}
+```
+### Fórmula de Cálculo Aplicada:
+`Consumo = (Lectura Actual - Lectura Anterior) * Factor`
+`Monto Final = (Consumo * Precio Unitario) + Cargo Fijo`
+
+### 2.1. Inicialización de Medidor (Primer Registro)
+Si es la primera vez que registras el medidor y este no empieza en cero (ej. ya marca `1250`), usa el campo `lectura_anterior` para establecer el punto de partida.
+
+- **Cuerpo (JSON)**:
+```json
+{
+  "contrato_id": 12,
+  "tipo_servicio": "luz",
+  "lectura_actual": 1300,
+  "lectura_anterior": 1250, // "Cuanto tenía" al iniciar
+  "precio_unitario": 1.50
+}
+```
+*El sistema calculará el consumo sobre la diferencia (50 unidades) y guardará `1300` como la nueva base para el próximo mes.*
+
+---
+
+## 3. Registro Masivo
+Ideal para cargar todas las habitaciones de un edificio en un solo paso.
 
 - **URL**: `POST /api/user/servicios/masivo`
-- **Body**: Un array de objetos como el del punto anterior.
+- **Cuerpo**: Array de objetos con la misma estructura que el registro individual.
+
+---
+
+## 4. Selector de Contratos Activos (Dropdown Helper)
+Para llenar los selectores del frontend con contratos válidos.
+
+- **URL**: `GET /api/user/alquileres/activos/selector`
+- **Respuesta**:
 ```json
 [
-  { "contrato_id": 1, "tipo_servicio": "luz", "lectura_actual": 200, ... },
-  { "contrato_id": 2, "tipo_servicio": "luz", "lectura_actual": 185, ... }
+  { "id": 12, "cliente_nombre": "Juan Perez", "unidad_codigo": "HAB-201" },
+  { "id": 13, "cliente_nombre": "Maria Lopez", "unidad_codigo": "HAB-202" }
 ]
 ```
 
 ---
 
-## 4. Listar Unidades Pendientes de Lectura
-Muestra qué habitaciones aún no tienen registrada su lectura para el mes en curso.
-
-- **URL**: `GET /api/user/servicios/pendientes`
-- **Query Params**: `tipo` (luz|agua)
-
----
-
-## 5. Selector de Contratos Activos
-Endpoint ligero diseñado específicamente para llenar desplegables (dropdowns) en el frontend. Retorna solo contratos con estado 'activo' o 'vencido'.
-
-- **URL**: `GET /api/user/alquileres/activos/selector`
-- **Respuesta**: Array de objetos con ID, Nombre de Cliente y Código de Unidad.
+## 5. Gestión y Correcciones
+- **Listar Pendientes**: `GET /api/user/servicios/pendientes` (Muestra lecturas aún no cobradas).
+- **Eliminar**: `DELETE /api/user/servicios/:id` (Solo si el cargo asociado no ha sido pagado).
+- **Actualizar**: `PUT /api/user/servicios/:id` (Permite corregir la lectura actual si hubo error de dedo).
 
 ---
 
-## 6. Historial y Mantenimiento
-- **Listar Todo**: `GET /api/user/servicios?contrato_id=X` (Paginado)
-- **Ver Detalle**: `GET /api/user/servicios/:id`
-- **Actualizar/Corregir**: `PUT /api/user/servicios/:id` (Solo lectura actual)
-- **Eliminar**: `DELETE /api/user/servicios/:id` (Solo si no está pagado)
-
----
-
-## Pruebas de Funcionamiento (Test Report)
-El módulo ha sido validado con pruebas unitarias (`TestRegistrarYCobrar`):
-- [x] Validación de cálculo de consumo (Actual - Anterior).
-- [x] Validación de monto financiero (Consumo * Precio).
-- [x] Generación automática de Cargo en el estado de cuenta.
-- [x] Integridad de datos en base de datos.
+## Notas Técnicas para Frontend:
+1. **Robusto**: El campo `contrato_id` es flexible; puedes enviarlo como número o como texto.
+2. **Validación**: El servidor rechazará lecturas donde la `actual` sea menor a la `anterior` (después de aplicar el factor).
+3. **Cargos**: Cada registro genera un registro en la tabla `cargos` con concepto "Consumo de [Tipo]".

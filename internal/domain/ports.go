@@ -203,6 +203,7 @@ type (
 	ServicioMedicionRepository interface {
 		Listar(ctx context.Context, filtros ServicioMedicionFiltros) ([]*ServicioMedicion, int, error)
 		BuscarPorID(ctx context.Context, id int, empresaID int) (*ServicioMedicion, error)
+		BuscarPorFecha(ctx context.Context, unidadID int, tipo string, fecha time.Time) (*ServicioMedicion, error)
 		Crear(ctx context.Context, s *ServicioMedicion) (*ServicioMedicion, error)
 		Actualizar(ctx context.Context, s *ServicioMedicion) (*ServicioMedicion, error)
 		Eliminar(ctx context.Context, id int, empresaID int) error

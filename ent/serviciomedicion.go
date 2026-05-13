@@ -36,6 +36,12 @@ type ServicioMedicion struct {
 	LecturaActual float64 `json:"lectura_actual,omitempty"`
 	// Consumo holds the value of the "consumo" field.
 	Consumo float64 `json:"consumo,omitempty"`
+	// PrecioUnitario holds the value of the "precio_unitario" field.
+	PrecioUnitario float64 `json:"precio_unitario,omitempty"`
+	// Factor holds the value of the "factor" field.
+	Factor float64 `json:"factor,omitempty"`
+	// CargoFijo holds the value of the "cargo_fijo" field.
+	CargoFijo int64 `json:"cargo_fijo,omitempty"`
 	// Monto holds the value of the "monto" field.
 	Monto int64 `json:"monto,omitempty"`
 	// Procesado holds the value of the "procesado" field.
@@ -99,9 +105,9 @@ func (*ServicioMedicion) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case serviciomedicion.FieldProcesado:
 			values[i] = new(sql.NullBool)
-		case serviciomedicion.FieldLecturaAnterior, serviciomedicion.FieldLecturaActual, serviciomedicion.FieldConsumo:
+		case serviciomedicion.FieldLecturaAnterior, serviciomedicion.FieldLecturaActual, serviciomedicion.FieldConsumo, serviciomedicion.FieldPrecioUnitario, serviciomedicion.FieldFactor:
 			values[i] = new(sql.NullFloat64)
-		case serviciomedicion.FieldID, serviciomedicion.FieldUnidadID, serviciomedicion.FieldContratoID, serviciomedicion.FieldMonto:
+		case serviciomedicion.FieldID, serviciomedicion.FieldUnidadID, serviciomedicion.FieldContratoID, serviciomedicion.FieldCargoFijo, serviciomedicion.FieldMonto:
 			values[i] = new(sql.NullInt64)
 		case serviciomedicion.FieldTipoServicio:
 			values[i] = new(sql.NullString)
@@ -176,6 +182,24 @@ func (_m *ServicioMedicion) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field consumo", values[i])
 			} else if value.Valid {
 				_m.Consumo = value.Float64
+			}
+		case serviciomedicion.FieldPrecioUnitario:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field precio_unitario", values[i])
+			} else if value.Valid {
+				_m.PrecioUnitario = value.Float64
+			}
+		case serviciomedicion.FieldFactor:
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field factor", values[i])
+			} else if value.Valid {
+				_m.Factor = value.Float64
+			}
+		case serviciomedicion.FieldCargoFijo:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field cargo_fijo", values[i])
+			} else if value.Valid {
+				_m.CargoFijo = value.Int64
 			}
 		case serviciomedicion.FieldMonto:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -265,6 +289,15 @@ func (_m *ServicioMedicion) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("consumo=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Consumo))
+	builder.WriteString(", ")
+	builder.WriteString("precio_unitario=")
+	builder.WriteString(fmt.Sprintf("%v", _m.PrecioUnitario))
+	builder.WriteString(", ")
+	builder.WriteString("factor=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Factor))
+	builder.WriteString(", ")
+	builder.WriteString("cargo_fijo=")
+	builder.WriteString(fmt.Sprintf("%v", _m.CargoFijo))
 	builder.WriteString(", ")
 	builder.WriteString("monto=")
 	builder.WriteString(fmt.Sprintf("%v", _m.Monto))

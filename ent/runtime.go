@@ -780,12 +780,24 @@ func init() {
 	serviciomedicionDescConsumo := serviciomedicionFields[6].Descriptor()
 	// serviciomedicion.DefaultConsumo holds the default value on creation for the consumo field.
 	serviciomedicion.DefaultConsumo = serviciomedicionDescConsumo.Default.(float64)
+	// serviciomedicionDescPrecioUnitario is the schema descriptor for precio_unitario field.
+	serviciomedicionDescPrecioUnitario := serviciomedicionFields[7].Descriptor()
+	// serviciomedicion.DefaultPrecioUnitario holds the default value on creation for the precio_unitario field.
+	serviciomedicion.DefaultPrecioUnitario = serviciomedicionDescPrecioUnitario.Default.(float64)
+	// serviciomedicionDescFactor is the schema descriptor for factor field.
+	serviciomedicionDescFactor := serviciomedicionFields[8].Descriptor()
+	// serviciomedicion.DefaultFactor holds the default value on creation for the factor field.
+	serviciomedicion.DefaultFactor = serviciomedicionDescFactor.Default.(float64)
+	// serviciomedicionDescCargoFijo is the schema descriptor for cargo_fijo field.
+	serviciomedicionDescCargoFijo := serviciomedicionFields[9].Descriptor()
+	// serviciomedicion.DefaultCargoFijo holds the default value on creation for the cargo_fijo field.
+	serviciomedicion.DefaultCargoFijo = serviciomedicionDescCargoFijo.Default.(int64)
 	// serviciomedicionDescMonto is the schema descriptor for monto field.
-	serviciomedicionDescMonto := serviciomedicionFields[7].Descriptor()
+	serviciomedicionDescMonto := serviciomedicionFields[10].Descriptor()
 	// serviciomedicion.DefaultMonto holds the default value on creation for the monto field.
 	serviciomedicion.DefaultMonto = serviciomedicionDescMonto.Default.(int64)
 	// serviciomedicionDescProcesado is the schema descriptor for procesado field.
-	serviciomedicionDescProcesado := serviciomedicionFields[8].Descriptor()
+	serviciomedicionDescProcesado := serviciomedicionFields[11].Descriptor()
 	// serviciomedicion.DefaultProcesado holds the default value on creation for the procesado field.
 	serviciomedicion.DefaultProcesado = serviciomedicionDescProcesado.Default.(bool)
 	ticketMixin := schema.Ticket{}.Mixin()

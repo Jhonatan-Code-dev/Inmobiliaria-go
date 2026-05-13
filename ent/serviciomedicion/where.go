@@ -90,6 +90,21 @@ func Consumo(v float64) predicate.ServicioMedicion {
 	return predicate.ServicioMedicion(sql.FieldEQ(FieldConsumo, v))
 }
 
+// PrecioUnitario applies equality check predicate on the "precio_unitario" field. It's identical to PrecioUnitarioEQ.
+func PrecioUnitario(v float64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldEQ(FieldPrecioUnitario, v))
+}
+
+// Factor applies equality check predicate on the "factor" field. It's identical to FactorEQ.
+func Factor(v float64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldEQ(FieldFactor, v))
+}
+
+// CargoFijo applies equality check predicate on the "cargo_fijo" field. It's identical to CargoFijoEQ.
+func CargoFijo(v int64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldEQ(FieldCargoFijo, v))
+}
+
 // Monto applies equality check predicate on the "monto" field. It's identical to MontoEQ.
 func Monto(v int64) predicate.ServicioMedicion {
 	return predicate.ServicioMedicion(sql.FieldEQ(FieldMonto, v))
@@ -368,6 +383,126 @@ func ConsumoLT(v float64) predicate.ServicioMedicion {
 // ConsumoLTE applies the LTE predicate on the "consumo" field.
 func ConsumoLTE(v float64) predicate.ServicioMedicion {
 	return predicate.ServicioMedicion(sql.FieldLTE(FieldConsumo, v))
+}
+
+// PrecioUnitarioEQ applies the EQ predicate on the "precio_unitario" field.
+func PrecioUnitarioEQ(v float64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldEQ(FieldPrecioUnitario, v))
+}
+
+// PrecioUnitarioNEQ applies the NEQ predicate on the "precio_unitario" field.
+func PrecioUnitarioNEQ(v float64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldNEQ(FieldPrecioUnitario, v))
+}
+
+// PrecioUnitarioIn applies the In predicate on the "precio_unitario" field.
+func PrecioUnitarioIn(vs ...float64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldIn(FieldPrecioUnitario, vs...))
+}
+
+// PrecioUnitarioNotIn applies the NotIn predicate on the "precio_unitario" field.
+func PrecioUnitarioNotIn(vs ...float64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldNotIn(FieldPrecioUnitario, vs...))
+}
+
+// PrecioUnitarioGT applies the GT predicate on the "precio_unitario" field.
+func PrecioUnitarioGT(v float64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldGT(FieldPrecioUnitario, v))
+}
+
+// PrecioUnitarioGTE applies the GTE predicate on the "precio_unitario" field.
+func PrecioUnitarioGTE(v float64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldGTE(FieldPrecioUnitario, v))
+}
+
+// PrecioUnitarioLT applies the LT predicate on the "precio_unitario" field.
+func PrecioUnitarioLT(v float64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldLT(FieldPrecioUnitario, v))
+}
+
+// PrecioUnitarioLTE applies the LTE predicate on the "precio_unitario" field.
+func PrecioUnitarioLTE(v float64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldLTE(FieldPrecioUnitario, v))
+}
+
+// FactorEQ applies the EQ predicate on the "factor" field.
+func FactorEQ(v float64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldEQ(FieldFactor, v))
+}
+
+// FactorNEQ applies the NEQ predicate on the "factor" field.
+func FactorNEQ(v float64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldNEQ(FieldFactor, v))
+}
+
+// FactorIn applies the In predicate on the "factor" field.
+func FactorIn(vs ...float64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldIn(FieldFactor, vs...))
+}
+
+// FactorNotIn applies the NotIn predicate on the "factor" field.
+func FactorNotIn(vs ...float64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldNotIn(FieldFactor, vs...))
+}
+
+// FactorGT applies the GT predicate on the "factor" field.
+func FactorGT(v float64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldGT(FieldFactor, v))
+}
+
+// FactorGTE applies the GTE predicate on the "factor" field.
+func FactorGTE(v float64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldGTE(FieldFactor, v))
+}
+
+// FactorLT applies the LT predicate on the "factor" field.
+func FactorLT(v float64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldLT(FieldFactor, v))
+}
+
+// FactorLTE applies the LTE predicate on the "factor" field.
+func FactorLTE(v float64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldLTE(FieldFactor, v))
+}
+
+// CargoFijoEQ applies the EQ predicate on the "cargo_fijo" field.
+func CargoFijoEQ(v int64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldEQ(FieldCargoFijo, v))
+}
+
+// CargoFijoNEQ applies the NEQ predicate on the "cargo_fijo" field.
+func CargoFijoNEQ(v int64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldNEQ(FieldCargoFijo, v))
+}
+
+// CargoFijoIn applies the In predicate on the "cargo_fijo" field.
+func CargoFijoIn(vs ...int64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldIn(FieldCargoFijo, vs...))
+}
+
+// CargoFijoNotIn applies the NotIn predicate on the "cargo_fijo" field.
+func CargoFijoNotIn(vs ...int64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldNotIn(FieldCargoFijo, vs...))
+}
+
+// CargoFijoGT applies the GT predicate on the "cargo_fijo" field.
+func CargoFijoGT(v int64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldGT(FieldCargoFijo, v))
+}
+
+// CargoFijoGTE applies the GTE predicate on the "cargo_fijo" field.
+func CargoFijoGTE(v int64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldGTE(FieldCargoFijo, v))
+}
+
+// CargoFijoLT applies the LT predicate on the "cargo_fijo" field.
+func CargoFijoLT(v int64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldLT(FieldCargoFijo, v))
+}
+
+// CargoFijoLTE applies the LTE predicate on the "cargo_fijo" field.
+func CargoFijoLTE(v int64) predicate.ServicioMedicion {
+	return predicate.ServicioMedicion(sql.FieldLTE(FieldCargoFijo, v))
 }
 
 // MontoEQ applies the EQ predicate on the "monto" field.

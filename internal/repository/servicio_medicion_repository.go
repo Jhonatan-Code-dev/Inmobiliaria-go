@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"math"
+	"time"
 	"rentals-go/ent"
 	"rentals-go/ent/contrato"
 	"rentals-go/ent/serviciomedicion"
@@ -64,7 +66,10 @@ func (r *ServicioMedicionRepoEnt) Crear(ctx context.Context, s *domain.ServicioM
 		SetLecturaAnterior(s.LecturaAnterior).
 		SetLecturaActual(s.LecturaActual).
 		SetConsumo(s.Consumo).
-		SetMonto(int64(s.Monto * 100)).
+		SetPrecioUnitario(s.PrecioUnitario).
+		SetFactor(s.Factor).
+		SetCargoFijo(int64(math.Round(s.CargoFijo * 100))).
+		SetMonto(int64(math.Round(s.Monto * 100))).
 		SetFechaLectura(s.FechaLectura).
 		SetProcesado(s.Procesado)
 
@@ -83,7 +88,7 @@ func (r *ServicioMedicionRepoEnt) Actualizar(ctx context.Context, s *domain.Serv
 	builder := r.client.ServicioMedicion.UpdateOneID(s.ID).
 		SetLecturaActual(s.LecturaActual).
 		SetConsumo(s.Consumo).
-		SetMonto(int64(s.Monto * 100)).
+		SetMonto(int64(math.Round(s.Monto * 100))).
 		SetProcesado(s.Procesado)
 
 	entServicio, err := builder.Save(ctx)
@@ -99,6 +104,23 @@ func (r *ServicioMedicionRepoEnt) Eliminar(ctx context.Context, id int, empresaI
 		return err
 	}
 	return r.client.ServicioMedicion.DeleteOneID(id).Exec(ctx)
+}
+
+func (r *ServicioMedicionRepoEnt) BuscarPorFecha(ctx context.Context, unidadID int, tipo string, fecha time.Time) (*domain.ServicioMedicion, error) {
+	e, err := r.client.ServicioMedicion.Query().
+		Where(
+			serviciomedicion.UnidadIDEQ(unidadID),
+			serviciomedicion.TipoServicioEQ(serviciomedicion.TipoServicio(tipo)),
+			serviciomedicion.FechaLecturaEQ(fecha),
+		).
+		Only(ctx)
+	if ent.IsNotFound(err) {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return mapServicioToDomain(e), nil
 }
 
 func (r *ServicioMedicionRepoEnt) ObtenerUltimaLectura(ctx context.Context, contratoID int, tipo string) (*domain.ServicioMedicion, error) {
@@ -128,6 +150,9 @@ func mapServicioToDomain(e *ent.ServicioMedicion) *domain.ServicioMedicion {
 		LecturaAnterior: e.LecturaAnterior,
 		LecturaActual:   e.LecturaActual,
 		Consumo:         e.Consumo,
+		PrecioUnitario:  e.PrecioUnitario,
+		Factor:          e.Factor,
+		CargoFijo:       float64(e.CargoFijo) / 100,
 		Monto:           float64(e.Monto) / 100,
 		FechaLectura:    e.FechaLectura,
 		Procesado:       e.Procesado,

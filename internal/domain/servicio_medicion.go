@@ -10,6 +10,9 @@ type ServicioMedicion struct {
 	LecturaAnterior    float64   `json:"lectura_anterior"`
 	LecturaActual      float64   `json:"lectura_actual"`
 	Consumo            float64   `json:"consumo"`
+	PrecioUnitario     float64   `json:"precio_unitario"`
+	Factor             float64   `json:"factor"`
+	CargoFijo          float64   `json:"cargo_fijo"`
 	Monto              float64   `json:"monto"`
 	FechaLectura       time.Time `json:"fecha_lectura"`
 	Procesado          bool      `json:"procesado"`

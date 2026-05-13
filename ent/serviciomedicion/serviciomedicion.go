@@ -31,6 +31,12 @@ const (
 	FieldLecturaActual = "lectura_actual"
 	// FieldConsumo holds the string denoting the consumo field in the database.
 	FieldConsumo = "consumo"
+	// FieldPrecioUnitario holds the string denoting the precio_unitario field in the database.
+	FieldPrecioUnitario = "precio_unitario"
+	// FieldFactor holds the string denoting the factor field in the database.
+	FieldFactor = "factor"
+	// FieldCargoFijo holds the string denoting the cargo_fijo field in the database.
+	FieldCargoFijo = "cargo_fijo"
 	// FieldMonto holds the string denoting the monto field in the database.
 	FieldMonto = "monto"
 	// FieldProcesado holds the string denoting the procesado field in the database.
@@ -77,6 +83,9 @@ var Columns = []string{
 	FieldLecturaAnterior,
 	FieldLecturaActual,
 	FieldConsumo,
+	FieldPrecioUnitario,
+	FieldFactor,
+	FieldCargoFijo,
 	FieldMonto,
 	FieldProcesado,
 }
@@ -100,6 +109,12 @@ var (
 	DefaultLecturaActual float64
 	// DefaultConsumo holds the default value on creation for the "consumo" field.
 	DefaultConsumo float64
+	// DefaultPrecioUnitario holds the default value on creation for the "precio_unitario" field.
+	DefaultPrecioUnitario float64
+	// DefaultFactor holds the default value on creation for the "factor" field.
+	DefaultFactor float64
+	// DefaultCargoFijo holds the default value on creation for the "cargo_fijo" field.
+	DefaultCargoFijo int64
 	// DefaultMonto holds the default value on creation for the "monto" field.
 	DefaultMonto int64
 	// DefaultProcesado holds the default value on creation for the "procesado" field.
@@ -181,6 +196,21 @@ func ByLecturaActual(opts ...sql.OrderTermOption) OrderOption {
 // ByConsumo orders the results by the consumo field.
 func ByConsumo(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldConsumo, opts...).ToFunc()
+}
+
+// ByPrecioUnitario orders the results by the precio_unitario field.
+func ByPrecioUnitario(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPrecioUnitario, opts...).ToFunc()
+}
+
+// ByFactor orders the results by the factor field.
+func ByFactor(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFactor, opts...).ToFunc()
+}
+
+// ByCargoFijo orders the results by the cargo_fijo field.
+func ByCargoFijo(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCargoFijo, opts...).ToFunc()
 }
 
 // ByMonto orders the results by the monto field.

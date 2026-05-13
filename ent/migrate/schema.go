@@ -608,6 +608,9 @@ var (
 		{Name: "lectura_anterior", Type: field.TypeFloat64, Default: 0},
 		{Name: "lectura_actual", Type: field.TypeFloat64, Default: 0},
 		{Name: "consumo", Type: field.TypeFloat64, Default: 0},
+		{Name: "precio_unitario", Type: field.TypeFloat64, Default: 0},
+		{Name: "factor", Type: field.TypeFloat64, Default: 1},
+		{Name: "cargo_fijo", Type: field.TypeInt64, Default: 0},
 		{Name: "monto", Type: field.TypeInt64, Default: 0},
 		{Name: "procesado", Type: field.TypeBool, Default: false},
 		{Name: "contrato_id", Type: field.TypeInt, Nullable: true},
@@ -621,13 +624,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "servicio_mediciones_contratos_servicio_mediciones",
-				Columns:    []*schema.Column{ServicioMedicionesColumns[9]},
+				Columns:    []*schema.Column{ServicioMedicionesColumns[12]},
 				RefColumns: []*schema.Column{ContratosColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "servicio_mediciones_unidades_servicio_mediciones",
-				Columns:    []*schema.Column{ServicioMedicionesColumns[10]},
+				Columns:    []*schema.Column{ServicioMedicionesColumns[13]},
 				RefColumns: []*schema.Column{UnidadesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -636,7 +639,7 @@ var (
 			{
 				Name:    "serviciomedicion_unidad_id_tipo_servicio_fecha_lectura",
 				Unique:  true,
-				Columns: []*schema.Column{ServicioMedicionesColumns[10], ServicioMedicionesColumns[2], ServicioMedicionesColumns[3]},
+				Columns: []*schema.Column{ServicioMedicionesColumns[13], ServicioMedicionesColumns[2], ServicioMedicionesColumns[3]},
 			},
 		},
 	}

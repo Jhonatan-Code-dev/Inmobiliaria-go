@@ -119,6 +119,48 @@ func (_c *ServicioMedicionCreate) SetNillableConsumo(v *float64) *ServicioMedici
 	return _c
 }
 
+// SetPrecioUnitario sets the "precio_unitario" field.
+func (_c *ServicioMedicionCreate) SetPrecioUnitario(v float64) *ServicioMedicionCreate {
+	_c.mutation.SetPrecioUnitario(v)
+	return _c
+}
+
+// SetNillablePrecioUnitario sets the "precio_unitario" field if the given value is not nil.
+func (_c *ServicioMedicionCreate) SetNillablePrecioUnitario(v *float64) *ServicioMedicionCreate {
+	if v != nil {
+		_c.SetPrecioUnitario(*v)
+	}
+	return _c
+}
+
+// SetFactor sets the "factor" field.
+func (_c *ServicioMedicionCreate) SetFactor(v float64) *ServicioMedicionCreate {
+	_c.mutation.SetFactor(v)
+	return _c
+}
+
+// SetNillableFactor sets the "factor" field if the given value is not nil.
+func (_c *ServicioMedicionCreate) SetNillableFactor(v *float64) *ServicioMedicionCreate {
+	if v != nil {
+		_c.SetFactor(*v)
+	}
+	return _c
+}
+
+// SetCargoFijo sets the "cargo_fijo" field.
+func (_c *ServicioMedicionCreate) SetCargoFijo(v int64) *ServicioMedicionCreate {
+	_c.mutation.SetCargoFijo(v)
+	return _c
+}
+
+// SetNillableCargoFijo sets the "cargo_fijo" field if the given value is not nil.
+func (_c *ServicioMedicionCreate) SetNillableCargoFijo(v *int64) *ServicioMedicionCreate {
+	if v != nil {
+		_c.SetCargoFijo(*v)
+	}
+	return _c
+}
+
 // SetMonto sets the "monto" field.
 func (_c *ServicioMedicionCreate) SetMonto(v int64) *ServicioMedicionCreate {
 	_c.mutation.SetMonto(v)
@@ -231,6 +273,18 @@ func (_c *ServicioMedicionCreate) defaults() {
 		v := serviciomedicion.DefaultConsumo
 		_c.mutation.SetConsumo(v)
 	}
+	if _, ok := _c.mutation.PrecioUnitario(); !ok {
+		v := serviciomedicion.DefaultPrecioUnitario
+		_c.mutation.SetPrecioUnitario(v)
+	}
+	if _, ok := _c.mutation.Factor(); !ok {
+		v := serviciomedicion.DefaultFactor
+		_c.mutation.SetFactor(v)
+	}
+	if _, ok := _c.mutation.CargoFijo(); !ok {
+		v := serviciomedicion.DefaultCargoFijo
+		_c.mutation.SetCargoFijo(v)
+	}
 	if _, ok := _c.mutation.Monto(); !ok {
 		v := serviciomedicion.DefaultMonto
 		_c.mutation.SetMonto(v)
@@ -268,6 +322,15 @@ func (_c *ServicioMedicionCreate) check() error {
 	}
 	if _, ok := _c.mutation.Consumo(); !ok {
 		return &ValidationError{Name: "consumo", err: errors.New(`ent: missing required field "ServicioMedicion.consumo"`)}
+	}
+	if _, ok := _c.mutation.PrecioUnitario(); !ok {
+		return &ValidationError{Name: "precio_unitario", err: errors.New(`ent: missing required field "ServicioMedicion.precio_unitario"`)}
+	}
+	if _, ok := _c.mutation.Factor(); !ok {
+		return &ValidationError{Name: "factor", err: errors.New(`ent: missing required field "ServicioMedicion.factor"`)}
+	}
+	if _, ok := _c.mutation.CargoFijo(); !ok {
+		return &ValidationError{Name: "cargo_fijo", err: errors.New(`ent: missing required field "ServicioMedicion.cargo_fijo"`)}
 	}
 	if _, ok := _c.mutation.Monto(); !ok {
 		return &ValidationError{Name: "monto", err: errors.New(`ent: missing required field "ServicioMedicion.monto"`)}
@@ -327,6 +390,18 @@ func (_c *ServicioMedicionCreate) createSpec() (*ServicioMedicion, *sqlgraph.Cre
 	if value, ok := _c.mutation.Consumo(); ok {
 		_spec.SetField(serviciomedicion.FieldConsumo, field.TypeFloat64, value)
 		_node.Consumo = value
+	}
+	if value, ok := _c.mutation.PrecioUnitario(); ok {
+		_spec.SetField(serviciomedicion.FieldPrecioUnitario, field.TypeFloat64, value)
+		_node.PrecioUnitario = value
+	}
+	if value, ok := _c.mutation.Factor(); ok {
+		_spec.SetField(serviciomedicion.FieldFactor, field.TypeFloat64, value)
+		_node.Factor = value
+	}
+	if value, ok := _c.mutation.CargoFijo(); ok {
+		_spec.SetField(serviciomedicion.FieldCargoFijo, field.TypeInt64, value)
+		_node.CargoFijo = value
 	}
 	if value, ok := _c.mutation.Monto(); ok {
 		_spec.SetField(serviciomedicion.FieldMonto, field.TypeInt64, value)

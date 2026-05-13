@@ -37,7 +37,24 @@ func (s *ServicioMedicionService) Registrar(ctx context.Context, reg *domain.Reg
 	if err != nil {
 		fecha = time.Now()
 	}
-	
+
+	// 1. Obtener contrato para tener el unidad_id
+	alq, err := s.alquilerRepo.BuscarPorID(ctx, reg.ContratoID)
+	if err != nil {
+		return nil, fmt.Errorf("contrato no encontrado o inválido")
+	}
+
+	// 2. Verificar duplicados (mismo unidad, tipo y fecha)
+	existente, err := s.repo.BuscarPorFecha(ctx, alq.UnidadID, reg.TipoServicio, fecha)
+	if err != nil {
+		return nil, err
+	}
+	if existente != nil {
+		return nil, fmt.Errorf("ya existe un registro de %s para la fecha %s. Usa el historial para editarlo o eliminarlo", 
+			reg.TipoServicio, reg.FechaLectura)
+	}
+
+	// 3. Determinar lectura anterior
 	var anterior float64
 	if reg.LecturaAnterior != nil {
 		anterior = *reg.LecturaAnterior
@@ -63,12 +80,6 @@ func (s *ServicioMedicionService) Registrar(ctx context.Context, reg *domain.Reg
 
 	monto := (consumo * reg.PrecioUnitario) + reg.CargoFijo
 
-	// Necesitamos el unidad_id del contrato
-	alq, err := s.alquilerRepo.BuscarPorID(ctx, reg.ContratoID)
-	if err != nil {
-		return nil, fmt.Errorf("alquiler no encontrado")
-	}
-
 	medicion := &domain.ServicioMedicion{
 		UnidadID:        alq.UnidadID,
 		ContratoID:      reg.ContratoID,
@@ -76,6 +87,9 @@ func (s *ServicioMedicionService) Registrar(ctx context.Context, reg *domain.Reg
 		LecturaAnterior: anterior,
 		LecturaActual:   reg.LecturaActual,
 		Consumo:         consumo,
+		PrecioUnitario:  reg.PrecioUnitario,
+		Factor:          factor,
+		CargoFijo:       reg.CargoFijo,
 		Monto:           monto,
 		FechaLectura:    fecha,
 		Procesado:       false,
@@ -104,20 +118,14 @@ func (s *ServicioMedicionService) Actualizar(ctx context.Context, id int, empres
 		return nil, fmt.Errorf("no se puede editar una medición que ya ha sido procesada")
 	}
 
-	consumo := lecturaActual - med.LecturaAnterior
+	consumo := (lecturaActual - med.LecturaAnterior) * med.Factor
 	if consumo < 0 {
 		return nil, fmt.Errorf("la nueva lectura actual no puede ser menor a la anterior (%.2f)", med.LecturaAnterior)
 	}
 
-	// Recalcular monto basado en la tarifa original (estimada del monto/consumo previo para no pedir precio unitario de nuevo)
-	precioUnitario := 0.0
-	if med.Consumo > 0 {
-		precioUnitario = med.Monto / med.Consumo
-	}
-	
 	med.LecturaActual = lecturaActual
 	med.Consumo = consumo
-	med.Monto = consumo * precioUnitario
+	med.Monto = (consumo * med.PrecioUnitario) + med.CargoFijo
 
 	return s.repo.Actualizar(ctx, med)
 }
@@ -140,8 +148,16 @@ func (s *ServicioMedicionService) RegistrarYCobrar(ctx context.Context, reg *dom
 	}
 	
 	concepto := fmt.Sprintf("Consumo de %s", strings.Title(reg.TipoServicio))
-	descripcion := fmt.Sprintf("Lectura: %.2f (Act) - %.2f (Ant) = %.2f unidades x %.2f", 
-		med.LecturaActual, med.LecturaAnterior, med.Consumo, reg.PrecioUnitario)
+	
+	// Descripción detallada de la fórmula
+	descripcion := fmt.Sprintf("Lectura: %.2f (Act) - %.2f (Ant)", med.LecturaActual, med.LecturaAnterior)
+	if med.Factor != 1.0 {
+		descripcion += fmt.Sprintf(" x %.2f (Fac)", med.Factor)
+	}
+	descripcion += fmt.Sprintf(" = %.2f unidades x %.2f", med.Consumo, med.PrecioUnitario)
+	if med.CargoFijo > 0 {
+		descripcion += fmt.Sprintf(" + %.2f (Cargo Fijo)", med.CargoFijo)
+	}
 
 	cargo := &domain.Cargo{
 		ContratoID:              reg.ContratoID,

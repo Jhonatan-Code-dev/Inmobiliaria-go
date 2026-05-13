@@ -17448,6 +17448,12 @@ type ServicioMedicionMutation struct {
 	addlectura_actual   *float64
 	consumo             *float64
 	addconsumo          *float64
+	precio_unitario     *float64
+	addprecio_unitario  *float64
+	factor              *float64
+	addfactor           *float64
+	cargo_fijo          *int64
+	addcargo_fijo       *int64
 	monto               *int64
 	addmonto            *int64
 	procesado           *bool
@@ -17922,6 +17928,174 @@ func (m *ServicioMedicionMutation) ResetConsumo() {
 	m.addconsumo = nil
 }
 
+// SetPrecioUnitario sets the "precio_unitario" field.
+func (m *ServicioMedicionMutation) SetPrecioUnitario(f float64) {
+	m.precio_unitario = &f
+	m.addprecio_unitario = nil
+}
+
+// PrecioUnitario returns the value of the "precio_unitario" field in the mutation.
+func (m *ServicioMedicionMutation) PrecioUnitario() (r float64, exists bool) {
+	v := m.precio_unitario
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPrecioUnitario returns the old "precio_unitario" field's value of the ServicioMedicion entity.
+// If the ServicioMedicion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ServicioMedicionMutation) OldPrecioUnitario(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPrecioUnitario is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPrecioUnitario requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPrecioUnitario: %w", err)
+	}
+	return oldValue.PrecioUnitario, nil
+}
+
+// AddPrecioUnitario adds f to the "precio_unitario" field.
+func (m *ServicioMedicionMutation) AddPrecioUnitario(f float64) {
+	if m.addprecio_unitario != nil {
+		*m.addprecio_unitario += f
+	} else {
+		m.addprecio_unitario = &f
+	}
+}
+
+// AddedPrecioUnitario returns the value that was added to the "precio_unitario" field in this mutation.
+func (m *ServicioMedicionMutation) AddedPrecioUnitario() (r float64, exists bool) {
+	v := m.addprecio_unitario
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetPrecioUnitario resets all changes to the "precio_unitario" field.
+func (m *ServicioMedicionMutation) ResetPrecioUnitario() {
+	m.precio_unitario = nil
+	m.addprecio_unitario = nil
+}
+
+// SetFactor sets the "factor" field.
+func (m *ServicioMedicionMutation) SetFactor(f float64) {
+	m.factor = &f
+	m.addfactor = nil
+}
+
+// Factor returns the value of the "factor" field in the mutation.
+func (m *ServicioMedicionMutation) Factor() (r float64, exists bool) {
+	v := m.factor
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFactor returns the old "factor" field's value of the ServicioMedicion entity.
+// If the ServicioMedicion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ServicioMedicionMutation) OldFactor(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFactor is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFactor requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFactor: %w", err)
+	}
+	return oldValue.Factor, nil
+}
+
+// AddFactor adds f to the "factor" field.
+func (m *ServicioMedicionMutation) AddFactor(f float64) {
+	if m.addfactor != nil {
+		*m.addfactor += f
+	} else {
+		m.addfactor = &f
+	}
+}
+
+// AddedFactor returns the value that was added to the "factor" field in this mutation.
+func (m *ServicioMedicionMutation) AddedFactor() (r float64, exists bool) {
+	v := m.addfactor
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetFactor resets all changes to the "factor" field.
+func (m *ServicioMedicionMutation) ResetFactor() {
+	m.factor = nil
+	m.addfactor = nil
+}
+
+// SetCargoFijo sets the "cargo_fijo" field.
+func (m *ServicioMedicionMutation) SetCargoFijo(i int64) {
+	m.cargo_fijo = &i
+	m.addcargo_fijo = nil
+}
+
+// CargoFijo returns the value of the "cargo_fijo" field in the mutation.
+func (m *ServicioMedicionMutation) CargoFijo() (r int64, exists bool) {
+	v := m.cargo_fijo
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCargoFijo returns the old "cargo_fijo" field's value of the ServicioMedicion entity.
+// If the ServicioMedicion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ServicioMedicionMutation) OldCargoFijo(ctx context.Context) (v int64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCargoFijo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCargoFijo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCargoFijo: %w", err)
+	}
+	return oldValue.CargoFijo, nil
+}
+
+// AddCargoFijo adds i to the "cargo_fijo" field.
+func (m *ServicioMedicionMutation) AddCargoFijo(i int64) {
+	if m.addcargo_fijo != nil {
+		*m.addcargo_fijo += i
+	} else {
+		m.addcargo_fijo = &i
+	}
+}
+
+// AddedCargoFijo returns the value that was added to the "cargo_fijo" field in this mutation.
+func (m *ServicioMedicionMutation) AddedCargoFijo() (r int64, exists bool) {
+	v := m.addcargo_fijo
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetCargoFijo resets all changes to the "cargo_fijo" field.
+func (m *ServicioMedicionMutation) ResetCargoFijo() {
+	m.cargo_fijo = nil
+	m.addcargo_fijo = nil
+}
+
 // SetMonto sets the "monto" field.
 func (m *ServicioMedicionMutation) SetMonto(i int64) {
 	m.monto = &i
@@ -18141,7 +18315,7 @@ func (m *ServicioMedicionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ServicioMedicionMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 13)
 	if m.creado_en != nil {
 		fields = append(fields, serviciomedicion.FieldCreadoEn)
 	}
@@ -18165,6 +18339,15 @@ func (m *ServicioMedicionMutation) Fields() []string {
 	}
 	if m.consumo != nil {
 		fields = append(fields, serviciomedicion.FieldConsumo)
+	}
+	if m.precio_unitario != nil {
+		fields = append(fields, serviciomedicion.FieldPrecioUnitario)
+	}
+	if m.factor != nil {
+		fields = append(fields, serviciomedicion.FieldFactor)
+	}
+	if m.cargo_fijo != nil {
+		fields = append(fields, serviciomedicion.FieldCargoFijo)
 	}
 	if m.monto != nil {
 		fields = append(fields, serviciomedicion.FieldMonto)
@@ -18196,6 +18379,12 @@ func (m *ServicioMedicionMutation) Field(name string) (ent.Value, bool) {
 		return m.LecturaActual()
 	case serviciomedicion.FieldConsumo:
 		return m.Consumo()
+	case serviciomedicion.FieldPrecioUnitario:
+		return m.PrecioUnitario()
+	case serviciomedicion.FieldFactor:
+		return m.Factor()
+	case serviciomedicion.FieldCargoFijo:
+		return m.CargoFijo()
 	case serviciomedicion.FieldMonto:
 		return m.Monto()
 	case serviciomedicion.FieldProcesado:
@@ -18225,6 +18414,12 @@ func (m *ServicioMedicionMutation) OldField(ctx context.Context, name string) (e
 		return m.OldLecturaActual(ctx)
 	case serviciomedicion.FieldConsumo:
 		return m.OldConsumo(ctx)
+	case serviciomedicion.FieldPrecioUnitario:
+		return m.OldPrecioUnitario(ctx)
+	case serviciomedicion.FieldFactor:
+		return m.OldFactor(ctx)
+	case serviciomedicion.FieldCargoFijo:
+		return m.OldCargoFijo(ctx)
 	case serviciomedicion.FieldMonto:
 		return m.OldMonto(ctx)
 	case serviciomedicion.FieldProcesado:
@@ -18294,6 +18489,27 @@ func (m *ServicioMedicionMutation) SetField(name string, value ent.Value) error 
 		}
 		m.SetConsumo(v)
 		return nil
+	case serviciomedicion.FieldPrecioUnitario:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPrecioUnitario(v)
+		return nil
+	case serviciomedicion.FieldFactor:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFactor(v)
+		return nil
+	case serviciomedicion.FieldCargoFijo:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCargoFijo(v)
+		return nil
 	case serviciomedicion.FieldMonto:
 		v, ok := value.(int64)
 		if !ok {
@@ -18325,6 +18541,15 @@ func (m *ServicioMedicionMutation) AddedFields() []string {
 	if m.addconsumo != nil {
 		fields = append(fields, serviciomedicion.FieldConsumo)
 	}
+	if m.addprecio_unitario != nil {
+		fields = append(fields, serviciomedicion.FieldPrecioUnitario)
+	}
+	if m.addfactor != nil {
+		fields = append(fields, serviciomedicion.FieldFactor)
+	}
+	if m.addcargo_fijo != nil {
+		fields = append(fields, serviciomedicion.FieldCargoFijo)
+	}
 	if m.addmonto != nil {
 		fields = append(fields, serviciomedicion.FieldMonto)
 	}
@@ -18342,6 +18567,12 @@ func (m *ServicioMedicionMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedLecturaActual()
 	case serviciomedicion.FieldConsumo:
 		return m.AddedConsumo()
+	case serviciomedicion.FieldPrecioUnitario:
+		return m.AddedPrecioUnitario()
+	case serviciomedicion.FieldFactor:
+		return m.AddedFactor()
+	case serviciomedicion.FieldCargoFijo:
+		return m.AddedCargoFijo()
 	case serviciomedicion.FieldMonto:
 		return m.AddedMonto()
 	}
@@ -18373,6 +18604,27 @@ func (m *ServicioMedicionMutation) AddField(name string, value ent.Value) error 
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddConsumo(v)
+		return nil
+	case serviciomedicion.FieldPrecioUnitario:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPrecioUnitario(v)
+		return nil
+	case serviciomedicion.FieldFactor:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddFactor(v)
+		return nil
+	case serviciomedicion.FieldCargoFijo:
+		v, ok := value.(int64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCargoFijo(v)
 		return nil
 	case serviciomedicion.FieldMonto:
 		v, ok := value.(int64)
@@ -18440,6 +18692,15 @@ func (m *ServicioMedicionMutation) ResetField(name string) error {
 		return nil
 	case serviciomedicion.FieldConsumo:
 		m.ResetConsumo()
+		return nil
+	case serviciomedicion.FieldPrecioUnitario:
+		m.ResetPrecioUnitario()
+		return nil
+	case serviciomedicion.FieldFactor:
+		m.ResetFactor()
+		return nil
+	case serviciomedicion.FieldCargoFijo:
+		m.ResetCargoFijo()
 		return nil
 	case serviciomedicion.FieldMonto:
 		m.ResetMonto()

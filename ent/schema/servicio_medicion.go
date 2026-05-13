@@ -34,6 +34,9 @@ func (ServicioMedicion) Fields() []ent.Field {
 		field.Float("lectura_anterior").Default(0),
 		field.Float("lectura_actual").Default(0),
 		field.Float("consumo").Default(0),
+		field.Float("precio_unitario").Default(0),
+		field.Float("factor").Default(1),
+		montoExacto("cargo_fijo"),
 		montoExacto("monto"),
 		field.Bool("procesado").Default(false),
 	}

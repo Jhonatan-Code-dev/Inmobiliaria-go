@@ -4,6 +4,7 @@ import (
 	"context"
 	"rentals-go/internal/domain"
 	"testing"
+	"time"
 )
 
 type medicionRepoStub struct {
@@ -35,6 +36,9 @@ func (s *medicionRepoStub) Eliminar(ctx context.Context, id int, empresaID int) 
 }
 func (s *medicionRepoStub) ObtenerUltimaLectura(ctx context.Context, contratoID int, tipo string) (*domain.ServicioMedicion, error) {
 	return s.ultima, nil
+}
+func (s *medicionRepoStub) BuscarPorFecha(ctx context.Context, unidadID int, tipo string, fecha time.Time) (*domain.ServicioMedicion, error) {
+	return nil, nil // Por defecto no hay duplicados en los tests existentes
 }
 
 type cargoRepoStub struct {
@@ -75,6 +79,8 @@ func TestRegistrarYCobrar(t *testing.T) {
 		TipoServicio:   "luz",
 		LecturaActual:  150,
 		PrecioUnitario: 2.0,
+		Factor:         10.0,
+		CargoFijo:      5.0,
 		FechaLectura:   "2026-05-12",
 	}
 
@@ -84,11 +90,13 @@ func TestRegistrarYCobrar(t *testing.T) {
 	}
 
 	// Verificar medición
-	if med.Consumo != 50 {
-		t.Errorf("Consumo = %.2f, want 50", med.Consumo)
+	// (150 - 100) * 10 = 500 unidades
+	if med.Consumo != 500 {
+		t.Errorf("Consumo = %.2f, want 500", med.Consumo)
 	}
-	if med.Monto != 100 {
-		t.Errorf("Monto = %.2f, want 100", med.Monto)
+	// (500 * 2.0) + 5.0 = 1005.00
+	if med.Monto != 1005 {
+		t.Errorf("Monto = %.2f, want 1005", med.Monto)
 	}
 	if !med.Procesado {
 		t.Error("expected medicion to be marked as processed")
@@ -101,8 +109,8 @@ func TestRegistrarYCobrar(t *testing.T) {
 	if carRepo.created == nil {
 		t.Fatal("expected cargo to be created")
 	}
-	if carRepo.created.Monto != 100 {
-		t.Errorf("Cargo Monto = %.2f, want 100", carRepo.created.Monto)
+	if carRepo.created.Monto != 1005 {
+		t.Errorf("Cargo Monto = %.2f, want 1005", carRepo.created.Monto)
 	}
 	if carRepo.created.Moneda != "PEN" {
 		t.Errorf("Cargo Moneda = %s, want PEN", carRepo.created.Moneda)

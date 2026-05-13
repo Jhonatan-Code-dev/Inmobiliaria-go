@@ -156,6 +156,69 @@ func (_u *ServicioMedicionUpdate) AddConsumo(v float64) *ServicioMedicionUpdate 
 	return _u
 }
 
+// SetPrecioUnitario sets the "precio_unitario" field.
+func (_u *ServicioMedicionUpdate) SetPrecioUnitario(v float64) *ServicioMedicionUpdate {
+	_u.mutation.ResetPrecioUnitario()
+	_u.mutation.SetPrecioUnitario(v)
+	return _u
+}
+
+// SetNillablePrecioUnitario sets the "precio_unitario" field if the given value is not nil.
+func (_u *ServicioMedicionUpdate) SetNillablePrecioUnitario(v *float64) *ServicioMedicionUpdate {
+	if v != nil {
+		_u.SetPrecioUnitario(*v)
+	}
+	return _u
+}
+
+// AddPrecioUnitario adds value to the "precio_unitario" field.
+func (_u *ServicioMedicionUpdate) AddPrecioUnitario(v float64) *ServicioMedicionUpdate {
+	_u.mutation.AddPrecioUnitario(v)
+	return _u
+}
+
+// SetFactor sets the "factor" field.
+func (_u *ServicioMedicionUpdate) SetFactor(v float64) *ServicioMedicionUpdate {
+	_u.mutation.ResetFactor()
+	_u.mutation.SetFactor(v)
+	return _u
+}
+
+// SetNillableFactor sets the "factor" field if the given value is not nil.
+func (_u *ServicioMedicionUpdate) SetNillableFactor(v *float64) *ServicioMedicionUpdate {
+	if v != nil {
+		_u.SetFactor(*v)
+	}
+	return _u
+}
+
+// AddFactor adds value to the "factor" field.
+func (_u *ServicioMedicionUpdate) AddFactor(v float64) *ServicioMedicionUpdate {
+	_u.mutation.AddFactor(v)
+	return _u
+}
+
+// SetCargoFijo sets the "cargo_fijo" field.
+func (_u *ServicioMedicionUpdate) SetCargoFijo(v int64) *ServicioMedicionUpdate {
+	_u.mutation.ResetCargoFijo()
+	_u.mutation.SetCargoFijo(v)
+	return _u
+}
+
+// SetNillableCargoFijo sets the "cargo_fijo" field if the given value is not nil.
+func (_u *ServicioMedicionUpdate) SetNillableCargoFijo(v *int64) *ServicioMedicionUpdate {
+	if v != nil {
+		_u.SetCargoFijo(*v)
+	}
+	return _u
+}
+
+// AddCargoFijo adds value to the "cargo_fijo" field.
+func (_u *ServicioMedicionUpdate) AddCargoFijo(v int64) *ServicioMedicionUpdate {
+	_u.mutation.AddCargoFijo(v)
+	return _u
+}
+
 // SetMonto sets the "monto" field.
 func (_u *ServicioMedicionUpdate) SetMonto(v int64) *ServicioMedicionUpdate {
 	_u.mutation.ResetMonto()
@@ -318,6 +381,24 @@ func (_u *ServicioMedicionUpdate) sqlSave(ctx context.Context) (_node int, err e
 	}
 	if value, ok := _u.mutation.AddedConsumo(); ok {
 		_spec.AddField(serviciomedicion.FieldConsumo, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.PrecioUnitario(); ok {
+		_spec.SetField(serviciomedicion.FieldPrecioUnitario, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedPrecioUnitario(); ok {
+		_spec.AddField(serviciomedicion.FieldPrecioUnitario, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.Factor(); ok {
+		_spec.SetField(serviciomedicion.FieldFactor, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedFactor(); ok {
+		_spec.AddField(serviciomedicion.FieldFactor, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.CargoFijo(); ok {
+		_spec.SetField(serviciomedicion.FieldCargoFijo, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedCargoFijo(); ok {
+		_spec.AddField(serviciomedicion.FieldCargoFijo, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.Monto(); ok {
 		_spec.SetField(serviciomedicion.FieldMonto, field.TypeInt64, value)
@@ -560,6 +641,69 @@ func (_u *ServicioMedicionUpdateOne) AddConsumo(v float64) *ServicioMedicionUpda
 	return _u
 }
 
+// SetPrecioUnitario sets the "precio_unitario" field.
+func (_u *ServicioMedicionUpdateOne) SetPrecioUnitario(v float64) *ServicioMedicionUpdateOne {
+	_u.mutation.ResetPrecioUnitario()
+	_u.mutation.SetPrecioUnitario(v)
+	return _u
+}
+
+// SetNillablePrecioUnitario sets the "precio_unitario" field if the given value is not nil.
+func (_u *ServicioMedicionUpdateOne) SetNillablePrecioUnitario(v *float64) *ServicioMedicionUpdateOne {
+	if v != nil {
+		_u.SetPrecioUnitario(*v)
+	}
+	return _u
+}
+
+// AddPrecioUnitario adds value to the "precio_unitario" field.
+func (_u *ServicioMedicionUpdateOne) AddPrecioUnitario(v float64) *ServicioMedicionUpdateOne {
+	_u.mutation.AddPrecioUnitario(v)
+	return _u
+}
+
+// SetFactor sets the "factor" field.
+func (_u *ServicioMedicionUpdateOne) SetFactor(v float64) *ServicioMedicionUpdateOne {
+	_u.mutation.ResetFactor()
+	_u.mutation.SetFactor(v)
+	return _u
+}
+
+// SetNillableFactor sets the "factor" field if the given value is not nil.
+func (_u *ServicioMedicionUpdateOne) SetNillableFactor(v *float64) *ServicioMedicionUpdateOne {
+	if v != nil {
+		_u.SetFactor(*v)
+	}
+	return _u
+}
+
+// AddFactor adds value to the "factor" field.
+func (_u *ServicioMedicionUpdateOne) AddFactor(v float64) *ServicioMedicionUpdateOne {
+	_u.mutation.AddFactor(v)
+	return _u
+}
+
+// SetCargoFijo sets the "cargo_fijo" field.
+func (_u *ServicioMedicionUpdateOne) SetCargoFijo(v int64) *ServicioMedicionUpdateOne {
+	_u.mutation.ResetCargoFijo()
+	_u.mutation.SetCargoFijo(v)
+	return _u
+}
+
+// SetNillableCargoFijo sets the "cargo_fijo" field if the given value is not nil.
+func (_u *ServicioMedicionUpdateOne) SetNillableCargoFijo(v *int64) *ServicioMedicionUpdateOne {
+	if v != nil {
+		_u.SetCargoFijo(*v)
+	}
+	return _u
+}
+
+// AddCargoFijo adds value to the "cargo_fijo" field.
+func (_u *ServicioMedicionUpdateOne) AddCargoFijo(v int64) *ServicioMedicionUpdateOne {
+	_u.mutation.AddCargoFijo(v)
+	return _u
+}
+
 // SetMonto sets the "monto" field.
 func (_u *ServicioMedicionUpdateOne) SetMonto(v int64) *ServicioMedicionUpdateOne {
 	_u.mutation.ResetMonto()
@@ -752,6 +896,24 @@ func (_u *ServicioMedicionUpdateOne) sqlSave(ctx context.Context) (_node *Servic
 	}
 	if value, ok := _u.mutation.AddedConsumo(); ok {
 		_spec.AddField(serviciomedicion.FieldConsumo, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.PrecioUnitario(); ok {
+		_spec.SetField(serviciomedicion.FieldPrecioUnitario, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedPrecioUnitario(); ok {
+		_spec.AddField(serviciomedicion.FieldPrecioUnitario, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.Factor(); ok {
+		_spec.SetField(serviciomedicion.FieldFactor, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.AddedFactor(); ok {
+		_spec.AddField(serviciomedicion.FieldFactor, field.TypeFloat64, value)
+	}
+	if value, ok := _u.mutation.CargoFijo(); ok {
+		_spec.SetField(serviciomedicion.FieldCargoFijo, field.TypeInt64, value)
+	}
+	if value, ok := _u.mutation.AddedCargoFijo(); ok {
+		_spec.AddField(serviciomedicion.FieldCargoFijo, field.TypeInt64, value)
 	}
 	if value, ok := _u.mutation.Monto(); ok {
 		_spec.SetField(serviciomedicion.FieldMonto, field.TypeInt64, value)

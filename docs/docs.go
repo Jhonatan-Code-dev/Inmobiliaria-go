@@ -3494,6 +3494,24 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/api/user/servicios/registrar-y-cobrar": {
+            "post": {
+                "tags": [
+                    "Servicios"
+                ],
+                "summary": "Registrar lectura y generar deuda automáticamente",
+                "responses": {}
+            }
+        },
+        "/api/user/servicios/ultimo/{contrato_id}": {
+            "get": {
+                "tags": [
+                    "Servicios"
+                ],
+                "summary": "Obtener última lectura registrada para un contrato",
+                "responses": {}
+            }
+        },
         "/api/user/servicios/{id}": {
             "get": {
                 "tags": [

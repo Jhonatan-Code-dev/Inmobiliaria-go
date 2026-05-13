@@ -123,3 +123,42 @@ func (h *ServicioMedicionController) Actualizar(c *fiber.Ctx) error {
 	}
 	return c.JSON(updated)
 }
+
+// RegistrarYCobrar godoc
+// @Summary Registrar lectura y generar deuda automáticamente
+// @Tags Servicios
+// @Router /api/user/servicios/registrar-y-cobrar [post]
+func (h *ServicioMedicionController) RegistrarYCobrar(c *fiber.Ctx) error {
+	empresaID := c.Locals("empresa_id").(int)
+	var req domain.RegistroLectura
+	if err := c.BodyParser(&req); err != nil {
+		return fiber.ErrBadRequest
+	}
+
+	med, err := h.svc.RegistrarYCobrar(c.Context(), &req, empresaID)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(errorResponse{Message: err.Error()})
+	}
+
+	return c.Status(http.StatusCreated).JSON(med)
+}
+
+// ObtenerUltima godoc
+// @Summary Obtener última lectura registrada para un contrato
+// @Tags Servicios
+// @Router /api/user/servicios/ultimo/{contrato_id} [get]
+func (h *ServicioMedicionController) ObtenerUltima(c *fiber.Ctx) error {
+	contratoID, _ := c.ParamsInt("contrato_id")
+	tipo := c.Query("tipo", "luz")
+
+	med, err := h.svc.ObtenerUltimaLectura(c.Context(), contratoID, tipo)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(errorResponse{Message: err.Error()})
+	}
+
+	if med == nil {
+		return c.Status(http.StatusOK).JSON(fiber.Map{"lectura_actual": 0})
+	}
+
+	return c.JSON(med)
+}

@@ -3349,6 +3349,18 @@ paths:
       summary: Editar lectura errónea
       tags:
       - Servicios
+  /api/user/servicios/registrar-y-cobrar:
+    post:
+      responses: {}
+      summary: Registrar lectura y generar deuda automáticamente
+      tags:
+      - Servicios
+  /api/user/servicios/ultimo/{contrato_id}:
+    get:
+      responses: {}
+      summary: Obtener última lectura registrada para un contrato
+      tags:
+      - Servicios
   /api/user/staff:
     get:
       parameters:

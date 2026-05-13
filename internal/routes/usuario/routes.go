@@ -101,6 +101,8 @@ func Register(app *fiber.App, appDI *di.App) {
 	servicios.Use(middlewares.TenantAuth(appDI.Config))
 	servicios.Get("/", appDI.ServicioCtrl.Listar)
 	servicios.Post("/", appDI.ServicioCtrl.Crear)
+	servicios.Post("/registrar-y-cobrar", appDI.ServicioCtrl.RegistrarYCobrar)
+	servicios.Get("/ultimo/:contrato_id", appDI.ServicioCtrl.ObtenerUltima)
 	servicios.Get("/:id", appDI.ServicioCtrl.Obtener)
 	servicios.Put("/:id", appDI.ServicioCtrl.Actualizar)
 	servicios.Delete("/:id", appDI.ServicioCtrl.Eliminar)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"rentals-go/internal/domain"
+	"strings"
 	"time"
 )
 
@@ -110,5 +111,49 @@ func (s *ServicioMedicionService) Actualizar(ctx context.Context, id int, empres
 	med.Consumo = consumo
 	med.Monto = consumo * precioUnitario
 
+	return s.repo.Actualizar(ctx, med)
+}
+
+func (s *ServicioMedicionService) ObtenerUltimaLectura(ctx context.Context, contratoID int, tipo string) (*domain.ServicioMedicion, error) {
+	return s.repo.ObtenerUltimaLectura(ctx, contratoID, tipo)
+}
+
+func (s *ServicioMedicionService) RegistrarYCobrar(ctx context.Context, reg *domain.RegistroLectura, empresaID int) (*domain.ServicioMedicion, error) {
+	// 1. Registrar la medición
+	med, err := s.Registrar(ctx, reg, empresaID)
+	if err != nil {
+		return nil, err
+	}
+
+	// 2. Generar el cargo automáticamente
+	alq, err := s.alquilerRepo.BuscarPorID(ctx, reg.ContratoID)
+	if err != nil {
+		return med, nil
+	}
+	
+	concepto := fmt.Sprintf("Consumo de %s", strings.Title(reg.TipoServicio))
+	descripcion := fmt.Sprintf("Lectura: %.2f (Act) - %.2f (Ant) = %.2f unidades x %.2f", 
+		med.LecturaActual, med.LecturaAnterior, med.Consumo, reg.PrecioUnitario)
+
+	cargo := &domain.Cargo{
+		ContratoID:              reg.ContratoID,
+		Concepto:                concepto,
+		Descripcion:             descripcion,
+		Monto:                   med.Monto,
+		Saldo:                   med.Monto,
+		Moneda:                  alq.Moneda,
+		FechaVencimiento:        time.Now().AddDate(0, 0, 7), // 7 días para pagar
+		Estado:                  "pendiente",
+		GeneradoAutomaticamente: true,
+	}
+
+	nuevoCargo, err := s.cargoRepo.Crear(ctx, cargo)
+	if err != nil {
+		return med, nil
+	}
+
+	// 3. Vincular el cargo con la medición
+	med.Procesado = true
+	med.CargoID = &nuevoCargo.ID
 	return s.repo.Actualizar(ctx, med)
 }

@@ -211,6 +211,8 @@ type (
 		Listar(ctx context.Context, filtros ServicioMedicionFiltros) ([]*ServicioMedicion, int, error)
 		Obtener(ctx context.Context, id int, empresaID int) (*ServicioMedicion, error)
 		Registrar(ctx context.Context, r *RegistroLectura, empresaID int) (*ServicioMedicion, error)
+		RegistrarYCobrar(ctx context.Context, r *RegistroLectura, empresaID int) (*ServicioMedicion, error)
+		ObtenerUltimaLectura(ctx context.Context, contratoID int, tipo string) (*ServicioMedicion, error)
 		Actualizar(ctx context.Context, id int, empresaID int, lecturaActual float64) (*ServicioMedicion, error)
 		Eliminar(ctx context.Context, id int, empresaID int) error
 	}

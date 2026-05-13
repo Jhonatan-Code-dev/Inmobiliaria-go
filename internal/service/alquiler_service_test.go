@@ -15,6 +15,13 @@ type alquilerRepoStub struct {
 	createdPlantilla *domain.PlantillaContrato
 }
 
+func (s *alquilerRepoStub) ListarActivos(ctx context.Context, empresaID int) ([]*domain.Alquiler, error) {
+	if s.alq != nil {
+		return []*domain.Alquiler{s.alq}, nil
+	}
+	return nil, nil
+}
+
 func (s *alquilerRepoStub) ListarPaginado(ctx context.Context, filtros domain.AlquilerFiltros) ([]*domain.Alquiler, int, error) {
 	return nil, 0, nil
 }

@@ -677,6 +677,16 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/user/alquileres/activos/selector": {
+            "get": {
+                "description": "Retorna una lista simplificada de contratos activos.",
+                "tags": [
+                    "Alquileres"
+                ],
+                "summary": "Listar contratos activos para selectores",
+                "responses": {}
+            }
+        },
         "/api/user/alquileres/generar-borrador": {
             "post": {
                 "description": "Genera un documento Word (.doc) al vuelo con datos manuales.",
@@ -3491,6 +3501,24 @@ const docTemplate = `{
                     "Servicios"
                 ],
                 "summary": "Registrar lectura de servicio",
+                "responses": {}
+            }
+        },
+        "/api/user/servicios/masivo": {
+            "post": {
+                "tags": [
+                    "Servicios"
+                ],
+                "summary": "Registrar múltiples lecturas a la vez",
+                "responses": {}
+            }
+        },
+        "/api/user/servicios/pendientes": {
+            "get": {
+                "tags": [
+                    "Servicios"
+                ],
+                "summary": "Listar contratos que faltan registrar lectura este mes",
                 "responses": {}
             }
         },

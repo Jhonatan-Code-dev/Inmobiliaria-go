@@ -89,6 +89,26 @@ func (r *AlquilerRepoEnt) BuscarPorID(ctx context.Context, id int) (*domain.Alqu
 	return mapContratoEntity(item), nil
 }
 
+func (r *AlquilerRepoEnt) ListarActivos(ctx context.Context, empresaID int) ([]*domain.Alquiler, error) {
+	list, err := r.client.Contrato.Query().
+		Where(
+			entContrato.EmpresaIDEQ(empresaID),
+			entContrato.EstadoIn(entContrato.EstadoActivo, entContrato.EstadoVencido),
+		).
+		WithCliente().
+		WithUnidad().
+		Order(ent.Asc(entContrato.FieldID)).
+		All(ctx)
+	if err != nil {
+		return nil, err
+	}
+	out := make([]*domain.Alquiler, 0, len(list))
+	for _, item := range list {
+		out = append(out, mapContratoEntity(item))
+	}
+	return out, nil
+}
+
 func (r *AlquilerRepoEnt) Crear(ctx context.Context, alquiler *domain.Alquiler) (*domain.Alquiler, error) {
 	tx, err := r.client.Tx(ctx)
 	if err != nil {

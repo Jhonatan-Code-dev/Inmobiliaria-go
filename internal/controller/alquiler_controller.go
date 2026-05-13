@@ -144,6 +144,25 @@ func (h *AlquilerController) Listar(c *fiber.Ctx) error {
 	})
 }
 
+// ListarActivosSelector godoc
+// @Summary Listar contratos activos para selectores
+// @Description Retorna una lista simplificada de contratos activos.
+// @Tags Alquileres
+// @Router /api/user/alquileres/activos/selector [get]
+func (h *AlquilerController) ListarActivosSelector(c *fiber.Ctx) error {
+	empresaID := c.Locals("empresa_id").(int)
+	list, err := h.svc.ListarActivosSelector(c.Context(), empresaID)
+	if err != nil {
+		return c.Status(500).JSON(errorResponse{Message: err.Error()})
+	}
+	
+	datos := make([]alquilerResponse, 0, len(list))
+	for _, item := range list {
+		datos = append(datos, mapAlquilerResponse(item))
+	}
+	return c.JSON(datos)
+}
+
 // ObtenerAlquiler godoc
 // @Summary Obtener alquiler por ID
 // @Description Devuelve el detalle de un contrato de alquiler.

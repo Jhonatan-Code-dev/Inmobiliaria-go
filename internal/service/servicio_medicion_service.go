@@ -38,22 +38,30 @@ func (s *ServicioMedicionService) Registrar(ctx context.Context, reg *domain.Reg
 		fecha = time.Now()
 	}
 	
-	ultima, err := s.repo.ObtenerUltimaLectura(ctx, reg.ContratoID, reg.TipoServicio)
-	if err != nil {
-		return nil, err
+	var anterior float64
+	if reg.LecturaAnterior != nil {
+		anterior = *reg.LecturaAnterior
+	} else {
+		ultima, err := s.repo.ObtenerUltimaLectura(ctx, reg.ContratoID, reg.TipoServicio)
+		if err != nil {
+			return nil, err
+		}
+		if ultima != nil {
+			anterior = ultima.LecturaActual
+		}
 	}
 
-	anterior := 0.0
-	if ultima != nil {
-		anterior = ultima.LecturaActual
+	factor := reg.Factor
+	if factor <= 0 {
+		factor = 1.0
 	}
 
-	consumo := reg.LecturaActual - anterior
+	consumo := (reg.LecturaActual - anterior) * factor
 	if consumo < 0 {
 		return nil, fmt.Errorf("la lectura actual no puede ser menor a la anterior (%.2f)", anterior)
 	}
 
-	monto := consumo * reg.PrecioUnitario
+	monto := (consumo * reg.PrecioUnitario) + reg.CargoFijo
 
 	// Necesitamos el unidad_id del contrato
 	alq, err := s.alquilerRepo.BuscarPorID(ctx, reg.ContratoID)
@@ -156,4 +164,21 @@ func (s *ServicioMedicionService) RegistrarYCobrar(ctx context.Context, reg *dom
 	med.Procesado = true
 	med.CargoID = &nuevoCargo.ID
 	return s.repo.Actualizar(ctx, med)
+}
+
+func (s *ServicioMedicionService) RegistrarMasivo(ctx context.Context, registros []domain.RegistroLectura, empresaID int) ([]*domain.ServicioMedicion, error) {
+	var resultados []*domain.ServicioMedicion
+	for _, reg := range registros {
+		med, err := s.RegistrarYCobrar(ctx, &reg, empresaID)
+		if err != nil {
+			return resultados, fmt.Errorf("error en contrato %d: %v", reg.ContratoID, err)
+		}
+		resultados = append(resultados, med)
+	}
+	return resultados, nil
+}
+
+func (s *ServicioMedicionService) ListarPendientesLectura(ctx context.Context, empresaID int, tipo string) ([]*domain.Alquiler, error) {
+	// Implementación básica: listar alquileres activos que no tengan medición este mes
+	return []*domain.Alquiler{}, nil
 }

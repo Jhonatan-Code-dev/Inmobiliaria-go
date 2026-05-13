@@ -83,6 +83,7 @@ type (
 
 	AlquilerRepository interface {
 		ListarPaginado(ctx context.Context, filtros AlquilerFiltros) ([]*Alquiler, int, error)
+		ListarActivos(ctx context.Context, empresaID int) ([]*Alquiler, error)
 		BuscarPorID(ctx context.Context, id int) (*Alquiler, error)
 		Crear(ctx context.Context, alquiler *Alquiler) (*Alquiler, error)
 		Actualizar(ctx context.Context, alquiler *Alquiler) (*Alquiler, error)
@@ -154,6 +155,7 @@ type (
 		GenerarContrato(ctx context.Context, id int, empresaID int, plantillaID int) (string, error)
 		GenerarContratoWord(ctx context.Context, id int, empresaID int, plantillaID int) ([]byte, error)
 		GenerarContratoBorrador(ctx context.Context, empresaID int, req GenerarBorradorRequest) ([]byte, error)
+		ListarActivosSelector(ctx context.Context, empresaID int) ([]*Alquiler, error)
 	}
 
 	PagoAlquilerService interface {
@@ -212,7 +214,9 @@ type (
 		Obtener(ctx context.Context, id int, empresaID int) (*ServicioMedicion, error)
 		Registrar(ctx context.Context, r *RegistroLectura, empresaID int) (*ServicioMedicion, error)
 		RegistrarYCobrar(ctx context.Context, r *RegistroLectura, empresaID int) (*ServicioMedicion, error)
+		RegistrarMasivo(ctx context.Context, r []RegistroLectura, empresaID int) ([]*ServicioMedicion, error)
 		ObtenerUltimaLectura(ctx context.Context, contratoID int, tipo string) (*ServicioMedicion, error)
+		ListarPendientesLectura(ctx context.Context, empresaID int, tipo string) ([]*Alquiler, error)
 		Actualizar(ctx context.Context, id int, empresaID int, lecturaActual float64) (*ServicioMedicion, error)
 		Eliminar(ctx context.Context, id int, empresaID int) error
 	}

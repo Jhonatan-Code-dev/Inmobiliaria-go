@@ -19,6 +19,10 @@ func NewAlquilerService(repo domain.AlquilerRepository, cliente domain.ClienteRe
 	return &AlquilerService{repo: repo, cliente: cliente, empresa: empresa}
 }
 
+func (s *AlquilerService) ListarActivosSelector(ctx context.Context, empresaID int) ([]*domain.Alquiler, error) {
+	return s.repo.ListarActivos(ctx, empresaID)
+}
+
 func (s *AlquilerService) Listar(ctx context.Context, filtros domain.AlquilerFiltros) ([]*domain.Alquiler, int, error) {
 	if filtros.Pagina <= 0 {
 		filtros.Pagina = 1

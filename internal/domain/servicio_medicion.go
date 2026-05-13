@@ -24,9 +24,12 @@ type ServicioMedicionFiltros struct {
 }
 
 type RegistroLectura struct {
-	ContratoID    int     `json:"contrato_id"`
-	TipoServicio  string  `json:"tipo_servicio"`
-	LecturaActual float64 `json:"lectura_actual"`
-	FechaLectura  string  `json:"fecha_lectura"`
-	PrecioUnitario float64 `json:"precio_unitario"`
+	ContratoID      int      `json:"contrato_id"`
+	TipoServicio    string   `json:"tipo_servicio"`
+	LecturaAnterior *float64 `json:"lectura_anterior,omitempty"`
+	LecturaActual   float64  `json:"lectura_actual"`
+	PrecioUnitario  float64  `json:"precio_unitario"`
+	Factor          float64  `json:"factor,omitempty"`     // Multiplicador (por defecto 1)
+	CargoFijo       float64  `json:"cargo_fijo,omitempty"` // Cargo fijo (Alumbrado, Alcantarillado, etc.)
+	FechaLectura    string   `json:"fecha_lectura"`
 }

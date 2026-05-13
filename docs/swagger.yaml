@@ -1597,6 +1597,13 @@ paths:
       summary: Finalizar contrato formalmente
       tags:
       - Alquileres
+  /api/user/alquileres/activos/selector:
+    get:
+      description: Retorna una lista simplificada de contratos activos.
+      responses: {}
+      summary: Listar contratos activos para selectores
+      tags:
+      - Alquileres
   /api/user/alquileres/generar-borrador:
     post:
       consumes:
@@ -3347,6 +3354,18 @@ paths:
           type: object
       responses: {}
       summary: Editar lectura errónea
+      tags:
+      - Servicios
+  /api/user/servicios/masivo:
+    post:
+      responses: {}
+      summary: Registrar múltiples lecturas a la vez
+      tags:
+      - Servicios
+  /api/user/servicios/pendientes:
+    get:
+      responses: {}
+      summary: Listar contratos que faltan registrar lectura este mes
       tags:
       - Servicios
   /api/user/servicios/registrar-y-cobrar:

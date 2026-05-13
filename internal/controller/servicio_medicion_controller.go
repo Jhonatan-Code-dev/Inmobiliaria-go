@@ -130,9 +130,56 @@ func (h *ServicioMedicionController) Actualizar(c *fiber.Ctx) error {
 // @Router /api/user/servicios/registrar-y-cobrar [post]
 func (h *ServicioMedicionController) RegistrarYCobrar(c *fiber.Ctx) error {
 	empresaID := c.Locals("empresa_id").(int)
-	var req domain.RegistroLectura
-	if err := c.BodyParser(&req); err != nil {
-		return fiber.ErrBadRequest
+	
+	// Estructura temporal para ser flexibles con los tipos de entrada
+	type registroReq struct {
+		ContratoID      interface{} `json:"contrato_id"`
+		TipoServicio    string      `json:"tipo_servicio"`
+		LecturaAnterior *float64    `json:"lectura_anterior"`
+		LecturaActual   float64     `json:"lectura_actual"`
+		PrecioUnitario  float64     `json:"precio_unitario"`
+		Factor          float64     `json:"factor"`
+		CargoFijo       float64     `json:"cargo_fijo"`
+		FechaLectura    string      `json:"fecha_lectura"`
+	}
+
+	var raw registroReq
+	if err := c.BodyParser(&raw); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(errorResponse{
+			Message: "Cuerpo de petición inválido. Asegúrese de enviar los campos correctamente.",
+		})
+	}
+
+	// Convertir ContratoID de forma robusta
+	var contratoID int
+	switch v := raw.ContratoID.(type) {
+	case float64:
+		contratoID = int(v)
+	case string:
+		contratoID, _ = strconv.Atoi(v)
+	case int:
+		contratoID = v
+	default:
+		return c.Status(http.StatusBadRequest).JSON(errorResponse{
+			Message: "contrato_id debe ser un número.",
+		})
+	}
+
+	if contratoID == 0 {
+		return c.Status(http.StatusBadRequest).JSON(errorResponse{
+			Message: "contrato_id es obligatorio y debe ser válido.",
+		})
+	}
+
+	req := domain.RegistroLectura{
+		ContratoID:      contratoID,
+		TipoServicio:    raw.TipoServicio,
+		LecturaAnterior: raw.LecturaAnterior,
+		LecturaActual:   raw.LecturaActual,
+		PrecioUnitario:  raw.PrecioUnitario,
+		Factor:          raw.Factor,
+		CargoFijo:       raw.CargoFijo,
+		FechaLectura:    raw.FechaLectura,
 	}
 
 	med, err := h.svc.RegistrarYCobrar(c.Context(), &req, empresaID)
@@ -161,4 +208,79 @@ func (h *ServicioMedicionController) ObtenerUltima(c *fiber.Ctx) error {
 	}
 
 	return c.JSON(med)
+}
+
+// RegistrarMasivo godoc
+// @Summary Registrar múltiples lecturas a la vez
+// @Tags Servicios
+// @Router /api/user/servicios/masivo [post]
+func (h *ServicioMedicionController) RegistrarMasivo(c *fiber.Ctx) error {
+	empresaID := c.Locals("empresa_id").(int)
+
+	type registroReq struct {
+		ContratoID      interface{} `json:"contrato_id"`
+		TipoServicio    string      `json:"tipo_servicio"`
+		LecturaAnterior *float64    `json:"lectura_anterior"`
+		LecturaActual   float64     `json:"lectura_actual"`
+		PrecioUnitario  float64     `json:"precio_unitario"`
+		Factor          float64     `json:"factor"`
+		CargoFijo       float64     `json:"cargo_fijo"`
+		FechaLectura    string      `json:"fecha_lectura"`
+	}
+
+	var rawItems []registroReq
+	if err := c.BodyParser(&rawItems); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(errorResponse{
+			Message: "Formato masivo inválido. Se espera un array de objetos.",
+		})
+	}
+
+	var registros []domain.RegistroLectura
+	for _, raw := range rawItems {
+		var contratoID int
+		switch v := raw.ContratoID.(type) {
+		case float64:
+			contratoID = int(v)
+		case string:
+			contratoID, _ = strconv.Atoi(v)
+		case int:
+			contratoID = v
+		}
+
+		if contratoID > 0 {
+			registros = append(registros, domain.RegistroLectura{
+				ContratoID:      contratoID,
+				TipoServicio:    raw.TipoServicio,
+				LecturaAnterior: raw.LecturaAnterior,
+				LecturaActual:   raw.LecturaActual,
+				PrecioUnitario:  raw.PrecioUnitario,
+				Factor:          raw.Factor,
+				CargoFijo:       raw.CargoFijo,
+				FechaLectura:    raw.FechaLectura,
+			})
+		}
+	}
+
+	mediciones, err := h.svc.RegistrarMasivo(c.Context(), registros, empresaID)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(errorResponse{Message: err.Error()})
+	}
+
+	return c.JSON(mediciones)
+}
+
+// ListarPendientes godoc
+// @Summary Listar contratos que faltan registrar lectura este mes
+// @Tags Servicios
+// @Router /api/user/servicios/pendientes [get]
+func (h *ServicioMedicionController) ListarPendientes(c *fiber.Ctx) error {
+	empresaID := c.Locals("empresa_id").(int)
+	tipo := c.Query("tipo", "luz")
+
+	pendientes, err := h.svc.ListarPendientesLectura(c.Context(), empresaID, tipo)
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(errorResponse{Message: err.Error()})
+	}
+
+	return c.JSON(pendientes)
 }

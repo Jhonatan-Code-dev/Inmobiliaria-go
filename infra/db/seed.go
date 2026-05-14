@@ -7,11 +7,14 @@ import (
 	"rentals-go/config/security"
 	"rentals-go/ent"
 	"rentals-go/ent/admin"
+	"rentals-go/ent/empresa"
+	"rentals-go/ent/empresausuario"
 	"rentals-go/ent/rol"
 	"rentals-go/ent/tipoidentificacion"
+	"rentals-go/ent/usuario"
 )
 
-// seedAdmin crea el super admin inicial si no existe.
+// seedAdmin crea los administradores iniciales si no existen.
 func seedAdmin(client *ent.Client) error {
 	ctx := context.Background()
 	const (
@@ -44,6 +47,94 @@ func seedAdmin(client *ent.Client) error {
 		return err
 	}
 	log.Println("🟦 Super admin creado por defecto")
+	return nil
+}
+
+// seedUsuarios crea usuarios de negocio iniciales y los vincula a una empresa.
+func seedUsuarios(client *ent.Client) error {
+	ctx := context.Background()
+	const (
+		uName = "yona"
+		uPass = "123456"
+		eName = "Inmobiliaria"
+	)
+
+	// 1. Asegurar que existe una empresa base
+	emp, err := client.Empresa.
+		Query().
+		Where(empresa.NombreEQ(eName)).
+		Only(ctx)
+	if ent.IsNotFound(err) {
+		emp, err = client.Empresa.Create().
+			SetNombre(eName).
+			SetMoneda("PEN").
+			SetPais("PE").
+			SetMaximoUsuarios(100).
+			Save(ctx)
+		if err != nil {
+			return err
+		}
+		log.Println("🟦 Empresa 'Inmobiliaria' creada")
+	} else if err != nil {
+		return err
+	}
+
+	// 2. Asegurar que existe el usuario
+	usr, err := client.Usuario.
+		Query().
+		Where(usuario.UsuarioEQ(uName)).
+		Only(ctx)
+
+	if ent.IsNotFound(err) {
+		hasher := security.NewServicioHash()
+		hash, err := hasher.Encriptar(uPass)
+		if err != nil {
+			return err
+		}
+
+		usr, err = client.Usuario.Create().
+			SetUsuario(uName).
+			SetHashContrasena(hash).
+			Save(ctx)
+		if err != nil {
+			return err
+		}
+		log.Println("🟦 Usuario 'yona' creado")
+	} else if err != nil {
+		return err
+	}
+
+	// 3. Vincular usuario a empresa como administrador principal si no está vinculado
+	r, err := client.Rol.Query().Where(rol.NombreEQ("administrador")).Only(ctx)
+	if err != nil {
+		return err
+	}
+
+	exists, err := client.EmpresaUsuario.
+		Query().
+		Where(
+			empresausuario.EmpresaIDEQ(emp.ID),
+			empresausuario.UsuarioIDEQ(usr.ID),
+		).
+		Exist(ctx)
+	if err != nil {
+		return err
+	}
+
+	if !exists {
+		err = client.EmpresaUsuario.Create().
+			SetEmpresaID(emp.ID).
+			SetUsuarioID(usr.ID).
+			SetRolID(r.ID).
+			SetPrincipal(true).
+			SetEstado("activo").
+			Exec(ctx)
+		if err != nil {
+			return err
+		}
+		log.Println("🟦 Usuario 'yona' vinculado a empresa correctamente")
+	}
+
 	return nil
 }
 

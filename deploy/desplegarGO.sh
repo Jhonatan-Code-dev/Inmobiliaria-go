@@ -1,6 +1,5 @@
 sudo vi /etc/systemd/system/paga-causa.service
 
-
 [Unit]
 Description=Paga Causa Go App
 After=network.target

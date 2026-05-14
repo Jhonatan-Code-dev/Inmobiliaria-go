@@ -9,7 +9,6 @@ sudo systemctl enable caddy
 sudo systemctl start caddy
 sudo systemctl status caddy
 
-
 sudo vi /etc/caddy/Caddyfile
 
 

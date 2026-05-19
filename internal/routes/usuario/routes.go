@@ -134,6 +134,16 @@ func Register(app *fiber.App, appDI *di.App) {
 	dashboard.Get("/estado-cuenta/:clienteId", appDI.DashboardCtrl.EstadoCuentaCliente)
 	dashboard.Get("/top-unidades", appDI.DashboardCtrl.TopUnidades)
 
+	// Módulo de Reportes Gerenciales
+	reportes := app.Group("/api/user/reportes")
+	reportes.Use(middlewares.TenantAuth(appDI.Config))
+	reportes.Get("/ingresos-gastos", appDI.ReporteCtrl.IngresosGastos)
+	reportes.Get("/metodos-pago", appDI.ReporteCtrl.MetodosPago)
+	reportes.Get("/categorias-gastos", appDI.ReporteCtrl.CategoriasGastos)
+	reportes.Get("/rentabilidad-propiedades", appDI.ReporteCtrl.RentabilidadPropiedades)
+	reportes.Get("/tickets-mantenimiento", appDI.ReporteCtrl.TicketsMantenimiento)
+
+
 	// Módulo de Asistencia
 	asistencia := app.Group("/api/user/asistencia")
 	asistencia.Use(middlewares.TenantAuth(appDI.Config))

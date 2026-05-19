@@ -755,6 +755,32 @@ definitions:
       respuesta:
         type: string
     type: object
+  domain.DistribucionCategoriaGasto:
+    properties:
+      cantidad_gastos:
+        type: integer
+      categoria:
+        description: Nombre del TipoPago
+        type: string
+      porcentaje:
+        type: number
+      tipo_pago_id:
+        type: integer
+      total:
+        type: number
+    type: object
+  domain.DistribucionMetodoPago:
+    properties:
+      cantidad_pagos:
+        type: integer
+      metodo:
+        description: '"efectivo", "transferencia", "yape", etc.'
+        type: string
+      porcentaje:
+        type: number
+      total:
+        type: number
+    type: object
   domain.EstadoCuentaCliente:
     properties:
       cargos:
@@ -879,6 +905,18 @@ definitions:
         description: '"2025-01", "2025-02" ...'
         type: string
     type: object
+  domain.PuntoIngresoGasto:
+    properties:
+      balance:
+        type: number
+      gastos:
+        type: number
+      ingresos:
+        type: number
+      periodo:
+        description: Formato "YYYY-MM"
+        type: string
+    type: object
   domain.RegistroHorario:
     properties:
       dias_laborables:
@@ -899,6 +937,28 @@ definitions:
       motivo:
         type: string
     type: object
+  domain.RentabilidadPropiedad:
+    properties:
+      direccion:
+        type: string
+      gastos:
+        type: number
+      ingresos:
+        type: number
+      nombre:
+        type: string
+      propiedad_id:
+        type: integer
+      rentabilidad:
+        description: Ingresos - Gastos
+        type: number
+      tasa_ocupacion_pct:
+        type: number
+      total_unidades:
+        type: integer
+      unidades_ocupadas:
+        type: integer
+    type: object
   domain.ReporteFinanciero:
     properties:
       balance_neto:
@@ -910,6 +970,23 @@ definitions:
       serie_mensual:
         items:
           $ref: '#/definitions/domain.PuntoFinanciero'
+        type: array
+      total_gastos:
+        type: number
+      total_ingresos:
+        type: number
+    type: object
+  domain.ReporteIngresosGastos:
+    properties:
+      balance_neto:
+        type: number
+      desde:
+        type: string
+      hasta:
+        type: string
+      serie_mensual:
+        items:
+          $ref: '#/definitions/domain.PuntoIngresoGasto'
         type: array
       total_gastos:
         type: number
@@ -961,6 +1038,15 @@ definitions:
       unidades_libres:
         type: integer
       unidades_ocupadas:
+        type: integer
+    type: object
+  domain.ResumenMantenimientoReporte:
+    properties:
+      por_estado:
+        $ref: '#/definitions/domain.TicketsPorEstado'
+      por_prioridad:
+        $ref: '#/definitions/domain.TicketsPorPrioridad'
+      total_tickets:
         type: integer
     type: object
   domain.ResumenMorosidad:
@@ -1029,6 +1115,26 @@ definitions:
       resueltos:
         type: integer
       total:
+        type: integer
+    type: object
+  domain.TicketsPorEstado:
+    properties:
+      abierto:
+        type: integer
+      anulado:
+        type: integer
+      en_progreso:
+        type: integer
+      resuelto:
+        type: integer
+    type: object
+  domain.TicketsPorPrioridad:
+    properties:
+      alta:
+        type: integer
+      baja:
+        type: integer
+      media:
         type: integer
     type: object
   domain.TopUnidad:
@@ -3314,6 +3420,228 @@ paths:
       summary: Listar pagos pendientes del mes actual
       tags:
       - Pagos
+  /api/user/reportes/categorias-gastos:
+    get:
+      description: Detalla el volumen de egresos agrupado por la categoría o tipo
+        de pago del gasto para gráficos circulares/torta (Pie / Doughnut). Si no se
+        envían fechas, usa los últimos 12 meses.
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      - description: Fecha inicio (YYYY-MM-DD)
+        in: query
+        name: desde
+        type: string
+      - description: Fecha fin (YYYY-MM-DD)
+        in: query
+        name: hasta
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.DistribucionCategoriaGasto'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Distribución de gastos por categoría
+      tags:
+      - Reportes Gerenciales
+  /api/user/reportes/ingresos-gastos:
+    get:
+      description: Retorna la serie mensual del balance neto de ingresos y gastos
+        en el rango de fechas indicado para gráficos de barras o líneas. Si no se
+        envían fechas, usa los últimos 12 meses.
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      - description: Fecha inicio (YYYY-MM-DD)
+        in: query
+        name: desde
+        type: string
+      - description: Fecha fin (YYYY-MM-DD)
+        in: query
+        name: hasta
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.ReporteIngresosGastos'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Reporte de Ingresos vs Gastos
+      tags:
+      - Reportes Gerenciales
+  /api/user/reportes/metodos-pago:
+    get:
+      description: Detalla el volumen de ingresos agrupado por método de pago para
+        gráficos circulares/torta (Pie / Doughnut). Si no se envían fechas, usa los
+        últimos 12 meses.
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      - description: Fecha inicio (YYYY-MM-DD)
+        in: query
+        name: desde
+        type: string
+      - description: Fecha fin (YYYY-MM-DD)
+        in: query
+        name: hasta
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.DistribucionMetodoPago'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Distribución de ingresos por método de pago
+      tags:
+      - Reportes Gerenciales
+  /api/user/reportes/rentabilidad-propiedades:
+    get:
+      description: Devuelve un análisis comparativo por propiedad que incluye tasa
+        de ocupación, ingresos generados, gastos prorrateados asignados y rentabilidad
+        neta para gráficos de barras horizontales o comparativos. Si no se envían
+        fechas, usa los últimos 12 meses.
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      - description: Fecha inicio (YYYY-MM-DD)
+        in: query
+        name: desde
+        type: string
+      - description: Fecha fin (YYYY-MM-DD)
+        in: query
+        name: hasta
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.RentabilidadPropiedad'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Rentabilidad y ocupación por propiedad
+      tags:
+      - Reportes Gerenciales
+  /api/user/reportes/tickets-mantenimiento:
+    get:
+      description: Detalla métricas del módulo de soporte/mantenimiento agrupados
+        por estado y prioridad creados en el rango indicado. Útil para gráficos de
+        barras apiladas. Si no se envían fechas, usa los últimos 12 meses.
+      parameters:
+      - description: ID de la empresa
+        in: query
+        name: empresa_id
+        required: true
+        type: integer
+      - description: Fecha inicio (YYYY-MM-DD)
+        in: query
+        name: desde
+        type: string
+      - description: Fecha fin (YYYY-MM-DD)
+        in: query
+        name: hasta
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/domain.ResumenMantenimientoReporte'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/controller.errorResponse'
+      security:
+      - BearerAuth: []
+      summary: Resumen de tickets de soporte y mantenimiento
+      tags:
+      - Reportes Gerenciales
   /api/user/servicios:
     get:
       responses: {}

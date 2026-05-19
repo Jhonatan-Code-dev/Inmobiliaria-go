@@ -52,6 +52,8 @@ var RepositorySet = wire.NewSet(
 	wire.Bind(new(domain.AsistenciaRepository), new(*repository.AsistenciaRepoEnt)),
 	repository.NewPermisoRepo,
 	wire.Bind(new(domain.PermisoRepository), new(*repository.PermisoRepoEnt)),
+	repository.NewReporteRepo,
+	wire.Bind(new(domain.ReporteRepository), new(*repository.ReporteRepoEnt)),
 )
 
 var ServiceSet = wire.NewSet(
@@ -80,6 +82,8 @@ var ServiceSet = wire.NewSet(
 	wire.Bind(new(domain.DashboardService), new(*service.DashboardService)),
 	service.NewAsistenciaService,
 	wire.Bind(new(domain.AsistenciaService), new(*service.AsistenciaService)),
+	service.NewReporteService,
+	wire.Bind(new(domain.ReporteService), new(*service.ReporteService)),
 	ProvideJWTSecret,
 )
 
@@ -97,4 +101,5 @@ var ControllerSet = wire.NewSet(
 	controller.NewTicketController,
 	controller.NewDashboardController,
 	controller.NewAsistenciaController,
+	controller.NewReporteController,
 )

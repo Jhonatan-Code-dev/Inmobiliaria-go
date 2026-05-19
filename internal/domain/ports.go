@@ -288,4 +288,20 @@ type (
 		ObtenerConfiguracionEmpresa(ctx context.Context, empresaID int) (*ConfiguracionAsistencia, error)
 		ActualizarConfiguracionEmpresa(ctx context.Context, empresaID int, req *ActualizarConfiguracionAsistencia) (*ConfiguracionAsistencia, error)
 	}
+
+	ReporteRepository interface {
+		ObtenerIngresosGastos(ctx context.Context, empresaID int, desde, hasta time.Time) (*ReporteIngresosGastos, error)
+		ObtenerDistribucionMetodosPago(ctx context.Context, empresaID int, desde, hasta time.Time) ([]DistribucionMetodoPago, error)
+		ObtenerDistribucionCategoriasGastos(ctx context.Context, empresaID int, desde, hasta time.Time) ([]DistribucionCategoriaGasto, error)
+		ObtenerRentabilidadPropiedades(ctx context.Context, empresaID int, desde, hasta time.Time) ([]RentabilidadPropiedad, error)
+		ObtenerResumenMantenimiento(ctx context.Context, empresaID int, desde, hasta time.Time) (*ResumenMantenimientoReporte, error)
+	}
+
+	ReporteService interface {
+		ObtenerIngresosGastos(ctx context.Context, empresaID int, desde, hasta time.Time) (*ReporteIngresosGastos, error)
+		ObtenerDistribucionMetodosPago(ctx context.Context, empresaID int, desde, hasta time.Time) ([]DistribucionMetodoPago, error)
+		ObtenerDistribucionCategoriasGastos(ctx context.Context, empresaID int, desde, hasta time.Time) ([]DistribucionCategoriaGasto, error)
+		ObtenerRentabilidadPropiedades(ctx context.Context, empresaID int, desde, hasta time.Time) ([]RentabilidadPropiedad, error)
+		ObtenerResumenMantenimiento(ctx context.Context, empresaID int, desde, hasta time.Time) (*ResumenMantenimientoReporte, error)
+	}
 )

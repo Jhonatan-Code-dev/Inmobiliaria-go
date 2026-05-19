@@ -72,6 +72,9 @@ func InitializeApp() (*App, error) {
 	permisoRepoEnt := repository.NewPermisoRepo(client)
 	asistenciaService := service.NewAsistenciaService(horarioRepoEnt, asistenciaRepoEnt, permisoRepoEnt, empresaRepoEnt)
 	asistenciaController := controller.NewAsistenciaController(asistenciaService)
+	reporteRepoEnt := repository.NewReporteRepo(client)
+	reporteService := service.NewReporteService(reporteRepoEnt)
+	reporteController := controller.NewReporteController(reporteService)
 	app := &App{
 		Config:         config,
 		EntClient:      client,
@@ -88,6 +91,7 @@ func InitializeApp() (*App, error) {
 		TicketCtrl:     ticketController,
 		DashboardCtrl:  dashboardController,
 		AsistenciaCtrl: asistenciaController,
+		ReporteCtrl:    reporteController,
 	}
 	return app, nil
 }

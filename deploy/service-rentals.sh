@@ -37,8 +37,8 @@ RestartSec=5
 # Variables de Entorno para Producción
 Environment="APP_ENV=production"
 Environment="PORT=7000"
-Environment="BASE_DATOS_1=postgres://yona:912059555Perez@localhost:5432/alquilamax?sslmode=disable&TimeZone=UTC"
-Environment="JWT_SECRET=PAGA_CAUSA_SUPER_SECRET_KEY_2026"
+Environment="BASE_DATOS_1="
+Environment="JWT_SECRET=ALQUILAMAX_SUPER_SECRET_KEY_2026"
 Environment="JWT_ACCESS_DURATION=15d"
 Environment="COOKIE_MAX_AGE=15d"
 Environment="COOKIE_SECURE=true"
@@ -66,7 +66,7 @@ sudo systemctl status alquilamax
 sudo journalctl -u alquilamax.service -f
 
 # ==============================================================================
-# PROCEDIMIENTO DE ACTUALIZACIÓN RÁPIDA (RE-DEPLOY)
+# PROCEDIMIENTO DE ACTUALIZACIÓN (RE-DEPLOY)
 # ==============================================================================
 # Solo ejecuta esto cuando subas un nuevo binario:
 

@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"rentals-go/ent/cita"
 	"rentals-go/ent/contrato"
 	"rentals-go/ent/propiedad"
 	"rentals-go/ent/serviciomedicion"
@@ -308,6 +309,21 @@ func (_c *UnidadCreate) AddTickets(v ...*Ticket) *UnidadCreate {
 		ids[i] = v[i].ID
 	}
 	return _c.AddTicketIDs(ids...)
+}
+
+// AddCitaIDs adds the "citas" edge to the Cita entity by IDs.
+func (_c *UnidadCreate) AddCitaIDs(ids ...int) *UnidadCreate {
+	_c.mutation.AddCitaIDs(ids...)
+	return _c
+}
+
+// AddCitas adds the "citas" edges to the Cita entity.
+func (_c *UnidadCreate) AddCitas(v ...*Cita) *UnidadCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddCitaIDs(ids...)
 }
 
 // Mutation returns the UnidadMutation object of the builder.
@@ -639,6 +655,22 @@ func (_c *UnidadCreate) createSpec() (*Unidad, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.CitasIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   unidad.CitasTable,
+			Columns: []string{unidad.CitasColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cita.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

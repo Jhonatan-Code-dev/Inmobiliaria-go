@@ -108,6 +108,65 @@ var (
 			},
 		},
 	}
+	// CitasColumns holds the columns for the "citas" table.
+	CitasColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "creado_en", Type: field.TypeTime},
+		{Name: "nombre_prospecto", Type: field.TypeString, Size: 150},
+		{Name: "telefono_prospecto", Type: field.TypeString, Size: 50},
+		{Name: "correo_prospecto", Type: field.TypeString, Nullable: true, Size: 150},
+		{Name: "fecha_visita", Type: field.TypeTime},
+		{Name: "estado", Type: field.TypeEnum, Enums: []string{"programada", "realizada", "cancelada", "no_asistio"}, Default: "programada"},
+		{Name: "comentarios", Type: field.TypeString, Nullable: true, Size: 1000},
+		{Name: "cliente_id", Type: field.TypeInt, Nullable: true},
+		{Name: "empresa_id", Type: field.TypeInt},
+		{Name: "propiedad_id", Type: field.TypeInt, Nullable: true},
+		{Name: "unidad_id", Type: field.TypeInt, Nullable: true},
+	}
+	// CitasTable holds the schema information for the "citas" table.
+	CitasTable = &schema.Table{
+		Name:       "citas",
+		Columns:    CitasColumns,
+		PrimaryKey: []*schema.Column{CitasColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "citas_clientes_citas",
+				Columns:    []*schema.Column{CitasColumns[8]},
+				RefColumns: []*schema.Column{ClientesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "citas_empresas_citas",
+				Columns:    []*schema.Column{CitasColumns[9]},
+				RefColumns: []*schema.Column{EmpresasColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "citas_propiedades_citas",
+				Columns:    []*schema.Column{CitasColumns[10]},
+				RefColumns: []*schema.Column{PropiedadesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "citas_unidades_citas",
+				Columns:    []*schema.Column{CitasColumns[11]},
+				RefColumns: []*schema.Column{UnidadesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "cita_empresa_id",
+				Unique:  false,
+				Columns: []*schema.Column{CitasColumns[9]},
+			},
+			{
+				Name:    "cita_fecha_visita",
+				Unique:  false,
+				Columns: []*schema.Column{CitasColumns[5]},
+			},
+		},
+	}
 	// ClientesColumns holds the columns for the "clientes" table.
 	ClientesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -793,6 +852,7 @@ var (
 		AdminsTable,
 		AsistenciasTable,
 		CargosTable,
+		CitasTable,
 		ClientesTable,
 		ClienteTelefonosTable,
 		ContratosTable,
@@ -829,6 +889,13 @@ func init() {
 	CargosTable.ForeignKeys[1].RefTable = ServicioMedicionesTable
 	CargosTable.Annotation = &entsql.Annotation{
 		Table: "cargos",
+	}
+	CitasTable.ForeignKeys[0].RefTable = ClientesTable
+	CitasTable.ForeignKeys[1].RefTable = EmpresasTable
+	CitasTable.ForeignKeys[2].RefTable = PropiedadesTable
+	CitasTable.ForeignKeys[3].RefTable = UnidadesTable
+	CitasTable.Annotation = &entsql.Annotation{
+		Table: "citas",
 	}
 	ClientesTable.ForeignKeys[0].RefTable = EmpresasTable
 	ClientesTable.ForeignKeys[1].RefTable = TiposIdentificacionTable

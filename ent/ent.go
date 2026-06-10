@@ -10,6 +10,7 @@ import (
 	"rentals-go/ent/admin"
 	"rentals-go/ent/asistencia"
 	"rentals-go/ent/cargo"
+	"rentals-go/ent/cita"
 	"rentals-go/ent/cliente"
 	"rentals-go/ent/clientetelefono"
 	"rentals-go/ent/contrato"
@@ -98,6 +99,7 @@ func checkColumn(t, c string) error {
 			admin.Table:              admin.ValidColumn,
 			asistencia.Table:         asistencia.ValidColumn,
 			cargo.Table:              cargo.ValidColumn,
+			cita.Table:               cita.ValidColumn,
 			cliente.Table:            cliente.ValidColumn,
 			clientetelefono.Table:    clientetelefono.ValidColumn,
 			contrato.Table:           contrato.ValidColumn,

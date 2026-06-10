@@ -18,6 +18,8 @@ type Tx struct {
 	Asistencia *AsistenciaClient
 	// Cargo is the client for interacting with the Cargo builders.
 	Cargo *CargoClient
+	// Cita is the client for interacting with the Cita builders.
+	Cita *CitaClient
 	// Cliente is the client for interacting with the Cliente builders.
 	Cliente *ClienteClient
 	// ClienteTelefono is the client for interacting with the ClienteTelefono builders.
@@ -192,6 +194,7 @@ func (tx *Tx) init() {
 	tx.Admin = NewAdminClient(tx.config)
 	tx.Asistencia = NewAsistenciaClient(tx.config)
 	tx.Cargo = NewCargoClient(tx.config)
+	tx.Cita = NewCitaClient(tx.config)
 	tx.Cliente = NewClienteClient(tx.config)
 	tx.ClienteTelefono = NewClienteTelefonoClient(tx.config)
 	tx.Contrato = NewContratoClient(tx.config)

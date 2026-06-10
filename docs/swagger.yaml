@@ -2170,6 +2170,45 @@ paths:
       summary: Editar cargo
       tags:
       - Cargos
+  /api/user/citas:
+    get:
+      responses: {}
+      summary: Listar citas / visitas de la empresa
+      tags:
+      - Citas
+    post:
+      responses: {}
+      summary: Agendar nueva cita / visita
+      tags:
+      - Citas
+  /api/user/citas/{id}:
+    delete:
+      responses: {}
+      summary: Eliminar cita
+      tags:
+      - Citas
+    get:
+      responses: {}
+      summary: Obtener detalle de cita
+      tags:
+      - Citas
+    put:
+      responses: {}
+      summary: Actualizar cita
+      tags:
+      - Citas
+  /api/user/citas/{id}/estado:
+    patch:
+      responses: {}
+      summary: Cambiar estado de cita
+      tags:
+      - Citas
+  /api/user/citas/config-formulario:
+    get:
+      responses: {}
+      summary: Catálogos para el formulario de citas
+      tags:
+      - Citas
   /api/user/clientes:
     get:
       description: 'Obtiene una lista paginada de clientes (máx 10). Filtros opcionales:

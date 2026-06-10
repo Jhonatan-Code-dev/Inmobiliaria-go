@@ -15,6 +15,9 @@ type Asistencia func(*sql.Selector)
 // Cargo is the predicate function for cargo builders.
 type Cargo func(*sql.Selector)
 
+// Cita is the predicate function for cita builders.
+type Cita func(*sql.Selector)
+
 // Cliente is the predicate function for cliente builders.
 type Cliente func(*sql.Selector)
 

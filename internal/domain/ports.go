@@ -304,4 +304,21 @@ type (
 		ObtenerRentabilidadPropiedades(ctx context.Context, empresaID int, desde, hasta time.Time) ([]RentabilidadPropiedad, error)
 		ObtenerResumenMantenimiento(ctx context.Context, empresaID int, desde, hasta time.Time) (*ResumenMantenimientoReporte, error)
 	}
+
+	CitaRepository interface {
+		Listar(ctx context.Context, filtros CitaFiltros) ([]*Cita, int, error)
+		BuscarPorID(ctx context.Context, id int, empresaID int) (*Cita, error)
+		Crear(ctx context.Context, c *Cita) (*Cita, error)
+		Actualizar(ctx context.Context, c *Cita) (*Cita, error)
+		Eliminar(ctx context.Context, id int, empresaID int) error
+	}
+
+	CitaService interface {
+		Listar(ctx context.Context, filtros CitaFiltros) ([]*Cita, int, error)
+		Obtener(ctx context.Context, id int, empresaID int) (*Cita, error)
+		Crear(ctx context.Context, req *RegistroCita, empresaID int) (*Cita, error)
+		Actualizar(ctx context.Context, id int, empresaID int, req *RegistroCita) (*Cita, error)
+		CambiarEstado(ctx context.Context, id int, empresaID int, estado string) (*Cita, error)
+		Eliminar(ctx context.Context, id int, empresaID int) error
+	}
 )

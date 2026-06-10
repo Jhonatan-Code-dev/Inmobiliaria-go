@@ -24,4 +24,5 @@ type App struct {
 	DashboardCtrl  *controller.DashboardController
 	AsistenciaCtrl *controller.AsistenciaController
 	ReporteCtrl    *controller.ReporteController
+	CitasCtrl      *controller.CitasController
 }

@@ -14,6 +14,7 @@ import (
 	"rentals-go/ent/admin"
 	"rentals-go/ent/asistencia"
 	"rentals-go/ent/cargo"
+	"rentals-go/ent/cita"
 	"rentals-go/ent/cliente"
 	"rentals-go/ent/clientetelefono"
 	"rentals-go/ent/contrato"
@@ -52,6 +53,8 @@ type Client struct {
 	Asistencia *AsistenciaClient
 	// Cargo is the client for interacting with the Cargo builders.
 	Cargo *CargoClient
+	// Cita is the client for interacting with the Cita builders.
+	Cita *CitaClient
 	// Cliente is the client for interacting with the Cliente builders.
 	Cliente *ClienteClient
 	// ClienteTelefono is the client for interacting with the ClienteTelefono builders.
@@ -106,6 +109,7 @@ func (c *Client) init() {
 	c.Admin = NewAdminClient(c.config)
 	c.Asistencia = NewAsistenciaClient(c.config)
 	c.Cargo = NewCargoClient(c.config)
+	c.Cita = NewCitaClient(c.config)
 	c.Cliente = NewClienteClient(c.config)
 	c.ClienteTelefono = NewClienteTelefonoClient(c.config)
 	c.Contrato = NewContratoClient(c.config)
@@ -221,6 +225,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Admin:              NewAdminClient(cfg),
 		Asistencia:         NewAsistenciaClient(cfg),
 		Cargo:              NewCargoClient(cfg),
+		Cita:               NewCitaClient(cfg),
 		Cliente:            NewClienteClient(cfg),
 		ClienteTelefono:    NewClienteTelefonoClient(cfg),
 		Contrato:           NewContratoClient(cfg),
@@ -263,6 +268,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Admin:              NewAdminClient(cfg),
 		Asistencia:         NewAsistenciaClient(cfg),
 		Cargo:              NewCargoClient(cfg),
+		Cita:               NewCitaClient(cfg),
 		Cliente:            NewClienteClient(cfg),
 		ClienteTelefono:    NewClienteTelefonoClient(cfg),
 		Contrato:           NewContratoClient(cfg),
@@ -312,9 +318,9 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.Admin, c.Asistencia, c.Cargo, c.Cliente, c.ClienteTelefono, c.Contrato,
-		c.Empresa, c.EmpresaUsuario, c.Gasto, c.Horario, c.MovimientoCaja, c.Pago,
-		c.PagoAplicacion, c.Permiso, c.PlantillaContrato, c.Propiedad, c.Rol,
+		c.Admin, c.Asistencia, c.Cargo, c.Cita, c.Cliente, c.ClienteTelefono,
+		c.Contrato, c.Empresa, c.EmpresaUsuario, c.Gasto, c.Horario, c.MovimientoCaja,
+		c.Pago, c.PagoAplicacion, c.Permiso, c.PlantillaContrato, c.Propiedad, c.Rol,
 		c.ServicioMedicion, c.Ticket, c.TipoIdentificacion, c.TipoPago, c.Unidad,
 		c.Usuario,
 	} {
@@ -326,9 +332,9 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.Admin, c.Asistencia, c.Cargo, c.Cliente, c.ClienteTelefono, c.Contrato,
-		c.Empresa, c.EmpresaUsuario, c.Gasto, c.Horario, c.MovimientoCaja, c.Pago,
-		c.PagoAplicacion, c.Permiso, c.PlantillaContrato, c.Propiedad, c.Rol,
+		c.Admin, c.Asistencia, c.Cargo, c.Cita, c.Cliente, c.ClienteTelefono,
+		c.Contrato, c.Empresa, c.EmpresaUsuario, c.Gasto, c.Horario, c.MovimientoCaja,
+		c.Pago, c.PagoAplicacion, c.Permiso, c.PlantillaContrato, c.Propiedad, c.Rol,
 		c.ServicioMedicion, c.Ticket, c.TipoIdentificacion, c.TipoPago, c.Unidad,
 		c.Usuario,
 	} {
@@ -345,6 +351,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Asistencia.mutate(ctx, m)
 	case *CargoMutation:
 		return c.Cargo.mutate(ctx, m)
+	case *CitaMutation:
+		return c.Cita.mutate(ctx, m)
 	case *ClienteMutation:
 		return c.Cliente.mutate(ctx, m)
 	case *ClienteTelefonoMutation:
@@ -869,6 +877,203 @@ func (c *CargoClient) mutate(ctx context.Context, m *CargoMutation) (Value, erro
 	}
 }
 
+// CitaClient is a client for the Cita schema.
+type CitaClient struct {
+	config
+}
+
+// NewCitaClient returns a client for the Cita from the given config.
+func NewCitaClient(c config) *CitaClient {
+	return &CitaClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `cita.Hooks(f(g(h())))`.
+func (c *CitaClient) Use(hooks ...Hook) {
+	c.hooks.Cita = append(c.hooks.Cita, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `cita.Intercept(f(g(h())))`.
+func (c *CitaClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Cita = append(c.inters.Cita, interceptors...)
+}
+
+// Create returns a builder for creating a Cita entity.
+func (c *CitaClient) Create() *CitaCreate {
+	mutation := newCitaMutation(c.config, OpCreate)
+	return &CitaCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Cita entities.
+func (c *CitaClient) CreateBulk(builders ...*CitaCreate) *CitaCreateBulk {
+	return &CitaCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CitaClient) MapCreateBulk(slice any, setFunc func(*CitaCreate, int)) *CitaCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CitaCreateBulk{err: fmt.Errorf("calling to CitaClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CitaCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CitaCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Cita.
+func (c *CitaClient) Update() *CitaUpdate {
+	mutation := newCitaMutation(c.config, OpUpdate)
+	return &CitaUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CitaClient) UpdateOne(_m *Cita) *CitaUpdateOne {
+	mutation := newCitaMutation(c.config, OpUpdateOne, withCita(_m))
+	return &CitaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CitaClient) UpdateOneID(id int) *CitaUpdateOne {
+	mutation := newCitaMutation(c.config, OpUpdateOne, withCitaID(id))
+	return &CitaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Cita.
+func (c *CitaClient) Delete() *CitaDelete {
+	mutation := newCitaMutation(c.config, OpDelete)
+	return &CitaDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CitaClient) DeleteOne(_m *Cita) *CitaDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CitaClient) DeleteOneID(id int) *CitaDeleteOne {
+	builder := c.Delete().Where(cita.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CitaDeleteOne{builder}
+}
+
+// Query returns a query builder for Cita.
+func (c *CitaClient) Query() *CitaQuery {
+	return &CitaQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCita},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Cita entity by its id.
+func (c *CitaClient) Get(ctx context.Context, id int) (*Cita, error) {
+	return c.Query().Where(cita.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CitaClient) GetX(ctx context.Context, id int) *Cita {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEmpresa queries the empresa edge of a Cita.
+func (c *CitaClient) QueryEmpresa(_m *Cita) *EmpresaQuery {
+	query := (&EmpresaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cita.Table, cita.FieldID, id),
+			sqlgraph.To(empresa.Table, empresa.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, cita.EmpresaTable, cita.EmpresaColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryPropiedad queries the propiedad edge of a Cita.
+func (c *CitaClient) QueryPropiedad(_m *Cita) *PropiedadQuery {
+	query := (&PropiedadClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cita.Table, cita.FieldID, id),
+			sqlgraph.To(propiedad.Table, propiedad.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, cita.PropiedadTable, cita.PropiedadColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryUnidad queries the unidad edge of a Cita.
+func (c *CitaClient) QueryUnidad(_m *Cita) *UnidadQuery {
+	query := (&UnidadClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cita.Table, cita.FieldID, id),
+			sqlgraph.To(unidad.Table, unidad.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, cita.UnidadTable, cita.UnidadColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCliente queries the cliente edge of a Cita.
+func (c *CitaClient) QueryCliente(_m *Cita) *ClienteQuery {
+	query := (&ClienteClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cita.Table, cita.FieldID, id),
+			sqlgraph.To(cliente.Table, cliente.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, cita.ClienteTable, cita.ClienteColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CitaClient) Hooks() []Hook {
+	return c.hooks.Cita
+}
+
+// Interceptors returns the client interceptors.
+func (c *CitaClient) Interceptors() []Interceptor {
+	return c.inters.Cita
+}
+
+func (c *CitaClient) mutate(ctx context.Context, m *CitaMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CitaCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CitaUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CitaUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CitaDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Cita mutation op: %q", m.Op())
+	}
+}
+
 // ClienteClient is a client for the Cliente schema.
 type ClienteClient struct {
 	config
@@ -1066,6 +1271,22 @@ func (c *ClienteClient) QueryTickets(_m *Cliente) *TicketQuery {
 			sqlgraph.From(cliente.Table, cliente.FieldID, id),
 			sqlgraph.To(ticket.Table, ticket.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, cliente.TicketsTable, cliente.TicketsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCitas queries the citas edge of a Cliente.
+func (c *ClienteClient) QueryCitas(_m *Cliente) *CitaQuery {
+	query := (&CitaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cliente.Table, cliente.FieldID, id),
+			sqlgraph.To(cita.Table, cita.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, cliente.CitasTable, cliente.CitasColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -1769,6 +1990,22 @@ func (c *EmpresaClient) QueryPlantillasContrato(_m *Empresa) *PlantillaContratoQ
 			sqlgraph.From(empresa.Table, empresa.FieldID, id),
 			sqlgraph.To(plantillacontrato.Table, plantillacontrato.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, empresa.PlantillasContratoTable, empresa.PlantillasContratoColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCitas queries the citas edge of a Empresa.
+func (c *EmpresaClient) QueryCitas(_m *Empresa) *CitaQuery {
+	query := (&CitaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(empresa.Table, empresa.FieldID, id),
+			sqlgraph.To(cita.Table, cita.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, empresa.CitasTable, empresa.CitasColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
@@ -3341,6 +3578,22 @@ func (c *PropiedadClient) QueryUnidades(_m *Propiedad) *UnidadQuery {
 	return query
 }
 
+// QueryCitas queries the citas edge of a Propiedad.
+func (c *PropiedadClient) QueryCitas(_m *Propiedad) *CitaQuery {
+	query := (&CitaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(propiedad.Table, propiedad.FieldID, id),
+			sqlgraph.To(cita.Table, cita.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, propiedad.CitasTable, propiedad.CitasColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *PropiedadClient) Hooks() []Hook {
 	return c.hooks.Propiedad
@@ -4347,6 +4600,22 @@ func (c *UnidadClient) QueryTickets(_m *Unidad) *TicketQuery {
 	return query
 }
 
+// QueryCitas queries the citas edge of a Unidad.
+func (c *UnidadClient) QueryCitas(_m *Unidad) *CitaQuery {
+	query := (&CitaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(unidad.Table, unidad.FieldID, id),
+			sqlgraph.To(cita.Table, cita.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, unidad.CitasTable, unidad.CitasColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *UnidadClient) Hooks() []Hook {
 	return c.hooks.Unidad
@@ -4572,13 +4841,13 @@ func (c *UsuarioClient) mutate(ctx context.Context, m *UsuarioMutation) (Value, 
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Admin, Asistencia, Cargo, Cliente, ClienteTelefono, Contrato, Empresa,
+		Admin, Asistencia, Cargo, Cita, Cliente, ClienteTelefono, Contrato, Empresa,
 		EmpresaUsuario, Gasto, Horario, MovimientoCaja, Pago, PagoAplicacion, Permiso,
 		PlantillaContrato, Propiedad, Rol, ServicioMedicion, Ticket,
 		TipoIdentificacion, TipoPago, Unidad, Usuario []ent.Hook
 	}
 	inters struct {
-		Admin, Asistencia, Cargo, Cliente, ClienteTelefono, Contrato, Empresa,
+		Admin, Asistencia, Cargo, Cita, Cliente, ClienteTelefono, Contrato, Empresa,
 		EmpresaUsuario, Gasto, Horario, MovimientoCaja, Pago, PagoAplicacion, Permiso,
 		PlantillaContrato, Propiedad, Rol, ServicioMedicion, Ticket,
 		TipoIdentificacion, TipoPago, Unidad, Usuario []ent.Interceptor

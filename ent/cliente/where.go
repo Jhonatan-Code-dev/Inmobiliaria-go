@@ -1063,6 +1063,29 @@ func HasTicketsWith(preds ...predicate.Ticket) predicate.Cliente {
 	})
 }
 
+// HasCitas applies the HasEdge predicate on the "citas" edge.
+func HasCitas() predicate.Cliente {
+	return predicate.Cliente(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, CitasTable, CitasColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCitasWith applies the HasEdge predicate on the "citas" edge with a given conditions (other predicates).
+func HasCitasWith(preds ...predicate.Cita) predicate.Cliente {
+	return predicate.Cliente(func(s *sql.Selector) {
+		step := newCitasStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Cliente) predicate.Cliente {
 	return predicate.Cliente(sql.AndPredicates(predicates...))

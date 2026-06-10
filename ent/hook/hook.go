@@ -44,6 +44,18 @@ func (f CargoFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CargoMutation", m)
 }
 
+// The CitaFunc type is an adapter to allow the use of ordinary
+// function as Cita mutator.
+type CitaFunc func(context.Context, *ent.CitaMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CitaFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CitaMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CitaMutation", m)
+}
+
 // The ClienteFunc type is an adapter to allow the use of ordinary
 // function as Cliente mutator.
 type ClienteFunc func(context.Context, *ent.ClienteMutation) (ent.Value, error)

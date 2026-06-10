@@ -59,6 +59,7 @@ func (Unidad) Edges() []ent.Edge {
 		edge.To("contratos", Contrato.Type),
 		edge.To("servicio_mediciones", ServicioMedicion.Type),
 		edge.To("tickets", Ticket.Type),
+		edge.To("citas", Cita.Type),
 	}
 }
 

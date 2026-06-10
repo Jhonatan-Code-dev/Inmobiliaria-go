@@ -6,6 +6,7 @@ import (
 	"rentals-go/ent/admin"
 	"rentals-go/ent/asistencia"
 	"rentals-go/ent/cargo"
+	"rentals-go/ent/cita"
 	"rentals-go/ent/cliente"
 	"rentals-go/ent/clientetelefono"
 	"rentals-go/ent/contrato"
@@ -141,6 +142,59 @@ func init() {
 	cargoDescGeneradoAutomaticamente := cargoFields[11].Descriptor()
 	// cargo.DefaultGeneradoAutomaticamente holds the default value on creation for the generado_automaticamente field.
 	cargo.DefaultGeneradoAutomaticamente = cargoDescGeneradoAutomaticamente.Default.(bool)
+	citaMixin := schema.Cita{}.Mixin()
+	citaMixinFields0 := citaMixin[0].Fields()
+	_ = citaMixinFields0
+	citaFields := schema.Cita{}.Fields()
+	_ = citaFields
+	// citaDescCreadoEn is the schema descriptor for creado_en field.
+	citaDescCreadoEn := citaMixinFields0[0].Descriptor()
+	// cita.DefaultCreadoEn holds the default value on creation for the creado_en field.
+	cita.DefaultCreadoEn = citaDescCreadoEn.Default.(func() time.Time)
+	// citaDescNombreProspecto is the schema descriptor for nombre_prospecto field.
+	citaDescNombreProspecto := citaFields[4].Descriptor()
+	// cita.NombreProspectoValidator is a validator for the "nombre_prospecto" field. It is called by the builders before save.
+	cita.NombreProspectoValidator = func() func(string) error {
+		validators := citaDescNombreProspecto.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(nombre_prospecto string) error {
+			for _, fn := range fns {
+				if err := fn(nombre_prospecto); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// citaDescTelefonoProspecto is the schema descriptor for telefono_prospecto field.
+	citaDescTelefonoProspecto := citaFields[5].Descriptor()
+	// cita.TelefonoProspectoValidator is a validator for the "telefono_prospecto" field. It is called by the builders before save.
+	cita.TelefonoProspectoValidator = func() func(string) error {
+		validators := citaDescTelefonoProspecto.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(telefono_prospecto string) error {
+			for _, fn := range fns {
+				if err := fn(telefono_prospecto); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// citaDescCorreoProspecto is the schema descriptor for correo_prospecto field.
+	citaDescCorreoProspecto := citaFields[6].Descriptor()
+	// cita.CorreoProspectoValidator is a validator for the "correo_prospecto" field. It is called by the builders before save.
+	cita.CorreoProspectoValidator = citaDescCorreoProspecto.Validators[0].(func(string) error)
+	// citaDescComentarios is the schema descriptor for comentarios field.
+	citaDescComentarios := citaFields[9].Descriptor()
+	// cita.ComentariosValidator is a validator for the "comentarios" field. It is called by the builders before save.
+	cita.ComentariosValidator = citaDescComentarios.Validators[0].(func(string) error)
 	clienteMixin := schema.Cliente{}.Mixin()
 	clienteMixinFields0 := clienteMixin[0].Fields()
 	_ = clienteMixinFields0

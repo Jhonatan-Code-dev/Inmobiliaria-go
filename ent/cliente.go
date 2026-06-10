@@ -67,9 +67,11 @@ type ClienteEdges struct {
 	Pagos []*Pago `json:"pagos,omitempty"`
 	// Tickets holds the value of the tickets edge.
 	Tickets []*Ticket `json:"tickets,omitempty"`
+	// Citas holds the value of the citas edge.
+	Citas []*Cita `json:"citas,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [6]bool
+	loadedTypes [7]bool
 }
 
 // EmpresaOrErr returns the Empresa value or an error if the edge
@@ -128,6 +130,15 @@ func (e ClienteEdges) TicketsOrErr() ([]*Ticket, error) {
 		return e.Tickets, nil
 	}
 	return nil, &NotLoadedError{edge: "tickets"}
+}
+
+// CitasOrErr returns the Citas value or an error if the edge
+// was not loaded in eager-loading.
+func (e ClienteEdges) CitasOrErr() ([]*Cita, error) {
+	if e.loadedTypes[6] {
+		return e.Citas, nil
+	}
+	return nil, &NotLoadedError{edge: "citas"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -295,6 +306,11 @@ func (_m *Cliente) QueryPagos() *PagoQuery {
 // QueryTickets queries the "tickets" edge of the Cliente entity.
 func (_m *Cliente) QueryTickets() *TicketQuery {
 	return NewClienteClient(_m.config).QueryTickets(_m)
+}
+
+// QueryCitas queries the "citas" edge of the Cliente entity.
+func (_m *Cliente) QueryCitas() *CitaQuery {
+	return NewClienteClient(_m.config).QueryCitas(_m)
 }
 
 // Update returns a builder for updating this Cliente.

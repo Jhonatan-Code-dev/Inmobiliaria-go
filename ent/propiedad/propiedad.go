@@ -45,6 +45,8 @@ const (
 	EdgeEmpresa = "empresa"
 	// EdgeUnidades holds the string denoting the unidades edge name in mutations.
 	EdgeUnidades = "unidades"
+	// EdgeCitas holds the string denoting the citas edge name in mutations.
+	EdgeCitas = "citas"
 	// Table holds the table name of the propiedad in the database.
 	Table = "propiedades"
 	// EmpresaTable is the table that holds the empresa relation/edge.
@@ -61,6 +63,13 @@ const (
 	UnidadesInverseTable = "unidades"
 	// UnidadesColumn is the table column denoting the unidades relation/edge.
 	UnidadesColumn = "propiedad_id"
+	// CitasTable is the table that holds the citas relation/edge.
+	CitasTable = "citas"
+	// CitasInverseTable is the table name for the Cita entity.
+	// It exists in this package in order to avoid circular dependency with the "cita" package.
+	CitasInverseTable = "citas"
+	// CitasColumn is the table column denoting the citas relation/edge.
+	CitasColumn = "propiedad_id"
 )
 
 // Columns holds all SQL columns for propiedad fields.
@@ -269,6 +278,20 @@ func ByUnidades(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newUnidadesStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByCitasCount orders the results by citas count.
+func ByCitasCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newCitasStep(), opts...)
+	}
+}
+
+// ByCitas orders the results by citas terms.
+func ByCitas(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newCitasStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newEmpresaStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -281,5 +304,12 @@ func newUnidadesStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(UnidadesInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, UnidadesTable, UnidadesColumn),
+	)
+}
+func newCitasStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(CitasInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, CitasTable, CitasColumn),
 	)
 }

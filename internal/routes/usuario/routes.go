@@ -169,6 +169,17 @@ func Register(app *fiber.App, appDI *di.App) {
 	// Exportaciones
 	asistencia.Get("/reporte/excel", appDI.AsistenciaCtrl.ExportarReporteExcel)
 	asistencia.Get("/reporte/pdf", appDI.AsistenciaCtrl.ExportarReportePDF)
+
+	// Módulo de Citas / Visitas
+	citas := app.Group("/api/user/citas")
+	citas.Use(middlewares.TenantAuth(appDI.Config))
+	citas.Get("/", appDI.CitasCtrl.Listar)
+	citas.Get("/config-formulario", appDI.CitasCtrl.ConfigFormulario)
+	citas.Get("/:id", appDI.CitasCtrl.Obtener)
+	citas.Post("/", appDI.CitasCtrl.Crear)
+	citas.Put("/:id", appDI.CitasCtrl.Actualizar)
+	citas.Patch("/:id/estado", appDI.CitasCtrl.CambiarEstado)
+	citas.Delete("/:id", appDI.CitasCtrl.Eliminar)
 }
 
 func registrarRutasAuth(group fiber.Router, appDI *di.App) {

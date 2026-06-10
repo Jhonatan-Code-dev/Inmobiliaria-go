@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"rentals-go/ent/cita"
 	"rentals-go/ent/contrato"
 	"rentals-go/ent/predicate"
 	"rentals-go/ent/propiedad"
@@ -392,6 +393,21 @@ func (_u *UnidadUpdate) AddTickets(v ...*Ticket) *UnidadUpdate {
 	return _u.AddTicketIDs(ids...)
 }
 
+// AddCitaIDs adds the "citas" edge to the Cita entity by IDs.
+func (_u *UnidadUpdate) AddCitaIDs(ids ...int) *UnidadUpdate {
+	_u.mutation.AddCitaIDs(ids...)
+	return _u
+}
+
+// AddCitas adds the "citas" edges to the Cita entity.
+func (_u *UnidadUpdate) AddCitas(v ...*Cita) *UnidadUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddCitaIDs(ids...)
+}
+
 // Mutation returns the UnidadMutation object of the builder.
 func (_u *UnidadUpdate) Mutation() *UnidadMutation {
 	return _u.mutation
@@ -464,6 +480,27 @@ func (_u *UnidadUpdate) RemoveTickets(v ...*Ticket) *UnidadUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveTicketIDs(ids...)
+}
+
+// ClearCitas clears all "citas" edges to the Cita entity.
+func (_u *UnidadUpdate) ClearCitas() *UnidadUpdate {
+	_u.mutation.ClearCitas()
+	return _u
+}
+
+// RemoveCitaIDs removes the "citas" edge to Cita entities by IDs.
+func (_u *UnidadUpdate) RemoveCitaIDs(ids ...int) *UnidadUpdate {
+	_u.mutation.RemoveCitaIDs(ids...)
+	return _u
+}
+
+// RemoveCitas removes "citas" edges to Cita entities.
+func (_u *UnidadUpdate) RemoveCitas(v ...*Cita) *UnidadUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveCitaIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -796,6 +833,51 @@ func (_u *UnidadUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.CitasCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   unidad.CitasTable,
+			Columns: []string{unidad.CitasColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cita.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedCitasIDs(); len(nodes) > 0 && !_u.mutation.CitasCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   unidad.CitasTable,
+			Columns: []string{unidad.CitasColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cita.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CitasIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   unidad.CitasTable,
+			Columns: []string{unidad.CitasColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cita.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -1184,6 +1266,21 @@ func (_u *UnidadUpdateOne) AddTickets(v ...*Ticket) *UnidadUpdateOne {
 	return _u.AddTicketIDs(ids...)
 }
 
+// AddCitaIDs adds the "citas" edge to the Cita entity by IDs.
+func (_u *UnidadUpdateOne) AddCitaIDs(ids ...int) *UnidadUpdateOne {
+	_u.mutation.AddCitaIDs(ids...)
+	return _u
+}
+
+// AddCitas adds the "citas" edges to the Cita entity.
+func (_u *UnidadUpdateOne) AddCitas(v ...*Cita) *UnidadUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddCitaIDs(ids...)
+}
+
 // Mutation returns the UnidadMutation object of the builder.
 func (_u *UnidadUpdateOne) Mutation() *UnidadMutation {
 	return _u.mutation
@@ -1256,6 +1353,27 @@ func (_u *UnidadUpdateOne) RemoveTickets(v ...*Ticket) *UnidadUpdateOne {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveTicketIDs(ids...)
+}
+
+// ClearCitas clears all "citas" edges to the Cita entity.
+func (_u *UnidadUpdateOne) ClearCitas() *UnidadUpdateOne {
+	_u.mutation.ClearCitas()
+	return _u
+}
+
+// RemoveCitaIDs removes the "citas" edge to Cita entities by IDs.
+func (_u *UnidadUpdateOne) RemoveCitaIDs(ids ...int) *UnidadUpdateOne {
+	_u.mutation.RemoveCitaIDs(ids...)
+	return _u
+}
+
+// RemoveCitas removes "citas" edges to Cita entities.
+func (_u *UnidadUpdateOne) RemoveCitas(v ...*Cita) *UnidadUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveCitaIDs(ids...)
 }
 
 // Where appends a list predicates to the UnidadUpdate builder.
@@ -1618,6 +1736,51 @@ func (_u *UnidadUpdateOne) sqlSave(ctx context.Context) (_node *Unidad, err erro
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(ticket.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.CitasCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   unidad.CitasTable,
+			Columns: []string{unidad.CitasColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cita.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedCitasIDs(); len(nodes) > 0 && !_u.mutation.CitasCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   unidad.CitasTable,
+			Columns: []string{unidad.CitasColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cita.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.CitasIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   unidad.CitasTable,
+			Columns: []string{unidad.CitasColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cita.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

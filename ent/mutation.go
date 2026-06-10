@@ -9,6 +9,7 @@ import (
 	"rentals-go/ent/admin"
 	"rentals-go/ent/asistencia"
 	"rentals-go/ent/cargo"
+	"rentals-go/ent/cita"
 	"rentals-go/ent/cliente"
 	"rentals-go/ent/clientetelefono"
 	"rentals-go/ent/contrato"
@@ -49,6 +50,7 @@ const (
 	TypeAdmin              = "Admin"
 	TypeAsistencia         = "Asistencia"
 	TypeCargo              = "Cargo"
+	TypeCita               = "Cita"
 	TypeCliente            = "Cliente"
 	TypeClienteTelefono    = "ClienteTelefono"
 	TypeContrato           = "Contrato"
@@ -2796,6 +2798,1165 @@ func (m *CargoMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Cargo edge %s", name)
 }
 
+// CitaMutation represents an operation that mutates the Cita nodes in the graph.
+type CitaMutation struct {
+	config
+	op                 Op
+	typ                string
+	id                 *int
+	creado_en          *time.Time
+	nombre_prospecto   *string
+	telefono_prospecto *string
+	correo_prospecto   *string
+	fecha_visita       *time.Time
+	estado             *cita.Estado
+	comentarios        *string
+	clearedFields      map[string]struct{}
+	empresa            *int
+	clearedempresa     bool
+	propiedad          *int
+	clearedpropiedad   bool
+	unidad             *int
+	clearedunidad      bool
+	cliente            *int
+	clearedcliente     bool
+	done               bool
+	oldValue           func(context.Context) (*Cita, error)
+	predicates         []predicate.Cita
+}
+
+var _ ent.Mutation = (*CitaMutation)(nil)
+
+// citaOption allows management of the mutation configuration using functional options.
+type citaOption func(*CitaMutation)
+
+// newCitaMutation creates new mutation for the Cita entity.
+func newCitaMutation(c config, op Op, opts ...citaOption) *CitaMutation {
+	m := &CitaMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCita,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCitaID sets the ID field of the mutation.
+func withCitaID(id int) citaOption {
+	return func(m *CitaMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Cita
+		)
+		m.oldValue = func(ctx context.Context) (*Cita, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Cita.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCita sets the old Cita of the mutation.
+func withCita(node *Cita) citaOption {
+	return func(m *CitaMutation) {
+		m.oldValue = func(context.Context) (*Cita, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CitaMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CitaMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CitaMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CitaMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Cita.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreadoEn sets the "creado_en" field.
+func (m *CitaMutation) SetCreadoEn(t time.Time) {
+	m.creado_en = &t
+}
+
+// CreadoEn returns the value of the "creado_en" field in the mutation.
+func (m *CitaMutation) CreadoEn() (r time.Time, exists bool) {
+	v := m.creado_en
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreadoEn returns the old "creado_en" field's value of the Cita entity.
+// If the Cita object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CitaMutation) OldCreadoEn(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreadoEn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreadoEn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreadoEn: %w", err)
+	}
+	return oldValue.CreadoEn, nil
+}
+
+// ResetCreadoEn resets all changes to the "creado_en" field.
+func (m *CitaMutation) ResetCreadoEn() {
+	m.creado_en = nil
+}
+
+// SetEmpresaID sets the "empresa_id" field.
+func (m *CitaMutation) SetEmpresaID(i int) {
+	m.empresa = &i
+}
+
+// EmpresaID returns the value of the "empresa_id" field in the mutation.
+func (m *CitaMutation) EmpresaID() (r int, exists bool) {
+	v := m.empresa
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmpresaID returns the old "empresa_id" field's value of the Cita entity.
+// If the Cita object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CitaMutation) OldEmpresaID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEmpresaID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEmpresaID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmpresaID: %w", err)
+	}
+	return oldValue.EmpresaID, nil
+}
+
+// ResetEmpresaID resets all changes to the "empresa_id" field.
+func (m *CitaMutation) ResetEmpresaID() {
+	m.empresa = nil
+}
+
+// SetPropiedadID sets the "propiedad_id" field.
+func (m *CitaMutation) SetPropiedadID(i int) {
+	m.propiedad = &i
+}
+
+// PropiedadID returns the value of the "propiedad_id" field in the mutation.
+func (m *CitaMutation) PropiedadID() (r int, exists bool) {
+	v := m.propiedad
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPropiedadID returns the old "propiedad_id" field's value of the Cita entity.
+// If the Cita object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CitaMutation) OldPropiedadID(ctx context.Context) (v *int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPropiedadID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPropiedadID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPropiedadID: %w", err)
+	}
+	return oldValue.PropiedadID, nil
+}
+
+// ClearPropiedadID clears the value of the "propiedad_id" field.
+func (m *CitaMutation) ClearPropiedadID() {
+	m.propiedad = nil
+	m.clearedFields[cita.FieldPropiedadID] = struct{}{}
+}
+
+// PropiedadIDCleared returns if the "propiedad_id" field was cleared in this mutation.
+func (m *CitaMutation) PropiedadIDCleared() bool {
+	_, ok := m.clearedFields[cita.FieldPropiedadID]
+	return ok
+}
+
+// ResetPropiedadID resets all changes to the "propiedad_id" field.
+func (m *CitaMutation) ResetPropiedadID() {
+	m.propiedad = nil
+	delete(m.clearedFields, cita.FieldPropiedadID)
+}
+
+// SetUnidadID sets the "unidad_id" field.
+func (m *CitaMutation) SetUnidadID(i int) {
+	m.unidad = &i
+}
+
+// UnidadID returns the value of the "unidad_id" field in the mutation.
+func (m *CitaMutation) UnidadID() (r int, exists bool) {
+	v := m.unidad
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUnidadID returns the old "unidad_id" field's value of the Cita entity.
+// If the Cita object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CitaMutation) OldUnidadID(ctx context.Context) (v *int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUnidadID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUnidadID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUnidadID: %w", err)
+	}
+	return oldValue.UnidadID, nil
+}
+
+// ClearUnidadID clears the value of the "unidad_id" field.
+func (m *CitaMutation) ClearUnidadID() {
+	m.unidad = nil
+	m.clearedFields[cita.FieldUnidadID] = struct{}{}
+}
+
+// UnidadIDCleared returns if the "unidad_id" field was cleared in this mutation.
+func (m *CitaMutation) UnidadIDCleared() bool {
+	_, ok := m.clearedFields[cita.FieldUnidadID]
+	return ok
+}
+
+// ResetUnidadID resets all changes to the "unidad_id" field.
+func (m *CitaMutation) ResetUnidadID() {
+	m.unidad = nil
+	delete(m.clearedFields, cita.FieldUnidadID)
+}
+
+// SetClienteID sets the "cliente_id" field.
+func (m *CitaMutation) SetClienteID(i int) {
+	m.cliente = &i
+}
+
+// ClienteID returns the value of the "cliente_id" field in the mutation.
+func (m *CitaMutation) ClienteID() (r int, exists bool) {
+	v := m.cliente
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldClienteID returns the old "cliente_id" field's value of the Cita entity.
+// If the Cita object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CitaMutation) OldClienteID(ctx context.Context) (v *int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldClienteID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldClienteID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldClienteID: %w", err)
+	}
+	return oldValue.ClienteID, nil
+}
+
+// ClearClienteID clears the value of the "cliente_id" field.
+func (m *CitaMutation) ClearClienteID() {
+	m.cliente = nil
+	m.clearedFields[cita.FieldClienteID] = struct{}{}
+}
+
+// ClienteIDCleared returns if the "cliente_id" field was cleared in this mutation.
+func (m *CitaMutation) ClienteIDCleared() bool {
+	_, ok := m.clearedFields[cita.FieldClienteID]
+	return ok
+}
+
+// ResetClienteID resets all changes to the "cliente_id" field.
+func (m *CitaMutation) ResetClienteID() {
+	m.cliente = nil
+	delete(m.clearedFields, cita.FieldClienteID)
+}
+
+// SetNombreProspecto sets the "nombre_prospecto" field.
+func (m *CitaMutation) SetNombreProspecto(s string) {
+	m.nombre_prospecto = &s
+}
+
+// NombreProspecto returns the value of the "nombre_prospecto" field in the mutation.
+func (m *CitaMutation) NombreProspecto() (r string, exists bool) {
+	v := m.nombre_prospecto
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNombreProspecto returns the old "nombre_prospecto" field's value of the Cita entity.
+// If the Cita object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CitaMutation) OldNombreProspecto(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNombreProspecto is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNombreProspecto requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNombreProspecto: %w", err)
+	}
+	return oldValue.NombreProspecto, nil
+}
+
+// ResetNombreProspecto resets all changes to the "nombre_prospecto" field.
+func (m *CitaMutation) ResetNombreProspecto() {
+	m.nombre_prospecto = nil
+}
+
+// SetTelefonoProspecto sets the "telefono_prospecto" field.
+func (m *CitaMutation) SetTelefonoProspecto(s string) {
+	m.telefono_prospecto = &s
+}
+
+// TelefonoProspecto returns the value of the "telefono_prospecto" field in the mutation.
+func (m *CitaMutation) TelefonoProspecto() (r string, exists bool) {
+	v := m.telefono_prospecto
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTelefonoProspecto returns the old "telefono_prospecto" field's value of the Cita entity.
+// If the Cita object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CitaMutation) OldTelefonoProspecto(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTelefonoProspecto is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTelefonoProspecto requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTelefonoProspecto: %w", err)
+	}
+	return oldValue.TelefonoProspecto, nil
+}
+
+// ResetTelefonoProspecto resets all changes to the "telefono_prospecto" field.
+func (m *CitaMutation) ResetTelefonoProspecto() {
+	m.telefono_prospecto = nil
+}
+
+// SetCorreoProspecto sets the "correo_prospecto" field.
+func (m *CitaMutation) SetCorreoProspecto(s string) {
+	m.correo_prospecto = &s
+}
+
+// CorreoProspecto returns the value of the "correo_prospecto" field in the mutation.
+func (m *CitaMutation) CorreoProspecto() (r string, exists bool) {
+	v := m.correo_prospecto
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCorreoProspecto returns the old "correo_prospecto" field's value of the Cita entity.
+// If the Cita object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CitaMutation) OldCorreoProspecto(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCorreoProspecto is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCorreoProspecto requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCorreoProspecto: %w", err)
+	}
+	return oldValue.CorreoProspecto, nil
+}
+
+// ClearCorreoProspecto clears the value of the "correo_prospecto" field.
+func (m *CitaMutation) ClearCorreoProspecto() {
+	m.correo_prospecto = nil
+	m.clearedFields[cita.FieldCorreoProspecto] = struct{}{}
+}
+
+// CorreoProspectoCleared returns if the "correo_prospecto" field was cleared in this mutation.
+func (m *CitaMutation) CorreoProspectoCleared() bool {
+	_, ok := m.clearedFields[cita.FieldCorreoProspecto]
+	return ok
+}
+
+// ResetCorreoProspecto resets all changes to the "correo_prospecto" field.
+func (m *CitaMutation) ResetCorreoProspecto() {
+	m.correo_prospecto = nil
+	delete(m.clearedFields, cita.FieldCorreoProspecto)
+}
+
+// SetFechaVisita sets the "fecha_visita" field.
+func (m *CitaMutation) SetFechaVisita(t time.Time) {
+	m.fecha_visita = &t
+}
+
+// FechaVisita returns the value of the "fecha_visita" field in the mutation.
+func (m *CitaMutation) FechaVisita() (r time.Time, exists bool) {
+	v := m.fecha_visita
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFechaVisita returns the old "fecha_visita" field's value of the Cita entity.
+// If the Cita object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CitaMutation) OldFechaVisita(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFechaVisita is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFechaVisita requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFechaVisita: %w", err)
+	}
+	return oldValue.FechaVisita, nil
+}
+
+// ResetFechaVisita resets all changes to the "fecha_visita" field.
+func (m *CitaMutation) ResetFechaVisita() {
+	m.fecha_visita = nil
+}
+
+// SetEstado sets the "estado" field.
+func (m *CitaMutation) SetEstado(c cita.Estado) {
+	m.estado = &c
+}
+
+// Estado returns the value of the "estado" field in the mutation.
+func (m *CitaMutation) Estado() (r cita.Estado, exists bool) {
+	v := m.estado
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEstado returns the old "estado" field's value of the Cita entity.
+// If the Cita object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CitaMutation) OldEstado(ctx context.Context) (v cita.Estado, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEstado is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEstado requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEstado: %w", err)
+	}
+	return oldValue.Estado, nil
+}
+
+// ResetEstado resets all changes to the "estado" field.
+func (m *CitaMutation) ResetEstado() {
+	m.estado = nil
+}
+
+// SetComentarios sets the "comentarios" field.
+func (m *CitaMutation) SetComentarios(s string) {
+	m.comentarios = &s
+}
+
+// Comentarios returns the value of the "comentarios" field in the mutation.
+func (m *CitaMutation) Comentarios() (r string, exists bool) {
+	v := m.comentarios
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldComentarios returns the old "comentarios" field's value of the Cita entity.
+// If the Cita object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CitaMutation) OldComentarios(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldComentarios is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldComentarios requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldComentarios: %w", err)
+	}
+	return oldValue.Comentarios, nil
+}
+
+// ClearComentarios clears the value of the "comentarios" field.
+func (m *CitaMutation) ClearComentarios() {
+	m.comentarios = nil
+	m.clearedFields[cita.FieldComentarios] = struct{}{}
+}
+
+// ComentariosCleared returns if the "comentarios" field was cleared in this mutation.
+func (m *CitaMutation) ComentariosCleared() bool {
+	_, ok := m.clearedFields[cita.FieldComentarios]
+	return ok
+}
+
+// ResetComentarios resets all changes to the "comentarios" field.
+func (m *CitaMutation) ResetComentarios() {
+	m.comentarios = nil
+	delete(m.clearedFields, cita.FieldComentarios)
+}
+
+// ClearEmpresa clears the "empresa" edge to the Empresa entity.
+func (m *CitaMutation) ClearEmpresa() {
+	m.clearedempresa = true
+	m.clearedFields[cita.FieldEmpresaID] = struct{}{}
+}
+
+// EmpresaCleared reports if the "empresa" edge to the Empresa entity was cleared.
+func (m *CitaMutation) EmpresaCleared() bool {
+	return m.clearedempresa
+}
+
+// EmpresaIDs returns the "empresa" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EmpresaID instead. It exists only for internal usage by the builders.
+func (m *CitaMutation) EmpresaIDs() (ids []int) {
+	if id := m.empresa; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEmpresa resets all changes to the "empresa" edge.
+func (m *CitaMutation) ResetEmpresa() {
+	m.empresa = nil
+	m.clearedempresa = false
+}
+
+// ClearPropiedad clears the "propiedad" edge to the Propiedad entity.
+func (m *CitaMutation) ClearPropiedad() {
+	m.clearedpropiedad = true
+	m.clearedFields[cita.FieldPropiedadID] = struct{}{}
+}
+
+// PropiedadCleared reports if the "propiedad" edge to the Propiedad entity was cleared.
+func (m *CitaMutation) PropiedadCleared() bool {
+	return m.PropiedadIDCleared() || m.clearedpropiedad
+}
+
+// PropiedadIDs returns the "propiedad" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// PropiedadID instead. It exists only for internal usage by the builders.
+func (m *CitaMutation) PropiedadIDs() (ids []int) {
+	if id := m.propiedad; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetPropiedad resets all changes to the "propiedad" edge.
+func (m *CitaMutation) ResetPropiedad() {
+	m.propiedad = nil
+	m.clearedpropiedad = false
+}
+
+// ClearUnidad clears the "unidad" edge to the Unidad entity.
+func (m *CitaMutation) ClearUnidad() {
+	m.clearedunidad = true
+	m.clearedFields[cita.FieldUnidadID] = struct{}{}
+}
+
+// UnidadCleared reports if the "unidad" edge to the Unidad entity was cleared.
+func (m *CitaMutation) UnidadCleared() bool {
+	return m.UnidadIDCleared() || m.clearedunidad
+}
+
+// UnidadIDs returns the "unidad" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// UnidadID instead. It exists only for internal usage by the builders.
+func (m *CitaMutation) UnidadIDs() (ids []int) {
+	if id := m.unidad; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetUnidad resets all changes to the "unidad" edge.
+func (m *CitaMutation) ResetUnidad() {
+	m.unidad = nil
+	m.clearedunidad = false
+}
+
+// ClearCliente clears the "cliente" edge to the Cliente entity.
+func (m *CitaMutation) ClearCliente() {
+	m.clearedcliente = true
+	m.clearedFields[cita.FieldClienteID] = struct{}{}
+}
+
+// ClienteCleared reports if the "cliente" edge to the Cliente entity was cleared.
+func (m *CitaMutation) ClienteCleared() bool {
+	return m.ClienteIDCleared() || m.clearedcliente
+}
+
+// ClienteIDs returns the "cliente" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ClienteID instead. It exists only for internal usage by the builders.
+func (m *CitaMutation) ClienteIDs() (ids []int) {
+	if id := m.cliente; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCliente resets all changes to the "cliente" edge.
+func (m *CitaMutation) ResetCliente() {
+	m.cliente = nil
+	m.clearedcliente = false
+}
+
+// Where appends a list predicates to the CitaMutation builder.
+func (m *CitaMutation) Where(ps ...predicate.Cita) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CitaMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CitaMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Cita, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CitaMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CitaMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Cita).
+func (m *CitaMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CitaMutation) Fields() []string {
+	fields := make([]string, 0, 11)
+	if m.creado_en != nil {
+		fields = append(fields, cita.FieldCreadoEn)
+	}
+	if m.empresa != nil {
+		fields = append(fields, cita.FieldEmpresaID)
+	}
+	if m.propiedad != nil {
+		fields = append(fields, cita.FieldPropiedadID)
+	}
+	if m.unidad != nil {
+		fields = append(fields, cita.FieldUnidadID)
+	}
+	if m.cliente != nil {
+		fields = append(fields, cita.FieldClienteID)
+	}
+	if m.nombre_prospecto != nil {
+		fields = append(fields, cita.FieldNombreProspecto)
+	}
+	if m.telefono_prospecto != nil {
+		fields = append(fields, cita.FieldTelefonoProspecto)
+	}
+	if m.correo_prospecto != nil {
+		fields = append(fields, cita.FieldCorreoProspecto)
+	}
+	if m.fecha_visita != nil {
+		fields = append(fields, cita.FieldFechaVisita)
+	}
+	if m.estado != nil {
+		fields = append(fields, cita.FieldEstado)
+	}
+	if m.comentarios != nil {
+		fields = append(fields, cita.FieldComentarios)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CitaMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case cita.FieldCreadoEn:
+		return m.CreadoEn()
+	case cita.FieldEmpresaID:
+		return m.EmpresaID()
+	case cita.FieldPropiedadID:
+		return m.PropiedadID()
+	case cita.FieldUnidadID:
+		return m.UnidadID()
+	case cita.FieldClienteID:
+		return m.ClienteID()
+	case cita.FieldNombreProspecto:
+		return m.NombreProspecto()
+	case cita.FieldTelefonoProspecto:
+		return m.TelefonoProspecto()
+	case cita.FieldCorreoProspecto:
+		return m.CorreoProspecto()
+	case cita.FieldFechaVisita:
+		return m.FechaVisita()
+	case cita.FieldEstado:
+		return m.Estado()
+	case cita.FieldComentarios:
+		return m.Comentarios()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CitaMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case cita.FieldCreadoEn:
+		return m.OldCreadoEn(ctx)
+	case cita.FieldEmpresaID:
+		return m.OldEmpresaID(ctx)
+	case cita.FieldPropiedadID:
+		return m.OldPropiedadID(ctx)
+	case cita.FieldUnidadID:
+		return m.OldUnidadID(ctx)
+	case cita.FieldClienteID:
+		return m.OldClienteID(ctx)
+	case cita.FieldNombreProspecto:
+		return m.OldNombreProspecto(ctx)
+	case cita.FieldTelefonoProspecto:
+		return m.OldTelefonoProspecto(ctx)
+	case cita.FieldCorreoProspecto:
+		return m.OldCorreoProspecto(ctx)
+	case cita.FieldFechaVisita:
+		return m.OldFechaVisita(ctx)
+	case cita.FieldEstado:
+		return m.OldEstado(ctx)
+	case cita.FieldComentarios:
+		return m.OldComentarios(ctx)
+	}
+	return nil, fmt.Errorf("unknown Cita field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CitaMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case cita.FieldCreadoEn:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreadoEn(v)
+		return nil
+	case cita.FieldEmpresaID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmpresaID(v)
+		return nil
+	case cita.FieldPropiedadID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPropiedadID(v)
+		return nil
+	case cita.FieldUnidadID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUnidadID(v)
+		return nil
+	case cita.FieldClienteID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetClienteID(v)
+		return nil
+	case cita.FieldNombreProspecto:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNombreProspecto(v)
+		return nil
+	case cita.FieldTelefonoProspecto:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTelefonoProspecto(v)
+		return nil
+	case cita.FieldCorreoProspecto:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCorreoProspecto(v)
+		return nil
+	case cita.FieldFechaVisita:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFechaVisita(v)
+		return nil
+	case cita.FieldEstado:
+		v, ok := value.(cita.Estado)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEstado(v)
+		return nil
+	case cita.FieldComentarios:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetComentarios(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Cita field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CitaMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CitaMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CitaMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Cita numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CitaMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(cita.FieldPropiedadID) {
+		fields = append(fields, cita.FieldPropiedadID)
+	}
+	if m.FieldCleared(cita.FieldUnidadID) {
+		fields = append(fields, cita.FieldUnidadID)
+	}
+	if m.FieldCleared(cita.FieldClienteID) {
+		fields = append(fields, cita.FieldClienteID)
+	}
+	if m.FieldCleared(cita.FieldCorreoProspecto) {
+		fields = append(fields, cita.FieldCorreoProspecto)
+	}
+	if m.FieldCleared(cita.FieldComentarios) {
+		fields = append(fields, cita.FieldComentarios)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CitaMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CitaMutation) ClearField(name string) error {
+	switch name {
+	case cita.FieldPropiedadID:
+		m.ClearPropiedadID()
+		return nil
+	case cita.FieldUnidadID:
+		m.ClearUnidadID()
+		return nil
+	case cita.FieldClienteID:
+		m.ClearClienteID()
+		return nil
+	case cita.FieldCorreoProspecto:
+		m.ClearCorreoProspecto()
+		return nil
+	case cita.FieldComentarios:
+		m.ClearComentarios()
+		return nil
+	}
+	return fmt.Errorf("unknown Cita nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CitaMutation) ResetField(name string) error {
+	switch name {
+	case cita.FieldCreadoEn:
+		m.ResetCreadoEn()
+		return nil
+	case cita.FieldEmpresaID:
+		m.ResetEmpresaID()
+		return nil
+	case cita.FieldPropiedadID:
+		m.ResetPropiedadID()
+		return nil
+	case cita.FieldUnidadID:
+		m.ResetUnidadID()
+		return nil
+	case cita.FieldClienteID:
+		m.ResetClienteID()
+		return nil
+	case cita.FieldNombreProspecto:
+		m.ResetNombreProspecto()
+		return nil
+	case cita.FieldTelefonoProspecto:
+		m.ResetTelefonoProspecto()
+		return nil
+	case cita.FieldCorreoProspecto:
+		m.ResetCorreoProspecto()
+		return nil
+	case cita.FieldFechaVisita:
+		m.ResetFechaVisita()
+		return nil
+	case cita.FieldEstado:
+		m.ResetEstado()
+		return nil
+	case cita.FieldComentarios:
+		m.ResetComentarios()
+		return nil
+	}
+	return fmt.Errorf("unknown Cita field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CitaMutation) AddedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.empresa != nil {
+		edges = append(edges, cita.EdgeEmpresa)
+	}
+	if m.propiedad != nil {
+		edges = append(edges, cita.EdgePropiedad)
+	}
+	if m.unidad != nil {
+		edges = append(edges, cita.EdgeUnidad)
+	}
+	if m.cliente != nil {
+		edges = append(edges, cita.EdgeCliente)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CitaMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case cita.EdgeEmpresa:
+		if id := m.empresa; id != nil {
+			return []ent.Value{*id}
+		}
+	case cita.EdgePropiedad:
+		if id := m.propiedad; id != nil {
+			return []ent.Value{*id}
+		}
+	case cita.EdgeUnidad:
+		if id := m.unidad; id != nil {
+			return []ent.Value{*id}
+		}
+	case cita.EdgeCliente:
+		if id := m.cliente; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CitaMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 4)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CitaMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CitaMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.clearedempresa {
+		edges = append(edges, cita.EdgeEmpresa)
+	}
+	if m.clearedpropiedad {
+		edges = append(edges, cita.EdgePropiedad)
+	}
+	if m.clearedunidad {
+		edges = append(edges, cita.EdgeUnidad)
+	}
+	if m.clearedcliente {
+		edges = append(edges, cita.EdgeCliente)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CitaMutation) EdgeCleared(name string) bool {
+	switch name {
+	case cita.EdgeEmpresa:
+		return m.clearedempresa
+	case cita.EdgePropiedad:
+		return m.clearedpropiedad
+	case cita.EdgeUnidad:
+		return m.clearedunidad
+	case cita.EdgeCliente:
+		return m.clearedcliente
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CitaMutation) ClearEdge(name string) error {
+	switch name {
+	case cita.EdgeEmpresa:
+		m.ClearEmpresa()
+		return nil
+	case cita.EdgePropiedad:
+		m.ClearPropiedad()
+		return nil
+	case cita.EdgeUnidad:
+		m.ClearUnidad()
+		return nil
+	case cita.EdgeCliente:
+		m.ClearCliente()
+		return nil
+	}
+	return fmt.Errorf("unknown Cita unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CitaMutation) ResetEdge(name string) error {
+	switch name {
+	case cita.EdgeEmpresa:
+		m.ResetEmpresa()
+		return nil
+	case cita.EdgePropiedad:
+		m.ResetPropiedad()
+		return nil
+	case cita.EdgeUnidad:
+		m.ResetUnidad()
+		return nil
+	case cita.EdgeCliente:
+		m.ResetCliente()
+		return nil
+	}
+	return fmt.Errorf("unknown Cita edge %s", name)
+}
+
 // ClienteMutation represents an operation that mutates the Cliente nodes in the graph.
 type ClienteMutation struct {
 	config
@@ -2831,6 +3992,9 @@ type ClienteMutation struct {
 	tickets                    map[int]struct{}
 	removedtickets             map[int]struct{}
 	clearedtickets             bool
+	citas                      map[int]struct{}
+	removedcitas               map[int]struct{}
+	clearedcitas               bool
 	done                       bool
 	oldValue                   func(context.Context) (*Cliente, error)
 	predicates                 []predicate.Cliente
@@ -3812,6 +4976,60 @@ func (m *ClienteMutation) ResetTickets() {
 	m.removedtickets = nil
 }
 
+// AddCitaIDs adds the "citas" edge to the Cita entity by ids.
+func (m *ClienteMutation) AddCitaIDs(ids ...int) {
+	if m.citas == nil {
+		m.citas = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.citas[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCitas clears the "citas" edge to the Cita entity.
+func (m *ClienteMutation) ClearCitas() {
+	m.clearedcitas = true
+}
+
+// CitasCleared reports if the "citas" edge to the Cita entity was cleared.
+func (m *ClienteMutation) CitasCleared() bool {
+	return m.clearedcitas
+}
+
+// RemoveCitaIDs removes the "citas" edge to the Cita entity by IDs.
+func (m *ClienteMutation) RemoveCitaIDs(ids ...int) {
+	if m.removedcitas == nil {
+		m.removedcitas = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.citas, ids[i])
+		m.removedcitas[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCitas returns the removed IDs of the "citas" edge to the Cita entity.
+func (m *ClienteMutation) RemovedCitasIDs() (ids []int) {
+	for id := range m.removedcitas {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CitasIDs returns the "citas" edge IDs in the mutation.
+func (m *ClienteMutation) CitasIDs() (ids []int) {
+	for id := range m.citas {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCitas resets all changes to the "citas" edge.
+func (m *ClienteMutation) ResetCitas() {
+	m.citas = nil
+	m.clearedcitas = false
+	m.removedcitas = nil
+}
+
 // Where appends a list predicates to the ClienteMutation builder.
 func (m *ClienteMutation) Where(ps ...predicate.Cliente) {
 	m.predicates = append(m.predicates, ps...)
@@ -4220,7 +5438,7 @@ func (m *ClienteMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ClienteMutation) AddedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.empresa != nil {
 		edges = append(edges, cliente.EdgeEmpresa)
 	}
@@ -4238,6 +5456,9 @@ func (m *ClienteMutation) AddedEdges() []string {
 	}
 	if m.tickets != nil {
 		edges = append(edges, cliente.EdgeTickets)
+	}
+	if m.citas != nil {
+		edges = append(edges, cliente.EdgeCitas)
 	}
 	return edges
 }
@@ -4278,13 +5499,19 @@ func (m *ClienteMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case cliente.EdgeCitas:
+		ids := make([]ent.Value, 0, len(m.citas))
+		for id := range m.citas {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ClienteMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.removedtelefonos != nil {
 		edges = append(edges, cliente.EdgeTelefonos)
 	}
@@ -4296,6 +5523,9 @@ func (m *ClienteMutation) RemovedEdges() []string {
 	}
 	if m.removedtickets != nil {
 		edges = append(edges, cliente.EdgeTickets)
+	}
+	if m.removedcitas != nil {
+		edges = append(edges, cliente.EdgeCitas)
 	}
 	return edges
 }
@@ -4328,13 +5558,19 @@ func (m *ClienteMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case cliente.EdgeCitas:
+		ids := make([]ent.Value, 0, len(m.removedcitas))
+		for id := range m.removedcitas {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ClienteMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.clearedempresa {
 		edges = append(edges, cliente.EdgeEmpresa)
 	}
@@ -4352,6 +5588,9 @@ func (m *ClienteMutation) ClearedEdges() []string {
 	}
 	if m.clearedtickets {
 		edges = append(edges, cliente.EdgeTickets)
+	}
+	if m.clearedcitas {
+		edges = append(edges, cliente.EdgeCitas)
 	}
 	return edges
 }
@@ -4372,6 +5611,8 @@ func (m *ClienteMutation) EdgeCleared(name string) bool {
 		return m.clearedpagos
 	case cliente.EdgeTickets:
 		return m.clearedtickets
+	case cliente.EdgeCitas:
+		return m.clearedcitas
 	}
 	return false
 }
@@ -4411,6 +5652,9 @@ func (m *ClienteMutation) ResetEdge(name string) error {
 		return nil
 	case cliente.EdgeTickets:
 		m.ResetTickets()
+		return nil
+	case cliente.EdgeCitas:
+		m.ResetCitas()
 		return nil
 	}
 	return fmt.Errorf("unknown Cliente edge %s", name)
@@ -6910,6 +8154,9 @@ type EmpresaMutation struct {
 	plantillas_contrato        map[int]struct{}
 	removedplantillas_contrato map[int]struct{}
 	clearedplantillas_contrato bool
+	citas                      map[int]struct{}
+	removedcitas               map[int]struct{}
+	clearedcitas               bool
 	done                       bool
 	oldValue                   func(context.Context) (*Empresa, error)
 	predicates                 []predicate.Empresa
@@ -8123,6 +9370,60 @@ func (m *EmpresaMutation) ResetPlantillasContrato() {
 	m.removedplantillas_contrato = nil
 }
 
+// AddCitaIDs adds the "citas" edge to the Cita entity by ids.
+func (m *EmpresaMutation) AddCitaIDs(ids ...int) {
+	if m.citas == nil {
+		m.citas = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.citas[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCitas clears the "citas" edge to the Cita entity.
+func (m *EmpresaMutation) ClearCitas() {
+	m.clearedcitas = true
+}
+
+// CitasCleared reports if the "citas" edge to the Cita entity was cleared.
+func (m *EmpresaMutation) CitasCleared() bool {
+	return m.clearedcitas
+}
+
+// RemoveCitaIDs removes the "citas" edge to the Cita entity by IDs.
+func (m *EmpresaMutation) RemoveCitaIDs(ids ...int) {
+	if m.removedcitas == nil {
+		m.removedcitas = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.citas, ids[i])
+		m.removedcitas[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCitas returns the removed IDs of the "citas" edge to the Cita entity.
+func (m *EmpresaMutation) RemovedCitasIDs() (ids []int) {
+	for id := range m.removedcitas {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CitasIDs returns the "citas" edge IDs in the mutation.
+func (m *EmpresaMutation) CitasIDs() (ids []int) {
+	for id := range m.citas {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCitas resets all changes to the "citas" edge.
+func (m *EmpresaMutation) ResetCitas() {
+	m.citas = nil
+	m.clearedcitas = false
+	m.removedcitas = nil
+}
+
 // Where appends a list predicates to the EmpresaMutation builder.
 func (m *EmpresaMutation) Where(ps ...predicate.Empresa) {
 	m.predicates = append(m.predicates, ps...)
@@ -8468,7 +9769,7 @@ func (m *EmpresaMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EmpresaMutation) AddedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.usuarios_empresa != nil {
 		edges = append(edges, empresa.EdgeUsuariosEmpresa)
 	}
@@ -8504,6 +9805,9 @@ func (m *EmpresaMutation) AddedEdges() []string {
 	}
 	if m.plantillas_contrato != nil {
 		edges = append(edges, empresa.EdgePlantillasContrato)
+	}
+	if m.citas != nil {
+		edges = append(edges, empresa.EdgeCitas)
 	}
 	return edges
 }
@@ -8584,13 +9888,19 @@ func (m *EmpresaMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case empresa.EdgeCitas:
+		ids := make([]ent.Value, 0, len(m.citas))
+		for id := range m.citas {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EmpresaMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.removedusuarios_empresa != nil {
 		edges = append(edges, empresa.EdgeUsuariosEmpresa)
 	}
@@ -8626,6 +9936,9 @@ func (m *EmpresaMutation) RemovedEdges() []string {
 	}
 	if m.removedplantillas_contrato != nil {
 		edges = append(edges, empresa.EdgePlantillasContrato)
+	}
+	if m.removedcitas != nil {
+		edges = append(edges, empresa.EdgeCitas)
 	}
 	return edges
 }
@@ -8706,13 +10019,19 @@ func (m *EmpresaMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case empresa.EdgeCitas:
+		ids := make([]ent.Value, 0, len(m.removedcitas))
+		for id := range m.removedcitas {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EmpresaMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.clearedusuarios_empresa {
 		edges = append(edges, empresa.EdgeUsuariosEmpresa)
 	}
@@ -8749,6 +10068,9 @@ func (m *EmpresaMutation) ClearedEdges() []string {
 	if m.clearedplantillas_contrato {
 		edges = append(edges, empresa.EdgePlantillasContrato)
 	}
+	if m.clearedcitas {
+		edges = append(edges, empresa.EdgeCitas)
+	}
 	return edges
 }
 
@@ -8780,6 +10102,8 @@ func (m *EmpresaMutation) EdgeCleared(name string) bool {
 		return m.clearedpermisos
 	case empresa.EdgePlantillasContrato:
 		return m.clearedplantillas_contrato
+	case empresa.EdgeCitas:
+		return m.clearedcitas
 	}
 	return false
 }
@@ -8831,6 +10155,9 @@ func (m *EmpresaMutation) ResetEdge(name string) error {
 		return nil
 	case empresa.EdgePlantillasContrato:
 		m.ResetPlantillasContrato()
+		return nil
+	case empresa.EdgeCitas:
+		m.ResetCitas()
 		return nil
 	}
 	return fmt.Errorf("unknown Empresa edge %s", name)
@@ -15684,6 +17011,9 @@ type PropiedadMutation struct {
 	unidades          map[int]struct{}
 	removedunidades   map[int]struct{}
 	clearedunidades   bool
+	citas             map[int]struct{}
+	removedcitas      map[int]struct{}
+	clearedcitas      bool
 	done              bool
 	oldValue          func(context.Context) (*Propiedad, error)
 	predicates        []predicate.Propiedad
@@ -16441,6 +17771,60 @@ func (m *PropiedadMutation) ResetUnidades() {
 	m.removedunidades = nil
 }
 
+// AddCitaIDs adds the "citas" edge to the Cita entity by ids.
+func (m *PropiedadMutation) AddCitaIDs(ids ...int) {
+	if m.citas == nil {
+		m.citas = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.citas[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCitas clears the "citas" edge to the Cita entity.
+func (m *PropiedadMutation) ClearCitas() {
+	m.clearedcitas = true
+}
+
+// CitasCleared reports if the "citas" edge to the Cita entity was cleared.
+func (m *PropiedadMutation) CitasCleared() bool {
+	return m.clearedcitas
+}
+
+// RemoveCitaIDs removes the "citas" edge to the Cita entity by IDs.
+func (m *PropiedadMutation) RemoveCitaIDs(ids ...int) {
+	if m.removedcitas == nil {
+		m.removedcitas = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.citas, ids[i])
+		m.removedcitas[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCitas returns the removed IDs of the "citas" edge to the Cita entity.
+func (m *PropiedadMutation) RemovedCitasIDs() (ids []int) {
+	for id := range m.removedcitas {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CitasIDs returns the "citas" edge IDs in the mutation.
+func (m *PropiedadMutation) CitasIDs() (ids []int) {
+	for id := range m.citas {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCitas resets all changes to the "citas" edge.
+func (m *PropiedadMutation) ResetCitas() {
+	m.citas = nil
+	m.clearedcitas = false
+	m.removedcitas = nil
+}
+
 // Where appends a list predicates to the PropiedadMutation builder.
 func (m *PropiedadMutation) Where(ps ...predicate.Propiedad) {
 	m.predicates = append(m.predicates, ps...)
@@ -16838,12 +18222,15 @@ func (m *PropiedadMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *PropiedadMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.empresa != nil {
 		edges = append(edges, propiedad.EdgeEmpresa)
 	}
 	if m.unidades != nil {
 		edges = append(edges, propiedad.EdgeUnidades)
+	}
+	if m.citas != nil {
+		edges = append(edges, propiedad.EdgeCitas)
 	}
 	return edges
 }
@@ -16862,15 +18249,24 @@ func (m *PropiedadMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case propiedad.EdgeCitas:
+		ids := make([]ent.Value, 0, len(m.citas))
+		for id := range m.citas {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *PropiedadMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.removedunidades != nil {
 		edges = append(edges, propiedad.EdgeUnidades)
+	}
+	if m.removedcitas != nil {
+		edges = append(edges, propiedad.EdgeCitas)
 	}
 	return edges
 }
@@ -16885,18 +18281,27 @@ func (m *PropiedadMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case propiedad.EdgeCitas:
+		ids := make([]ent.Value, 0, len(m.removedcitas))
+		for id := range m.removedcitas {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *PropiedadMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedempresa {
 		edges = append(edges, propiedad.EdgeEmpresa)
 	}
 	if m.clearedunidades {
 		edges = append(edges, propiedad.EdgeUnidades)
+	}
+	if m.clearedcitas {
+		edges = append(edges, propiedad.EdgeCitas)
 	}
 	return edges
 }
@@ -16909,6 +18314,8 @@ func (m *PropiedadMutation) EdgeCleared(name string) bool {
 		return m.clearedempresa
 	case propiedad.EdgeUnidades:
 		return m.clearedunidades
+	case propiedad.EdgeCitas:
+		return m.clearedcitas
 	}
 	return false
 }
@@ -16933,6 +18340,9 @@ func (m *PropiedadMutation) ResetEdge(name string) error {
 		return nil
 	case propiedad.EdgeUnidades:
 		m.ResetUnidades()
+		return nil
+	case propiedad.EdgeCitas:
+		m.ResetCitas()
 		return nil
 	}
 	return fmt.Errorf("unknown Propiedad edge %s", name)
@@ -20815,6 +22225,9 @@ type UnidadMutation struct {
 	tickets                    map[int]struct{}
 	removedtickets             map[int]struct{}
 	clearedtickets             bool
+	citas                      map[int]struct{}
+	removedcitas               map[int]struct{}
+	clearedcitas               bool
 	done                       bool
 	oldValue                   func(context.Context) (*Unidad, error)
 	predicates                 []predicate.Unidad
@@ -21949,6 +23362,60 @@ func (m *UnidadMutation) ResetTickets() {
 	m.removedtickets = nil
 }
 
+// AddCitaIDs adds the "citas" edge to the Cita entity by ids.
+func (m *UnidadMutation) AddCitaIDs(ids ...int) {
+	if m.citas == nil {
+		m.citas = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.citas[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCitas clears the "citas" edge to the Cita entity.
+func (m *UnidadMutation) ClearCitas() {
+	m.clearedcitas = true
+}
+
+// CitasCleared reports if the "citas" edge to the Cita entity was cleared.
+func (m *UnidadMutation) CitasCleared() bool {
+	return m.clearedcitas
+}
+
+// RemoveCitaIDs removes the "citas" edge to the Cita entity by IDs.
+func (m *UnidadMutation) RemoveCitaIDs(ids ...int) {
+	if m.removedcitas == nil {
+		m.removedcitas = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.citas, ids[i])
+		m.removedcitas[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCitas returns the removed IDs of the "citas" edge to the Cita entity.
+func (m *UnidadMutation) RemovedCitasIDs() (ids []int) {
+	for id := range m.removedcitas {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CitasIDs returns the "citas" edge IDs in the mutation.
+func (m *UnidadMutation) CitasIDs() (ids []int) {
+	for id := range m.citas {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCitas resets all changes to the "citas" edge.
+func (m *UnidadMutation) ResetCitas() {
+	m.citas = nil
+	m.clearedcitas = false
+	m.removedcitas = nil
+}
+
 // Where appends a list predicates to the UnidadMutation builder.
 func (m *UnidadMutation) Where(ps ...predicate.Unidad) {
 	m.predicates = append(m.predicates, ps...)
@@ -22485,7 +23952,7 @@ func (m *UnidadMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *UnidadMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.propiedad != nil {
 		edges = append(edges, unidad.EdgePropiedad)
 	}
@@ -22497,6 +23964,9 @@ func (m *UnidadMutation) AddedEdges() []string {
 	}
 	if m.tickets != nil {
 		edges = append(edges, unidad.EdgeTickets)
+	}
+	if m.citas != nil {
+		edges = append(edges, unidad.EdgeCitas)
 	}
 	return edges
 }
@@ -22527,13 +23997,19 @@ func (m *UnidadMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case unidad.EdgeCitas:
+		ids := make([]ent.Value, 0, len(m.citas))
+		for id := range m.citas {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *UnidadMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.removedcontratos != nil {
 		edges = append(edges, unidad.EdgeContratos)
 	}
@@ -22542,6 +24018,9 @@ func (m *UnidadMutation) RemovedEdges() []string {
 	}
 	if m.removedtickets != nil {
 		edges = append(edges, unidad.EdgeTickets)
+	}
+	if m.removedcitas != nil {
+		edges = append(edges, unidad.EdgeCitas)
 	}
 	return edges
 }
@@ -22568,13 +24047,19 @@ func (m *UnidadMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case unidad.EdgeCitas:
+		ids := make([]ent.Value, 0, len(m.removedcitas))
+		for id := range m.removedcitas {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *UnidadMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.clearedpropiedad {
 		edges = append(edges, unidad.EdgePropiedad)
 	}
@@ -22586,6 +24071,9 @@ func (m *UnidadMutation) ClearedEdges() []string {
 	}
 	if m.clearedtickets {
 		edges = append(edges, unidad.EdgeTickets)
+	}
+	if m.clearedcitas {
+		edges = append(edges, unidad.EdgeCitas)
 	}
 	return edges
 }
@@ -22602,6 +24090,8 @@ func (m *UnidadMutation) EdgeCleared(name string) bool {
 		return m.clearedservicio_mediciones
 	case unidad.EdgeTickets:
 		return m.clearedtickets
+	case unidad.EdgeCitas:
+		return m.clearedcitas
 	}
 	return false
 }
@@ -22632,6 +24122,9 @@ func (m *UnidadMutation) ResetEdge(name string) error {
 		return nil
 	case unidad.EdgeTickets:
 		m.ResetTickets()
+		return nil
+	case unidad.EdgeCitas:
+		m.ResetCitas()
 		return nil
 	}
 	return fmt.Errorf("unknown Unidad edge %s", name)

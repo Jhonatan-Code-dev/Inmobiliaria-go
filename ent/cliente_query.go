@@ -7,6 +7,7 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"math"
+	"rentals-go/ent/cita"
 	"rentals-go/ent/cliente"
 	"rentals-go/ent/clientetelefono"
 	"rentals-go/ent/contrato"
@@ -35,6 +36,7 @@ type ClienteQuery struct {
 	withContratos          *ContratoQuery
 	withPagos              *PagoQuery
 	withTickets            *TicketQuery
+	withCitas              *CitaQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -196,6 +198,28 @@ func (_q *ClienteQuery) QueryTickets() *TicketQuery {
 			sqlgraph.From(cliente.Table, cliente.FieldID, selector),
 			sqlgraph.To(ticket.Table, ticket.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, cliente.TicketsTable, cliente.TicketsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCitas chains the current query on the "citas" edge.
+func (_q *ClienteQuery) QueryCitas() *CitaQuery {
+	query := (&CitaClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(cliente.Table, cliente.FieldID, selector),
+			sqlgraph.To(cita.Table, cita.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, cliente.CitasTable, cliente.CitasColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -401,6 +425,7 @@ func (_q *ClienteQuery) Clone() *ClienteQuery {
 		withContratos:          _q.withContratos.Clone(),
 		withPagos:              _q.withPagos.Clone(),
 		withTickets:            _q.withTickets.Clone(),
+		withCitas:              _q.withCitas.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -470,6 +495,17 @@ func (_q *ClienteQuery) WithTickets(opts ...func(*TicketQuery)) *ClienteQuery {
 		opt(query)
 	}
 	_q.withTickets = query
+	return _q
+}
+
+// WithCitas tells the query-builder to eager-load the nodes that are connected to
+// the "citas" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *ClienteQuery) WithCitas(opts ...func(*CitaQuery)) *ClienteQuery {
+	query := (&CitaClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withCitas = query
 	return _q
 }
 
@@ -551,13 +587,14 @@ func (_q *ClienteQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Clie
 	var (
 		nodes       = []*Cliente{}
 		_spec       = _q.querySpec()
-		loadedTypes = [6]bool{
+		loadedTypes = [7]bool{
 			_q.withEmpresa != nil,
 			_q.withTipoIdentificacion != nil,
 			_q.withTelefonos != nil,
 			_q.withContratos != nil,
 			_q.withPagos != nil,
 			_q.withTickets != nil,
+			_q.withCitas != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -615,6 +652,13 @@ func (_q *ClienteQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Clie
 		if err := _q.loadTickets(ctx, query, nodes,
 			func(n *Cliente) { n.Edges.Tickets = []*Ticket{} },
 			func(n *Cliente, e *Ticket) { n.Edges.Tickets = append(n.Edges.Tickets, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withCitas; query != nil {
+		if err := _q.loadCitas(ctx, query, nodes,
+			func(n *Cliente) { n.Edges.Citas = []*Cita{} },
+			func(n *Cliente, e *Cita) { n.Edges.Citas = append(n.Edges.Citas, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -787,6 +831,39 @@ func (_q *ClienteQuery) loadTickets(ctx context.Context, query *TicketQuery, nod
 	}
 	query.Where(predicate.Ticket(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(cliente.TicketsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.ClienteID
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "cliente_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "cliente_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *ClienteQuery) loadCitas(ctx context.Context, query *CitaQuery, nodes []*Cliente, init func(*Cliente), assign func(*Cliente, *Cita)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Cliente)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(cita.FieldClienteID)
+	}
+	query.Where(predicate.Cita(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(cliente.CitasColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

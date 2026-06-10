@@ -1572,6 +1572,63 @@
                 "responses": {}
             }
         },
+        "/api/user/citas": {
+            "get": {
+                "tags": [
+                    "Citas"
+                ],
+                "summary": "Listar citas / visitas de la empresa",
+                "responses": {}
+            },
+            "post": {
+                "tags": [
+                    "Citas"
+                ],
+                "summary": "Agendar nueva cita / visita",
+                "responses": {}
+            }
+        },
+        "/api/user/citas/config-formulario": {
+            "get": {
+                "tags": [
+                    "Citas"
+                ],
+                "summary": "Catálogos para el formulario de citas",
+                "responses": {}
+            }
+        },
+        "/api/user/citas/{id}": {
+            "get": {
+                "tags": [
+                    "Citas"
+                ],
+                "summary": "Obtener detalle de cita",
+                "responses": {}
+            },
+            "put": {
+                "tags": [
+                    "Citas"
+                ],
+                "summary": "Actualizar cita",
+                "responses": {}
+            },
+            "delete": {
+                "tags": [
+                    "Citas"
+                ],
+                "summary": "Eliminar cita",
+                "responses": {}
+            }
+        },
+        "/api/user/citas/{id}/estado": {
+            "patch": {
+                "tags": [
+                    "Citas"
+                ],
+                "summary": "Cambiar estado de cita",
+                "responses": {}
+            }
+        },
         "/api/user/clientes": {
             "get": {
                 "security": [

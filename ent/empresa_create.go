@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"rentals-go/ent/asistencia"
+	"rentals-go/ent/cita"
 	"rentals-go/ent/cliente"
 	"rentals-go/ent/contrato"
 	"rentals-go/ent/empresa"
@@ -356,6 +357,21 @@ func (_c *EmpresaCreate) AddPlantillasContrato(v ...*PlantillaContrato) *Empresa
 		ids[i] = v[i].ID
 	}
 	return _c.AddPlantillasContratoIDs(ids...)
+}
+
+// AddCitaIDs adds the "citas" edge to the Cita entity by IDs.
+func (_c *EmpresaCreate) AddCitaIDs(ids ...int) *EmpresaCreate {
+	_c.mutation.AddCitaIDs(ids...)
+	return _c
+}
+
+// AddCitas adds the "citas" edges to the Cita entity.
+func (_c *EmpresaCreate) AddCitas(v ...*Cita) *EmpresaCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddCitaIDs(ids...)
 }
 
 // Mutation returns the EmpresaMutation object of the builder.
@@ -731,6 +747,22 @@ func (_c *EmpresaCreate) createSpec() (*Empresa, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(plantillacontrato.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.CitasIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.CitasTable,
+			Columns: []string{empresa.CitasColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(cita.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

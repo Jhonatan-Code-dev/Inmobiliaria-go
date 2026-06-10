@@ -7,6 +7,7 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"math"
+	"rentals-go/ent/cita"
 	"rentals-go/ent/contrato"
 	"rentals-go/ent/predicate"
 	"rentals-go/ent/propiedad"
@@ -31,6 +32,7 @@ type UnidadQuery struct {
 	withContratos          *ContratoQuery
 	withServicioMediciones *ServicioMedicionQuery
 	withTickets            *TicketQuery
+	withCitas              *CitaQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -148,6 +150,28 @@ func (_q *UnidadQuery) QueryTickets() *TicketQuery {
 			sqlgraph.From(unidad.Table, unidad.FieldID, selector),
 			sqlgraph.To(ticket.Table, ticket.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, unidad.TicketsTable, unidad.TicketsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCitas chains the current query on the "citas" edge.
+func (_q *UnidadQuery) QueryCitas() *CitaQuery {
+	query := (&CitaClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(unidad.Table, unidad.FieldID, selector),
+			sqlgraph.To(cita.Table, cita.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, unidad.CitasTable, unidad.CitasColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -351,6 +375,7 @@ func (_q *UnidadQuery) Clone() *UnidadQuery {
 		withContratos:          _q.withContratos.Clone(),
 		withServicioMediciones: _q.withServicioMediciones.Clone(),
 		withTickets:            _q.withTickets.Clone(),
+		withCitas:              _q.withCitas.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -398,6 +423,17 @@ func (_q *UnidadQuery) WithTickets(opts ...func(*TicketQuery)) *UnidadQuery {
 		opt(query)
 	}
 	_q.withTickets = query
+	return _q
+}
+
+// WithCitas tells the query-builder to eager-load the nodes that are connected to
+// the "citas" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *UnidadQuery) WithCitas(opts ...func(*CitaQuery)) *UnidadQuery {
+	query := (&CitaClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withCitas = query
 	return _q
 }
 
@@ -479,11 +515,12 @@ func (_q *UnidadQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Unida
 	var (
 		nodes       = []*Unidad{}
 		_spec       = _q.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [5]bool{
 			_q.withPropiedad != nil,
 			_q.withContratos != nil,
 			_q.withServicioMediciones != nil,
 			_q.withTickets != nil,
+			_q.withCitas != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -530,6 +567,13 @@ func (_q *UnidadQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Unida
 		if err := _q.loadTickets(ctx, query, nodes,
 			func(n *Unidad) { n.Edges.Tickets = []*Ticket{} },
 			func(n *Unidad, e *Ticket) { n.Edges.Tickets = append(n.Edges.Tickets, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withCitas; query != nil {
+		if err := _q.loadCitas(ctx, query, nodes,
+			func(n *Unidad) { n.Edges.Citas = []*Cita{} },
+			func(n *Unidad, e *Cita) { n.Edges.Citas = append(n.Edges.Citas, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -650,6 +694,39 @@ func (_q *UnidadQuery) loadTickets(ctx context.Context, query *TicketQuery, node
 		node, ok := nodeids[fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "unidad_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *UnidadQuery) loadCitas(ctx context.Context, query *CitaQuery, nodes []*Unidad, init func(*Unidad), assign func(*Unidad, *Cita)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Unidad)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(cita.FieldUnidadID)
+	}
+	query.Where(predicate.Cita(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(unidad.CitasColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.UnidadID
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "unidad_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "unidad_id" returned %v for node %v`, *fk, n.ID)
 		}
 		assign(node, n)
 	}

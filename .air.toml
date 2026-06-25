@@ -9,11 +9,11 @@ tmp_dir = "tmp"
 [build]
   # Comando de build
   # - Genera swagger
-  # - Compila binario Linux (sin .exe)
-  cmd = "swag init -g cmd/api/main.go && go build -o ./tmp/main ./cmd/api"
+  # - Compila binario Windows
+  cmd = "cmd /c \"swag init -g cmd/api/main.go && go build -o ./tmp/main.exe ./cmd/api\""
 
   # Binario a ejecutar
-  bin = "tmp/main"
+  bin = "tmp/main.exe"
 
   # Delay antes de rebuild
   delay = 1000

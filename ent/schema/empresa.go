@@ -57,6 +57,7 @@ func (Empresa) Edges() []ent.Edge {
 		edge.To("permisos", Permiso.Type),
 		edge.To("plantillas_contrato", PlantillaContrato.Type),
 		edge.To("citas", Cita.Type),
+		edge.To("reclamaciones", Reclamacion.Type),
 	}
 }
 

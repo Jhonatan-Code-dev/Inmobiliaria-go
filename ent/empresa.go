@@ -73,9 +73,11 @@ type EmpresaEdges struct {
 	PlantillasContrato []*PlantillaContrato `json:"plantillas_contrato,omitempty"`
 	// Citas holds the value of the citas edge.
 	Citas []*Cita `json:"citas,omitempty"`
+	// Reclamaciones holds the value of the reclamaciones edge.
+	Reclamaciones []*Reclamacion `json:"reclamaciones,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [13]bool
+	loadedTypes [14]bool
 }
 
 // UsuariosEmpresaOrErr returns the UsuariosEmpresa value or an error if the edge
@@ -193,6 +195,15 @@ func (e EmpresaEdges) CitasOrErr() ([]*Cita, error) {
 		return e.Citas, nil
 	}
 	return nil, &NotLoadedError{edge: "citas"}
+}
+
+// ReclamacionesOrErr returns the Reclamaciones value or an error if the edge
+// was not loaded in eager-loading.
+func (e EmpresaEdges) ReclamacionesOrErr() ([]*Reclamacion, error) {
+	if e.loadedTypes[13] {
+		return e.Reclamaciones, nil
+	}
+	return nil, &NotLoadedError{edge: "reclamaciones"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -373,6 +384,11 @@ func (_m *Empresa) QueryPlantillasContrato() *PlantillaContratoQuery {
 // QueryCitas queries the "citas" edge of the Empresa entity.
 func (_m *Empresa) QueryCitas() *CitaQuery {
 	return NewEmpresaClient(_m.config).QueryCitas(_m)
+}
+
+// QueryReclamaciones queries the "reclamaciones" edge of the Empresa entity.
+func (_m *Empresa) QueryReclamaciones() *ReclamacionQuery {
+	return NewEmpresaClient(_m.config).QueryReclamaciones(_m)
 }
 
 // Update returns a builder for updating this Empresa.

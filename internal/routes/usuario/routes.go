@@ -180,6 +180,14 @@ func Register(app *fiber.App, appDI *di.App) {
 	citas.Put("/:id", appDI.CitasCtrl.Actualizar)
 	citas.Patch("/:id/estado", appDI.CitasCtrl.CambiarEstado)
 	citas.Delete("/:id", appDI.CitasCtrl.Eliminar)
+
+	// Módulo de Reclamaciones
+	reclamaciones := app.Group("/api/user/reclamaciones")
+	reclamaciones.Use(middlewares.TenantAuth(appDI.Config))
+	reclamaciones.Get("/", appDI.ReclamacionCtrl.Listar)
+	reclamaciones.Get("/:id", appDI.ReclamacionCtrl.Obtener)
+	reclamaciones.Put("/:id/respuesta", appDI.ReclamacionCtrl.Responder)
+	reclamaciones.Delete("/:id", appDI.ReclamacionCtrl.Eliminar)
 }
 
 func registrarRutasAuth(group fiber.Router, appDI *di.App) {

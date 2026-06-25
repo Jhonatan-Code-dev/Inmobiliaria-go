@@ -57,6 +57,9 @@ type PlantillaContrato func(*sql.Selector)
 // Propiedad is the predicate function for propiedad builders.
 type Propiedad func(*sql.Selector)
 
+// Reclamacion is the predicate function for reclamacion builders.
+type Reclamacion func(*sql.Selector)
+
 // Rol is the predicate function for rol builders.
 type Rol func(*sql.Selector)
 

@@ -28,6 +28,7 @@ import (
 	"rentals-go/ent/permiso"
 	"rentals-go/ent/plantillacontrato"
 	"rentals-go/ent/propiedad"
+	"rentals-go/ent/reclamacion"
 	"rentals-go/ent/rol"
 	"rentals-go/ent/serviciomedicion"
 	"rentals-go/ent/ticket"
@@ -81,6 +82,8 @@ type Client struct {
 	PlantillaContrato *PlantillaContratoClient
 	// Propiedad is the client for interacting with the Propiedad builders.
 	Propiedad *PropiedadClient
+	// Reclamacion is the client for interacting with the Reclamacion builders.
+	Reclamacion *ReclamacionClient
 	// Rol is the client for interacting with the Rol builders.
 	Rol *RolClient
 	// ServicioMedicion is the client for interacting with the ServicioMedicion builders.
@@ -123,6 +126,7 @@ func (c *Client) init() {
 	c.Permiso = NewPermisoClient(c.config)
 	c.PlantillaContrato = NewPlantillaContratoClient(c.config)
 	c.Propiedad = NewPropiedadClient(c.config)
+	c.Reclamacion = NewReclamacionClient(c.config)
 	c.Rol = NewRolClient(c.config)
 	c.ServicioMedicion = NewServicioMedicionClient(c.config)
 	c.Ticket = NewTicketClient(c.config)
@@ -239,6 +243,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Permiso:            NewPermisoClient(cfg),
 		PlantillaContrato:  NewPlantillaContratoClient(cfg),
 		Propiedad:          NewPropiedadClient(cfg),
+		Reclamacion:        NewReclamacionClient(cfg),
 		Rol:                NewRolClient(cfg),
 		ServicioMedicion:   NewServicioMedicionClient(cfg),
 		Ticket:             NewTicketClient(cfg),
@@ -282,6 +287,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Permiso:            NewPermisoClient(cfg),
 		PlantillaContrato:  NewPlantillaContratoClient(cfg),
 		Propiedad:          NewPropiedadClient(cfg),
+		Reclamacion:        NewReclamacionClient(cfg),
 		Rol:                NewRolClient(cfg),
 		ServicioMedicion:   NewServicioMedicionClient(cfg),
 		Ticket:             NewTicketClient(cfg),
@@ -320,9 +326,9 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.Admin, c.Asistencia, c.Cargo, c.Cita, c.Cliente, c.ClienteTelefono,
 		c.Contrato, c.Empresa, c.EmpresaUsuario, c.Gasto, c.Horario, c.MovimientoCaja,
-		c.Pago, c.PagoAplicacion, c.Permiso, c.PlantillaContrato, c.Propiedad, c.Rol,
-		c.ServicioMedicion, c.Ticket, c.TipoIdentificacion, c.TipoPago, c.Unidad,
-		c.Usuario,
+		c.Pago, c.PagoAplicacion, c.Permiso, c.PlantillaContrato, c.Propiedad,
+		c.Reclamacion, c.Rol, c.ServicioMedicion, c.Ticket, c.TipoIdentificacion,
+		c.TipoPago, c.Unidad, c.Usuario,
 	} {
 		n.Use(hooks...)
 	}
@@ -334,9 +340,9 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.Admin, c.Asistencia, c.Cargo, c.Cita, c.Cliente, c.ClienteTelefono,
 		c.Contrato, c.Empresa, c.EmpresaUsuario, c.Gasto, c.Horario, c.MovimientoCaja,
-		c.Pago, c.PagoAplicacion, c.Permiso, c.PlantillaContrato, c.Propiedad, c.Rol,
-		c.ServicioMedicion, c.Ticket, c.TipoIdentificacion, c.TipoPago, c.Unidad,
-		c.Usuario,
+		c.Pago, c.PagoAplicacion, c.Permiso, c.PlantillaContrato, c.Propiedad,
+		c.Reclamacion, c.Rol, c.ServicioMedicion, c.Ticket, c.TipoIdentificacion,
+		c.TipoPago, c.Unidad, c.Usuario,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -379,6 +385,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.PlantillaContrato.mutate(ctx, m)
 	case *PropiedadMutation:
 		return c.Propiedad.mutate(ctx, m)
+	case *ReclamacionMutation:
+		return c.Reclamacion.mutate(ctx, m)
 	case *RolMutation:
 		return c.Rol.mutate(ctx, m)
 	case *ServicioMedicionMutation:
@@ -2013,6 +2021,22 @@ func (c *EmpresaClient) QueryCitas(_m *Empresa) *CitaQuery {
 	return query
 }
 
+// QueryReclamaciones queries the reclamaciones edge of a Empresa.
+func (c *EmpresaClient) QueryReclamaciones(_m *Empresa) *ReclamacionQuery {
+	query := (&ReclamacionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(empresa.Table, empresa.FieldID, id),
+			sqlgraph.To(reclamacion.Table, reclamacion.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, empresa.ReclamacionesTable, empresa.ReclamacionesColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *EmpresaClient) Hooks() []Hook {
 	return c.hooks.Empresa
@@ -3619,6 +3643,155 @@ func (c *PropiedadClient) mutate(ctx context.Context, m *PropiedadMutation) (Val
 	}
 }
 
+// ReclamacionClient is a client for the Reclamacion schema.
+type ReclamacionClient struct {
+	config
+}
+
+// NewReclamacionClient returns a client for the Reclamacion from the given config.
+func NewReclamacionClient(c config) *ReclamacionClient {
+	return &ReclamacionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `reclamacion.Hooks(f(g(h())))`.
+func (c *ReclamacionClient) Use(hooks ...Hook) {
+	c.hooks.Reclamacion = append(c.hooks.Reclamacion, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `reclamacion.Intercept(f(g(h())))`.
+func (c *ReclamacionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Reclamacion = append(c.inters.Reclamacion, interceptors...)
+}
+
+// Create returns a builder for creating a Reclamacion entity.
+func (c *ReclamacionClient) Create() *ReclamacionCreate {
+	mutation := newReclamacionMutation(c.config, OpCreate)
+	return &ReclamacionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Reclamacion entities.
+func (c *ReclamacionClient) CreateBulk(builders ...*ReclamacionCreate) *ReclamacionCreateBulk {
+	return &ReclamacionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ReclamacionClient) MapCreateBulk(slice any, setFunc func(*ReclamacionCreate, int)) *ReclamacionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ReclamacionCreateBulk{err: fmt.Errorf("calling to ReclamacionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ReclamacionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ReclamacionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Reclamacion.
+func (c *ReclamacionClient) Update() *ReclamacionUpdate {
+	mutation := newReclamacionMutation(c.config, OpUpdate)
+	return &ReclamacionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ReclamacionClient) UpdateOne(_m *Reclamacion) *ReclamacionUpdateOne {
+	mutation := newReclamacionMutation(c.config, OpUpdateOne, withReclamacion(_m))
+	return &ReclamacionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ReclamacionClient) UpdateOneID(id int) *ReclamacionUpdateOne {
+	mutation := newReclamacionMutation(c.config, OpUpdateOne, withReclamacionID(id))
+	return &ReclamacionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Reclamacion.
+func (c *ReclamacionClient) Delete() *ReclamacionDelete {
+	mutation := newReclamacionMutation(c.config, OpDelete)
+	return &ReclamacionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ReclamacionClient) DeleteOne(_m *Reclamacion) *ReclamacionDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ReclamacionClient) DeleteOneID(id int) *ReclamacionDeleteOne {
+	builder := c.Delete().Where(reclamacion.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ReclamacionDeleteOne{builder}
+}
+
+// Query returns a query builder for Reclamacion.
+func (c *ReclamacionClient) Query() *ReclamacionQuery {
+	return &ReclamacionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeReclamacion},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Reclamacion entity by its id.
+func (c *ReclamacionClient) Get(ctx context.Context, id int) (*Reclamacion, error) {
+	return c.Query().Where(reclamacion.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ReclamacionClient) GetX(ctx context.Context, id int) *Reclamacion {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryEmpresa queries the empresa edge of a Reclamacion.
+func (c *ReclamacionClient) QueryEmpresa(_m *Reclamacion) *EmpresaQuery {
+	query := (&EmpresaClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(reclamacion.Table, reclamacion.FieldID, id),
+			sqlgraph.To(empresa.Table, empresa.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, reclamacion.EmpresaTable, reclamacion.EmpresaColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ReclamacionClient) Hooks() []Hook {
+	return c.hooks.Reclamacion
+}
+
+// Interceptors returns the client interceptors.
+func (c *ReclamacionClient) Interceptors() []Interceptor {
+	return c.inters.Reclamacion
+}
+
+func (c *ReclamacionClient) mutate(ctx context.Context, m *ReclamacionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ReclamacionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ReclamacionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ReclamacionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ReclamacionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Reclamacion mutation op: %q", m.Op())
+	}
+}
+
 // RolClient is a client for the Rol schema.
 type RolClient struct {
 	config
@@ -4843,13 +5016,13 @@ type (
 	hooks struct {
 		Admin, Asistencia, Cargo, Cita, Cliente, ClienteTelefono, Contrato, Empresa,
 		EmpresaUsuario, Gasto, Horario, MovimientoCaja, Pago, PagoAplicacion, Permiso,
-		PlantillaContrato, Propiedad, Rol, ServicioMedicion, Ticket,
+		PlantillaContrato, Propiedad, Reclamacion, Rol, ServicioMedicion, Ticket,
 		TipoIdentificacion, TipoPago, Unidad, Usuario []ent.Hook
 	}
 	inters struct {
 		Admin, Asistencia, Cargo, Cita, Cliente, ClienteTelefono, Contrato, Empresa,
 		EmpresaUsuario, Gasto, Horario, MovimientoCaja, Pago, PagoAplicacion, Permiso,
-		PlantillaContrato, Propiedad, Rol, ServicioMedicion, Ticket,
+		PlantillaContrato, Propiedad, Reclamacion, Rol, ServicioMedicion, Ticket,
 		TipoIdentificacion, TipoPago, Unidad, Usuario []ent.Interceptor
 	}
 )

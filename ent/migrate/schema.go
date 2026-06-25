@@ -646,6 +646,45 @@ var (
 			},
 		},
 	}
+	// ReclamacionesColumns holds the columns for the "reclamaciones" table.
+	ReclamacionesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "creado_en", Type: field.TypeTime},
+		{Name: "codigo", Type: field.TypeString, Unique: true, Size: 50},
+		{Name: "nombres", Type: field.TypeString, Size: 150},
+		{Name: "apellidos", Type: field.TypeString, Size: 150},
+		{Name: "tipo_documento", Type: field.TypeString, Size: 50},
+		{Name: "numero_documento", Type: field.TypeString, Size: 50},
+		{Name: "telefono", Type: field.TypeString, Size: 50},
+		{Name: "email", Type: field.TypeString, Size: 100},
+		{Name: "direccion", Type: field.TypeString, Size: 255},
+		{Name: "menor_edad", Type: field.TypeBool, Default: false},
+		{Name: "nombre_apoderado", Type: field.TypeString, Nullable: true, Size: 200},
+		{Name: "tipo_bien", Type: field.TypeString, Size: 20},
+		{Name: "monto_reclamado", Type: field.TypeFloat64, Default: 0},
+		{Name: "descripcion_bien", Type: field.TypeString, Size: 1000},
+		{Name: "tipo_reclamacion", Type: field.TypeString, Size: 20},
+		{Name: "detalle_reclamacion", Type: field.TypeString, Size: 4000},
+		{Name: "pedido_consumidor", Type: field.TypeString, Size: 2000},
+		{Name: "estado", Type: field.TypeString, Size: 20, Default: "PENDIENTE"},
+		{Name: "respuesta_detalle", Type: field.TypeString, Nullable: true, Size: 4000},
+		{Name: "respondido_en", Type: field.TypeTime, Nullable: true},
+		{Name: "empresa_id", Type: field.TypeInt},
+	}
+	// ReclamacionesTable holds the schema information for the "reclamaciones" table.
+	ReclamacionesTable = &schema.Table{
+		Name:       "reclamaciones",
+		Columns:    ReclamacionesColumns,
+		PrimaryKey: []*schema.Column{ReclamacionesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "reclamaciones_empresas_reclamaciones",
+				Columns:    []*schema.Column{ReclamacionesColumns[21]},
+				RefColumns: []*schema.Column{EmpresasColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// RolesColumns holds the columns for the "roles" table.
 	RolesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -866,6 +905,7 @@ var (
 		PermisosTable,
 		PlantillasContratoTable,
 		PropiedadesTable,
+		ReclamacionesTable,
 		RolesTable,
 		ServicioMedicionesTable,
 		TicketsTable,
@@ -962,6 +1002,10 @@ func init() {
 	PropiedadesTable.ForeignKeys[0].RefTable = EmpresasTable
 	PropiedadesTable.Annotation = &entsql.Annotation{
 		Table: "propiedades",
+	}
+	ReclamacionesTable.ForeignKeys[0].RefTable = EmpresasTable
+	ReclamacionesTable.Annotation = &entsql.Annotation{
+		Table: "reclamaciones",
 	}
 	RolesTable.Annotation = &entsql.Annotation{
 		Table:     "roles",

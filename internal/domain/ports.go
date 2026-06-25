@@ -321,4 +321,21 @@ type (
 		CambiarEstado(ctx context.Context, id int, empresaID int, estado string) (*Cita, error)
 		Eliminar(ctx context.Context, id int, empresaID int) error
 	}
+
+	ReclamacionRepository interface {
+		ListarPaginado(ctx context.Context, empresaID int, pag, limite int) ([]*Reclamacion, int, error)
+		BuscarPorID(ctx context.Context, id int, empresaID int) (*Reclamacion, error)
+		Crear(ctx context.Context, rec *Reclamacion) (*Reclamacion, error)
+		Actualizar(ctx context.Context, rec *Reclamacion) (*Reclamacion, error)
+		Eliminar(ctx context.Context, id int, empresaID int) error
+	}
+
+	ReclamacionService interface {
+		Listar(ctx context.Context, empresaID int, pag int) ([]*Reclamacion, int, error)
+		Obtener(ctx context.Context, id int, empresaID int) (*Reclamacion, error)
+		Registrar(ctx context.Context, rec *Reclamacion) (*Reclamacion, error)
+		Responder(ctx context.Context, id int, empresaID int, respuesta string) (*Reclamacion, error)
+		Eliminar(ctx context.Context, id int, empresaID int) error
+		GenerarPDF(ctx context.Context, id int, empresaID int) ([]byte, error)
+	}
 )

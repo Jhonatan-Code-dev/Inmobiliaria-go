@@ -212,6 +212,18 @@ func (f PropiedadFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, e
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PropiedadMutation", m)
 }
 
+// The ReclamacionFunc type is an adapter to allow the use of ordinary
+// function as Reclamacion mutator.
+type ReclamacionFunc func(context.Context, *ent.ReclamacionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ReclamacionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ReclamacionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ReclamacionMutation", m)
+}
+
 // The RolFunc type is an adapter to allow the use of ordinary
 // function as Rol mutator.
 type RolFunc func(context.Context, *ent.RolMutation) (ent.Value, error)

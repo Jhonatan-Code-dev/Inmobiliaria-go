@@ -21,6 +21,7 @@ import (
 	"rentals-go/ent/plantillacontrato"
 	"rentals-go/ent/predicate"
 	"rentals-go/ent/propiedad"
+	"rentals-go/ent/reclamacion"
 	"rentals-go/ent/ticket"
 
 	"entgo.io/ent"
@@ -49,6 +50,7 @@ type EmpresaQuery struct {
 	withPermisos           *PermisoQuery
 	withPlantillasContrato *PlantillaContratoQuery
 	withCitas              *CitaQuery
+	withReclamaciones      *ReclamacionQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -371,6 +373,28 @@ func (_q *EmpresaQuery) QueryCitas() *CitaQuery {
 	return query
 }
 
+// QueryReclamaciones chains the current query on the "reclamaciones" edge.
+func (_q *EmpresaQuery) QueryReclamaciones() *ReclamacionQuery {
+	query := (&ReclamacionClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(empresa.Table, empresa.FieldID, selector),
+			sqlgraph.To(reclamacion.Table, reclamacion.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, empresa.ReclamacionesTable, empresa.ReclamacionesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Empresa entity from the query.
 // Returns a *NotFoundError when no Empresa was found.
 func (_q *EmpresaQuery) First(ctx context.Context) (*Empresa, error) {
@@ -576,6 +600,7 @@ func (_q *EmpresaQuery) Clone() *EmpresaQuery {
 		withPermisos:           _q.withPermisos.Clone(),
 		withPlantillasContrato: _q.withPlantillasContrato.Clone(),
 		withCitas:              _q.withCitas.Clone(),
+		withReclamaciones:      _q.withReclamaciones.Clone(),
 		// clone intermediate query.
 		sql:  _q.sql.Clone(),
 		path: _q.path,
@@ -725,6 +750,17 @@ func (_q *EmpresaQuery) WithCitas(opts ...func(*CitaQuery)) *EmpresaQuery {
 	return _q
 }
 
+// WithReclamaciones tells the query-builder to eager-load the nodes that are connected to
+// the "reclamaciones" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *EmpresaQuery) WithReclamaciones(opts ...func(*ReclamacionQuery)) *EmpresaQuery {
+	query := (&ReclamacionClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withReclamaciones = query
+	return _q
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -803,7 +839,7 @@ func (_q *EmpresaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Empr
 	var (
 		nodes       = []*Empresa{}
 		_spec       = _q.querySpec()
-		loadedTypes = [13]bool{
+		loadedTypes = [14]bool{
 			_q.withUsuariosEmpresa != nil,
 			_q.withClientes != nil,
 			_q.withPropiedades != nil,
@@ -817,6 +853,7 @@ func (_q *EmpresaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Empr
 			_q.withPermisos != nil,
 			_q.withPlantillasContrato != nil,
 			_q.withCitas != nil,
+			_q.withReclamaciones != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -927,6 +964,13 @@ func (_q *EmpresaQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Empr
 		if err := _q.loadCitas(ctx, query, nodes,
 			func(n *Empresa) { n.Edges.Citas = []*Cita{} },
 			func(n *Empresa, e *Cita) { n.Edges.Citas = append(n.Edges.Citas, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withReclamaciones; query != nil {
+		if err := _q.loadReclamaciones(ctx, query, nodes,
+			func(n *Empresa) { n.Edges.Reclamaciones = []*Reclamacion{} },
+			func(n *Empresa, e *Reclamacion) { n.Edges.Reclamaciones = append(n.Edges.Reclamaciones, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -1308,6 +1352,36 @@ func (_q *EmpresaQuery) loadCitas(ctx context.Context, query *CitaQuery, nodes [
 	}
 	query.Where(predicate.Cita(func(s *sql.Selector) {
 		s.Where(sql.InValues(s.C(empresa.CitasColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.EmpresaID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "empresa_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *EmpresaQuery) loadReclamaciones(ctx context.Context, query *ReclamacionQuery, nodes []*Empresa, init func(*Empresa), assign func(*Empresa, *Reclamacion)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Empresa)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(reclamacion.FieldEmpresaID)
+	}
+	query.Where(predicate.Reclamacion(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(empresa.ReclamacionesColumn), fks...))
 	}))
 	neighbors, err := query.All(ctx)
 	if err != nil {

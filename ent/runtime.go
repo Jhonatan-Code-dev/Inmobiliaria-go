@@ -20,6 +20,7 @@ import (
 	"rentals-go/ent/permiso"
 	"rentals-go/ent/plantillacontrato"
 	"rentals-go/ent/propiedad"
+	"rentals-go/ent/reclamacion"
 	"rentals-go/ent/rol"
 	"rentals-go/ent/schema"
 	"rentals-go/ent/serviciomedicion"
@@ -789,6 +790,271 @@ func init() {
 	propiedad.DefaultTotalUnidades = propiedadDescTotalUnidades.Default.(int)
 	// propiedad.TotalUnidadesValidator is a validator for the "total_unidades" field. It is called by the builders before save.
 	propiedad.TotalUnidadesValidator = propiedadDescTotalUnidades.Validators[0].(func(int) error)
+	reclamacionMixin := schema.Reclamacion{}.Mixin()
+	reclamacionMixinFields0 := reclamacionMixin[0].Fields()
+	_ = reclamacionMixinFields0
+	reclamacionFields := schema.Reclamacion{}.Fields()
+	_ = reclamacionFields
+	// reclamacionDescCreadoEn is the schema descriptor for creado_en field.
+	reclamacionDescCreadoEn := reclamacionMixinFields0[0].Descriptor()
+	// reclamacion.DefaultCreadoEn holds the default value on creation for the creado_en field.
+	reclamacion.DefaultCreadoEn = reclamacionDescCreadoEn.Default.(func() time.Time)
+	// reclamacionDescCodigo is the schema descriptor for codigo field.
+	reclamacionDescCodigo := reclamacionFields[0].Descriptor()
+	// reclamacion.CodigoValidator is a validator for the "codigo" field. It is called by the builders before save.
+	reclamacion.CodigoValidator = func() func(string) error {
+		validators := reclamacionDescCodigo.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(codigo string) error {
+			for _, fn := range fns {
+				if err := fn(codigo); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// reclamacionDescNombres is the schema descriptor for nombres field.
+	reclamacionDescNombres := reclamacionFields[2].Descriptor()
+	// reclamacion.NombresValidator is a validator for the "nombres" field. It is called by the builders before save.
+	reclamacion.NombresValidator = func() func(string) error {
+		validators := reclamacionDescNombres.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(nombres string) error {
+			for _, fn := range fns {
+				if err := fn(nombres); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// reclamacionDescApellidos is the schema descriptor for apellidos field.
+	reclamacionDescApellidos := reclamacionFields[3].Descriptor()
+	// reclamacion.ApellidosValidator is a validator for the "apellidos" field. It is called by the builders before save.
+	reclamacion.ApellidosValidator = func() func(string) error {
+		validators := reclamacionDescApellidos.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(apellidos string) error {
+			for _, fn := range fns {
+				if err := fn(apellidos); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// reclamacionDescTipoDocumento is the schema descriptor for tipo_documento field.
+	reclamacionDescTipoDocumento := reclamacionFields[4].Descriptor()
+	// reclamacion.TipoDocumentoValidator is a validator for the "tipo_documento" field. It is called by the builders before save.
+	reclamacion.TipoDocumentoValidator = func() func(string) error {
+		validators := reclamacionDescTipoDocumento.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(tipo_documento string) error {
+			for _, fn := range fns {
+				if err := fn(tipo_documento); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// reclamacionDescNumeroDocumento is the schema descriptor for numero_documento field.
+	reclamacionDescNumeroDocumento := reclamacionFields[5].Descriptor()
+	// reclamacion.NumeroDocumentoValidator is a validator for the "numero_documento" field. It is called by the builders before save.
+	reclamacion.NumeroDocumentoValidator = func() func(string) error {
+		validators := reclamacionDescNumeroDocumento.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(numero_documento string) error {
+			for _, fn := range fns {
+				if err := fn(numero_documento); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// reclamacionDescTelefono is the schema descriptor for telefono field.
+	reclamacionDescTelefono := reclamacionFields[6].Descriptor()
+	// reclamacion.TelefonoValidator is a validator for the "telefono" field. It is called by the builders before save.
+	reclamacion.TelefonoValidator = func() func(string) error {
+		validators := reclamacionDescTelefono.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(telefono string) error {
+			for _, fn := range fns {
+				if err := fn(telefono); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// reclamacionDescEmail is the schema descriptor for email field.
+	reclamacionDescEmail := reclamacionFields[7].Descriptor()
+	// reclamacion.EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	reclamacion.EmailValidator = func() func(string) error {
+		validators := reclamacionDescEmail.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(email string) error {
+			for _, fn := range fns {
+				if err := fn(email); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// reclamacionDescDireccion is the schema descriptor for direccion field.
+	reclamacionDescDireccion := reclamacionFields[8].Descriptor()
+	// reclamacion.DireccionValidator is a validator for the "direccion" field. It is called by the builders before save.
+	reclamacion.DireccionValidator = func() func(string) error {
+		validators := reclamacionDescDireccion.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(direccion string) error {
+			for _, fn := range fns {
+				if err := fn(direccion); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// reclamacionDescMenorEdad is the schema descriptor for menor_edad field.
+	reclamacionDescMenorEdad := reclamacionFields[9].Descriptor()
+	// reclamacion.DefaultMenorEdad holds the default value on creation for the menor_edad field.
+	reclamacion.DefaultMenorEdad = reclamacionDescMenorEdad.Default.(bool)
+	// reclamacionDescNombreApoderado is the schema descriptor for nombre_apoderado field.
+	reclamacionDescNombreApoderado := reclamacionFields[10].Descriptor()
+	// reclamacion.NombreApoderadoValidator is a validator for the "nombre_apoderado" field. It is called by the builders before save.
+	reclamacion.NombreApoderadoValidator = reclamacionDescNombreApoderado.Validators[0].(func(string) error)
+	// reclamacionDescTipoBien is the schema descriptor for tipo_bien field.
+	reclamacionDescTipoBien := reclamacionFields[11].Descriptor()
+	// reclamacion.TipoBienValidator is a validator for the "tipo_bien" field. It is called by the builders before save.
+	reclamacion.TipoBienValidator = func() func(string) error {
+		validators := reclamacionDescTipoBien.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(tipo_bien string) error {
+			for _, fn := range fns {
+				if err := fn(tipo_bien); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// reclamacionDescMontoReclamado is the schema descriptor for monto_reclamado field.
+	reclamacionDescMontoReclamado := reclamacionFields[12].Descriptor()
+	// reclamacion.DefaultMontoReclamado holds the default value on creation for the monto_reclamado field.
+	reclamacion.DefaultMontoReclamado = reclamacionDescMontoReclamado.Default.(float64)
+	// reclamacionDescDescripcionBien is the schema descriptor for descripcion_bien field.
+	reclamacionDescDescripcionBien := reclamacionFields[13].Descriptor()
+	// reclamacion.DescripcionBienValidator is a validator for the "descripcion_bien" field. It is called by the builders before save.
+	reclamacion.DescripcionBienValidator = func() func(string) error {
+		validators := reclamacionDescDescripcionBien.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(descripcion_bien string) error {
+			for _, fn := range fns {
+				if err := fn(descripcion_bien); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// reclamacionDescTipoReclamacion is the schema descriptor for tipo_reclamacion field.
+	reclamacionDescTipoReclamacion := reclamacionFields[14].Descriptor()
+	// reclamacion.TipoReclamacionValidator is a validator for the "tipo_reclamacion" field. It is called by the builders before save.
+	reclamacion.TipoReclamacionValidator = func() func(string) error {
+		validators := reclamacionDescTipoReclamacion.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(tipo_reclamacion string) error {
+			for _, fn := range fns {
+				if err := fn(tipo_reclamacion); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// reclamacionDescDetalleReclamacion is the schema descriptor for detalle_reclamacion field.
+	reclamacionDescDetalleReclamacion := reclamacionFields[15].Descriptor()
+	// reclamacion.DetalleReclamacionValidator is a validator for the "detalle_reclamacion" field. It is called by the builders before save.
+	reclamacion.DetalleReclamacionValidator = func() func(string) error {
+		validators := reclamacionDescDetalleReclamacion.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(detalle_reclamacion string) error {
+			for _, fn := range fns {
+				if err := fn(detalle_reclamacion); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// reclamacionDescPedidoConsumidor is the schema descriptor for pedido_consumidor field.
+	reclamacionDescPedidoConsumidor := reclamacionFields[16].Descriptor()
+	// reclamacion.PedidoConsumidorValidator is a validator for the "pedido_consumidor" field. It is called by the builders before save.
+	reclamacion.PedidoConsumidorValidator = func() func(string) error {
+		validators := reclamacionDescPedidoConsumidor.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(pedido_consumidor string) error {
+			for _, fn := range fns {
+				if err := fn(pedido_consumidor); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// reclamacionDescEstado is the schema descriptor for estado field.
+	reclamacionDescEstado := reclamacionFields[17].Descriptor()
+	// reclamacion.DefaultEstado holds the default value on creation for the estado field.
+	reclamacion.DefaultEstado = reclamacionDescEstado.Default.(string)
+	// reclamacion.EstadoValidator is a validator for the "estado" field. It is called by the builders before save.
+	reclamacion.EstadoValidator = reclamacionDescEstado.Validators[0].(func(string) error)
+	// reclamacionDescRespuestaDetalle is the schema descriptor for respuesta_detalle field.
+	reclamacionDescRespuestaDetalle := reclamacionFields[18].Descriptor()
+	// reclamacion.RespuestaDetalleValidator is a validator for the "respuesta_detalle" field. It is called by the builders before save.
+	reclamacion.RespuestaDetalleValidator = reclamacionDescRespuestaDetalle.Validators[0].(func(string) error)
 	rolFields := schema.Rol{}.Fields()
 	_ = rolFields
 	// rolDescNombre is the schema descriptor for nombre field.

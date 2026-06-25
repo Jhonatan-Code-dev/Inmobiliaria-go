@@ -78,24 +78,28 @@ func InitializeApp() (*App, error) {
 	citaRepoEnt := repository.NewCitaRepo(client)
 	citaService := service.NewCitaService(citaRepoEnt)
 	citasController := controller.NewCitasController(citaService, inmuebleService, clienteService)
+	reclamacionRepoEnt := repository.NewReclamacionRepo(client)
+	reclamacionService := service.NewReclamacionService(reclamacionRepoEnt, empresaRepoEnt)
+	reclamacionController := controller.NewReclamacionController(reclamacionService, empresaRepoEnt)
 	app := &App{
-		Config:         config,
-		EntClient:      client,
-		AdminCtrl:      adminController,
-		MonedaCtrl:     monedaController,
-		UsuarioCtrl:    usuarioController,
-		GastoCtrl:      gastoController,
-		ClienteCtrl:    clienteController,
-		InmuebleCtrl:   inmuebleController,
-		AlquilerCtrl:   alquilerController,
-		StaffCtrl:      staffController,
-		CargoCtrl:      cargoController,
-		ServicioCtrl:   servicioMedicionController,
-		TicketCtrl:     ticketController,
-		DashboardCtrl:  dashboardController,
-		AsistenciaCtrl: asistenciaController,
-		ReporteCtrl:    reporteController,
-		CitasCtrl:      citasController,
+		Config:          config,
+		EntClient:       client,
+		AdminCtrl:       adminController,
+		MonedaCtrl:      monedaController,
+		UsuarioCtrl:     usuarioController,
+		GastoCtrl:       gastoController,
+		ClienteCtrl:     clienteController,
+		InmuebleCtrl:    inmuebleController,
+		AlquilerCtrl:    alquilerController,
+		StaffCtrl:       staffController,
+		CargoCtrl:       cargoController,
+		ServicioCtrl:    servicioMedicionController,
+		TicketCtrl:      ticketController,
+		DashboardCtrl:   dashboardController,
+		AsistenciaCtrl:  asistenciaController,
+		ReporteCtrl:     reporteController,
+		CitasCtrl:       citasController,
+		ReclamacionCtrl: reclamacionController,
 	}
 	return app, nil
 }

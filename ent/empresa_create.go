@@ -19,6 +19,7 @@ import (
 	"rentals-go/ent/permiso"
 	"rentals-go/ent/plantillacontrato"
 	"rentals-go/ent/propiedad"
+	"rentals-go/ent/reclamacion"
 	"rentals-go/ent/ticket"
 	"time"
 
@@ -372,6 +373,21 @@ func (_c *EmpresaCreate) AddCitas(v ...*Cita) *EmpresaCreate {
 		ids[i] = v[i].ID
 	}
 	return _c.AddCitaIDs(ids...)
+}
+
+// AddReclamacioneIDs adds the "reclamaciones" edge to the Reclamacion entity by IDs.
+func (_c *EmpresaCreate) AddReclamacioneIDs(ids ...int) *EmpresaCreate {
+	_c.mutation.AddReclamacioneIDs(ids...)
+	return _c
+}
+
+// AddReclamaciones adds the "reclamaciones" edges to the Reclamacion entity.
+func (_c *EmpresaCreate) AddReclamaciones(v ...*Reclamacion) *EmpresaCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddReclamacioneIDs(ids...)
 }
 
 // Mutation returns the EmpresaMutation object of the builder.
@@ -763,6 +779,22 @@ func (_c *EmpresaCreate) createSpec() (*Empresa, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(cita.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.ReclamacionesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.ReclamacionesTable,
+			Columns: []string{empresa.ReclamacionesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reclamacion.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

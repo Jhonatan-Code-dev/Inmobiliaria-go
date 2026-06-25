@@ -24,6 +24,7 @@ import (
 	"rentals-go/ent/plantillacontrato"
 	"rentals-go/ent/predicate"
 	"rentals-go/ent/propiedad"
+	"rentals-go/ent/reclamacion"
 	"rentals-go/ent/rol"
 	"rentals-go/ent/serviciomedicion"
 	"rentals-go/ent/ticket"
@@ -64,6 +65,7 @@ const (
 	TypePermiso            = "Permiso"
 	TypePlantillaContrato  = "PlantillaContrato"
 	TypePropiedad          = "Propiedad"
+	TypeReclamacion        = "Reclamacion"
 	TypeRol                = "Rol"
 	TypeServicioMedicion   = "ServicioMedicion"
 	TypeTicket             = "Ticket"
@@ -8157,6 +8159,9 @@ type EmpresaMutation struct {
 	citas                      map[int]struct{}
 	removedcitas               map[int]struct{}
 	clearedcitas               bool
+	reclamaciones              map[int]struct{}
+	removedreclamaciones       map[int]struct{}
+	clearedreclamaciones       bool
 	done                       bool
 	oldValue                   func(context.Context) (*Empresa, error)
 	predicates                 []predicate.Empresa
@@ -9424,6 +9429,60 @@ func (m *EmpresaMutation) ResetCitas() {
 	m.removedcitas = nil
 }
 
+// AddReclamacioneIDs adds the "reclamaciones" edge to the Reclamacion entity by ids.
+func (m *EmpresaMutation) AddReclamacioneIDs(ids ...int) {
+	if m.reclamaciones == nil {
+		m.reclamaciones = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.reclamaciones[ids[i]] = struct{}{}
+	}
+}
+
+// ClearReclamaciones clears the "reclamaciones" edge to the Reclamacion entity.
+func (m *EmpresaMutation) ClearReclamaciones() {
+	m.clearedreclamaciones = true
+}
+
+// ReclamacionesCleared reports if the "reclamaciones" edge to the Reclamacion entity was cleared.
+func (m *EmpresaMutation) ReclamacionesCleared() bool {
+	return m.clearedreclamaciones
+}
+
+// RemoveReclamacioneIDs removes the "reclamaciones" edge to the Reclamacion entity by IDs.
+func (m *EmpresaMutation) RemoveReclamacioneIDs(ids ...int) {
+	if m.removedreclamaciones == nil {
+		m.removedreclamaciones = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.reclamaciones, ids[i])
+		m.removedreclamaciones[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedReclamaciones returns the removed IDs of the "reclamaciones" edge to the Reclamacion entity.
+func (m *EmpresaMutation) RemovedReclamacionesIDs() (ids []int) {
+	for id := range m.removedreclamaciones {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ReclamacionesIDs returns the "reclamaciones" edge IDs in the mutation.
+func (m *EmpresaMutation) ReclamacionesIDs() (ids []int) {
+	for id := range m.reclamaciones {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetReclamaciones resets all changes to the "reclamaciones" edge.
+func (m *EmpresaMutation) ResetReclamaciones() {
+	m.reclamaciones = nil
+	m.clearedreclamaciones = false
+	m.removedreclamaciones = nil
+}
+
 // Where appends a list predicates to the EmpresaMutation builder.
 func (m *EmpresaMutation) Where(ps ...predicate.Empresa) {
 	m.predicates = append(m.predicates, ps...)
@@ -9769,7 +9828,7 @@ func (m *EmpresaMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *EmpresaMutation) AddedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 14)
 	if m.usuarios_empresa != nil {
 		edges = append(edges, empresa.EdgeUsuariosEmpresa)
 	}
@@ -9808,6 +9867,9 @@ func (m *EmpresaMutation) AddedEdges() []string {
 	}
 	if m.citas != nil {
 		edges = append(edges, empresa.EdgeCitas)
+	}
+	if m.reclamaciones != nil {
+		edges = append(edges, empresa.EdgeReclamaciones)
 	}
 	return edges
 }
@@ -9894,13 +9956,19 @@ func (m *EmpresaMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case empresa.EdgeReclamaciones:
+		ids := make([]ent.Value, 0, len(m.reclamaciones))
+		for id := range m.reclamaciones {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *EmpresaMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 14)
 	if m.removedusuarios_empresa != nil {
 		edges = append(edges, empresa.EdgeUsuariosEmpresa)
 	}
@@ -9939,6 +10007,9 @@ func (m *EmpresaMutation) RemovedEdges() []string {
 	}
 	if m.removedcitas != nil {
 		edges = append(edges, empresa.EdgeCitas)
+	}
+	if m.removedreclamaciones != nil {
+		edges = append(edges, empresa.EdgeReclamaciones)
 	}
 	return edges
 }
@@ -10025,13 +10096,19 @@ func (m *EmpresaMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case empresa.EdgeReclamaciones:
+		ids := make([]ent.Value, 0, len(m.removedreclamaciones))
+		for id := range m.removedreclamaciones {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *EmpresaMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 14)
 	if m.clearedusuarios_empresa {
 		edges = append(edges, empresa.EdgeUsuariosEmpresa)
 	}
@@ -10071,6 +10148,9 @@ func (m *EmpresaMutation) ClearedEdges() []string {
 	if m.clearedcitas {
 		edges = append(edges, empresa.EdgeCitas)
 	}
+	if m.clearedreclamaciones {
+		edges = append(edges, empresa.EdgeReclamaciones)
+	}
 	return edges
 }
 
@@ -10104,6 +10184,8 @@ func (m *EmpresaMutation) EdgeCleared(name string) bool {
 		return m.clearedplantillas_contrato
 	case empresa.EdgeCitas:
 		return m.clearedcitas
+	case empresa.EdgeReclamaciones:
+		return m.clearedreclamaciones
 	}
 	return false
 }
@@ -10158,6 +10240,9 @@ func (m *EmpresaMutation) ResetEdge(name string) error {
 		return nil
 	case empresa.EdgeCitas:
 		m.ResetCitas()
+		return nil
+	case empresa.EdgeReclamaciones:
+		m.ResetReclamaciones()
 		return nil
 	}
 	return fmt.Errorf("unknown Empresa edge %s", name)
@@ -18346,6 +18431,1562 @@ func (m *PropiedadMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Propiedad edge %s", name)
+}
+
+// ReclamacionMutation represents an operation that mutates the Reclamacion nodes in the graph.
+type ReclamacionMutation struct {
+	config
+	op                  Op
+	typ                 string
+	id                  *int
+	creado_en           *time.Time
+	codigo              *string
+	nombres             *string
+	apellidos           *string
+	tipo_documento      *string
+	numero_documento    *string
+	telefono            *string
+	email               *string
+	direccion           *string
+	menor_edad          *bool
+	nombre_apoderado    *string
+	tipo_bien           *string
+	monto_reclamado     *float64
+	addmonto_reclamado  *float64
+	descripcion_bien    *string
+	tipo_reclamacion    *string
+	detalle_reclamacion *string
+	pedido_consumidor   *string
+	estado              *string
+	respuesta_detalle   *string
+	respondido_en       *time.Time
+	clearedFields       map[string]struct{}
+	empresa             *int
+	clearedempresa      bool
+	done                bool
+	oldValue            func(context.Context) (*Reclamacion, error)
+	predicates          []predicate.Reclamacion
+}
+
+var _ ent.Mutation = (*ReclamacionMutation)(nil)
+
+// reclamacionOption allows management of the mutation configuration using functional options.
+type reclamacionOption func(*ReclamacionMutation)
+
+// newReclamacionMutation creates new mutation for the Reclamacion entity.
+func newReclamacionMutation(c config, op Op, opts ...reclamacionOption) *ReclamacionMutation {
+	m := &ReclamacionMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeReclamacion,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withReclamacionID sets the ID field of the mutation.
+func withReclamacionID(id int) reclamacionOption {
+	return func(m *ReclamacionMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Reclamacion
+		)
+		m.oldValue = func(ctx context.Context) (*Reclamacion, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Reclamacion.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withReclamacion sets the old Reclamacion of the mutation.
+func withReclamacion(node *Reclamacion) reclamacionOption {
+	return func(m *ReclamacionMutation) {
+		m.oldValue = func(context.Context) (*Reclamacion, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ReclamacionMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ReclamacionMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ReclamacionMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ReclamacionMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Reclamacion.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreadoEn sets the "creado_en" field.
+func (m *ReclamacionMutation) SetCreadoEn(t time.Time) {
+	m.creado_en = &t
+}
+
+// CreadoEn returns the value of the "creado_en" field in the mutation.
+func (m *ReclamacionMutation) CreadoEn() (r time.Time, exists bool) {
+	v := m.creado_en
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreadoEn returns the old "creado_en" field's value of the Reclamacion entity.
+// If the Reclamacion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReclamacionMutation) OldCreadoEn(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreadoEn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreadoEn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreadoEn: %w", err)
+	}
+	return oldValue.CreadoEn, nil
+}
+
+// ResetCreadoEn resets all changes to the "creado_en" field.
+func (m *ReclamacionMutation) ResetCreadoEn() {
+	m.creado_en = nil
+}
+
+// SetCodigo sets the "codigo" field.
+func (m *ReclamacionMutation) SetCodigo(s string) {
+	m.codigo = &s
+}
+
+// Codigo returns the value of the "codigo" field in the mutation.
+func (m *ReclamacionMutation) Codigo() (r string, exists bool) {
+	v := m.codigo
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCodigo returns the old "codigo" field's value of the Reclamacion entity.
+// If the Reclamacion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReclamacionMutation) OldCodigo(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCodigo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCodigo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCodigo: %w", err)
+	}
+	return oldValue.Codigo, nil
+}
+
+// ResetCodigo resets all changes to the "codigo" field.
+func (m *ReclamacionMutation) ResetCodigo() {
+	m.codigo = nil
+}
+
+// SetEmpresaID sets the "empresa_id" field.
+func (m *ReclamacionMutation) SetEmpresaID(i int) {
+	m.empresa = &i
+}
+
+// EmpresaID returns the value of the "empresa_id" field in the mutation.
+func (m *ReclamacionMutation) EmpresaID() (r int, exists bool) {
+	v := m.empresa
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmpresaID returns the old "empresa_id" field's value of the Reclamacion entity.
+// If the Reclamacion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReclamacionMutation) OldEmpresaID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEmpresaID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEmpresaID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmpresaID: %w", err)
+	}
+	return oldValue.EmpresaID, nil
+}
+
+// ResetEmpresaID resets all changes to the "empresa_id" field.
+func (m *ReclamacionMutation) ResetEmpresaID() {
+	m.empresa = nil
+}
+
+// SetNombres sets the "nombres" field.
+func (m *ReclamacionMutation) SetNombres(s string) {
+	m.nombres = &s
+}
+
+// Nombres returns the value of the "nombres" field in the mutation.
+func (m *ReclamacionMutation) Nombres() (r string, exists bool) {
+	v := m.nombres
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNombres returns the old "nombres" field's value of the Reclamacion entity.
+// If the Reclamacion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReclamacionMutation) OldNombres(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNombres is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNombres requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNombres: %w", err)
+	}
+	return oldValue.Nombres, nil
+}
+
+// ResetNombres resets all changes to the "nombres" field.
+func (m *ReclamacionMutation) ResetNombres() {
+	m.nombres = nil
+}
+
+// SetApellidos sets the "apellidos" field.
+func (m *ReclamacionMutation) SetApellidos(s string) {
+	m.apellidos = &s
+}
+
+// Apellidos returns the value of the "apellidos" field in the mutation.
+func (m *ReclamacionMutation) Apellidos() (r string, exists bool) {
+	v := m.apellidos
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldApellidos returns the old "apellidos" field's value of the Reclamacion entity.
+// If the Reclamacion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReclamacionMutation) OldApellidos(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldApellidos is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldApellidos requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldApellidos: %w", err)
+	}
+	return oldValue.Apellidos, nil
+}
+
+// ResetApellidos resets all changes to the "apellidos" field.
+func (m *ReclamacionMutation) ResetApellidos() {
+	m.apellidos = nil
+}
+
+// SetTipoDocumento sets the "tipo_documento" field.
+func (m *ReclamacionMutation) SetTipoDocumento(s string) {
+	m.tipo_documento = &s
+}
+
+// TipoDocumento returns the value of the "tipo_documento" field in the mutation.
+func (m *ReclamacionMutation) TipoDocumento() (r string, exists bool) {
+	v := m.tipo_documento
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTipoDocumento returns the old "tipo_documento" field's value of the Reclamacion entity.
+// If the Reclamacion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReclamacionMutation) OldTipoDocumento(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTipoDocumento is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTipoDocumento requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTipoDocumento: %w", err)
+	}
+	return oldValue.TipoDocumento, nil
+}
+
+// ResetTipoDocumento resets all changes to the "tipo_documento" field.
+func (m *ReclamacionMutation) ResetTipoDocumento() {
+	m.tipo_documento = nil
+}
+
+// SetNumeroDocumento sets the "numero_documento" field.
+func (m *ReclamacionMutation) SetNumeroDocumento(s string) {
+	m.numero_documento = &s
+}
+
+// NumeroDocumento returns the value of the "numero_documento" field in the mutation.
+func (m *ReclamacionMutation) NumeroDocumento() (r string, exists bool) {
+	v := m.numero_documento
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNumeroDocumento returns the old "numero_documento" field's value of the Reclamacion entity.
+// If the Reclamacion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReclamacionMutation) OldNumeroDocumento(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNumeroDocumento is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNumeroDocumento requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNumeroDocumento: %w", err)
+	}
+	return oldValue.NumeroDocumento, nil
+}
+
+// ResetNumeroDocumento resets all changes to the "numero_documento" field.
+func (m *ReclamacionMutation) ResetNumeroDocumento() {
+	m.numero_documento = nil
+}
+
+// SetTelefono sets the "telefono" field.
+func (m *ReclamacionMutation) SetTelefono(s string) {
+	m.telefono = &s
+}
+
+// Telefono returns the value of the "telefono" field in the mutation.
+func (m *ReclamacionMutation) Telefono() (r string, exists bool) {
+	v := m.telefono
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTelefono returns the old "telefono" field's value of the Reclamacion entity.
+// If the Reclamacion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReclamacionMutation) OldTelefono(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTelefono is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTelefono requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTelefono: %w", err)
+	}
+	return oldValue.Telefono, nil
+}
+
+// ResetTelefono resets all changes to the "telefono" field.
+func (m *ReclamacionMutation) ResetTelefono() {
+	m.telefono = nil
+}
+
+// SetEmail sets the "email" field.
+func (m *ReclamacionMutation) SetEmail(s string) {
+	m.email = &s
+}
+
+// Email returns the value of the "email" field in the mutation.
+func (m *ReclamacionMutation) Email() (r string, exists bool) {
+	v := m.email
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEmail returns the old "email" field's value of the Reclamacion entity.
+// If the Reclamacion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReclamacionMutation) OldEmail(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEmail is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEmail requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEmail: %w", err)
+	}
+	return oldValue.Email, nil
+}
+
+// ResetEmail resets all changes to the "email" field.
+func (m *ReclamacionMutation) ResetEmail() {
+	m.email = nil
+}
+
+// SetDireccion sets the "direccion" field.
+func (m *ReclamacionMutation) SetDireccion(s string) {
+	m.direccion = &s
+}
+
+// Direccion returns the value of the "direccion" field in the mutation.
+func (m *ReclamacionMutation) Direccion() (r string, exists bool) {
+	v := m.direccion
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDireccion returns the old "direccion" field's value of the Reclamacion entity.
+// If the Reclamacion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReclamacionMutation) OldDireccion(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDireccion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDireccion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDireccion: %w", err)
+	}
+	return oldValue.Direccion, nil
+}
+
+// ResetDireccion resets all changes to the "direccion" field.
+func (m *ReclamacionMutation) ResetDireccion() {
+	m.direccion = nil
+}
+
+// SetMenorEdad sets the "menor_edad" field.
+func (m *ReclamacionMutation) SetMenorEdad(b bool) {
+	m.menor_edad = &b
+}
+
+// MenorEdad returns the value of the "menor_edad" field in the mutation.
+func (m *ReclamacionMutation) MenorEdad() (r bool, exists bool) {
+	v := m.menor_edad
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMenorEdad returns the old "menor_edad" field's value of the Reclamacion entity.
+// If the Reclamacion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReclamacionMutation) OldMenorEdad(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMenorEdad is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMenorEdad requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMenorEdad: %w", err)
+	}
+	return oldValue.MenorEdad, nil
+}
+
+// ResetMenorEdad resets all changes to the "menor_edad" field.
+func (m *ReclamacionMutation) ResetMenorEdad() {
+	m.menor_edad = nil
+}
+
+// SetNombreApoderado sets the "nombre_apoderado" field.
+func (m *ReclamacionMutation) SetNombreApoderado(s string) {
+	m.nombre_apoderado = &s
+}
+
+// NombreApoderado returns the value of the "nombre_apoderado" field in the mutation.
+func (m *ReclamacionMutation) NombreApoderado() (r string, exists bool) {
+	v := m.nombre_apoderado
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldNombreApoderado returns the old "nombre_apoderado" field's value of the Reclamacion entity.
+// If the Reclamacion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReclamacionMutation) OldNombreApoderado(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldNombreApoderado is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldNombreApoderado requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldNombreApoderado: %w", err)
+	}
+	return oldValue.NombreApoderado, nil
+}
+
+// ClearNombreApoderado clears the value of the "nombre_apoderado" field.
+func (m *ReclamacionMutation) ClearNombreApoderado() {
+	m.nombre_apoderado = nil
+	m.clearedFields[reclamacion.FieldNombreApoderado] = struct{}{}
+}
+
+// NombreApoderadoCleared returns if the "nombre_apoderado" field was cleared in this mutation.
+func (m *ReclamacionMutation) NombreApoderadoCleared() bool {
+	_, ok := m.clearedFields[reclamacion.FieldNombreApoderado]
+	return ok
+}
+
+// ResetNombreApoderado resets all changes to the "nombre_apoderado" field.
+func (m *ReclamacionMutation) ResetNombreApoderado() {
+	m.nombre_apoderado = nil
+	delete(m.clearedFields, reclamacion.FieldNombreApoderado)
+}
+
+// SetTipoBien sets the "tipo_bien" field.
+func (m *ReclamacionMutation) SetTipoBien(s string) {
+	m.tipo_bien = &s
+}
+
+// TipoBien returns the value of the "tipo_bien" field in the mutation.
+func (m *ReclamacionMutation) TipoBien() (r string, exists bool) {
+	v := m.tipo_bien
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTipoBien returns the old "tipo_bien" field's value of the Reclamacion entity.
+// If the Reclamacion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReclamacionMutation) OldTipoBien(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTipoBien is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTipoBien requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTipoBien: %w", err)
+	}
+	return oldValue.TipoBien, nil
+}
+
+// ResetTipoBien resets all changes to the "tipo_bien" field.
+func (m *ReclamacionMutation) ResetTipoBien() {
+	m.tipo_bien = nil
+}
+
+// SetMontoReclamado sets the "monto_reclamado" field.
+func (m *ReclamacionMutation) SetMontoReclamado(f float64) {
+	m.monto_reclamado = &f
+	m.addmonto_reclamado = nil
+}
+
+// MontoReclamado returns the value of the "monto_reclamado" field in the mutation.
+func (m *ReclamacionMutation) MontoReclamado() (r float64, exists bool) {
+	v := m.monto_reclamado
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMontoReclamado returns the old "monto_reclamado" field's value of the Reclamacion entity.
+// If the Reclamacion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReclamacionMutation) OldMontoReclamado(ctx context.Context) (v float64, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMontoReclamado is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMontoReclamado requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMontoReclamado: %w", err)
+	}
+	return oldValue.MontoReclamado, nil
+}
+
+// AddMontoReclamado adds f to the "monto_reclamado" field.
+func (m *ReclamacionMutation) AddMontoReclamado(f float64) {
+	if m.addmonto_reclamado != nil {
+		*m.addmonto_reclamado += f
+	} else {
+		m.addmonto_reclamado = &f
+	}
+}
+
+// AddedMontoReclamado returns the value that was added to the "monto_reclamado" field in this mutation.
+func (m *ReclamacionMutation) AddedMontoReclamado() (r float64, exists bool) {
+	v := m.addmonto_reclamado
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetMontoReclamado resets all changes to the "monto_reclamado" field.
+func (m *ReclamacionMutation) ResetMontoReclamado() {
+	m.monto_reclamado = nil
+	m.addmonto_reclamado = nil
+}
+
+// SetDescripcionBien sets the "descripcion_bien" field.
+func (m *ReclamacionMutation) SetDescripcionBien(s string) {
+	m.descripcion_bien = &s
+}
+
+// DescripcionBien returns the value of the "descripcion_bien" field in the mutation.
+func (m *ReclamacionMutation) DescripcionBien() (r string, exists bool) {
+	v := m.descripcion_bien
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescripcionBien returns the old "descripcion_bien" field's value of the Reclamacion entity.
+// If the Reclamacion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReclamacionMutation) OldDescripcionBien(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDescripcionBien is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDescripcionBien requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescripcionBien: %w", err)
+	}
+	return oldValue.DescripcionBien, nil
+}
+
+// ResetDescripcionBien resets all changes to the "descripcion_bien" field.
+func (m *ReclamacionMutation) ResetDescripcionBien() {
+	m.descripcion_bien = nil
+}
+
+// SetTipoReclamacion sets the "tipo_reclamacion" field.
+func (m *ReclamacionMutation) SetTipoReclamacion(s string) {
+	m.tipo_reclamacion = &s
+}
+
+// TipoReclamacion returns the value of the "tipo_reclamacion" field in the mutation.
+func (m *ReclamacionMutation) TipoReclamacion() (r string, exists bool) {
+	v := m.tipo_reclamacion
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTipoReclamacion returns the old "tipo_reclamacion" field's value of the Reclamacion entity.
+// If the Reclamacion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReclamacionMutation) OldTipoReclamacion(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTipoReclamacion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTipoReclamacion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTipoReclamacion: %w", err)
+	}
+	return oldValue.TipoReclamacion, nil
+}
+
+// ResetTipoReclamacion resets all changes to the "tipo_reclamacion" field.
+func (m *ReclamacionMutation) ResetTipoReclamacion() {
+	m.tipo_reclamacion = nil
+}
+
+// SetDetalleReclamacion sets the "detalle_reclamacion" field.
+func (m *ReclamacionMutation) SetDetalleReclamacion(s string) {
+	m.detalle_reclamacion = &s
+}
+
+// DetalleReclamacion returns the value of the "detalle_reclamacion" field in the mutation.
+func (m *ReclamacionMutation) DetalleReclamacion() (r string, exists bool) {
+	v := m.detalle_reclamacion
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDetalleReclamacion returns the old "detalle_reclamacion" field's value of the Reclamacion entity.
+// If the Reclamacion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReclamacionMutation) OldDetalleReclamacion(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDetalleReclamacion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDetalleReclamacion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDetalleReclamacion: %w", err)
+	}
+	return oldValue.DetalleReclamacion, nil
+}
+
+// ResetDetalleReclamacion resets all changes to the "detalle_reclamacion" field.
+func (m *ReclamacionMutation) ResetDetalleReclamacion() {
+	m.detalle_reclamacion = nil
+}
+
+// SetPedidoConsumidor sets the "pedido_consumidor" field.
+func (m *ReclamacionMutation) SetPedidoConsumidor(s string) {
+	m.pedido_consumidor = &s
+}
+
+// PedidoConsumidor returns the value of the "pedido_consumidor" field in the mutation.
+func (m *ReclamacionMutation) PedidoConsumidor() (r string, exists bool) {
+	v := m.pedido_consumidor
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPedidoConsumidor returns the old "pedido_consumidor" field's value of the Reclamacion entity.
+// If the Reclamacion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReclamacionMutation) OldPedidoConsumidor(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPedidoConsumidor is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPedidoConsumidor requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPedidoConsumidor: %w", err)
+	}
+	return oldValue.PedidoConsumidor, nil
+}
+
+// ResetPedidoConsumidor resets all changes to the "pedido_consumidor" field.
+func (m *ReclamacionMutation) ResetPedidoConsumidor() {
+	m.pedido_consumidor = nil
+}
+
+// SetEstado sets the "estado" field.
+func (m *ReclamacionMutation) SetEstado(s string) {
+	m.estado = &s
+}
+
+// Estado returns the value of the "estado" field in the mutation.
+func (m *ReclamacionMutation) Estado() (r string, exists bool) {
+	v := m.estado
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEstado returns the old "estado" field's value of the Reclamacion entity.
+// If the Reclamacion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReclamacionMutation) OldEstado(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEstado is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEstado requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEstado: %w", err)
+	}
+	return oldValue.Estado, nil
+}
+
+// ResetEstado resets all changes to the "estado" field.
+func (m *ReclamacionMutation) ResetEstado() {
+	m.estado = nil
+}
+
+// SetRespuestaDetalle sets the "respuesta_detalle" field.
+func (m *ReclamacionMutation) SetRespuestaDetalle(s string) {
+	m.respuesta_detalle = &s
+}
+
+// RespuestaDetalle returns the value of the "respuesta_detalle" field in the mutation.
+func (m *ReclamacionMutation) RespuestaDetalle() (r string, exists bool) {
+	v := m.respuesta_detalle
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRespuestaDetalle returns the old "respuesta_detalle" field's value of the Reclamacion entity.
+// If the Reclamacion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReclamacionMutation) OldRespuestaDetalle(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRespuestaDetalle is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRespuestaDetalle requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRespuestaDetalle: %w", err)
+	}
+	return oldValue.RespuestaDetalle, nil
+}
+
+// ClearRespuestaDetalle clears the value of the "respuesta_detalle" field.
+func (m *ReclamacionMutation) ClearRespuestaDetalle() {
+	m.respuesta_detalle = nil
+	m.clearedFields[reclamacion.FieldRespuestaDetalle] = struct{}{}
+}
+
+// RespuestaDetalleCleared returns if the "respuesta_detalle" field was cleared in this mutation.
+func (m *ReclamacionMutation) RespuestaDetalleCleared() bool {
+	_, ok := m.clearedFields[reclamacion.FieldRespuestaDetalle]
+	return ok
+}
+
+// ResetRespuestaDetalle resets all changes to the "respuesta_detalle" field.
+func (m *ReclamacionMutation) ResetRespuestaDetalle() {
+	m.respuesta_detalle = nil
+	delete(m.clearedFields, reclamacion.FieldRespuestaDetalle)
+}
+
+// SetRespondidoEn sets the "respondido_en" field.
+func (m *ReclamacionMutation) SetRespondidoEn(t time.Time) {
+	m.respondido_en = &t
+}
+
+// RespondidoEn returns the value of the "respondido_en" field in the mutation.
+func (m *ReclamacionMutation) RespondidoEn() (r time.Time, exists bool) {
+	v := m.respondido_en
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRespondidoEn returns the old "respondido_en" field's value of the Reclamacion entity.
+// If the Reclamacion object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ReclamacionMutation) OldRespondidoEn(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRespondidoEn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRespondidoEn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRespondidoEn: %w", err)
+	}
+	return oldValue.RespondidoEn, nil
+}
+
+// ClearRespondidoEn clears the value of the "respondido_en" field.
+func (m *ReclamacionMutation) ClearRespondidoEn() {
+	m.respondido_en = nil
+	m.clearedFields[reclamacion.FieldRespondidoEn] = struct{}{}
+}
+
+// RespondidoEnCleared returns if the "respondido_en" field was cleared in this mutation.
+func (m *ReclamacionMutation) RespondidoEnCleared() bool {
+	_, ok := m.clearedFields[reclamacion.FieldRespondidoEn]
+	return ok
+}
+
+// ResetRespondidoEn resets all changes to the "respondido_en" field.
+func (m *ReclamacionMutation) ResetRespondidoEn() {
+	m.respondido_en = nil
+	delete(m.clearedFields, reclamacion.FieldRespondidoEn)
+}
+
+// ClearEmpresa clears the "empresa" edge to the Empresa entity.
+func (m *ReclamacionMutation) ClearEmpresa() {
+	m.clearedempresa = true
+	m.clearedFields[reclamacion.FieldEmpresaID] = struct{}{}
+}
+
+// EmpresaCleared reports if the "empresa" edge to the Empresa entity was cleared.
+func (m *ReclamacionMutation) EmpresaCleared() bool {
+	return m.clearedempresa
+}
+
+// EmpresaIDs returns the "empresa" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// EmpresaID instead. It exists only for internal usage by the builders.
+func (m *ReclamacionMutation) EmpresaIDs() (ids []int) {
+	if id := m.empresa; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetEmpresa resets all changes to the "empresa" edge.
+func (m *ReclamacionMutation) ResetEmpresa() {
+	m.empresa = nil
+	m.clearedempresa = false
+}
+
+// Where appends a list predicates to the ReclamacionMutation builder.
+func (m *ReclamacionMutation) Where(ps ...predicate.Reclamacion) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ReclamacionMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ReclamacionMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Reclamacion, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ReclamacionMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ReclamacionMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Reclamacion).
+func (m *ReclamacionMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ReclamacionMutation) Fields() []string {
+	fields := make([]string, 0, 21)
+	if m.creado_en != nil {
+		fields = append(fields, reclamacion.FieldCreadoEn)
+	}
+	if m.codigo != nil {
+		fields = append(fields, reclamacion.FieldCodigo)
+	}
+	if m.empresa != nil {
+		fields = append(fields, reclamacion.FieldEmpresaID)
+	}
+	if m.nombres != nil {
+		fields = append(fields, reclamacion.FieldNombres)
+	}
+	if m.apellidos != nil {
+		fields = append(fields, reclamacion.FieldApellidos)
+	}
+	if m.tipo_documento != nil {
+		fields = append(fields, reclamacion.FieldTipoDocumento)
+	}
+	if m.numero_documento != nil {
+		fields = append(fields, reclamacion.FieldNumeroDocumento)
+	}
+	if m.telefono != nil {
+		fields = append(fields, reclamacion.FieldTelefono)
+	}
+	if m.email != nil {
+		fields = append(fields, reclamacion.FieldEmail)
+	}
+	if m.direccion != nil {
+		fields = append(fields, reclamacion.FieldDireccion)
+	}
+	if m.menor_edad != nil {
+		fields = append(fields, reclamacion.FieldMenorEdad)
+	}
+	if m.nombre_apoderado != nil {
+		fields = append(fields, reclamacion.FieldNombreApoderado)
+	}
+	if m.tipo_bien != nil {
+		fields = append(fields, reclamacion.FieldTipoBien)
+	}
+	if m.monto_reclamado != nil {
+		fields = append(fields, reclamacion.FieldMontoReclamado)
+	}
+	if m.descripcion_bien != nil {
+		fields = append(fields, reclamacion.FieldDescripcionBien)
+	}
+	if m.tipo_reclamacion != nil {
+		fields = append(fields, reclamacion.FieldTipoReclamacion)
+	}
+	if m.detalle_reclamacion != nil {
+		fields = append(fields, reclamacion.FieldDetalleReclamacion)
+	}
+	if m.pedido_consumidor != nil {
+		fields = append(fields, reclamacion.FieldPedidoConsumidor)
+	}
+	if m.estado != nil {
+		fields = append(fields, reclamacion.FieldEstado)
+	}
+	if m.respuesta_detalle != nil {
+		fields = append(fields, reclamacion.FieldRespuestaDetalle)
+	}
+	if m.respondido_en != nil {
+		fields = append(fields, reclamacion.FieldRespondidoEn)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ReclamacionMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case reclamacion.FieldCreadoEn:
+		return m.CreadoEn()
+	case reclamacion.FieldCodigo:
+		return m.Codigo()
+	case reclamacion.FieldEmpresaID:
+		return m.EmpresaID()
+	case reclamacion.FieldNombres:
+		return m.Nombres()
+	case reclamacion.FieldApellidos:
+		return m.Apellidos()
+	case reclamacion.FieldTipoDocumento:
+		return m.TipoDocumento()
+	case reclamacion.FieldNumeroDocumento:
+		return m.NumeroDocumento()
+	case reclamacion.FieldTelefono:
+		return m.Telefono()
+	case reclamacion.FieldEmail:
+		return m.Email()
+	case reclamacion.FieldDireccion:
+		return m.Direccion()
+	case reclamacion.FieldMenorEdad:
+		return m.MenorEdad()
+	case reclamacion.FieldNombreApoderado:
+		return m.NombreApoderado()
+	case reclamacion.FieldTipoBien:
+		return m.TipoBien()
+	case reclamacion.FieldMontoReclamado:
+		return m.MontoReclamado()
+	case reclamacion.FieldDescripcionBien:
+		return m.DescripcionBien()
+	case reclamacion.FieldTipoReclamacion:
+		return m.TipoReclamacion()
+	case reclamacion.FieldDetalleReclamacion:
+		return m.DetalleReclamacion()
+	case reclamacion.FieldPedidoConsumidor:
+		return m.PedidoConsumidor()
+	case reclamacion.FieldEstado:
+		return m.Estado()
+	case reclamacion.FieldRespuestaDetalle:
+		return m.RespuestaDetalle()
+	case reclamacion.FieldRespondidoEn:
+		return m.RespondidoEn()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ReclamacionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case reclamacion.FieldCreadoEn:
+		return m.OldCreadoEn(ctx)
+	case reclamacion.FieldCodigo:
+		return m.OldCodigo(ctx)
+	case reclamacion.FieldEmpresaID:
+		return m.OldEmpresaID(ctx)
+	case reclamacion.FieldNombres:
+		return m.OldNombres(ctx)
+	case reclamacion.FieldApellidos:
+		return m.OldApellidos(ctx)
+	case reclamacion.FieldTipoDocumento:
+		return m.OldTipoDocumento(ctx)
+	case reclamacion.FieldNumeroDocumento:
+		return m.OldNumeroDocumento(ctx)
+	case reclamacion.FieldTelefono:
+		return m.OldTelefono(ctx)
+	case reclamacion.FieldEmail:
+		return m.OldEmail(ctx)
+	case reclamacion.FieldDireccion:
+		return m.OldDireccion(ctx)
+	case reclamacion.FieldMenorEdad:
+		return m.OldMenorEdad(ctx)
+	case reclamacion.FieldNombreApoderado:
+		return m.OldNombreApoderado(ctx)
+	case reclamacion.FieldTipoBien:
+		return m.OldTipoBien(ctx)
+	case reclamacion.FieldMontoReclamado:
+		return m.OldMontoReclamado(ctx)
+	case reclamacion.FieldDescripcionBien:
+		return m.OldDescripcionBien(ctx)
+	case reclamacion.FieldTipoReclamacion:
+		return m.OldTipoReclamacion(ctx)
+	case reclamacion.FieldDetalleReclamacion:
+		return m.OldDetalleReclamacion(ctx)
+	case reclamacion.FieldPedidoConsumidor:
+		return m.OldPedidoConsumidor(ctx)
+	case reclamacion.FieldEstado:
+		return m.OldEstado(ctx)
+	case reclamacion.FieldRespuestaDetalle:
+		return m.OldRespuestaDetalle(ctx)
+	case reclamacion.FieldRespondidoEn:
+		return m.OldRespondidoEn(ctx)
+	}
+	return nil, fmt.Errorf("unknown Reclamacion field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ReclamacionMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case reclamacion.FieldCreadoEn:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreadoEn(v)
+		return nil
+	case reclamacion.FieldCodigo:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCodigo(v)
+		return nil
+	case reclamacion.FieldEmpresaID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmpresaID(v)
+		return nil
+	case reclamacion.FieldNombres:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNombres(v)
+		return nil
+	case reclamacion.FieldApellidos:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetApellidos(v)
+		return nil
+	case reclamacion.FieldTipoDocumento:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTipoDocumento(v)
+		return nil
+	case reclamacion.FieldNumeroDocumento:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNumeroDocumento(v)
+		return nil
+	case reclamacion.FieldTelefono:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTelefono(v)
+		return nil
+	case reclamacion.FieldEmail:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEmail(v)
+		return nil
+	case reclamacion.FieldDireccion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDireccion(v)
+		return nil
+	case reclamacion.FieldMenorEdad:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMenorEdad(v)
+		return nil
+	case reclamacion.FieldNombreApoderado:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetNombreApoderado(v)
+		return nil
+	case reclamacion.FieldTipoBien:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTipoBien(v)
+		return nil
+	case reclamacion.FieldMontoReclamado:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMontoReclamado(v)
+		return nil
+	case reclamacion.FieldDescripcionBien:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescripcionBien(v)
+		return nil
+	case reclamacion.FieldTipoReclamacion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTipoReclamacion(v)
+		return nil
+	case reclamacion.FieldDetalleReclamacion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDetalleReclamacion(v)
+		return nil
+	case reclamacion.FieldPedidoConsumidor:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPedidoConsumidor(v)
+		return nil
+	case reclamacion.FieldEstado:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEstado(v)
+		return nil
+	case reclamacion.FieldRespuestaDetalle:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRespuestaDetalle(v)
+		return nil
+	case reclamacion.FieldRespondidoEn:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRespondidoEn(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Reclamacion field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ReclamacionMutation) AddedFields() []string {
+	var fields []string
+	if m.addmonto_reclamado != nil {
+		fields = append(fields, reclamacion.FieldMontoReclamado)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ReclamacionMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case reclamacion.FieldMontoReclamado:
+		return m.AddedMontoReclamado()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ReclamacionMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case reclamacion.FieldMontoReclamado:
+		v, ok := value.(float64)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddMontoReclamado(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Reclamacion numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ReclamacionMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(reclamacion.FieldNombreApoderado) {
+		fields = append(fields, reclamacion.FieldNombreApoderado)
+	}
+	if m.FieldCleared(reclamacion.FieldRespuestaDetalle) {
+		fields = append(fields, reclamacion.FieldRespuestaDetalle)
+	}
+	if m.FieldCleared(reclamacion.FieldRespondidoEn) {
+		fields = append(fields, reclamacion.FieldRespondidoEn)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ReclamacionMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ReclamacionMutation) ClearField(name string) error {
+	switch name {
+	case reclamacion.FieldNombreApoderado:
+		m.ClearNombreApoderado()
+		return nil
+	case reclamacion.FieldRespuestaDetalle:
+		m.ClearRespuestaDetalle()
+		return nil
+	case reclamacion.FieldRespondidoEn:
+		m.ClearRespondidoEn()
+		return nil
+	}
+	return fmt.Errorf("unknown Reclamacion nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ReclamacionMutation) ResetField(name string) error {
+	switch name {
+	case reclamacion.FieldCreadoEn:
+		m.ResetCreadoEn()
+		return nil
+	case reclamacion.FieldCodigo:
+		m.ResetCodigo()
+		return nil
+	case reclamacion.FieldEmpresaID:
+		m.ResetEmpresaID()
+		return nil
+	case reclamacion.FieldNombres:
+		m.ResetNombres()
+		return nil
+	case reclamacion.FieldApellidos:
+		m.ResetApellidos()
+		return nil
+	case reclamacion.FieldTipoDocumento:
+		m.ResetTipoDocumento()
+		return nil
+	case reclamacion.FieldNumeroDocumento:
+		m.ResetNumeroDocumento()
+		return nil
+	case reclamacion.FieldTelefono:
+		m.ResetTelefono()
+		return nil
+	case reclamacion.FieldEmail:
+		m.ResetEmail()
+		return nil
+	case reclamacion.FieldDireccion:
+		m.ResetDireccion()
+		return nil
+	case reclamacion.FieldMenorEdad:
+		m.ResetMenorEdad()
+		return nil
+	case reclamacion.FieldNombreApoderado:
+		m.ResetNombreApoderado()
+		return nil
+	case reclamacion.FieldTipoBien:
+		m.ResetTipoBien()
+		return nil
+	case reclamacion.FieldMontoReclamado:
+		m.ResetMontoReclamado()
+		return nil
+	case reclamacion.FieldDescripcionBien:
+		m.ResetDescripcionBien()
+		return nil
+	case reclamacion.FieldTipoReclamacion:
+		m.ResetTipoReclamacion()
+		return nil
+	case reclamacion.FieldDetalleReclamacion:
+		m.ResetDetalleReclamacion()
+		return nil
+	case reclamacion.FieldPedidoConsumidor:
+		m.ResetPedidoConsumidor()
+		return nil
+	case reclamacion.FieldEstado:
+		m.ResetEstado()
+		return nil
+	case reclamacion.FieldRespuestaDetalle:
+		m.ResetRespuestaDetalle()
+		return nil
+	case reclamacion.FieldRespondidoEn:
+		m.ResetRespondidoEn()
+		return nil
+	}
+	return fmt.Errorf("unknown Reclamacion field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ReclamacionMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.empresa != nil {
+		edges = append(edges, reclamacion.EdgeEmpresa)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ReclamacionMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case reclamacion.EdgeEmpresa:
+		if id := m.empresa; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ReclamacionMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ReclamacionMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ReclamacionMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedempresa {
+		edges = append(edges, reclamacion.EdgeEmpresa)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ReclamacionMutation) EdgeCleared(name string) bool {
+	switch name {
+	case reclamacion.EdgeEmpresa:
+		return m.clearedempresa
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ReclamacionMutation) ClearEdge(name string) error {
+	switch name {
+	case reclamacion.EdgeEmpresa:
+		m.ClearEmpresa()
+		return nil
+	}
+	return fmt.Errorf("unknown Reclamacion unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ReclamacionMutation) ResetEdge(name string) error {
+	switch name {
+	case reclamacion.EdgeEmpresa:
+		m.ResetEmpresa()
+		return nil
+	}
+	return fmt.Errorf("unknown Reclamacion edge %s", name)
 }
 
 // RolMutation represents an operation that mutates the Rol nodes in the graph.

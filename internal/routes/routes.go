@@ -21,6 +21,11 @@ func Register(app *fiber.App, appDI *di.App) {
 	app.Get("/catalogos/monedas", appDI.MonedaCtrl.Listar)
 	app.Get("/catalogos/monedas/:codigo", appDI.MonedaCtrl.Obtener)
 
+	// Public compliance endpoints
+	app.Get("/api/public/empresas", appDI.ReclamacionCtrl.ListarPublicasEmpresas)
+	app.Post("/api/public/reclamaciones", appDI.ReclamacionCtrl.RegistrarPublica)
+	app.Get("/api/public/reclamaciones/:id/pdf", appDI.ReclamacionCtrl.DescargarPDFPublica)
+
 	adminroutes.Register(app, appDI)
 	userroutes.Register(app, appDI)
 }

@@ -20,6 +20,7 @@ import (
 	"rentals-go/ent/plantillacontrato"
 	"rentals-go/ent/predicate"
 	"rentals-go/ent/propiedad"
+	"rentals-go/ent/reclamacion"
 	"rentals-go/ent/ticket"
 	"time"
 
@@ -402,6 +403,21 @@ func (_u *EmpresaUpdate) AddCitas(v ...*Cita) *EmpresaUpdate {
 	return _u.AddCitaIDs(ids...)
 }
 
+// AddReclamacioneIDs adds the "reclamaciones" edge to the Reclamacion entity by IDs.
+func (_u *EmpresaUpdate) AddReclamacioneIDs(ids ...int) *EmpresaUpdate {
+	_u.mutation.AddReclamacioneIDs(ids...)
+	return _u
+}
+
+// AddReclamaciones adds the "reclamaciones" edges to the Reclamacion entity.
+func (_u *EmpresaUpdate) AddReclamaciones(v ...*Reclamacion) *EmpresaUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddReclamacioneIDs(ids...)
+}
+
 // Mutation returns the EmpresaMutation object of the builder.
 func (_u *EmpresaUpdate) Mutation() *EmpresaMutation {
 	return _u.mutation
@@ -678,6 +694,27 @@ func (_u *EmpresaUpdate) RemoveCitas(v ...*Cita) *EmpresaUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveCitaIDs(ids...)
+}
+
+// ClearReclamaciones clears all "reclamaciones" edges to the Reclamacion entity.
+func (_u *EmpresaUpdate) ClearReclamaciones() *EmpresaUpdate {
+	_u.mutation.ClearReclamaciones()
+	return _u
+}
+
+// RemoveReclamacioneIDs removes the "reclamaciones" edge to Reclamacion entities by IDs.
+func (_u *EmpresaUpdate) RemoveReclamacioneIDs(ids ...int) *EmpresaUpdate {
+	_u.mutation.RemoveReclamacioneIDs(ids...)
+	return _u
+}
+
+// RemoveReclamaciones removes "reclamaciones" edges to Reclamacion entities.
+func (_u *EmpresaUpdate) RemoveReclamaciones(v ...*Reclamacion) *EmpresaUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveReclamacioneIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1371,6 +1408,51 @@ func (_u *EmpresaUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if _u.mutation.ReclamacionesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.ReclamacionesTable,
+			Columns: []string{empresa.ReclamacionesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reclamacion.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedReclamacionesIDs(); len(nodes) > 0 && !_u.mutation.ReclamacionesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.ReclamacionesTable,
+			Columns: []string{empresa.ReclamacionesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reclamacion.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ReclamacionesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.ReclamacionesTable,
+			Columns: []string{empresa.ReclamacionesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reclamacion.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{empresa.Label}
@@ -1752,6 +1834,21 @@ func (_u *EmpresaUpdateOne) AddCitas(v ...*Cita) *EmpresaUpdateOne {
 	return _u.AddCitaIDs(ids...)
 }
 
+// AddReclamacioneIDs adds the "reclamaciones" edge to the Reclamacion entity by IDs.
+func (_u *EmpresaUpdateOne) AddReclamacioneIDs(ids ...int) *EmpresaUpdateOne {
+	_u.mutation.AddReclamacioneIDs(ids...)
+	return _u
+}
+
+// AddReclamaciones adds the "reclamaciones" edges to the Reclamacion entity.
+func (_u *EmpresaUpdateOne) AddReclamaciones(v ...*Reclamacion) *EmpresaUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddReclamacioneIDs(ids...)
+}
+
 // Mutation returns the EmpresaMutation object of the builder.
 func (_u *EmpresaUpdateOne) Mutation() *EmpresaMutation {
 	return _u.mutation
@@ -2028,6 +2125,27 @@ func (_u *EmpresaUpdateOne) RemoveCitas(v ...*Cita) *EmpresaUpdateOne {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveCitaIDs(ids...)
+}
+
+// ClearReclamaciones clears all "reclamaciones" edges to the Reclamacion entity.
+func (_u *EmpresaUpdateOne) ClearReclamaciones() *EmpresaUpdateOne {
+	_u.mutation.ClearReclamaciones()
+	return _u
+}
+
+// RemoveReclamacioneIDs removes the "reclamaciones" edge to Reclamacion entities by IDs.
+func (_u *EmpresaUpdateOne) RemoveReclamacioneIDs(ids ...int) *EmpresaUpdateOne {
+	_u.mutation.RemoveReclamacioneIDs(ids...)
+	return _u
+}
+
+// RemoveReclamaciones removes "reclamaciones" edges to Reclamacion entities.
+func (_u *EmpresaUpdateOne) RemoveReclamaciones(v ...*Reclamacion) *EmpresaUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveReclamacioneIDs(ids...)
 }
 
 // Where appends a list predicates to the EmpresaUpdate builder.
@@ -2744,6 +2862,51 @@ func (_u *EmpresaUpdateOne) sqlSave(ctx context.Context) (_node *Empresa, err er
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(cita.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.ReclamacionesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.ReclamacionesTable,
+			Columns: []string{empresa.ReclamacionesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reclamacion.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedReclamacionesIDs(); len(nodes) > 0 && !_u.mutation.ReclamacionesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.ReclamacionesTable,
+			Columns: []string{empresa.ReclamacionesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reclamacion.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.ReclamacionesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   empresa.ReclamacionesTable,
+			Columns: []string{empresa.ReclamacionesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(reclamacion.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

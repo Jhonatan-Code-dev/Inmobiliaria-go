@@ -62,6 +62,8 @@ const (
 	EdgePlantillasContrato = "plantillas_contrato"
 	// EdgeCitas holds the string denoting the citas edge name in mutations.
 	EdgeCitas = "citas"
+	// EdgeReclamaciones holds the string denoting the reclamaciones edge name in mutations.
+	EdgeReclamaciones = "reclamaciones"
 	// Table holds the table name of the empresa in the database.
 	Table = "empresas"
 	// UsuariosEmpresaTable is the table that holds the usuarios_empresa relation/edge.
@@ -155,6 +157,13 @@ const (
 	CitasInverseTable = "citas"
 	// CitasColumn is the table column denoting the citas relation/edge.
 	CitasColumn = "empresa_id"
+	// ReclamacionesTable is the table that holds the reclamaciones relation/edge.
+	ReclamacionesTable = "reclamaciones"
+	// ReclamacionesInverseTable is the table name for the Reclamacion entity.
+	// It exists in this package in order to avoid circular dependency with the "reclamacion" package.
+	ReclamacionesInverseTable = "reclamaciones"
+	// ReclamacionesColumn is the table column denoting the reclamaciones relation/edge.
+	ReclamacionesColumn = "empresa_id"
 )
 
 // Columns holds all SQL columns for empresa fields.
@@ -454,6 +463,20 @@ func ByCitas(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 		sqlgraph.OrderByNeighborTerms(s, newCitasStep(), append([]sql.OrderTerm{term}, terms...)...)
 	}
 }
+
+// ByReclamacionesCount orders the results by reclamaciones count.
+func ByReclamacionesCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newReclamacionesStep(), opts...)
+	}
+}
+
+// ByReclamaciones orders the results by reclamaciones terms.
+func ByReclamaciones(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newReclamacionesStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
 func newUsuariosEmpresaStep() *sqlgraph.Step {
 	return sqlgraph.NewStep(
 		sqlgraph.From(Table, FieldID),
@@ -543,5 +566,12 @@ func newCitasStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(CitasInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, CitasTable, CitasColumn),
+	)
+}
+func newReclamacionesStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(ReclamacionesInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, ReclamacionesTable, ReclamacionesColumn),
 	)
 }

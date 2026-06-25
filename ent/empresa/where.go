@@ -989,6 +989,29 @@ func HasCitasWith(preds ...predicate.Cita) predicate.Empresa {
 	})
 }
 
+// HasReclamaciones applies the HasEdge predicate on the "reclamaciones" edge.
+func HasReclamaciones() predicate.Empresa {
+	return predicate.Empresa(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ReclamacionesTable, ReclamacionesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasReclamacionesWith applies the HasEdge predicate on the "reclamaciones" edge with a given conditions (other predicates).
+func HasReclamacionesWith(preds ...predicate.Reclamacion) predicate.Empresa {
+	return predicate.Empresa(func(s *sql.Selector) {
+		step := newReclamacionesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Empresa) predicate.Empresa {
 	return predicate.Empresa(sql.AndPredicates(predicates...))

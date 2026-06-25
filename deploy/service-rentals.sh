@@ -81,3 +81,10 @@ sudo systemctl status alquilamax
 # COMANDO PARA COMPILAR (EJECUTAR EN TU MÁQUINA LOCAL)
 # ==============================================================================
 GOOS=linux GOARCH=amd64 go build -o alquilamax-bin ./cmd/api/main.go
+
+
+
+#-------------------------------------------------------
+$env:GOOS="linux"; $env:GOARCH="amd64"; go build -ldflags="-w -s" -o alquilamax-bin ./cmd/api/main.go
+
+#------------------------------------------------------
